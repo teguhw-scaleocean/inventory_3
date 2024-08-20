@@ -11,4 +11,8 @@ class TextConstants {
 
   static String get onBoardingTitle3 => "Perfect Deliveries";
   static String get onBoardingSubTitle3 => "Scan to ensure timely dispatches.";
+
+  static String get loginTitle => "Smart Managing Smarter";
+  static String get loginSubTitle =>
+      "Log in to simplify your inventory\nmanagement.";
 }

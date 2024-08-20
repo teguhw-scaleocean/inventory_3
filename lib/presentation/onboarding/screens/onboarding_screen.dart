@@ -4,7 +4,9 @@ import 'package:inventory_v3/common/constants/local_images.dart';
 import 'package:inventory_v3/common/constants/text_constants.dart';
 import 'package:inventory_v3/presentation/onboarding/widgets/dot_indicators.dart';
 
+import '../../../common/components/top_logo_section.dart';
 import '../../../common/theme/text/base_text.dart';
+import '../../login/screens/login_screen.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -43,6 +45,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }
 
   void _onNextPage() {
+    if (_currentIndex == _onBoardingPages.length - 1) {
+      Navigator.push(context, MaterialPageRoute(builder: (context) {
+        return const LoginScreen();
+      }));
+    }
     _pageController.nextPage(duration: _kDuration, curve: _kCurve);
   }
 
@@ -67,7 +74,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   mainAxisSize: MainAxisSize.max,
                   children: [
                     GestureDetector(
-                      onTap: () {},
+                      onTap: () => Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const LoginScreen(),
+                        ),
+                        (route) => false,
+                      ),
                       child: Text(
                         "Skip",
                         style: BaseText.mainText14
@@ -134,30 +147,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
     return Column(
       children: [
-        Flexible(
-          child: SizedBox(
-            height: 80,
-            width: 90,
-            // color: Colors.amber,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const SizedBox(height: 24),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Text(
-                      "Powered by",
-                      style: BaseText.grey2Text10,
-                      textAlign: TextAlign.end,
-                    ),
-                  ],
-                ),
-                SvgPicture.asset(LocalImages.logoImage),
-              ],
-            ),
-          ),
-        ),
+        buildTopLogoSection(),
         const Spacer(),
         // Flexible(child: Container(height: 120)),
         SvgPicture.asset(images),

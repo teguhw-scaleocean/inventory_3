@@ -45,7 +45,7 @@ class PrimaryButton extends StatelessWidget {
             Text(
               title,
               style: textStyle ??
-                  BaseText.whiteText14.copyWith(fontWeight: BaseText.semiBold),
+                  BaseText.whiteText14.copyWith(fontWeight: BaseText.medium),
             ),
           ],
         ),

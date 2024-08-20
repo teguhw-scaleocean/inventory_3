@@ -27,8 +27,8 @@ class _LoginScreenState extends State<LoginScreen> {
       child: Scaffold(
         body: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Column(
-            children: [
+          child: ListView(
+            children: <Widget>[
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -38,25 +38,23 @@ class _LoginScreenState extends State<LoginScreen> {
               24.height,
               SvgPicture.asset(LocalImages.loginImage),
               24.height,
-              Flexible(
-                child: SizedBox(
-                  width: double.infinity,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        TextConstants.loginTitle,
-                        textAlign: TextAlign.center,
-                        style: BaseText.mainText20
-                            .copyWith(fontWeight: BaseText.semiBold),
-                      ),
-                      Text(
-                        textAlign: TextAlign.center,
-                        TextConstants.loginSubTitle,
-                        style: BaseText.subText14,
-                      ),
-                    ],
-                  ),
+              SizedBox(
+                width: double.infinity,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      TextConstants.loginTitle,
+                      textAlign: TextAlign.center,
+                      style: BaseText.mainText20
+                          .copyWith(fontWeight: BaseText.semiBold),
+                    ),
+                    Text(
+                      textAlign: TextAlign.center,
+                      TextConstants.loginSubTitle,
+                      style: BaseText.subText14,
+                    ),
+                  ],
                 ),
               ),
               40.height,

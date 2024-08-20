@@ -9,4 +9,9 @@ class LocalImages {
 
   // Login
   static String get loginImage => "assets/login/login.svg";
+
+  // Receipt
+  static String get receiptPalleteImage => "assets/receipt/pallete.svg";
+  static String get receiptProductImage => "assets/receipt/product.svg";
+  static String get receiptBothImage => "assets/receipt/both.svg";
 }

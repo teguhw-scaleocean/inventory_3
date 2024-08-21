@@ -15,4 +15,8 @@ class TextConstants {
   static String get loginTitle => "Smart Managing Smarter";
   static String get loginSubTitle =>
       "Log in to simplify your inventory\nmanagement.";
+
+  static String get readyToReceive => "Ready to receive items?";
+  static String get chooseSubTitle =>
+      "Choose to scan a Pallet, Product, or Both";
 }

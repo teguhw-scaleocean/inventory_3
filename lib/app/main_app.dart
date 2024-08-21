@@ -2,6 +2,7 @@ import 'package:device_preview/device_preview.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:inventory_v3/presentation/receipt/screens/receipt_screen.dart';
 
 import '../common/theme/color/color_name.dart';
 import '../common/theme/color/colors.dart';
@@ -14,15 +15,15 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      locale: DevicePreview.locale(context),
-      builder: DevicePreview.appBuilder,
+      // locale: DevicePreview.locale(context),
+      // builder: DevicePreview.appBuilder,
       theme: _getThemeData(),
       darkTheme: _getThemeData(),
       scrollBehavior: const MaterialScrollBehavior().copyWith(dragDevices: {
         PointerDeviceKind.touch,
         PointerDeviceKind.mouse,
       }),
-      home: const OnboardingScreen(),
+      home: ReceiptScreen(),
     );
   }
 

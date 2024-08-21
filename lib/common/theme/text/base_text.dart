@@ -20,6 +20,11 @@ class BaseText {
     color: ColorName.blackNewColor,
   );
 
+  static TextStyle black2TextStyle = const TextStyle(
+    fontFamily: "Lexend",
+    color: ColorName.black2Color,
+  );
+
   static TextStyle redTextStyle = const TextStyle(
     fontFamily: "Lexend",
     color: ColorName.redColor,
@@ -56,6 +61,7 @@ class BaseText {
   static TextStyle grey2Text14 = grey2TextStyle.copyWith(fontSize: 14);
 
   static TextStyle blackText12 = blackTextStyle.copyWith(fontSize: 12);
+  static TextStyle blackText16 = black2TextStyle.copyWith(fontSize: 16);
 
   static TextStyle whiteText14 = whiteTextStyle.copyWith(fontSize: 14);
 

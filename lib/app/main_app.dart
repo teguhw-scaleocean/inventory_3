@@ -7,6 +7,7 @@ import 'package:inventory_v3/presentation/receipt/screens/receipt_screen.dart';
 import '../common/theme/color/color_name.dart';
 import '../common/theme/color/colors.dart';
 import '../presentation/onboarding/screens/onboarding_screen.dart';
+import '../presentation/receipt/screens/receipt_product_detail.dart';
 
 class MainApp extends StatelessWidget {
   const MainApp({super.key});
@@ -27,7 +28,7 @@ class MainApp extends StatelessWidget {
         PointerDeviceKind.touch,
         PointerDeviceKind.mouse,
       }),
-      home: ReceiptScreen(),
+      home: const ReceiptProductDetailScreen(),
     );
   }
 

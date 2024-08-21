@@ -15,7 +15,10 @@ class ColorName {
   static const Color grey4Color = Color(0xFFDADADA);
   static const Color grey5Color = Color(0xFFE4E4E4);
   static const Color grey6Color = Color(0xFFE6EAEF);
+  static const Color grey7Color = Color(0xFFD9D9D9);
+  static const Color grey8Color = Color(0xFFF5F5F5);
   static const Color borderColor = Color(0xFFE9E9E9);
   static const Color redColor = Color(0xFFE81A0C);
   static const Color badgeRedColor = Color(0xFFEE4345);
+  static const Color readyColor = Color(0xFF1798EE);
 }

@@ -1,8 +1,10 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:inventory_v3/common/extensions/empty_space_extension.dart';
 
+import '../constants/local_images.dart';
 import '../theme/color/color_name.dart';
 import '../theme/text/base_text.dart';
 
@@ -113,6 +115,7 @@ class DisableButton extends StatelessWidget {
   double width;
   String title;
   Color? color;
+  Widget iconWidget;
 
   DisableButton({
     Key? key,
@@ -120,6 +123,7 @@ class DisableButton extends StatelessWidget {
     required this.width,
     required this.title,
     this.color,
+    required this.iconWidget,
   }) : super(key: key);
 
   @override
@@ -132,11 +136,18 @@ class DisableButton extends StatelessWidget {
       child: SizedBox(
         height: height,
         width: width,
-        child: Center(
-            child: Text(
-          title,
-          style: BaseText.whiteText14.copyWith(fontWeight: BaseText.semiBold),
-        )),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            iconWidget,
+            6.width,
+            Text(
+              title,
+              style:
+                  BaseText.whiteText14.copyWith(fontWeight: BaseText.semiBold),
+            ),
+          ],
+        ),
       ),
     );
   }

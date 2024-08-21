@@ -21,4 +21,6 @@ class ColorName {
   static const Color redColor = Color(0xFFE81A0C);
   static const Color badgeRedColor = Color(0xFFEE4345);
   static const Color readyColor = Color(0xFF1798EE);
+  static const Color waitingColor = Color(0xFFFF8A14);
+  static const Color lateColor = Color(0xFFEE4345);
 }

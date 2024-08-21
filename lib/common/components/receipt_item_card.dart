@@ -1,18 +1,25 @@
 import 'package:flutter/material.dart';
 
+import '../../data/model/receipt.dart';
 import '../extensions/empty_space_extension.dart';
 import '../theme/color/color_name.dart';
 import '../theme/text/base_text.dart';
 import 'status_badge.dart';
 
 class ReceiptItemCard extends StatelessWidget {
-  const ReceiptItemCard({super.key});
+  final Receipt receipt;
+
+  const ReceiptItemCard({super.key, required this.receipt});
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       // height: 120,
       child: Card(
+        margin: EdgeInsets.only(
+          top: (receipt.id == 1) ? 8 : 0,
+          bottom: 10,
+        ),
         semanticContainer: true,
         clipBehavior: Clip.antiAliasWithSaveLayer,
         shape: RoundedRectangleBorder(
@@ -27,13 +34,13 @@ class ReceiptItemCard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    "WH/IN/00013",
+                    receipt.name,
                     style: BaseText.blackText14
                         .copyWith(fontWeight: BaseText.medium),
                   ),
-                  const StatusBadge(
-                    status: "Ready",
-                    color: ColorName.readyColor,
+                  StatusBadge(
+                    status: receipt.status,
+                    color: receipt.statusColor,
                   ),
                 ],
               ),
@@ -42,12 +49,12 @@ class ReceiptItemCard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    "Package: Pallet",
+                    receipt.packageName,
                     style: BaseText.grey1Text13
                         .copyWith(fontWeight: BaseText.light),
                   ),
                   Text(
-                    "Tracking: Lots",
+                    receipt.packageStatus,
                     style: BaseText.grey1Text13
                         .copyWith(fontWeight: BaseText.light),
                   )
@@ -57,7 +64,7 @@ class ReceiptItemCard extends StatelessWidget {
               Row(
                 children: [
                   Text(
-                    "14/06/2024 - 15:30",
+                    receipt.dateTime,
                     style: BaseText.grey1Text13
                         .copyWith(fontWeight: BaseText.light),
                   )
@@ -73,7 +80,7 @@ class ReceiptItemCard extends StatelessWidget {
               Row(
                 children: [
                   Text(
-                    "To: Main Storage Area",
+                    receipt.destination,
                     style: BaseText.mainText13.copyWith(
                       fontWeight: BaseText.semiBold,
                     ),

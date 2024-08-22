@@ -43,3 +43,4 @@ flutter:
     - assets/onboarding/
     - assets/login/
     - assets/receipt/
+    - assets/receipt/stepper/

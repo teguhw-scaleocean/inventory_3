@@ -18,6 +18,8 @@ class ColorName {
   static const Color grey7Color = Color(0xFFD9D9D9);
   static const Color grey8Color = Color(0xFFF5F5F5);
   static const Color grey9Color = Color(0xFFEFEFEF);
+  static const Color grey10Color = Color(0xFF4A4A4A);
+  static const Color grey11Color = Color(0xFF9C9C9C);
   static const Color borderColor = Color(0xFFE9E9E9);
   static const Color redColor = Color(0xFFE81A0C);
   static const Color badgeRedColor = Color(0xFFEE4345);
@@ -25,4 +27,10 @@ class ColorName {
   static const Color waitingColor = Color(0xFFFF8A14);
   static const Color lateColor = Color(0xFFEE4345);
   static const Color dateTimeColor = Color(0xFF56799B);
+  static const Color receiveBgColor = Color(0xFFF6FBFE);
+  static const Color doneBgColor = Color(0xFFF5FFF0);
+  static const Color receiveLabelColor = Color(0xFF78C3F5);
+  static const Color receiveValueColor = Color(0xFF1798EE);
+  static const Color doneLabelColor = Color(0xFFB2D37A);
+  static const Color doneValueColor = Color(0xFF7BB31A);
 }

@@ -45,6 +45,11 @@ class BaseText {
     color: ColorName.grey2Color,
   );
 
+  static TextStyle grey10TextStyle = const TextStyle(
+    fontFamily: "Lexend",
+    color: ColorName.grey10Color,
+  );
+
   static TextStyle baseTextStyle = const TextStyle(
     fontFamily: "Lexend",
   );
@@ -63,10 +68,14 @@ class BaseText {
   static TextStyle grey1Text12 = grey1TextStyle.copyWith(fontSize: 12);
   static TextStyle grey1Text13 = grey1TextStyle.copyWith(fontSize: 13);
   static TextStyle grey1Text14 = grey1TextStyle.copyWith(fontSize: 14);
+  static TextStyle grey1Text15 = grey1TextStyle.copyWith(fontSize: 15);
 
   // Grey Text 2
   static TextStyle grey2Text10 = grey2TextStyle.copyWith(fontSize: 10);
+  static TextStyle grey2Text13 = grey2TextStyle.copyWith(fontSize: 13);
   static TextStyle grey2Text14 = grey2TextStyle.copyWith(fontSize: 14);
+
+  static TextStyle grey10Text14 = grey10TextStyle.copyWith(fontSize: 14);
 
   static TextStyle blackText11 = blackTextStyle.copyWith(fontSize: 11);
   static TextStyle blackText12 = blackTextStyle.copyWith(fontSize: 12);
@@ -74,6 +83,8 @@ class BaseText {
   static TextStyle blackText15 = blackTextStyle.copyWith(fontSize: 15);
   static TextStyle blackText16 = black2TextStyle.copyWith(fontSize: 16);
   static TextStyle blackText17 = black2TextStyle.copyWith(fontSize: 17);
+
+  static TextStyle black2Text15 = black2TextStyle.copyWith(fontSize: 15);
 
   static TextStyle whiteText12 = whiteTextStyle.copyWith(fontSize: 12);
   static TextStyle whiteText14 = whiteTextStyle.copyWith(fontSize: 14);

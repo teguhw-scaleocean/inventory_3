@@ -27,74 +27,7 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Column(
             children: [
-              SizedBox(
-                width: double.infinity,
-                child: Card(
-                  semanticContainer: true,
-                  clipBehavior: Clip.antiAliasWithSaveLayer,
-                  margin: EdgeInsets.zero,
-                  shape: const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(6))),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.fromLTRB(16, 12, 0, 10),
-                        decoration: const BoxDecoration(
-                          border: Border(
-                            bottom: BorderSide(
-                              color: ColorName.borderColor,
-                              width: 0.5,
-                            ),
-                          ),
-                        ),
-                        child: Text(
-                          "A499",
-                          style: BaseText.black2Text15
-                              .copyWith(fontWeight: BaseText.medium),
-                        ),
-                      ),
-                      Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 10, horizontal: 16),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              "Surgical Instruments",
-                              style: BaseText.grey1Text15,
-                            ),
-                            Text(
-                              "SUR_13041",
-                              style: BaseText.baseTextStyle.copyWith(
-                                color: ColorName.grey11Color,
-                                fontSize: 13,
-                                fontWeight: BaseText.light,
-                              ),
-                            ),
-                            10.height,
-                            Text(
-                              "Sch. Date: 14/06/2024 - 15.33",
-                              style: BaseText.baseTextStyle.copyWith(
-                                fontSize: 14,
-                                color: ColorName.dateTimeColor,
-                              ),
-                            ),
-                            10.height,
-                          ],
-                        ),
-                      ),
-                      _buildBottomCardSection(
-                        label: "Receive",
-                        value: "100.0 Unit",
-                      )
-                    ],
-                  ),
-                ),
-              ),
+              buildPalleteItemCard(),
             ],
           ),
         ),
@@ -230,7 +163,82 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
     );
   }
 
-  Container _buildBottomCardSection(
+  Card buildPalleteItemCard() {
+    return Card(
+      // semanticContainer: true,
+      // clipBehavior: Clip.antiAliasWithSaveLayer,
+      margin: EdgeInsets.zero,
+      shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(6))),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.fromLTRB(16, 12, 0, 10),
+            decoration: const BoxDecoration(
+              border: Border(
+                bottom: BorderSide(
+                  color: ColorName.borderColor,
+                  width: 0.5,
+                ),
+              ),
+            ),
+            child: Text(
+              "A499",
+              style:
+                  BaseText.black2Text15.copyWith(fontWeight: BaseText.medium),
+            ),
+          ),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  "Surgical Instruments",
+                  style: BaseText.grey1Text15,
+                ),
+                Text(
+                  "SUR_13041",
+                  style: BaseText.baseTextStyle.copyWith(
+                    color: ColorName.grey11Color,
+                    fontSize: 13,
+                    fontWeight: BaseText.light,
+                  ),
+                ),
+                10.height,
+                Text(
+                  "Sch. Date: 14/06/2024 - 15.33",
+                  style: BaseText.baseTextStyle.copyWith(
+                    fontSize: 14,
+                    color: ColorName.dateTimeColor,
+                  ),
+                ),
+                10.height,
+              ],
+            ),
+          ),
+          Row(
+            children: [
+              _buildBottomCardSection(
+                label: "Receive",
+                value: "100.0 Unit",
+              ),
+              _buildBottomCardSection(
+                label: "Done",
+                value: "1.0 Unit",
+              )
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBottomCardSection(
       {required String label, required String value}) {
     bool isReceive = false;
     Color bgColor;
@@ -242,42 +250,45 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
       bgColor = ColorName.doneBgColor;
     }
 
-    return Container(
-      height: 60,
-      // width: ,
-      padding: const EdgeInsets.symmetric(vertical: 12),
-      decoration: BoxDecoration(
-        color: bgColor,
-        borderRadius: BorderRadius.only(
-          bottomLeft:
-              (isReceive) ? const Radius.circular(6) : const Radius.circular(0),
-          bottomRight: (!isReceive)
-              ? const Radius.circular(6)
-              : const Radius.circular(0),
+    return Flexible(
+      child: Container(
+        height: 60,
+        width: MediaQuery.sizeOf(context).width / 2,
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        decoration: BoxDecoration(
+          color: bgColor,
+          borderRadius: BorderRadius.only(
+            bottomLeft: (isReceive)
+                ? const Radius.circular(6)
+                : const Radius.circular(0),
+            bottomRight: (!isReceive)
+                ? const Radius.circular(6)
+                : const Radius.circular(0),
+          ),
         ),
-      ),
-      child: RichText(
-          textAlign: TextAlign.center,
-          text: TextSpan(children: [
-            TextSpan(
-              text: "$label\n",
-              style: BaseText.baseTextStyle.copyWith(
-                  fontSize: 13,
-                  color: (isReceive)
-                      ? ColorName.receiveLabelColor
-                      : ColorName.doneLabelColor),
-            ),
-            TextSpan(
-              text: value,
-              style: BaseText.baseTextStyle.copyWith(
-                fontSize: 14,
-                color: (isReceive)
-                    ? ColorName.receiveValueColor
-                    : ColorName.doneValueColor,
-                fontWeight: BaseText.medium,
+        child: RichText(
+            textAlign: TextAlign.center,
+            text: TextSpan(children: [
+              TextSpan(
+                text: "$label\n",
+                style: BaseText.baseTextStyle.copyWith(
+                    fontSize: 13,
+                    color: (isReceive)
+                        ? ColorName.receiveLabelColor
+                        : ColorName.doneLabelColor),
               ),
-            )
-          ])),
+              TextSpan(
+                text: value,
+                style: BaseText.baseTextStyle.copyWith(
+                  fontSize: 14,
+                  color: (isReceive)
+                      ? ColorName.receiveValueColor
+                      : ColorName.doneValueColor,
+                  fontWeight: BaseText.medium,
+                ),
+              )
+            ])),
+      ),
     );
   }
 

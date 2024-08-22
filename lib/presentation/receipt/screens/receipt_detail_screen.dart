@@ -4,6 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:inventory_v3/common/components/custom_app_bar.dart';
 import 'package:inventory_v3/common/components/custom_divider.dart';
 import 'package:inventory_v3/common/components/primary_button.dart';
+import 'package:inventory_v3/common/components/reusable_floating_action_button.dart';
 import 'package:inventory_v3/common/constants/local_images.dart';
 
 import '../../../common/components/status_badge.dart';
@@ -24,12 +25,6 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
     return SafeArea(
       child: Scaffold(
         appBar: const CustomAppBar(title: "Receipt Detail"),
-        // body: Container(
-        //   padding: const EdgeInsets.symmetric(horizontal: 16),
-        //   child: const Column(
-        //     children: [],
-        //   ),
-        // ),
         body: ListView(
           children: [
             Container(
@@ -101,9 +96,8 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
             ),
             16.height,
             const CustomDivider(height: 1.0, color: ColorName.grey9Color),
-            16.height,
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
+              padding: const EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -162,28 +156,46 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
                 ],
               ),
             ),
-            Expanded(
-              child: Container(
-                color: ColorName.backgroundColor,
-                child: Row(
-                  children: [
-                    Text(
-                      "Pallet ",
-                      style: BaseText.black2Text15
-                          .copyWith(fontWeight: BaseText.medium),
-                    ),
-                    Text(
-                      "(7)",
-                      style: BaseText.black2TextStyle.copyWith(
-                        fontSize: 14,
-                        fontWeight: BaseText.regular,
+            Container(
+              color: ColorName.backgroundColor,
+              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      Text(
+                        "Pallet ",
+                        style: BaseText.black2Text15
+                            .copyWith(fontWeight: BaseText.medium),
                       ),
-                    )
-                  ],
-                ),
+                      Text(
+                        "(7)",
+                        style: BaseText.black2TextStyle.copyWith(
+                          fontSize: 14,
+                          fontWeight: BaseText.regular,
+                        ),
+                      )
+                    ],
+                  ),
+                  12.height,
+                  buildPalletButtonSection(),
+                  14.height,
+                  ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: 4,
+                      physics: const NeverScrollableScrollPhysics(),
+                      primary: false,
+                      itemBuilder: (context, index) {
+                        return buildPalleteItemCard();
+                      })
+                ],
               ),
             )
           ],
+        ),
+        floatingActionButton: reusableFloatingActionButton(
+          onTap: () {},
+          icon: Icons.add,
         ),
       ),
     );
@@ -227,7 +239,7 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
     return Card(
       // semanticContainer: true,
       // clipBehavior: Clip.antiAliasWithSaveLayer,
-      margin: EdgeInsets.zero,
+      margin: const EdgeInsets.only(bottom: 12),
       shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(6))),
       child: Column(

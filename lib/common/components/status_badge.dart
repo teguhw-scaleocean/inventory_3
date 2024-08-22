@@ -14,13 +14,15 @@ class StatusBadge extends StatelessWidget {
       height: 20,
       width: 65,
       // padding: const EdgeInsets.symmetric(
-      //     horizontal: 12.5, vertical: 6),
+      //     vertical: 6),
       decoration:
           BoxDecoration(color: color, borderRadius: BorderRadius.circular(25)),
-      child: Text(
-        status,
-        textAlign: TextAlign.center,
-        style: BaseText.whiteText12.copyWith(fontWeight: BaseText.medium),
+      child: Center(
+        child: Text(
+          status,
+          textAlign: TextAlign.center,
+          style: BaseText.whiteText12.copyWith(fontWeight: BaseText.medium),
+        ),
       ),
     );
   }

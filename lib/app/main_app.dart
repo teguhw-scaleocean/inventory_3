@@ -36,10 +36,11 @@ class MainApp extends StatelessWidget {
   _getThemeData() {
     return ThemeData.light().copyWith(
         appBarTheme: const AppBarTheme(
+            scrolledUnderElevation: 0,
             systemOverlayStyle: SystemUiOverlayStyle(
-          statusBarColor: Colors.white,
-          statusBarIconBrightness: Brightness.light,
-        )),
+              statusBarColor: Colors.white,
+              statusBarIconBrightness: Brightness.light,
+            )),
         bottomSheetTheme:
             const BottomSheetThemeData(surfaceTintColor: Colors.white),
         canvasColor: Colors.white,

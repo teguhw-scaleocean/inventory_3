@@ -4,6 +4,7 @@ class ColorName {
   const ColorName();
 
   static const Color mainColor = Color(0xFF002F5D);
+  static const Color main2Color = Color(0xFF2B5279);
   static const Color subColor = Color(0xFF6B86A1);
   static const Color whiteColor = Color(0xFFFFFFFF);
   static const Color blackColor = Color(0xFF000000);
@@ -35,4 +36,5 @@ class ColorName {
   static const Color receiveValueColor = Color(0xFF1798EE);
   static const Color doneLabelColor = Color(0xFFB2D37A);
   static const Color doneValueColor = Color(0xFF7BB31A);
+  static const Color updateButtonColor = Color(0xFF00AA5B);
 }

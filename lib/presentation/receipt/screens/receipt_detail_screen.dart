@@ -6,6 +6,7 @@ import 'package:inventory_v3/common/components/custom_divider.dart';
 import 'package:inventory_v3/common/components/primary_button.dart';
 import 'package:inventory_v3/common/components/reusable_floating_action_button.dart';
 import 'package:inventory_v3/common/constants/local_images.dart';
+import 'package:inventory_v3/data/model/receipt.dart';
 
 import '../../../common/components/status_badge.dart';
 import '../../../common/extensions/empty_space_extension.dart';
@@ -13,13 +14,25 @@ import '../../../common/theme/color/color_name.dart';
 import '../../../common/theme/text/base_text.dart';
 
 class ReceiptDetailScreen extends StatefulWidget {
-  const ReceiptDetailScreen({super.key});
+  final Receipt receipt;
+
+  const ReceiptDetailScreen({super.key, required this.receipt});
 
   @override
   State<ReceiptDetailScreen> createState() => _ReceiptDetailScreenState();
 }
 
 class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
+  late Receipt receipt;
+
+  @override
+  void initState() {
+    super.initState();
+
+    receipt = widget.receipt;
+    debugPrint(receipt.toJson());
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -35,13 +48,13 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        "WH/IN/00012",
+                        receipt.name,
                         style: BaseText.blackText17
                             .copyWith(fontWeight: BaseText.medium),
                       ),
-                      const StatusBadge(
-                        status: "Waiting",
-                        color: ColorName.waitingColor,
+                      StatusBadge(
+                        status: receipt.status,
+                        color: receipt.statusColor,
                       ),
                     ],
                   ),
@@ -50,12 +63,12 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        "Package: Pallet",
+                        receipt.packageName,
                         style: BaseText.grey1Text13
                             .copyWith(fontWeight: BaseText.light),
                       ),
                       Text(
-                        "Tracking: No Tracking",
+                        receipt.packageStatus,
                         style: BaseText.grey1Text13
                             .copyWith(fontWeight: BaseText.light),
                       )
@@ -67,32 +80,7 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
             16.height,
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Row(
-                children: [
-                  Flexible(
-                    child: DisableButton(
-                      height: 40,
-                      width: double.infinity,
-                      iconWidget: SvgPicture.asset(
-                        LocalImages.scanIcons,
-                        color: ColorName.whiteColor,
-                      ),
-                      title: "Scan",
-                    ),
-                  ),
-                  16.width,
-                  Flexible(
-                    child: DisableButton(
-                      height: 40,
-                      width: double.infinity,
-                      // width: 156,
-                      iconWidget:
-                          SvgPicture.asset(LocalImages.updatePalleteIcons),
-                      title: "Update Pallete",
-                    ),
-                  ),
-                ],
-              ),
+              child: buildScanAndUpdateSection(status: receipt.status),
             ),
             16.height,
             const CustomDivider(height: 1.0, color: ColorName.grey9Color),
@@ -178,7 +166,9 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
                     ],
                   ),
                   12.height,
-                  buildPalletButtonSection(),
+                  buildPalletButtonSection(
+                    status: receipt.status,
+                  ),
                   14.height,
                   ListView.builder(
                       shrinkWrap: true,
@@ -198,6 +188,49 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
           icon: Icons.add,
         ),
       ),
+    );
+  }
+
+  Row buildScanAndUpdateSection({required String status}) {
+    Color? scanButtonColor;
+    Color? updateButtonColor;
+
+    switch (status) {
+      case "Late":
+        scanButtonColor = ColorName.mainColor;
+        updateButtonColor = ColorName.updateButtonColor;
+        break;
+      default:
+        scanButtonColor = null;
+        updateButtonColor = null;
+    }
+
+    return Row(
+      children: [
+        Flexible(
+          child: DisableButton(
+            height: 40,
+            width: double.infinity,
+            iconWidget: SvgPicture.asset(
+              LocalImages.scanIcons,
+              color: ColorName.whiteColor,
+            ),
+            title: "Scan",
+            color: scanButtonColor,
+          ),
+        ),
+        16.width,
+        Flexible(
+          child: DisableButton(
+            height: 40,
+            width: double.infinity,
+            // width: 156,
+            iconWidget: SvgPicture.asset(LocalImages.updatePalleteIcons),
+            title: "Update Pallet",
+            color: updateButtonColor,
+          ),
+        ),
+      ],
     );
   }
 
@@ -270,11 +303,23 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  "Surgical Instruments",
+                  (receipt.packageStatus.toLowerCase().contains("lots"))
+                      ? "Nebulizer Machine"
+                      : (receipt.packageStatus
+                              .toLowerCase()
+                              .contains("no tracking"))
+                          ? "Surgical Instruments"
+                          : "Empty",
                   style: BaseText.grey1Text15,
                 ),
                 Text(
-                  "SUR_13041",
+                  (receipt.packageStatus.toLowerCase().contains("lots"))
+                      ? "LOTS-2024-001A"
+                      : (receipt.packageStatus
+                              .toLowerCase()
+                              .contains("no tracking"))
+                          ? "SUR_13041"
+                          : "Empty",
                   style: BaseText.baseTextStyle.copyWith(
                     color: ColorName.grey11Color,
                     fontSize: 13,
@@ -384,12 +429,25 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
     );
   }
 
-  Widget buildPalletButtonSection() {
+  Widget buildPalletButtonSection({required String status}) {
+    TextStyle? labelTextStyle;
+    switch (status) {
+      case "Late":
+        labelTextStyle = BaseText.mainText12
+            .copyWith(color: ColorName.main2Color, fontWeight: BaseText.medium);
+        break;
+      default:
+    }
+
     return Row(
       children: [
-        Flexible(child: buildOutlineButton(context, label: "Damage")),
+        Flexible(
+            child: buildOutlineButton(context,
+                label: "Damage", labelTextStyle: labelTextStyle)),
         12.width,
-        Flexible(child: buildOutlineButton(context, label: "Return")),
+        Flexible(
+            child: buildOutlineButton(context,
+                label: "Return", labelTextStyle: labelTextStyle)),
       ],
     );
   }

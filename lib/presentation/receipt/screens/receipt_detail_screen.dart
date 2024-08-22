@@ -27,7 +27,12 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Column(
             children: [
-              buildPalleteItemCard(),
+              Row(
+                children: [
+                  Flexible(child: buildOutlineButton(context, label: "Damage")),
+                  Flexible(child: buildOutlineButton(context, label: "Damage")),
+                ],
+              )
             ],
           ),
         ),
@@ -161,6 +166,36 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
         // ),
       ),
     );
+  }
+
+  Widget buildOutlineButton(BuildContext context,
+      {required String label,
+      Color? borderColor,
+      Color? backgroundColor,
+      TextStyle? labelTextStyle}) {
+    return Material(
+        // onPressed: () {},
+        color: backgroundColor ?? ColorName.whiteColor,
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(5),
+            side: BorderSide(
+              color: borderColor ?? ColorName.grey6Color,
+              width: 1,
+            )),
+        elevation: 0,
+        child: SizedBox(
+          width: double.infinity,
+          child: Text(
+            label,
+            textAlign: TextAlign.center,
+            style: labelTextStyle ??
+                BaseText.baseTextStyle.copyWith(
+                  fontSize: 12,
+                  fontWeight: BaseText.medium,
+                  color: ColorName.grey12Color,
+                ),
+          ),
+        ));
   }
 
   Card buildPalleteItemCard() {

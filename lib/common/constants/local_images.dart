@@ -14,4 +14,9 @@ class LocalImages {
   static String get receiptPalleteImage => "assets/receipt/pallete.svg";
   static String get receiptProductImage => "assets/receipt/product.svg";
   static String get receiptBothImage => "assets/receipt/both.svg";
+
+  static String get scanIcons => "assets/receipt/scan.svg";
+
+  // Receipt Detail
+  static String get updatePalleteIcons => "assets/receipt/update-pallete.svg";
 }

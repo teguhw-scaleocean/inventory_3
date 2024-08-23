@@ -63,7 +63,7 @@ class _ReceiptProductDetailScreenState
                     Text(product.code,
                         style: BaseText.grey1Text13
                             .copyWith(fontWeight: BaseText.light)),
-                    Text(product.palletCode,
+                    Text("Pallet ${product.palletCode}",
                         style: BaseText.grey1Text13
                             .copyWith(fontWeight: BaseText.light)),
                   ],
@@ -79,9 +79,33 @@ class _ReceiptProductDetailScreenState
                 ),
                 16.height,
                 const CustomDivider(),
-                16.height,
                 Flexible(
-                    child: Text("$tracking (11)", style: BaseText.blackText15)),
+                    child: SizedBox(
+                        height: 43,
+                        // padding: const EdgeInsets.symmetric(vertical: 16),
+                        child: Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            "$tracking (11)",
+                            style: BaseText.blackText15,
+                          ),
+                        ))),
+                (tracking.toLowerCase().contains("serial number"))
+                    ? Flexible(
+                        child: SizedBox(
+                          height: 36,
+                          width: double.infinity,
+                          child: SearchBarBorder(
+                            context,
+                            onSearch: _onSearch(),
+                            clearData: _onClearData(),
+                            keySearch: searchKey,
+                            controller: searchSerialNumberController,
+                            queryKey: searchSerialNumberController.text,
+                          ),
+                        ),
+                      )
+                    : const SizedBox(),
                 12.height,
                 (tracking.toLowerCase().contains("serial number"))
                     // ? Container(
@@ -90,24 +114,19 @@ class _ReceiptProductDetailScreenState
                     //     itemBuilder: (context, index) {},),
                     // )
                     ? Expanded(
-                        child: Column(
-                          children: [
-                            Flexible(
-                              child: SizedBox(
-                                height: 36,
-                                width: double.infinity,
-                                child: SearchBarBorder(
-                                  context,
-                                  onSearch: _onSearch(),
-                                  clearData: _onClearData(),
-                                  keySearch: searchKey,
-                                  controller: searchSerialNumberController,
-                                  queryKey: searchSerialNumberController.text,
-                                ),
-                              ),
-                            )
-                          ],
-                        ),
+                        flex: 10,
+                        child: ListView.builder(
+                            // shrinkWrap: true,
+                            physics: const AlwaysScrollableScrollPhysics(),
+                            scrollDirection: Axis.vertical,
+                            itemCount: 4,
+                            itemBuilder: (context, index) {
+                              String code = "SM-2024-${product.code}";
+
+                              return Padding(
+                                  padding: const EdgeInsets.only(bottom: 8),
+                                  child: buildItemQuantity(code));
+                            }),
                       )
                     : buildItemQuantity(product.code)
               ],

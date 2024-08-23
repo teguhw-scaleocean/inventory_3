@@ -9,6 +9,7 @@ import 'package:inventory_v3/common/constants/text_constants.dart';
 import 'package:inventory_v3/common/extensions/empty_space_extension.dart';
 
 import '../../../common/theme/text/base_text.dart';
+import '../../receipt/screens/receipt_list_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -77,7 +78,14 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               40.height,
               PrimaryButton(
-                onPressed: () {},
+                onPressed: () => Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        const ReceiptListScreen(title: "Receipt: Pallet"),
+                  ),
+                  (route) => false,
+                ),
                 height: 40,
                 title: "Login",
                 width: double.infinity,

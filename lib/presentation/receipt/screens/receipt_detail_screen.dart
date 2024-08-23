@@ -6,7 +6,9 @@ import 'package:inventory_v3/common/components/custom_divider.dart';
 import 'package:inventory_v3/common/components/primary_button.dart';
 import 'package:inventory_v3/common/components/reusable_floating_action_button.dart';
 import 'package:inventory_v3/common/constants/local_images.dart';
+import 'package:inventory_v3/data/model/product.dart';
 import 'package:inventory_v3/data/model/receipt.dart';
+import 'package:inventory_v3/presentation/receipt/screens/receipt_product_detail.dart';
 
 import '../../../common/components/status_badge.dart';
 import '../../../common/extensions/empty_space_extension.dart';
@@ -24,6 +26,7 @@ class ReceiptDetailScreen extends StatefulWidget {
 
 class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
   late Receipt receipt;
+  List<Product> listProducts = <Product>[];
 
   @override
   void initState() {
@@ -31,6 +34,23 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
 
     receipt = widget.receipt;
     debugPrint(receipt.toJson());
+
+    if (receipt.packageStatus
+        .toString()
+        .toLowerCase()
+        .contains("no tracking")) {
+      listProducts = products;
+    } else if (receipt.packageStatus
+        .toString()
+        .toLowerCase()
+        .contains("lots")) {
+      listProducts = products2;
+    } else if (receipt.packageStatus
+        .toString()
+        .toLowerCase()
+        .contains("serial number")) {
+      listProducts = products3;
+    }
   }
 
   @override
@@ -172,11 +192,16 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
                   14.height,
                   ListView.builder(
                       shrinkWrap: true,
-                      itemCount: 4,
+                      itemCount: listProducts.length,
                       physics: const NeverScrollableScrollPhysics(),
                       primary: false,
                       itemBuilder: (context, index) {
-                        return buildPalleteItemCard();
+                        Product item = listProducts[index];
+                        String tracking = "";
+                        tracking = receipt.packageStatus.substring(10);
+                        debugPrint("tracking: $tracking");
+
+                        return buildPalleteItemCard(item, tracking);
                       })
                 ],
               ),
@@ -197,6 +222,10 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
 
     switch (status) {
       case "Late":
+        scanButtonColor = ColorName.mainColor;
+        updateButtonColor = ColorName.updateButtonColor;
+        break;
+      case "Ready":
         scanButtonColor = ColorName.mainColor;
         updateButtonColor = ColorName.updateButtonColor;
         break;
@@ -268,89 +297,87 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
         ));
   }
 
-  Card buildPalleteItemCard() {
-    return Card(
-      // semanticContainer: true,
-      // clipBehavior: Clip.antiAliasWithSaveLayer,
-      margin: const EdgeInsets.only(bottom: 12),
-      shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(6))),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.fromLTRB(16, 12, 0, 10),
-            decoration: const BoxDecoration(
-              border: Border(
-                bottom: BorderSide(
-                  color: ColorName.borderColor,
-                  width: 0.5,
+  InkWell buildPalleteItemCard(Product product, String tracking) {
+    Product product0;
+    product0 = product;
+
+    return InkWell(
+      onTap: () => Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => ReceiptProductDetailScreen(
+                  product: product0, tracking: tracking))),
+      child: Card(
+        // semanticContainer: true,
+        // clipBehavior: Clip.antiAliasWithSaveLayer,
+        margin: const EdgeInsets.only(bottom: 12),
+        shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(6))),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.fromLTRB(16, 12, 0, 10),
+              decoration: const BoxDecoration(
+                border: Border(
+                  bottom: BorderSide(
+                    color: ColorName.borderColor,
+                    width: 0.5,
+                  ),
                 ),
               ),
+              child: Text(
+                "Pallet ${product0.palletCode}",
+                style:
+                    BaseText.black2Text15.copyWith(fontWeight: BaseText.medium),
+              ),
             ),
-            child: Text(
-              "A499",
-              style:
-                  BaseText.black2Text15.copyWith(fontWeight: BaseText.medium),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    product0.productName,
+                    style: BaseText.grey1Text15,
+                  ),
+                  Text(
+                    product0.lotsCode ?? product0.code,
+                    style: BaseText.baseTextStyle.copyWith(
+                      color: ColorName.grey11Color,
+                      fontSize: 13,
+                      fontWeight: BaseText.light,
+                    ),
+                  ),
+                  10.height,
+                  Text(
+                    product0.dateTime,
+                    style: BaseText.baseTextStyle.copyWith(
+                      fontSize: 14,
+                      color: ColorName.dateTimeColor,
+                    ),
+                  ),
+                  10.height,
+                ],
+              ),
             ),
-          ),
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
+            Row(
               children: [
-                Text(
-                  (receipt.packageStatus.toLowerCase().contains("lots"))
-                      ? "Nebulizer Machine"
-                      : (receipt.packageStatus
-                              .toLowerCase()
-                              .contains("no tracking"))
-                          ? "Surgical Instruments"
-                          : "Empty",
-                  style: BaseText.grey1Text15,
+                _buildBottomCardSection(
+                  label: "Receive",
+                  value: "11.00 Unit",
                 ),
-                Text(
-                  (receipt.packageStatus.toLowerCase().contains("lots"))
-                      ? "LOTS-2024-001A"
-                      : (receipt.packageStatus
-                              .toLowerCase()
-                              .contains("no tracking"))
-                          ? "SUR_13041"
-                          : "Empty",
-                  style: BaseText.baseTextStyle.copyWith(
-                    color: ColorName.grey11Color,
-                    fontSize: 13,
-                    fontWeight: BaseText.light,
-                  ),
-                ),
-                10.height,
-                Text(
-                  "Sch. Date: 14/06/2024 - 15.33",
-                  style: BaseText.baseTextStyle.copyWith(
-                    fontSize: 14,
-                    color: ColorName.dateTimeColor,
-                  ),
-                ),
-                10.height,
+                _buildBottomCardSection(
+                  label: "Done",
+                  value: "1.00 Unit",
+                )
               ],
             ),
-          ),
-          Row(
-            children: [
-              _buildBottomCardSection(
-                label: "Receive",
-                value: "100.0 Unit",
-              ),
-              _buildBottomCardSection(
-                label: "Done",
-                value: "1.0 Unit",
-              )
-            ],
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -433,6 +460,10 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
     TextStyle? labelTextStyle;
     switch (status) {
       case "Late":
+        labelTextStyle = BaseText.mainText12
+            .copyWith(color: ColorName.main2Color, fontWeight: BaseText.medium);
+        break;
+      case "Ready":
         labelTextStyle = BaseText.mainText12
             .copyWith(color: ColorName.main2Color, fontWeight: BaseText.medium);
         break;

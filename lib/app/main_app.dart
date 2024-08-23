@@ -30,7 +30,7 @@ class MainApp extends StatelessWidget {
         PointerDeviceKind.touch,
         PointerDeviceKind.mouse,
       }),
-      home: const ReceiptListScreen(title: "Receipt: Pallet"),
+      home: const OnboardingScreen(),
     );
   }
 

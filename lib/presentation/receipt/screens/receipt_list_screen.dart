@@ -105,94 +105,102 @@ class _ReceiptListScreenState extends State<ReceiptListScreen>
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        appBar: CustomAppBar(title: appBarTitle),
-        body: Column(
-          children: [
-            SizedBox(
-              height: 62,
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(16, 16, 16, 10),
-                child: Row(
-                  children: [
-                    Flexible(
-                      child: SizedBox(
-                        height: 36,
-                        child: SearchBarBorder(
-                          context,
-                          controller: searchController,
-                          queryKey: searchController.text,
-                          keySearch: searchKey,
-                          onSearch: _onSearch(),
-                          clearData: _onSearchClear(),
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (didPop) async {
+        if (didPop) {
+          return;
+        }
+      },
+      child: SafeArea(
+        child: Scaffold(
+          appBar: CustomAppBar(title: appBarTitle),
+          body: Column(
+            children: [
+              SizedBox(
+                height: 62,
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 10),
+                  child: Row(
+                    children: [
+                      Flexible(
+                        child: SizedBox(
+                          height: 36,
+                          child: SearchBarBorder(
+                            context,
+                            controller: searchController,
+                            queryKey: searchController.text,
+                            keySearch: searchKey,
+                            onSearch: _onSearch(),
+                            clearData: _onSearchClear(),
+                          ),
                         ),
                       ),
-                    ),
-                    8.width,
-                    Container(
-                      height: 36,
-                      width: 82,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(6),
-                        border: Border.all(color: ColorName.mainColor),
-                      ),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          SizedBox(
-                            height: 16,
-                            width: 16,
-                            child: SvgPicture.asset(LocalImages.scanIcons),
-                          ),
-                          8.width,
-                          LimitedBox(
-                            maxHeight: 16,
-                            child: Text(
-                              "Scan",
-                              style: BaseText.mainText14.copyWith(
-                                color: ColorName.mainColor,
-                                fontWeight: BaseText.medium,
+                      8.width,
+                      Container(
+                        height: 36,
+                        width: 82,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(6),
+                          border: Border.all(color: ColorName.mainColor),
+                        ),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            SizedBox(
+                              height: 16,
+                              width: 16,
+                              child: SvgPicture.asset(LocalImages.scanIcons),
+                            ),
+                            8.width,
+                            LimitedBox(
+                              maxHeight: 16,
+                              child: Text(
+                                "Scan",
+                                style: BaseText.mainText14.copyWith(
+                                  color: ColorName.mainColor,
+                                  fontWeight: BaseText.medium,
+                                ),
                               ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
-            ),
-            Container(
-              // height: 32,
-              // width: double.infinity,
-              padding: const EdgeInsets.only(left: 16),
-              child: reusableTabBar(
-                tabs: tabs.map((e) {
-                  bool isSelectedTab = false;
-                  isSelectedTab = _tabController.index == tabs.indexOf(e);
+              Container(
+                // height: 32,
+                // width: double.infinity,
+                padding: const EdgeInsets.only(left: 16),
+                child: reusableTabBar(
+                  tabs: tabs.map((e) {
+                    bool isSelectedTab = false;
+                    isSelectedTab = _tabController.index == tabs.indexOf(e);
 
-                  return buildTabLabel(
-                      label: e,
-                      total: "(${Random().nextInt(100)})",
-                      isSelected: isSelectedTab);
-                }).toList(),
-                tabController: _tabController,
-                isScrollable: true,
-                setState: setState,
+                    return buildTabLabel(
+                        label: e,
+                        total: "(${Random().nextInt(100)})",
+                        isSelected: isSelectedTab);
+                  }).toList(),
+                  tabController: _tabController,
+                  isScrollable: true,
+                  setState: setState,
+                ),
               ),
-            ),
-            Expanded(
-              child: TabBarView(
-                controller: _tabController,
-                children: tabs.map<Widget>((e) {
-                  return _buildListSection();
-                }).toList(),
+              Expanded(
+                child: TabBarView(
+                  controller: _tabController,
+                  children: tabs.map<Widget>((e) {
+                    return _buildListSection();
+                  }).toList(),
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

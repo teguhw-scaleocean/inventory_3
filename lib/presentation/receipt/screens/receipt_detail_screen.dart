@@ -368,11 +368,11 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
               children: [
                 _buildBottomCardSection(
                   label: "Receive",
-                  value: "11.0 Unit",
+                  value: "11.00 Unit",
                 ),
                 _buildBottomCardSection(
                   label: "Done",
-                  value: "1.0 Unit",
+                  value: "1.00 Unit",
                 )
               ],
             ),

@@ -62,7 +62,7 @@ class _ReceiptProductDetailScreenState
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(product.lotsCode ?? product.code,
+                  Text(product.code,
                       style: BaseText.grey1Text13
                           .copyWith(fontWeight: BaseText.light)),
                   Text("Pallet ${product.palletCode}",

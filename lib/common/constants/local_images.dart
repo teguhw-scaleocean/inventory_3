@@ -19,4 +19,8 @@ class LocalImages {
 
   // Receipt Detail
   static String get updatePalleteIcons => "assets/receipt/update-pallete.svg";
+
+  static String get receiveIcon => "assets/receipt/stepper/receive.svg";
+  static String get destinationIcon => "assets/receipt/stepper/destination.svg";
+  static String get lineIcon => "assets/receipt/stepper/line.svg";
 }

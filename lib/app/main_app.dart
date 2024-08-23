@@ -8,6 +8,7 @@ import '../common/theme/color/color_name.dart';
 import '../common/theme/color/colors.dart';
 import '../presentation/onboarding/screens/onboarding_screen.dart';
 import '../presentation/receipt/screens/receipt_detail_screen.dart';
+import '../presentation/receipt/screens/receipt_list_screen.dart';
 import '../presentation/receipt/screens/receipt_product_detail.dart';
 
 class MainApp extends StatelessWidget {
@@ -29,17 +30,18 @@ class MainApp extends StatelessWidget {
         PointerDeviceKind.touch,
         PointerDeviceKind.mouse,
       }),
-      home: const ReceiptDetailScreen(),
+      home: const ReceiptListScreen(title: "Receipt: Pallet"),
     );
   }
 
   _getThemeData() {
     return ThemeData.light().copyWith(
         appBarTheme: const AppBarTheme(
+            scrolledUnderElevation: 0,
             systemOverlayStyle: SystemUiOverlayStyle(
-          statusBarColor: Colors.white,
-          statusBarIconBrightness: Brightness.light,
-        )),
+              statusBarColor: Colors.white,
+              statusBarIconBrightness: Brightness.light,
+            )),
         bottomSheetTheme:
             const BottomSheetThemeData(surfaceTintColor: Colors.white),
         canvasColor: Colors.white,

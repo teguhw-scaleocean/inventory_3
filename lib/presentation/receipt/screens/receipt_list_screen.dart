@@ -187,35 +187,30 @@ class _ReceiptListScreenState extends State<ReceiptListScreen>
             Expanded(
               child: TabBarView(
                 controller: _tabController,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-                    color: ColorName.grey8Color,
-                    child: ListView.builder(
-                        padding: EdgeInsets.zero,
-                        shrinkWrap: true,
-                        itemCount: listReceipt.length,
-                        itemBuilder: (context, index) {
-                          var item = listReceipt[index];
-
-                          return ReceiptItemCard(receipt: item);
-                        }),
-                  ),
-                  const Center(
-                    child: Text("Waiting"),
-                  ),
-                  const Center(
-                    child: Text("Ready"),
-                  ),
-                  const Center(
-                    child: Text("Late"),
-                  ),
-                ],
+                children: tabs.map<Widget>((e) {
+                  return _buildListSection();
+                }).toList(),
               ),
             ),
           ],
         ),
       ),
+    );
+  }
+
+  Container _buildListSection() {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+      color: ColorName.grey8Color,
+      child: ListView.builder(
+          padding: EdgeInsets.zero,
+          shrinkWrap: true,
+          itemCount: listReceipt.length,
+          itemBuilder: (context, index) {
+            var item = listReceipt[index];
+
+            return ReceiptItemCard(receipt: item);
+          }),
     );
   }
 }

@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:inventory_v3/common/components/custom_app_bar.dart';
 import 'package:inventory_v3/common/extensions/empty_space_extension.dart';
+import 'package:inventory_v3/data/model/product.dart';
 
 import '../../../common/components/custom_divider.dart';
 import '../../../common/theme/color/color_name.dart';
 import '../../../common/theme/text/base_text.dart';
 
 class ReceiptProductDetailScreen extends StatefulWidget {
-  const ReceiptProductDetailScreen({super.key});
+  final Product product;
+
+  const ReceiptProductDetailScreen({super.key, required this.product});
 
   @override
   State<ReceiptProductDetailScreen> createState() =>
@@ -16,6 +19,17 @@ class ReceiptProductDetailScreen extends StatefulWidget {
 
 class _ReceiptProductDetailScreenState
     extends State<ReceiptProductDetailScreen> {
+  late Product product;
+
+  @override
+  void initState() {
+    super.initState();
+
+    debugPrint(widget.product.toJson());
+
+    product = widget.product;
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(

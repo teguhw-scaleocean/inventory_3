@@ -6,7 +6,9 @@ import 'package:inventory_v3/common/components/custom_divider.dart';
 import 'package:inventory_v3/common/components/primary_button.dart';
 import 'package:inventory_v3/common/components/reusable_floating_action_button.dart';
 import 'package:inventory_v3/common/constants/local_images.dart';
+import 'package:inventory_v3/data/model/product.dart';
 import 'package:inventory_v3/data/model/receipt.dart';
+import 'package:inventory_v3/presentation/receipt/screens/receipt_product_detail.dart';
 
 import '../../../common/components/status_badge.dart';
 import '../../../common/extensions/empty_space_extension.dart';
@@ -172,11 +174,13 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
                   14.height,
                   ListView.builder(
                       shrinkWrap: true,
-                      itemCount: 4,
+                      itemCount: products.length,
                       physics: const NeverScrollableScrollPhysics(),
                       primary: false,
                       itemBuilder: (context, index) {
-                        return buildPalleteItemCard();
+                        Product item = products[index];
+
+                        return buildPalleteItemCard(item);
                       })
                 ],
               ),
@@ -268,89 +272,99 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
         ));
   }
 
-  Card buildPalleteItemCard() {
-    return Card(
-      // semanticContainer: true,
-      // clipBehavior: Clip.antiAliasWithSaveLayer,
-      margin: const EdgeInsets.only(bottom: 12),
-      shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(6))),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.fromLTRB(16, 12, 0, 10),
-            decoration: const BoxDecoration(
-              border: Border(
-                bottom: BorderSide(
-                  color: ColorName.borderColor,
-                  width: 0.5,
+  InkWell buildPalleteItemCard(Product product) {
+    Product product0;
+    product0 = product;
+
+    return InkWell(
+      onTap: () => Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) =>
+                  ReceiptProductDetailScreen(product: product0))),
+      child: Card(
+        // semanticContainer: true,
+        // clipBehavior: Clip.antiAliasWithSaveLayer,
+        margin: const EdgeInsets.only(bottom: 12),
+        shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(6))),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.fromLTRB(16, 12, 0, 10),
+              decoration: const BoxDecoration(
+                border: Border(
+                  bottom: BorderSide(
+                    color: ColorName.borderColor,
+                    width: 0.5,
+                  ),
                 ),
               ),
+              child: Text(
+                "Pallet A499",
+                style:
+                    BaseText.black2Text15.copyWith(fontWeight: BaseText.medium),
+              ),
             ),
-            child: Text(
-              "A499",
-              style:
-                  BaseText.black2Text15.copyWith(fontWeight: BaseText.medium),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    (receipt.packageStatus.toLowerCase().contains("lots"))
+                        ? "Nebulizer Machine"
+                        : (receipt.packageStatus
+                                .toLowerCase()
+                                .contains("no tracking"))
+                            ? "Surgical Instruments"
+                            : "Empty",
+                    style: BaseText.grey1Text15,
+                  ),
+                  Text(
+                    (receipt.packageStatus.toLowerCase().contains("lots"))
+                        ? "LOTS-2024-001A"
+                        : (receipt.packageStatus
+                                .toLowerCase()
+                                .contains("no tracking"))
+                            ? "SUR_13041"
+                            : "Empty",
+                    style: BaseText.baseTextStyle.copyWith(
+                      color: ColorName.grey11Color,
+                      fontSize: 13,
+                      fontWeight: BaseText.light,
+                    ),
+                  ),
+                  10.height,
+                  Text(
+                    "Sch. Date: 14/06/2024 - 15.33",
+                    style: BaseText.baseTextStyle.copyWith(
+                      fontSize: 14,
+                      color: ColorName.dateTimeColor,
+                    ),
+                  ),
+                  10.height,
+                ],
+              ),
             ),
-          ),
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
+            Row(
               children: [
-                Text(
-                  (receipt.packageStatus.toLowerCase().contains("lots"))
-                      ? "Nebulizer Machine"
-                      : (receipt.packageStatus
-                              .toLowerCase()
-                              .contains("no tracking"))
-                          ? "Surgical Instruments"
-                          : "Empty",
-                  style: BaseText.grey1Text15,
+                _buildBottomCardSection(
+                  label: "Receive",
+                  value: "100.0 Unit",
                 ),
-                Text(
-                  (receipt.packageStatus.toLowerCase().contains("lots"))
-                      ? "LOTS-2024-001A"
-                      : (receipt.packageStatus
-                              .toLowerCase()
-                              .contains("no tracking"))
-                          ? "SUR_13041"
-                          : "Empty",
-                  style: BaseText.baseTextStyle.copyWith(
-                    color: ColorName.grey11Color,
-                    fontSize: 13,
-                    fontWeight: BaseText.light,
-                  ),
-                ),
-                10.height,
-                Text(
-                  "Sch. Date: 14/06/2024 - 15.33",
-                  style: BaseText.baseTextStyle.copyWith(
-                    fontSize: 14,
-                    color: ColorName.dateTimeColor,
-                  ),
-                ),
-                10.height,
+                _buildBottomCardSection(
+                  label: "Done",
+                  value: "1.0 Unit",
+                )
               ],
             ),
-          ),
-          Row(
-            children: [
-              _buildBottomCardSection(
-                label: "Receive",
-                value: "100.0 Unit",
-              ),
-              _buildBottomCardSection(
-                label: "Done",
-                value: "1.0 Unit",
-              )
-            ],
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

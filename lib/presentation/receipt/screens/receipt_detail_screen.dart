@@ -225,6 +225,10 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
         scanButtonColor = ColorName.mainColor;
         updateButtonColor = ColorName.updateButtonColor;
         break;
+      case "Ready":
+        scanButtonColor = ColorName.mainColor;
+        updateButtonColor = ColorName.updateButtonColor;
+        break;
       default:
         scanButtonColor = null;
         updateButtonColor = null;
@@ -341,7 +345,7 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
                     style: BaseText.grey1Text15,
                   ),
                   Text(
-                    product0.code,
+                    product0.lotsCode ?? product0.code,
                     style: BaseText.baseTextStyle.copyWith(
                       color: ColorName.grey11Color,
                       fontSize: 13,
@@ -456,6 +460,10 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
     TextStyle? labelTextStyle;
     switch (status) {
       case "Late":
+        labelTextStyle = BaseText.mainText12
+            .copyWith(color: ColorName.main2Color, fontWeight: BaseText.medium);
+        break;
+      case "Ready":
         labelTextStyle = BaseText.mainText12
             .copyWith(color: ColorName.main2Color, fontWeight: BaseText.medium);
         break;

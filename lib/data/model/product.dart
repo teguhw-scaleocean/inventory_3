@@ -9,6 +9,7 @@ class Product {
   String productName;
   String code;
   String dateTime;
+  String? lotsCode;
   int productQty;
   List<SerialNumber>? serialNumber;
 
@@ -18,6 +19,7 @@ class Product {
     required this.productName,
     required this.code,
     required this.dateTime,
+    this.lotsCode,
     required this.productQty,
     this.serialNumber,
   });
@@ -28,6 +30,7 @@ class Product {
     String? productName,
     String? code,
     String? dateTime,
+    String? lotsCode,
     int? productQty,
     List<SerialNumber>? serialNumber,
   }) {
@@ -37,6 +40,7 @@ class Product {
       productName: productName ?? this.productName,
       code: code ?? this.code,
       dateTime: dateTime ?? this.dateTime,
+      lotsCode: lotsCode ?? this.lotsCode,
       productQty: productQty ?? this.productQty,
       serialNumber: serialNumber ?? this.serialNumber,
     );
@@ -49,6 +53,7 @@ class Product {
       'productName': productName,
       'code': code,
       'dateTime': dateTime,
+      'lotsCode': lotsCode,
       'productQty': productQty,
       'serialNumber': serialNumber?.map((x) => x.toMap()).toList(),
     };
@@ -61,6 +66,7 @@ class Product {
       productName: map['productName'] as String,
       code: map['code'] as String,
       dateTime: map['dateTime'] as String,
+      lotsCode: map['lotsCode'] != null ? map['lotsCode'] as String : null,
       productQty: map['productQty'] as int,
       serialNumber: map['serialNumber'] != null
           ? List<SerialNumber>.from(
@@ -79,7 +85,7 @@ class Product {
 
   @override
   String toString() {
-    return 'Product(id: $id, palletCode: $palletCode, productName: $productName, code: $code, dateTime: $dateTime, productQty: $productQty, serialNumber: $serialNumber)';
+    return 'Product(id: $id, palletCode: $palletCode, productName: $productName, code: $code, dateTime: $dateTime, lotsCode: $lotsCode, productQty: $productQty, serialNumber: $serialNumber)';
   }
 
   @override
@@ -91,6 +97,7 @@ class Product {
         other.productName == productName &&
         other.code == code &&
         other.dateTime == dateTime &&
+        other.lotsCode == lotsCode &&
         other.productQty == productQty &&
         listEquals(other.serialNumber, serialNumber);
   }
@@ -102,6 +109,7 @@ class Product {
         productName.hashCode ^
         code.hashCode ^
         dateTime.hashCode ^
+        lotsCode.hashCode ^
         productQty.hashCode ^
         serialNumber.hashCode;
   }
@@ -213,7 +221,8 @@ List<Product> products2 = [
     id: 1,
     palletCode: "A494",
     productName: "Nebulizer Machine",
-    code: "LOTS-2024-001A",
+    code: "NEB_14578",
+    lotsCode: "LOTS-2024-001B",
     dateTime: "Exp. Date: 12/07/2024 - 15:30",
     productQty: 11,
   ),
@@ -222,6 +231,7 @@ List<Product> products2 = [
     palletCode: "A495",
     productName: "Surgical Masks",
     code: "MASK_12942 ",
+    lotsCode: "LOTS-2024-002B",
     dateTime: "Exp. Date: 28/07/2024 - 14:00",
     productQty: 12,
   ),
@@ -230,17 +240,20 @@ List<Product> products2 = [
     palletCode: "A496",
     productName: "Essence Mascara",
     code: "EM_12942",
+    lotsCode: "LOTS-2024-003B",
     dateTime: "Exp. Date: 02/07/2024 - 14:00",
     productQty: 14,
   ),
 ];
 
+// SN
 List<Product> products3 = [
   Product(
     id: 1,
     palletCode: "A4910",
     productName: "Nebulizer Machine",
-    code: "LOTS-2024-001A",
+    code: "NEB_14578",
+    // lotsCode: "LOTS-2024-001A",
     dateTime: "Exp. Date: 12/07/2024 - 15:30",
     productQty: 11,
   ),
@@ -249,6 +262,7 @@ List<Product> products3 = [
     palletCode: "A4910",
     productName: "Surgical Masks",
     code: "MASK_12942 ",
+    // lotsCode: "LOTS-2024-002A",
     dateTime: "Exp. Date: 28/07/2024 - 14:00",
     productQty: 12,
   ),
@@ -257,6 +271,7 @@ List<Product> products3 = [
     palletCode: "A4910",
     productName: "Essence Mascara",
     code: "EM_12942",
+    // lotsCode: "LOTS-2024-003A",
     dateTime: "Exp. Date: 02/07/2024 - 14:00",
     productQty: 14,
   ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:inventory_v3/common/components/custom_app_bar.dart';
+import 'package:inventory_v3/common/components/reusable_floating_action_button.dart';
 import 'package:inventory_v3/common/extensions/empty_space_extension.dart';
 import 'package:inventory_v3/data/model/product.dart';
 
@@ -45,93 +46,92 @@ class _ReceiptProductDetailScreenState
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-          appBar: const CustomAppBar(title: "Product Detail"),
-          body: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  product.productName,
-                  style: BaseText.blackText17
-                      .copyWith(fontWeight: BaseText.medium),
+        appBar: const CustomAppBar(title: "Product Detail"),
+        body: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              16.height,
+              Text(
+                product.productName,
+                style:
+                    BaseText.blackText17.copyWith(fontWeight: BaseText.medium),
+              ),
+              8.height,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(product.lotsCode ?? product.code,
+                      style: BaseText.grey1Text13
+                          .copyWith(fontWeight: BaseText.light)),
+                  Text("Pallet ${product.palletCode}",
+                      style: BaseText.grey1Text13
+                          .copyWith(fontWeight: BaseText.light)),
+                ],
+              ),
+              16.height,
+              Text(
+                product.dateTime,
+                style: BaseText.baseTextStyle.copyWith(
+                  fontWeight: BaseText.light,
+                  fontSize: 14,
+                  color: ColorName.dateTimeColor,
                 ),
-                8.height,
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(product.code,
-                        style: BaseText.grey1Text13
-                            .copyWith(fontWeight: BaseText.light)),
-                    Text("Pallet ${product.palletCode}",
-                        style: BaseText.grey1Text13
-                            .copyWith(fontWeight: BaseText.light)),
-                  ],
-                ),
-                16.height,
-                Text(
-                  product.dateTime,
-                  style: BaseText.baseTextStyle.copyWith(
-                    fontWeight: BaseText.light,
-                    fontSize: 14,
-                    color: ColorName.dateTimeColor,
-                  ),
-                ),
-                16.height,
-                const CustomDivider(),
-                Flexible(
-                    child: SizedBox(
-                        height: 43,
-                        // padding: const EdgeInsets.symmetric(vertical: 16),
-                        child: Align(
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            "$tracking (11)",
-                            style: BaseText.blackText15,
-                          ),
-                        ))),
-                (tracking.toLowerCase().contains("serial number"))
-                    ? Flexible(
-                        child: SizedBox(
-                          height: 36,
-                          width: double.infinity,
-                          child: SearchBarBorder(
-                            context,
-                            onSearch: _onSearch(),
-                            clearData: _onClearData(),
-                            keySearch: searchKey,
-                            controller: searchSerialNumberController,
-                            queryKey: searchSerialNumberController.text,
-                          ),
+              ),
+              16.height,
+              const CustomDivider(),
+              Flexible(
+                  child: SizedBox(
+                      height: 43,
+                      // padding: const EdgeInsets.symmetric(vertical: 16),
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          "$tracking (11)",
+                          style: BaseText.blackText15,
                         ),
-                      )
-                    : const SizedBox(),
-                12.height,
-                (tracking.toLowerCase().contains("serial number"))
-                    // ? Container(
-                    //   child: ListView.builder(
-                    //     itemCount: ,
-                    //     itemBuilder: (context, index) {},),
-                    // )
-                    ? Expanded(
-                        flex: 10,
-                        child: ListView.builder(
-                            // shrinkWrap: true,
-                            physics: const AlwaysScrollableScrollPhysics(),
-                            scrollDirection: Axis.vertical,
-                            itemCount: 4,
-                            itemBuilder: (context, index) {
-                              String code = "SM-2024-${product.code}";
+                      ))),
+              (tracking.toLowerCase().contains("serial number"))
+                  ? Flexible(
+                      child: SizedBox(
+                        height: 36,
+                        width: double.infinity,
+                        child: SearchBarBorder(
+                          context,
+                          onSearch: _onSearch(),
+                          clearData: _onClearData(),
+                          keySearch: searchKey,
+                          controller: searchSerialNumberController,
+                          queryKey: searchSerialNumberController.text,
+                        ),
+                      ),
+                    )
+                  : const SizedBox(),
+              12.height,
+              (tracking.toLowerCase().contains("serial number"))
+                  ? SizedBox(
+                      height: 600,
+                      child: ListView.builder(
+                          shrinkWrap: true,
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          scrollDirection: Axis.vertical,
+                          itemCount: 11,
+                          itemBuilder: (context, index) {
+                            String code = "SM-2024-${product.code}";
 
-                              return Padding(
-                                  padding: const EdgeInsets.only(bottom: 8),
-                                  child: buildItemQuantity(code));
-                            }),
-                      )
-                    : buildItemQuantity(product.code)
-              ],
-            ),
-          )),
+                            return Padding(
+                                padding: const EdgeInsets.only(bottom: 8),
+                                child: buildItemQuantity(code));
+                          }),
+                    )
+                  : buildItemQuantity(product.lotsCode ?? product.code)
+            ],
+          ),
+        ),
+        floatingActionButton:
+            reusableFloatingActionButton(onTap: () {}, icon: Icons.add),
+      ),
     );
   }
 

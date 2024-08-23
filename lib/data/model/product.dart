@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 
 class Product {
   int id;
+  String palletCode;
   String productName;
   String code;
   String dateTime;
@@ -13,6 +14,7 @@ class Product {
 
   Product({
     required this.id,
+    required this.palletCode,
     required this.productName,
     required this.code,
     required this.dateTime,
@@ -22,6 +24,7 @@ class Product {
 
   Product copyWith({
     int? id,
+    String? palletCode,
     String? productName,
     String? code,
     String? dateTime,
@@ -30,6 +33,7 @@ class Product {
   }) {
     return Product(
       id: id ?? this.id,
+      palletCode: palletCode ?? this.palletCode,
       productName: productName ?? this.productName,
       code: code ?? this.code,
       dateTime: dateTime ?? this.dateTime,
@@ -41,17 +45,19 @@ class Product {
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'id': id,
+      'palletCode': palletCode,
       'productName': productName,
       'code': code,
       'dateTime': dateTime,
       'productQty': productQty,
-      'serialNumber': serialNumber!.map((x) => x.toMap()).toList(),
+      'serialNumber': serialNumber?.map((x) => x.toMap()).toList(),
     };
   }
 
   factory Product.fromMap(Map<String, dynamic> map) {
     return Product(
       id: map['id'] as int,
+      palletCode: map['palletCode'] as String,
       productName: map['productName'] as String,
       code: map['code'] as String,
       dateTime: map['dateTime'] as String,
@@ -73,7 +79,7 @@ class Product {
 
   @override
   String toString() {
-    return 'Product(id: $id, productName: $productName, code: $code, dateTime: $dateTime, productQty: $productQty, serialNumber: $serialNumber)';
+    return 'Product(id: $id, palletCode: $palletCode, productName: $productName, code: $code, dateTime: $dateTime, productQty: $productQty, serialNumber: $serialNumber)';
   }
 
   @override
@@ -81,6 +87,7 @@ class Product {
     if (identical(this, other)) return true;
 
     return other.id == id &&
+        other.palletCode == palletCode &&
         other.productName == productName &&
         other.code == code &&
         other.dateTime == dateTime &&
@@ -91,6 +98,7 @@ class Product {
   @override
   int get hashCode {
     return id.hashCode ^
+        palletCode.hashCode ^
         productName.hashCode ^
         code.hashCode ^
         dateTime.hashCode ^
@@ -176,6 +184,7 @@ class SerialNumber {
 List<Product> products = [
   Product(
     id: 1,
+    palletCode: "A490",
     productName: "Surgical Instruments",
     code: "SUR_12942",
     dateTime: "Exp. Date: 12/07/2024 - 15:30",
@@ -183,6 +192,7 @@ List<Product> products = [
   ),
   Product(
     id: 2,
+    palletCode: "A491",
     productName: "Surgical Masks",
     code: "MASK_12942 ",
     dateTime: "Exp. Date: 28/07/2024 - 14:00",
@@ -190,6 +200,61 @@ List<Product> products = [
   ),
   Product(
     id: 3,
+    palletCode: "A492",
+    productName: "Essence Mascara",
+    code: "EM_12942",
+    dateTime: "Exp. Date: 02/07/2024 - 14:00",
+    productQty: 14,
+  ),
+];
+
+List<Product> products2 = [
+  Product(
+    id: 1,
+    palletCode: "A494",
+    productName: "Nebulizer Machine",
+    code: "LOTS-2024-001A",
+    dateTime: "Exp. Date: 12/07/2024 - 15:30",
+    productQty: 11,
+  ),
+  Product(
+    id: 2,
+    palletCode: "A495",
+    productName: "Surgical Masks",
+    code: "MASK_12942 ",
+    dateTime: "Exp. Date: 28/07/2024 - 14:00",
+    productQty: 12,
+  ),
+  Product(
+    id: 3,
+    palletCode: "A496",
+    productName: "Essence Mascara",
+    code: "EM_12942",
+    dateTime: "Exp. Date: 02/07/2024 - 14:00",
+    productQty: 14,
+  ),
+];
+
+List<Product> products3 = [
+  Product(
+    id: 1,
+    palletCode: "A4910",
+    productName: "Nebulizer Machine",
+    code: "LOTS-2024-001A",
+    dateTime: "Exp. Date: 12/07/2024 - 15:30",
+    productQty: 11,
+  ),
+  Product(
+    id: 2,
+    palletCode: "A4910",
+    productName: "Surgical Masks",
+    code: "MASK_12942 ",
+    dateTime: "Exp. Date: 28/07/2024 - 14:00",
+    productQty: 12,
+  ),
+  Product(
+    id: 3,
+    palletCode: "A4910",
     productName: "Essence Mascara",
     code: "EM_12942",
     dateTime: "Exp. Date: 02/07/2024 - 14:00",

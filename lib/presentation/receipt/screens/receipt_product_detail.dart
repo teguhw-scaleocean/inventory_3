@@ -4,13 +4,16 @@ import 'package:inventory_v3/common/extensions/empty_space_extension.dart';
 import 'package:inventory_v3/data/model/product.dart';
 
 import '../../../common/components/custom_divider.dart';
+import '../../../common/components/reusable_search_bar_border.dart';
 import '../../../common/theme/color/color_name.dart';
 import '../../../common/theme/text/base_text.dart';
 
 class ReceiptProductDetailScreen extends StatefulWidget {
   final Product product;
+  final String tracking;
 
-  const ReceiptProductDetailScreen({super.key, required this.product});
+  const ReceiptProductDetailScreen(
+      {super.key, required this.product, required this.tracking});
 
   @override
   State<ReceiptProductDetailScreen> createState() =>
@@ -20,6 +23,10 @@ class ReceiptProductDetailScreen extends StatefulWidget {
 class _ReceiptProductDetailScreenState
     extends State<ReceiptProductDetailScreen> {
   late Product product;
+  String tracking = "";
+
+  final searchSerialNumberController = TextEditingController();
+  final searchKey = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -28,7 +35,11 @@ class _ReceiptProductDetailScreenState
     debugPrint(widget.product.toJson());
 
     product = widget.product;
+    tracking = widget.tracking;
   }
+
+  _onSearch() {}
+  _onClearData() {}
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +52,7 @@ class _ReceiptProductDetailScreenState
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "Surgical Instruments",
+                  product.productName,
                   style: BaseText.blackText17
                       .copyWith(fontWeight: BaseText.medium),
                 ),
@@ -49,17 +60,17 @@ class _ReceiptProductDetailScreenState
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text("SUR_12942",
+                    Text(product.code,
                         style: BaseText.grey1Text13
                             .copyWith(fontWeight: BaseText.light)),
-                    Text("Pallet A493",
+                    Text(product.palletCode,
                         style: BaseText.grey1Text13
                             .copyWith(fontWeight: BaseText.light)),
                   ],
                 ),
                 16.height,
                 Text(
-                  "Sch. Date: 14/06/2024 - 15.30",
+                  product.dateTime,
                   style: BaseText.baseTextStyle.copyWith(
                     fontWeight: BaseText.light,
                     fontSize: 14,
@@ -70,66 +81,94 @@ class _ReceiptProductDetailScreenState
                 const CustomDivider(),
                 16.height,
                 Flexible(
-                    child:
-                        Text("No Tracking (11)", style: BaseText.blackText15)),
+                    child: Text("$tracking (11)", style: BaseText.blackText15)),
                 12.height,
-                Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(6),
-                    border: Border.all(
-                      color: ColorName.grey9Color,
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "SUR_12942",
-                            style: BaseText.blackText14,
-                          ),
-                          Text(
-                            "Exp. Date: 12/07/2024 - 15:00",
-                            style: BaseText.baseTextStyle.copyWith(
-                              color: ColorName.dateTimeColor,
-                              fontSize: 12,
-                              fontWeight: BaseText.light,
-                            ),
-                          )
-                        ],
-                      ),
-                      IntrinsicHeight(
-                        child: Row(
+                (tracking.toLowerCase().contains("serial number"))
+                    // ? Container(
+                    //   child: ListView.builder(
+                    //     itemCount: ,
+                    //     itemBuilder: (context, index) {},),
+                    // )
+                    ? Expanded(
+                        child: Column(
                           children: [
-                            const Padding(
-                              padding: EdgeInsets.symmetric(vertical: 0),
-                              child: VerticalDivider(
-                                color: ColorName.grey9Color,
-                                thickness: 1.0,
+                            Flexible(
+                              child: SizedBox(
+                                height: 36,
+                                width: double.infinity,
+                                child: SearchBarBorder(
+                                  context,
+                                  onSearch: _onSearch(),
+                                  clearData: _onClearData(),
+                                  keySearch: searchKey,
+                                  controller: searchSerialNumberController,
+                                  queryKey: searchSerialNumberController.text,
+                                ),
                               ),
-                            ),
-                            SizedBox(
-                              height: 36,
-                              width: 60,
-                              child: Center(
-                                child: Text("11",
-                                    textAlign: TextAlign.center,
-                                    style: BaseText.blackText11),
-                              ),
-                            ),
+                            )
                           ],
                         ),
                       )
-                    ],
-                  ),
-                )
+                    : buildItemQuantity(product.code)
               ],
             ),
           )),
+    );
+  }
+
+  Container buildItemQuantity(String code) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(6),
+        border: Border.all(
+          color: ColorName.grey9Color,
+        ),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                code,
+                style: BaseText.blackText14,
+              ),
+              Text(
+                "Exp. Date: 12/07/2024 - 15:00",
+                style: BaseText.baseTextStyle.copyWith(
+                  color: ColorName.dateTimeColor,
+                  fontSize: 12,
+                  fontWeight: BaseText.light,
+                ),
+              )
+            ],
+          ),
+          IntrinsicHeight(
+            child: Row(
+              children: [
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 0),
+                  child: VerticalDivider(
+                    color: ColorName.grey9Color,
+                    thickness: 1.0,
+                  ),
+                ),
+                SizedBox(
+                  height: 36,
+                  width: 60,
+                  child: Center(
+                    child: Text("11",
+                        textAlign: TextAlign.center,
+                        style: BaseText.blackText11),
+                  ),
+                ),
+              ],
+            ),
+          )
+        ],
+      ),
     );
   }
 }

@@ -26,6 +26,7 @@ class ReceiptDetailScreen extends StatefulWidget {
 
 class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
   late Receipt receipt;
+  List<Product> listProducts = <Product>[];
 
   @override
   void initState() {
@@ -33,6 +34,23 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
 
     receipt = widget.receipt;
     debugPrint(receipt.toJson());
+
+    if (receipt.packageStatus
+        .toString()
+        .toLowerCase()
+        .contains("no tracking")) {
+      listProducts = products;
+    } else if (receipt.packageStatus
+        .toString()
+        .toLowerCase()
+        .contains("lots")) {
+      listProducts = products2;
+    } else if (receipt.packageStatus
+        .toString()
+        .toLowerCase()
+        .contains("serial number")) {
+      listProducts = products3;
+    }
   }
 
   @override
@@ -174,13 +192,16 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
                   14.height,
                   ListView.builder(
                       shrinkWrap: true,
-                      itemCount: products.length,
+                      itemCount: listProducts.length,
                       physics: const NeverScrollableScrollPhysics(),
                       primary: false,
                       itemBuilder: (context, index) {
-                        Product item = products[index];
+                        Product item = listProducts[index];
+                        String tracking = "";
+                        tracking = receipt.packageStatus.substring(10);
+                        debugPrint("tracking: $tracking");
 
-                        return buildPalleteItemCard(item);
+                        return buildPalleteItemCard(item, tracking);
                       })
                 ],
               ),
@@ -272,7 +293,7 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
         ));
   }
 
-  InkWell buildPalleteItemCard(Product product) {
+  InkWell buildPalleteItemCard(Product product, String tracking) {
     Product product0;
     product0 = product;
 
@@ -280,8 +301,8 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
       onTap: () => Navigator.push(
           context,
           MaterialPageRoute(
-              builder: (context) =>
-                  ReceiptProductDetailScreen(product: product0))),
+              builder: (context) => ReceiptProductDetailScreen(
+                  product: product0, tracking: tracking))),
       child: Card(
         // semanticContainer: true,
         // clipBehavior: Clip.antiAliasWithSaveLayer,
@@ -303,7 +324,7 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
                 ),
               ),
               child: Text(
-                "Pallet A499",
+                "Pallet ${product0.palletCode}",
                 style:
                     BaseText.black2Text15.copyWith(fontWeight: BaseText.medium),
               ),
@@ -316,23 +337,11 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    (receipt.packageStatus.toLowerCase().contains("lots"))
-                        ? "Nebulizer Machine"
-                        : (receipt.packageStatus
-                                .toLowerCase()
-                                .contains("no tracking"))
-                            ? "Surgical Instruments"
-                            : "Empty",
+                    product0.productName,
                     style: BaseText.grey1Text15,
                   ),
                   Text(
-                    (receipt.packageStatus.toLowerCase().contains("lots"))
-                        ? "LOTS-2024-001A"
-                        : (receipt.packageStatus
-                                .toLowerCase()
-                                .contains("no tracking"))
-                            ? "SUR_13041"
-                            : "Empty",
+                    product0.code,
                     style: BaseText.baseTextStyle.copyWith(
                       color: ColorName.grey11Color,
                       fontSize: 13,
@@ -341,7 +350,7 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
                   ),
                   10.height,
                   Text(
-                    "Sch. Date: 14/06/2024 - 15.33",
+                    product0.dateTime,
                     style: BaseText.baseTextStyle.copyWith(
                       fontSize: 14,
                       color: ColorName.dateTimeColor,
@@ -355,7 +364,7 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
               children: [
                 _buildBottomCardSection(
                   label: "Receive",
-                  value: "100.0 Unit",
+                  value: "11.0 Unit",
                 ),
                 _buildBottomCardSection(
                   label: "Done",

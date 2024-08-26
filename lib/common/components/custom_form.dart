@@ -97,6 +97,7 @@ class _CustomFormFieldState extends State<CustomFormField> {
               hintText: widget.hintText,
               hintStyle: BaseText.grey2Text14.copyWith(
                 fontWeight: BaseText.regular,
+                color: ColorName.grey12Color,
               ),
               border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(6),
@@ -194,6 +195,7 @@ class _CustomFormPasswordState extends State<CustomFormPassword> {
               hintText: widget.hintText,
               hintStyle: BaseText.grey2Text14.copyWith(
                 fontWeight: BaseText.regular,
+                color: ColorName.grey12Color,
               ),
               contentPadding: widget.contentPadding ?? const EdgeInsets.all(12),
               hoverColor: ColorName.mainColor,

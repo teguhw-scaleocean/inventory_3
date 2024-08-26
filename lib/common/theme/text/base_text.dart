@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../color/color_name.dart';
 
@@ -57,12 +58,12 @@ class BaseText {
   // Main Text
   static TextStyle mainText12 = mainTextStyle.copyWith(fontSize: 12);
   static TextStyle mainText13 = mainTextStyle.copyWith(fontSize: 13);
-  static TextStyle mainText14 = mainTextStyle.copyWith(fontSize: 14);
+  static TextStyle mainText14 = mainTextStyle.copyWith(fontSize: 14.sp);
   static TextStyle mainText16 = mainTextStyle.copyWith(fontSize: 16);
-  static TextStyle mainText20 = mainTextStyle.copyWith(fontSize: 20);
+  static TextStyle mainText20 = mainTextStyle.copyWith(fontSize: 20.sp);
 
   // Sub Text
-  static TextStyle subText14 = subTextStyle.copyWith(fontSize: 14);
+  static TextStyle subText14 = subTextStyle.copyWith(fontSize: 14.sp);
 
   // Grey Text 1
   static TextStyle grey1Text12 = grey1TextStyle.copyWith(fontSize: 12);

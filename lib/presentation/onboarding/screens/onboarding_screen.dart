@@ -151,16 +151,17 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         const Spacer(),
         // Flexible(child: Container(height: 120)),
         Container(
-            height: 185,
-            width: double.infinity,
-            margin: const EdgeInsets.symmetric(horizontal: 16),
-            padding: const EdgeInsets.symmetric(horizontal: 24),
-            alignment: Alignment.center,
-            child: SvgPicture.asset(
-              images,
-              height: 185,
-              width: 280,
-            )),
+          height: 225,
+          width: double.infinity,
+          margin: const EdgeInsets.symmetric(horizontal: 40),
+          // alignment: Alignment.center,
+          child: SvgPicture.asset(
+            images,
+            fit: BoxFit.fitWidth,
+            height: 220,
+            width: 280,
+          ),
+        ),
         const Spacer(),
         // Flexible(child: Container(height: 120)),
         Flexible(

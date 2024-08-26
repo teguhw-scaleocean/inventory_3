@@ -37,7 +37,18 @@ class _LoginScreenState extends State<LoginScreen> {
                 ],
               ),
               24.height,
-              SvgPicture.asset(LocalImages.loginImage),
+              Container(
+                height: 235,
+                width: double.infinity,
+                margin: const EdgeInsets.symmetric(horizontal: 40),
+                // alignment: Alignment.center,
+                child: SvgPicture.asset(
+                  LocalImages.loginImage,
+                  fit: BoxFit.fitWidth,
+                  height: 230,
+                  width: 280,
+                ),
+              ),
               24.height,
               SizedBox(
                 width: double.infinity,

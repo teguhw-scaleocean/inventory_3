@@ -56,7 +56,7 @@ class BaseText {
   );
 
   // Main Text
-  static TextStyle mainText12 = mainTextStyle.copyWith(fontSize: 12);
+  static TextStyle mainText12 = mainTextStyle.copyWith(fontSize: 12.sp);
   static TextStyle mainText13 = mainTextStyle.copyWith(fontSize: 13);
   static TextStyle mainText14 = mainTextStyle.copyWith(fontSize: 14.sp);
   static TextStyle mainText16 = mainTextStyle.copyWith(fontSize: 16);
@@ -68,13 +68,13 @@ class BaseText {
   // Grey Text 1
   static TextStyle grey1Text12 = grey1TextStyle.copyWith(fontSize: 12);
   static TextStyle grey1Text13 = grey1TextStyle.copyWith(fontSize: 13);
-  static TextStyle grey1Text14 = grey1TextStyle.copyWith(fontSize: 14);
+  static TextStyle grey1Text14 = grey1TextStyle.copyWith(fontSize: 14.sp);
   static TextStyle grey1Text15 = grey1TextStyle.copyWith(fontSize: 15);
 
   // Grey Text 2
   static TextStyle grey2Text10 = grey2TextStyle.copyWith(fontSize: 10);
   static TextStyle grey2Text13 = grey2TextStyle.copyWith(fontSize: 13);
-  static TextStyle grey2Text14 = grey2TextStyle.copyWith(fontSize: 14);
+  static TextStyle grey2Text14 = grey2TextStyle.copyWith(fontSize: 14.sp);
 
   static TextStyle grey10Text14 = grey10TextStyle.copyWith(fontSize: 14);
 
@@ -88,9 +88,9 @@ class BaseText {
   static TextStyle black2Text15 = black2TextStyle.copyWith(fontSize: 15);
 
   static TextStyle whiteText12 = whiteTextStyle.copyWith(fontSize: 12);
-  static TextStyle whiteText14 = whiteTextStyle.copyWith(fontSize: 14);
+  static TextStyle whiteText14 = whiteTextStyle.copyWith(fontSize: 14.sp);
 
-  static TextStyle redText14 = redTextStyle.copyWith(fontSize: 14);
+  static TextStyle redText14 = redTextStyle.copyWith(fontSize: 14.sp);
 
   // Font Weight
   static FontWeight light = FontWeight.w300;

@@ -219,7 +219,7 @@ class _ReceiptListScreenState extends State<ReceiptListScreen>
   Container _buildListSection() {
     return Container(
       padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-      color: ColorName.grey8Color,
+      color: ColorName.backgroundColor,
       child: ListView.builder(
           padding: EdgeInsets.zero,
           shrinkWrap: true,

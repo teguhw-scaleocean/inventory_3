@@ -27,7 +27,12 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           padding: EdgeInsets.only(left: 16.w),
           child: InkWell(
             onTap: () => Navigator.pop(context),
-            child: SvgPicture.asset(LocalImages.backIcon),
+            child: SvgPicture.asset(
+              LocalImages.backIcon,
+              height: 24.w,
+              width: 24.w,
+              fit: BoxFit.scaleDown,
+            ),
           ),
         ),
         title: Text(

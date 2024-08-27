@@ -131,7 +131,7 @@ class _ReceiptListScreenState extends State<ReceiptListScreen>
                         ),
                       ),
                     ),
-                    8.width,
+                    SizedBox(width: 8.w),
                     buildScanButton(),
                   ],
                 ),
@@ -148,7 +148,7 @@ class _ReceiptListScreenState extends State<ReceiptListScreen>
                   ),
                 ),
               ),
-              padding: const EdgeInsets.only(left: 16),
+              padding: EdgeInsets.only(left: 16.w),
               child: reusableTabBar(
                 tabs: tabs.map((e) {
                   bool isSelectedTab = false;
@@ -186,7 +186,7 @@ class _ReceiptListScreenState extends State<ReceiptListScreen>
         height: 36.h,
         width: 82.w,
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(6),
+          borderRadius: BorderRadius.circular(6.r),
           border: Border.all(color: ColorName.mainColor),
         ),
         child: Row(
@@ -199,7 +199,7 @@ class _ReceiptListScreenState extends State<ReceiptListScreen>
               height: 16.w,
               width: 16.w,
             ),
-            8.width,
+            SizedBox(width: 8.w),
             LimitedBox(
               maxHeight: 16.h,
               child: Text(
@@ -218,7 +218,7 @@ class _ReceiptListScreenState extends State<ReceiptListScreen>
 
   Container _buildListSection() {
     return Container(
-      padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+      padding: EdgeInsets.fromLTRB(16.w, 0, 16.w, 8.h),
       color: ColorName.backgroundColor,
       child: ListView.builder(
           padding: EdgeInsets.zero,

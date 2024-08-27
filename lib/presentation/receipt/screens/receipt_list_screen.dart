@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:inventory_v3/data/model/receipt.dart';
 import 'package:inventory_v3/presentation/receipt/screens/receipt_screen.dart';
@@ -112,14 +113,14 @@ class _ReceiptListScreenState extends State<ReceiptListScreen>
         body: Column(
           children: [
             SizedBox(
-              height: 62,
+              height: 62.h,
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(16, 16, 16, 10),
+                padding: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 10.h),
                 child: Row(
                   children: [
                     Flexible(
                       child: SizedBox(
-                        height: 36,
+                        height: 36.h,
                         child: SearchBarBorder(
                           context,
                           controller: searchController,
@@ -139,6 +140,14 @@ class _ReceiptListScreenState extends State<ReceiptListScreen>
             Container(
               // height: 32,
               // width: double.infinity,
+              decoration: const BoxDecoration(
+                border: Border(
+                  bottom: BorderSide(
+                    color: ColorName.borderColor,
+                    width: 0.5,
+                  ),
+                ),
+              ),
               padding: const EdgeInsets.only(left: 16),
               child: reusableTabBar(
                 tabs: tabs.map((e) {
@@ -174,8 +183,8 @@ class _ReceiptListScreenState extends State<ReceiptListScreen>
       onTap: () => Navigator.push(
           context, MaterialPageRoute(builder: (context) => ReceiptScreen())),
       child: Container(
-        height: 36,
-        width: 82,
+        height: 36.h,
+        width: 82.w,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(6),
           border: Border.all(color: ColorName.mainColor),
@@ -185,14 +194,14 @@ class _ReceiptListScreenState extends State<ReceiptListScreen>
           mainAxisAlignment: MainAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
           children: [
-            SizedBox(
-              height: 16,
-              width: 16,
-              child: SvgPicture.asset(LocalImages.scanIcons),
+            SvgPicture.asset(
+              LocalImages.scanIcons,
+              height: 16.w,
+              width: 16.w,
             ),
             8.width,
             LimitedBox(
-              maxHeight: 16,
+              maxHeight: 16.h,
               child: Text(
                 "Scan",
                 style: BaseText.mainText14.copyWith(

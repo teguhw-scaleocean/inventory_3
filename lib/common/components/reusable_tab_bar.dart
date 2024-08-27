@@ -18,11 +18,12 @@ TabBar reusableTabBar({
       indicatorWeight: 1.5,
       indicatorPadding: const EdgeInsets.only(bottom: 0),
       indicatorSize: TabBarIndicatorSize.tab,
+      // indicator:
       labelPadding: const EdgeInsets.only(top: 8, bottom: 8, left: 8, right: 9),
       labelColor: ColorName.mainColor,
-      unselectedLabelColor: ColorName.grey1Color,
+      unselectedLabelColor: ColorName.grey2Color,
       labelStyle: BaseText.mainText14.copyWith(fontWeight: BaseText.regular),
-      unselectedLabelStyle: BaseText.grey1Text14.copyWith(
+      unselectedLabelStyle: BaseText.grey2Text14.copyWith(
         fontWeight: BaseText.light,
       ),
       controller: tabController,
@@ -74,7 +75,7 @@ Row buildTabLabel({
                   style: (isSelected == true)
                       ? BaseText.mainText12
                           .copyWith(fontWeight: BaseText.regular)
-                      : BaseText.grey1Text12.copyWith(
+                      : BaseText.grey2Text12.copyWith(
                           fontWeight: BaseText.light,
                         ),
                 )

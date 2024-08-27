@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:inventory_v3/common/constants/local_images.dart';
 
 import '../theme/color/color_name.dart';
 import '../theme/text/base_text.dart';
@@ -24,10 +26,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           padding: const EdgeInsets.only(left: 16),
           child: InkWell(
             onTap: () => Navigator.pop(context),
-            child: const Icon(
-              CupertinoIcons.arrow_left,
-              color: ColorName.black2Color,
-            ),
+            child: SvgPicture.asset(LocalImages.backIcon),
           ),
         ),
         title: Text(

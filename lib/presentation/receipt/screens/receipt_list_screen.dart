@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:inventory_v3/data/model/receipt.dart';
+import 'package:inventory_v3/presentation/receipt/screens/receipt_screen.dart';
 
 import '../../../common/components/custom_app_bar.dart';
 import '../../../common/components/receipt_item_card.dart';
@@ -130,37 +131,7 @@ class _ReceiptListScreenState extends State<ReceiptListScreen>
                       ),
                     ),
                     8.width,
-                    Container(
-                      height: 36,
-                      width: 82,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(6),
-                        border: Border.all(color: ColorName.mainColor),
-                      ),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          SizedBox(
-                            height: 16,
-                            width: 16,
-                            child: SvgPicture.asset(LocalImages.scanIcons),
-                          ),
-                          8.width,
-                          LimitedBox(
-                            maxHeight: 16,
-                            child: Text(
-                              "Scan",
-                              style: BaseText.mainText14.copyWith(
-                                color: ColorName.mainColor,
-                                fontWeight: BaseText.medium,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+                    buildScanButton(),
                   ],
                 ),
               ),
@@ -190,6 +161,44 @@ class _ReceiptListScreenState extends State<ReceiptListScreen>
                 children: tabs.map<Widget>((e) {
                   return _buildListSection();
                 }).toList(),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  GestureDetector buildScanButton() {
+    return GestureDetector(
+      onTap: () => Navigator.push(
+          context, MaterialPageRoute(builder: (context) => ReceiptScreen())),
+      child: Container(
+        height: 36,
+        width: 82,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(6),
+          border: Border.all(color: ColorName.mainColor),
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SizedBox(
+              height: 16,
+              width: 16,
+              child: SvgPicture.asset(LocalImages.scanIcons),
+            ),
+            8.width,
+            LimitedBox(
+              maxHeight: 16,
+              child: Text(
+                "Scan",
+                style: BaseText.mainText14.copyWith(
+                  color: ColorName.mainColor,
+                  fontWeight: BaseText.medium,
+                ),
               ),
             ),
           ],

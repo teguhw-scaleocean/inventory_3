@@ -91,11 +91,10 @@ class _LoginScreenState extends State<LoginScreen> {
               40.height,
               PrimaryButton(
                 onPressed: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => ReceiptScreen(),
-                  ),
-                ),
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const ReceiptListScreen(
+                            title: "Receipt: Pallete"))),
                 height: 40,
                 title: "Login",
                 width: double.infinity,

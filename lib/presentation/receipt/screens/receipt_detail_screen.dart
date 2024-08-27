@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dash/flutter_dash.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:inventory_v3/common/components/custom_app_bar.dart';
 import 'package:inventory_v3/common/components/custom_divider.dart';
@@ -114,15 +115,16 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
                       TextSpan(
                         text: "Sch. Date: ",
                         style: BaseText.baseTextStyle.copyWith(
-                          fontSize: 14,
+                          fontSize: 14.sp,
+                          fontWeight: BaseText.regular,
                           color: ColorName.dateTimeColor,
                         ),
                       ),
                       TextSpan(
                         text: "14/06/2024 - 15.30",
                         style: BaseText.baseTextStyle.copyWith(
-                          fontSize: 14,
-                          fontWeight: BaseText.light,
+                          fontSize: 14.sp,
+                          fontWeight: BaseText.semiBold,
                           color: ColorName.dateTimeColor,
                         ),
                       )
@@ -243,6 +245,8 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
             iconWidget: SvgPicture.asset(
               LocalImages.scanIcons,
               color: ColorName.whiteColor,
+              height: 16.w,
+              width: 16.w,
             ),
             title: "Scan",
             color: scanButtonColor,
@@ -254,7 +258,11 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
             height: 40,
             width: double.infinity,
             // width: 156,
-            iconWidget: SvgPicture.asset(LocalImages.updatePalleteIcons),
+            iconWidget: SvgPicture.asset(
+              LocalImages.updatePalleteIcons,
+              height: 16.w,
+              width: 16.w,
+            ),
             title: "Update Pallet",
             color: updateButtonColor,
           ),

@@ -84,7 +84,7 @@ class BaseText {
   static TextStyle blackText14 = blackTextStyle.copyWith(fontSize: 14.sp);
   static TextStyle blackText15 = blackTextStyle.copyWith(fontSize: 15);
   static TextStyle blackText16 = black2TextStyle.copyWith(fontSize: 16.sp);
-  static TextStyle blackText17 = black2TextStyle.copyWith(fontSize: 17);
+  static TextStyle blackText17 = black2TextStyle.copyWith(fontSize: 17.sp);
 
   static TextStyle black2Text15 = black2TextStyle.copyWith(fontSize: 15);
 

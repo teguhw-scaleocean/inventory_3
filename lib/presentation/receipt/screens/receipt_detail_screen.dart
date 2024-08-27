@@ -139,9 +139,10 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
                         children: [
                           SvgPicture.asset(LocalImages.receiveIcon),
                           const Dash(
+                            dashColor: ColorName.grey2Color,
                             direction: Axis.vertical,
-                            dashLength: 3,
-                            length: 46,
+                            dashLength: 5,
+                            length: 50,
                           ),
                           SvgPicture.asset(LocalImages.destinationIcon),
                         ],

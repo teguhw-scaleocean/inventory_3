@@ -143,8 +143,7 @@ class DisableButton extends StatelessWidget {
             6.width,
             Text(
               title,
-              style:
-                  BaseText.whiteText14.copyWith(fontWeight: BaseText.semiBold),
+              style: BaseText.whiteText14.copyWith(fontWeight: BaseText.medium),
             ),
           ],
         ),

@@ -29,6 +29,9 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
   late Receipt receipt;
   List<Product> listProducts = <Product>[];
 
+  String date = "";
+  String time = "";
+
   @override
   void initState() {
     super.initState();
@@ -52,6 +55,9 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
         .contains("serial number")) {
       listProducts = products3;
     }
+
+    date = receipt.dateTime.substring(0, 10);
+    time = receipt.dateTime.substring(13, 18);
   }
 
   @override
@@ -121,13 +127,32 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
                         ),
                       ),
                       TextSpan(
-                        text: "14/06/2024 - 15.30",
+                        text: date,
                         style: BaseText.baseTextStyle.copyWith(
                           fontSize: 14.sp,
-                          fontWeight: BaseText.semiBold,
+                          fontWeight: BaseText.medium,
                           color: ColorName.dateTimeColor,
                         ),
-                      )
+                      ),
+                      WidgetSpan(
+                          child: Padding(
+                        padding: EdgeInsets.symmetric(
+                            vertical: 6.h, horizontal: 2.5.w),
+                        child: Container(
+                          width: 7.w,
+                          height: 1.h,
+                          color: ColorName.grey2Color,
+                          alignment: Alignment.center,
+                        ),
+                      )),
+                      TextSpan(
+                        text: time,
+                        style: BaseText.baseTextStyle.copyWith(
+                          fontSize: 14.sp,
+                          fontWeight: BaseText.medium,
+                          color: ColorName.dateTimeColor,
+                        ),
+                      ),
                     ]),
                   ),
                   SizedBox(height: 8.h),
@@ -255,7 +280,7 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
         SizedBox(width: 16.w),
         Flexible(
           child: DisableButton(
-            height: 40,
+            height: 40.h,
             width: double.infinity,
             // width: 156,
             iconWidget: SvgPicture.asset(
@@ -315,12 +340,29 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
           MaterialPageRoute(
               builder: (context) => ReceiptProductDetailScreen(
                   product: product0, tracking: tracking))),
-      child: Card(
+      child: Container(
+        margin: EdgeInsets.only(bottom: 12.h),
         // semanticContainer: true,
         // clipBehavior: Clip.antiAliasWithSaveLayer,
-        margin: EdgeInsets.only(bottom: 12.h),
-        shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(6))),
+        decoration: ShapeDecoration(
+          color: Colors.white,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(6.r)),
+          shadows: const [
+            BoxShadow(
+              color: Color(0x19000000),
+              blurRadius: 2,
+              offset: Offset(0, 0.44),
+              spreadRadius: 0,
+            ),
+            BoxShadow(
+              color: Color(0x0C000000),
+              blurRadius: 3.52,
+              offset: Offset(0, 1.76),
+              spreadRadius: 1.32,
+            )
+          ],
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -355,18 +397,50 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
                   Text(
                     product0.lotsCode ?? product0.code,
                     style: BaseText.baseTextStyle.copyWith(
-                      color: ColorName.grey11Color,
+                      color: ColorName.grey14Color,
                       fontSize: 13.sp,
                       fontWeight: BaseText.light,
                     ),
                   ),
                   SizedBox(height: 10.h),
-                  Text(
-                    product0.dateTime,
-                    style: BaseText.baseTextStyle.copyWith(
-                      fontSize: 14.sp,
-                      color: ColorName.dateTimeColor,
-                    ),
+                  RichText(
+                    text: TextSpan(children: [
+                      TextSpan(
+                        text: "Sch. Date: ",
+                        style: BaseText.baseTextStyle.copyWith(
+                          fontSize: 14.sp,
+                          fontWeight: BaseText.light,
+                          color: ColorName.dateTimeColor,
+                        ),
+                      ),
+                      TextSpan(
+                        text: date,
+                        style: BaseText.baseTextStyle.copyWith(
+                          fontSize: 14.sp,
+                          fontWeight: BaseText.regular,
+                          color: ColorName.dateTimeColor,
+                        ),
+                      ),
+                      WidgetSpan(
+                          child: Padding(
+                        padding: EdgeInsets.symmetric(
+                            vertical: 6.h, horizontal: 2.5.w),
+                        child: Container(
+                          width: 7.w,
+                          height: 1.h,
+                          color: ColorName.grey2Color,
+                          alignment: Alignment.center,
+                        ),
+                      )),
+                      TextSpan(
+                        text: time,
+                        style: BaseText.baseTextStyle.copyWith(
+                          fontSize: 14.sp,
+                          fontWeight: BaseText.regular,
+                          color: ColorName.dateTimeColor,
+                        ),
+                      ),
+                    ]),
                   ),
                   SizedBox(height: 10.h),
                 ],

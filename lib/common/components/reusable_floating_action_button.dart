@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../theme/color/color_name.dart';
 
@@ -7,7 +8,7 @@ Widget reusableFloatingActionButton(
   return InkWell(
     onTap: onTap,
     child: Container(
-        padding: const EdgeInsets.all(15),
+        padding: EdgeInsets.all(15.w),
         decoration: const BoxDecoration(
           shape: BoxShape.circle,
           color: ColorName.mainColor,
@@ -15,7 +16,7 @@ Widget reusableFloatingActionButton(
         child: Icon(
           icon,
           color: ColorName.whiteColor,
-          size: 18,
+          size: 18.w,
         )),
   );
 }

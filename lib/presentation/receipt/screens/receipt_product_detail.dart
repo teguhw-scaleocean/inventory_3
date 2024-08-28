@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:inventory_v3/common/components/custom_app_bar.dart';
 import 'package:inventory_v3/common/components/reusable_floating_action_button.dart';
 import 'package:inventory_v3/common/extensions/empty_space_extension.dart';
@@ -47,87 +48,103 @@ class _ReceiptProductDetailScreenState
     return SafeArea(
       child: Scaffold(
         appBar: const CustomAppBar(title: "Product Detail"),
-        body: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              16.height,
-              Text(
-                product.productName,
-                style:
-                    BaseText.blackText17.copyWith(fontWeight: BaseText.medium),
-              ),
-              8.height,
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 16.w),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(product.code,
-                      style: BaseText.grey1Text13
-                          .copyWith(fontWeight: BaseText.light)),
-                  Text("Pallet ${product.palletCode}",
-                      style: BaseText.grey1Text13
-                          .copyWith(fontWeight: BaseText.light)),
+                  SizedBox(height: 16.h),
+                  Text(
+                    product.productName,
+                    style: BaseText.blackText17
+                        .copyWith(fontWeight: BaseText.medium),
+                  ),
+                  SizedBox(height: 8.h),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(product.code,
+                          style: BaseText.grey1Text13
+                              .copyWith(fontWeight: BaseText.light)),
+                      Text("Pallet ${product.palletCode}",
+                          style: BaseText.grey1Text13
+                              .copyWith(fontWeight: BaseText.light)),
+                    ],
+                  ),
+                  SizedBox(height: 16.h),
+                  Text(
+                    product.dateTime,
+                    style: BaseText.baseTextStyle.copyWith(
+                      fontWeight: BaseText.light,
+                      fontSize: 14.sp,
+                      color: ColorName.dateTimeColor,
+                    ),
+                  ),
+                  SizedBox(height: 16.h),
                 ],
               ),
-              16.height,
-              Text(
-                product.dateTime,
-                style: BaseText.baseTextStyle.copyWith(
-                  fontWeight: BaseText.light,
-                  fontSize: 14,
-                  color: ColorName.dateTimeColor,
-                ),
-              ),
-              16.height,
-              const CustomDivider(),
-              Flexible(
-                  child: SizedBox(
-                      height: 43,
-                      // padding: const EdgeInsets.symmetric(vertical: 16),
-                      child: Align(
-                        alignment: Alignment.centerLeft,
-                        child: Text(
-                          "$tracking (11)",
-                          style: BaseText.blackText15,
-                        ),
-                      ))),
-              (tracking.toLowerCase().contains("serial number"))
-                  ? Flexible(
-                      child: SizedBox(
-                        height: 36,
-                        width: double.infinity,
-                        child: SearchBarBorder(
-                          context,
-                          onSearch: _onSearch(),
-                          clearData: _onClearData(),
-                          keySearch: searchKey,
-                          controller: searchSerialNumberController,
-                          queryKey: searchSerialNumberController.text,
+            ),
+            const CustomDivider(),
+            Flexible(
+                child: Container(
+                    padding: EdgeInsets.symmetric(horizontal: 16.w),
+                    height: 43.h,
+                    // padding: const EdgeInsets.symmetric(vertical: 16),
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        "$tracking (11)",
+                        style: BaseText.blackText15.copyWith(
+                          fontWeight: BaseText.medium,
                         ),
                       ),
-                    )
-                  : const SizedBox(),
-              12.height,
-              (tracking.toLowerCase().contains("serial number"))
-                  ? SizedBox(
-                      height: 600,
-                      child: ListView.builder(
-                          shrinkWrap: true,
-                          physics: const AlwaysScrollableScrollPhysics(),
-                          scrollDirection: Axis.vertical,
-                          itemCount: 11,
-                          itemBuilder: (context, index) {
-                            String code = "SM-2024-${product.code}";
+                    ))),
+            (tracking.toLowerCase().contains("serial number"))
+                ? Flexible(
+                    child: SizedBox(
+                      height: 36.h,
+                      width: double.infinity,
+                      child: SearchBarBorder(
+                        context,
+                        onSearch: _onSearch(),
+                        clearData: _onClearData(),
+                        keySearch: searchKey,
+                        controller: searchSerialNumberController,
+                        queryKey: searchSerialNumberController.text,
+                      ),
+                    ),
+                  )
+                : const SizedBox(),
+            SizedBox(height: 12.h),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16.w),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  (tracking.toLowerCase().contains("serial number"))
+                      ? SizedBox(
+                          height: 600.h,
+                          child: ListView.builder(
+                              shrinkWrap: true,
+                              physics: const AlwaysScrollableScrollPhysics(),
+                              scrollDirection: Axis.vertical,
+                              itemCount: 11,
+                              itemBuilder: (context, index) {
+                                String code = "SM-2024-${product.code}";
 
-                            return Padding(
-                                padding: const EdgeInsets.only(bottom: 8),
-                                child: buildItemQuantity(code));
-                          }),
-                    )
-                  : buildItemQuantity(product.lotsCode ?? product.code)
-            ],
-          ),
+                                return Padding(
+                                    padding: EdgeInsets.only(bottom: 8.h),
+                                    child: buildItemQuantity(code));
+                              }),
+                        )
+                      : buildItemQuantity(product.lotsCode ?? product.code)
+                ],
+              ),
+            )
+          ],
         ),
         floatingActionButton:
             reusableFloatingActionButton(onTap: () {}, icon: Icons.add),
@@ -137,9 +154,9 @@ class _ReceiptProductDetailScreenState
 
   Container buildItemQuantity(String code) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      padding: EdgeInsets.symmetric(horizontal: 12.h, vertical: 10.h),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(6),
+        borderRadius: BorderRadius.circular(6.r),
         border: Border.all(
           color: ColorName.grey9Color,
         ),
@@ -152,13 +169,14 @@ class _ReceiptProductDetailScreenState
             children: [
               Text(
                 code,
-                style: BaseText.blackText14,
+                style:
+                    BaseText.black2Text14.copyWith(fontWeight: BaseText.medium),
               ),
               Text(
                 "Exp. Date: 12/07/2024 - 15:00",
                 style: BaseText.baseTextStyle.copyWith(
                   color: ColorName.dateTimeColor,
-                  fontSize: 12,
+                  fontSize: 12.sp,
                   fontWeight: BaseText.light,
                 ),
               )
@@ -175,12 +193,12 @@ class _ReceiptProductDetailScreenState
                   ),
                 ),
                 SizedBox(
-                  height: 36,
-                  width: 60,
+                  height: 36.h,
+                  width: 60.w,
                   child: Center(
                     child: Text("11",
                         textAlign: TextAlign.center,
-                        style: BaseText.blackText11),
+                        style: BaseText.black2Text14),
                   ),
                 ),
               ],

@@ -29,6 +29,9 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
   late Receipt receipt;
   List<Product> listProducts = <Product>[];
 
+  String date = "";
+  String time = "";
+
   @override
   void initState() {
     super.initState();
@@ -52,6 +55,9 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
         .contains("serial number")) {
       listProducts = products3;
     }
+
+    date = receipt.dateTime.substring(0, 10);
+    time = receipt.dateTime.substring(13, 18);
   }
 
   @override
@@ -121,13 +127,32 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
                         ),
                       ),
                       TextSpan(
-                        text: "14/06/2024 - 15.30",
+                        text: date,
                         style: BaseText.baseTextStyle.copyWith(
                           fontSize: 14.sp,
-                          fontWeight: BaseText.semiBold,
+                          fontWeight: BaseText.medium,
                           color: ColorName.dateTimeColor,
                         ),
-                      )
+                      ),
+                      WidgetSpan(
+                          child: Padding(
+                        padding: EdgeInsets.symmetric(
+                            vertical: 6.h, horizontal: 2.5.w),
+                        child: Container(
+                          width: 7.w,
+                          height: 1.h,
+                          color: ColorName.grey2Color,
+                          alignment: Alignment.center,
+                        ),
+                      )),
+                      TextSpan(
+                        text: time,
+                        style: BaseText.baseTextStyle.copyWith(
+                          fontSize: 14.sp,
+                          fontWeight: BaseText.medium,
+                          color: ColorName.dateTimeColor,
+                        ),
+                      ),
                     ]),
                   ),
                   SizedBox(height: 8.h),
@@ -255,7 +280,7 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
         SizedBox(width: 16.w),
         Flexible(
           child: DisableButton(
-            height: 40,
+            height: 40.h,
             width: double.infinity,
             // width: 156,
             iconWidget: SvgPicture.asset(

@@ -78,8 +78,8 @@ class _ReceiptProductDetailScreenState
                   Text(
                     product.dateTime,
                     style: BaseText.baseTextStyle.copyWith(
-                      fontWeight: BaseText.light,
-                      fontSize: 14.sp,
+                      fontWeight: BaseText.regular,
+                      fontSize: 13.sp,
                       color: ColorName.dateTimeColor,
                     ),
                   ),
@@ -95,12 +95,21 @@ class _ReceiptProductDetailScreenState
                     // padding: const EdgeInsets.symmetric(vertical: 16),
                     child: Align(
                       alignment: Alignment.centerLeft,
-                      child: Text(
-                        "$tracking (11)",
-                        style: BaseText.blackText15.copyWith(
-                          fontWeight: BaseText.medium,
+                      child: RichText(
+                          text: TextSpan(children: [
+                        TextSpan(
+                          text: "$tracking ",
+                          style: BaseText.blackText15.copyWith(
+                            fontWeight: BaseText.medium,
+                          ),
                         ),
-                      ),
+                        TextSpan(
+                          text: "(11)",
+                          style: BaseText.blackText15.copyWith(
+                            fontWeight: BaseText.regular,
+                          ),
+                        )
+                      ])),
                     ))),
             (tracking.toLowerCase().contains("serial number"))
                 ? Flexible(
@@ -169,8 +178,8 @@ class _ReceiptProductDetailScreenState
             children: [
               Text(
                 code,
-                style:
-                    BaseText.black2Text14.copyWith(fontWeight: BaseText.medium),
+                style: BaseText.black2Text14
+                    .copyWith(fontWeight: BaseText.regular),
               ),
               Text(
                 "Exp. Date: 12/07/2024 - 15:00",
@@ -196,9 +205,13 @@ class _ReceiptProductDetailScreenState
                   height: 36.h,
                   width: 60.w,
                   child: Center(
-                    child: Text("11",
-                        textAlign: TextAlign.center,
-                        style: BaseText.black2Text14),
+                    child: Text(
+                      "11",
+                      textAlign: TextAlign.center,
+                      style: BaseText.black2Text14.copyWith(
+                        fontWeight: BaseText.regular,
+                      ),
+                    ),
                   ),
                 ),
               ],

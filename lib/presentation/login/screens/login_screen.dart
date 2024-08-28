@@ -7,6 +7,7 @@ import 'package:inventory_v3/common/components/top_logo_section.dart';
 import 'package:inventory_v3/common/constants/local_images.dart';
 import 'package:inventory_v3/common/constants/text_constants.dart';
 import 'package:inventory_v3/common/extensions/empty_space_extension.dart';
+import 'package:inventory_v3/presentation/receipt/screens/receipt_screen.dart';
 
 import '../../../common/theme/text/base_text.dart';
 import '../../receipt/screens/receipt_list_screen.dart';
@@ -37,7 +38,18 @@ class _LoginScreenState extends State<LoginScreen> {
                 ],
               ),
               24.height,
-              SvgPicture.asset(LocalImages.loginImage),
+              Container(
+                height: 235,
+                width: double.infinity,
+                margin: const EdgeInsets.symmetric(horizontal: 40),
+                // alignment: Alignment.center,
+                child: SvgPicture.asset(
+                  LocalImages.loginImage,
+                  fit: BoxFit.fitWidth,
+                  height: 230,
+                  width: 280,
+                ),
+              ),
               24.height,
               SizedBox(
                 width: double.infinity,
@@ -78,14 +90,11 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               40.height,
               PrimaryButton(
-                onPressed: () => Navigator.pushAndRemoveUntil(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) =>
-                        const ReceiptListScreen(title: "Receipt: Pallet"),
-                  ),
-                  (route) => false,
-                ),
+                onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const ReceiptListScreen(
+                            title: "Receipt: Pallete"))),
                 height: 40,
                 title: "Login",
                 width: double.infinity,

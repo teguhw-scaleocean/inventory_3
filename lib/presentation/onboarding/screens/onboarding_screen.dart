@@ -150,13 +150,25 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         buildTopLogoSection(),
         const Spacer(),
         // Flexible(child: Container(height: 120)),
-        SvgPicture.asset(images),
+        Container(
+          height: 225,
+          width: double.infinity,
+          margin: const EdgeInsets.symmetric(horizontal: 40),
+          // alignment: Alignment.center,
+          child: SvgPicture.asset(
+            images,
+            fit: BoxFit.fitWidth,
+            height: 220,
+            width: 280,
+          ),
+        ),
         const Spacer(),
         // Flexible(child: Container(height: 120)),
         Flexible(
           child: Container(
             margin: const EdgeInsets.symmetric(horizontal: 16),
-            width: 328,
+            // width: 328,
+            width: double.infinity,
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -167,11 +179,15 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   ),
                 ),
                 const SizedBox(height: 8),
-                Text(
-                  subTitle,
-                  textAlign: TextAlign.center,
-                  style: BaseText.subText14.copyWith(
-                    fontWeight: BaseText.regular,
+                SizedBox(
+                  height: 40,
+                  width: 256,
+                  child: Text(
+                    subTitle,
+                    textAlign: TextAlign.center,
+                    style: BaseText.subText14.copyWith(
+                      fontWeight: BaseText.regular,
+                    ),
                   ),
                 ),
               ],

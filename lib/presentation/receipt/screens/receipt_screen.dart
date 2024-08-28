@@ -83,11 +83,11 @@ class ReceiptScreen extends StatelessWidget {
       onTap: () {
         switch (index) {
           case 0:
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) =>
-                        const ReceiptListScreen(title: "Receipt: Pallete")));
+            // Navigator.push(
+            //     context,
+            //     MaterialPageRoute(
+            //         builder: (context) =>
+            //             const ReceiptListScreen(title: "Receipt: Pallete")));
             break;
           default:
         }

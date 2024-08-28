@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:inventory_v3/common/extensions/empty_space_extension.dart';
 
 import '../theme/color/color_name.dart';
@@ -96,6 +97,7 @@ class _CustomFormFieldState extends State<CustomFormField> {
               hintText: widget.hintText,
               hintStyle: BaseText.grey2Text14.copyWith(
                 fontWeight: BaseText.regular,
+                color: ColorName.grey12Color,
               ),
               border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(6),
@@ -175,10 +177,15 @@ class _CustomFormPasswordState extends State<CustomFormPassword> {
         TextFormField(
           obscureText: isSecure,
           obscuringCharacter: '●',
-          style: BaseText.blackText12.copyWith(
-            fontWeight: (!isSecure) ? BaseText.light : BaseText.black,
-            color: ColorName.blackNewColor,
-          ),
+          style: (!isSecure)
+              ? BaseText.blackText12.copyWith(
+                  fontWeight: BaseText.light,
+                  color: ColorName.blackNewColor,
+                )
+              : BaseText.blackText14.copyWith(
+                  fontWeight: BaseText.black,
+                  color: ColorName.blackNewColor,
+                ),
           controller: widget.controller,
           validator: widget.validator,
           autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -188,6 +195,7 @@ class _CustomFormPasswordState extends State<CustomFormPassword> {
               hintText: widget.hintText,
               hintStyle: BaseText.grey2Text14.copyWith(
                 fontWeight: BaseText.regular,
+                color: ColorName.grey12Color,
               ),
               contentPadding: widget.contentPadding ?? const EdgeInsets.all(12),
               hoverColor: ColorName.mainColor,
@@ -204,22 +212,29 @@ class _CustomFormPasswordState extends State<CustomFormPassword> {
               errorBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(6),
                   borderSide: const BorderSide(color: ColorName.redColor)),
-              suffixIcon: IconButton(
-                  onPressed: () {
-                    setState(() {
-                      isSecure = !isSecure;
-                    });
-                    log(isSecure.toString());
-                  },
-                  icon: SizedBox(
-                    width: 18,
-                    height: 18,
-                    child: Icon(
+              suffixIcon: Container(
+                width: 18,
+                height: 18,
+                margin: const EdgeInsets.only(top: 11, bottom: 11, right: 16),
+                alignment: Alignment.center,
+                child: Transform.scale(
+                  scale: 1.0,
+                  child: IconButton(
+                    onPressed: () {
+                      setState(() {
+                        isSecure = !isSecure;
+                      });
+                      log(isSecure.toString());
+                    },
+                    padding: const EdgeInsets.all(0),
+                    icon: Icon(
                       (!isSecure) ? Icons.visibility : Icons.visibility_off,
-                      color: ColorName.grey3Color,
-                      size: 16.5,
+                      color: ColorName.grey13Color,
+                      // size: 18,
                     ),
-                  ))),
+                  ),
+                ),
+              )),
           // onFieldSubmitted: onFieldSubmitted,
         ),
       ],

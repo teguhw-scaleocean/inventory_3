@@ -129,7 +129,7 @@ class DisableButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: color ?? ColorName.grey4Color,
+      color: color ?? ColorName.grey12Color,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(6),
       ),

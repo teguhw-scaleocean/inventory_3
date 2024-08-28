@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dash/flutter_dash.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:inventory_v3/common/components/custom_app_bar.dart';
 import 'package:inventory_v3/common/components/custom_divider.dart';
@@ -61,7 +62,7 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
         body: ListView(
           children: [
             Container(
-              padding: const EdgeInsets.all(16.0),
+              padding: EdgeInsets.all(16.w),
               child: Column(
                 children: [
                   Row(
@@ -78,7 +79,7 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
                       ),
                     ],
                   ),
-                  8.height,
+                  SizedBox(height: 8.h),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -97,15 +98,15 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
                 ],
               ),
             ),
-            16.height,
+            SizedBox(height: 16.h),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
+              padding: EdgeInsets.symmetric(horizontal: 16.w),
               child: buildScanAndUpdateSection(status: receipt.status),
             ),
-            16.height,
+            SizedBox(height: 16.h),
             const CustomDivider(height: 1.0, color: ColorName.grey9Color),
             Container(
-              padding: const EdgeInsets.all(16),
+              padding: EdgeInsets.all(16.w),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -114,21 +115,22 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
                       TextSpan(
                         text: "Sch. Date: ",
                         style: BaseText.baseTextStyle.copyWith(
-                          fontSize: 14,
+                          fontSize: 14.sp,
+                          fontWeight: BaseText.regular,
                           color: ColorName.dateTimeColor,
                         ),
                       ),
                       TextSpan(
                         text: "14/06/2024 - 15.30",
                         style: BaseText.baseTextStyle.copyWith(
-                          fontSize: 14,
-                          fontWeight: BaseText.light,
+                          fontSize: 14.sp,
+                          fontWeight: BaseText.semiBold,
                           color: ColorName.dateTimeColor,
                         ),
                       )
                     ]),
                   ),
-                  8.height,
+                  SizedBox(height: 8.h),
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -137,14 +139,15 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
                         children: [
                           SvgPicture.asset(LocalImages.receiveIcon),
                           const Dash(
+                            dashColor: ColorName.grey2Color,
                             direction: Axis.vertical,
-                            dashLength: 3,
-                            length: 46,
+                            dashLength: 5,
+                            length: 50,
                           ),
                           SvgPicture.asset(LocalImages.destinationIcon),
                         ],
                       ),
-                      16.width,
+                      SizedBox(width: 16.w),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -152,7 +155,7 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
                             label: "Receive From",
                             location: "Main Storage Area",
                           ),
-                          20.height,
+                          SizedBox(height: 20.h),
                           buildPlaceStepper(
                             label: "Destination Location",
                             location: "Medical Storage",
@@ -164,9 +167,10 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
                 ],
               ),
             ),
+            const CustomDivider(height: 1.0, color: ColorName.grey9Color),
             Container(
               color: ColorName.backgroundColor,
-              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+              padding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 16.w),
               child: Column(
                 children: [
                   Row(
@@ -178,18 +182,16 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
                       ),
                       Text(
                         "(7)",
-                        style: BaseText.black2TextStyle.copyWith(
-                          fontSize: 14,
-                          fontWeight: BaseText.regular,
-                        ),
+                        style: BaseText.black2Text15
+                            .copyWith(fontWeight: BaseText.regular),
                       )
                     ],
                   ),
-                  12.height,
+                  SizedBox(height: 12.h),
                   buildPalletButtonSection(
                     status: receipt.status,
                   ),
-                  14.height,
+                  SizedBox(height: 14.h),
                   ListView.builder(
                       shrinkWrap: true,
                       itemCount: listProducts.length,
@@ -238,23 +240,29 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
       children: [
         Flexible(
           child: DisableButton(
-            height: 40,
+            height: 40.h,
             width: double.infinity,
             iconWidget: SvgPicture.asset(
               LocalImages.scanIcons,
               color: ColorName.whiteColor,
+              height: 16.w,
+              width: 16.w,
             ),
             title: "Scan",
             color: scanButtonColor,
           ),
         ),
-        16.width,
+        SizedBox(width: 16.w),
         Flexible(
           child: DisableButton(
             height: 40,
             width: double.infinity,
             // width: 156,
-            iconWidget: SvgPicture.asset(LocalImages.updatePalleteIcons),
+            iconWidget: SvgPicture.asset(
+              LocalImages.updatePalleteIcons,
+              height: 16.w,
+              width: 16.w,
+            ),
             title: "Update Pallet",
             color: updateButtonColor,
           ),
@@ -272,23 +280,23 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
         // onPressed: () {},
         color: backgroundColor ?? ColorName.whiteColor,
         shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(5),
+            borderRadius: BorderRadius.circular(5.r),
             side: BorderSide(
               color: borderColor ?? ColorName.grey6Color,
               width: 1,
             )),
         elevation: 0,
         child: Container(
-          height: 36,
+          height: 36.h,
           width: double.infinity,
-          padding: const EdgeInsets.symmetric(vertical: 10),
+          padding: EdgeInsets.symmetric(vertical: 10.h),
           child: Center(
             child: Text(
               label,
               textAlign: TextAlign.center,
               style: labelTextStyle ??
                   BaseText.baseTextStyle.copyWith(
-                    fontSize: 12,
+                    fontSize: 12.sp,
                     fontWeight: BaseText.medium,
                     color: ColorName.grey12Color,
                   ),
@@ -310,7 +318,7 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
       child: Card(
         // semanticContainer: true,
         // clipBehavior: Clip.antiAliasWithSaveLayer,
-        margin: const EdgeInsets.only(bottom: 12),
+        margin: EdgeInsets.only(bottom: 12.h),
         shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.all(Radius.circular(6))),
         child: Column(
@@ -318,7 +326,7 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
           children: [
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.fromLTRB(16, 12, 0, 10),
+              padding: EdgeInsets.fromLTRB(16.w, 12.h, 0, 10.h),
               decoration: const BoxDecoration(
                 border: Border(
                   bottom: BorderSide(
@@ -335,7 +343,7 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
             ),
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+              padding: EdgeInsets.symmetric(vertical: 10.h, horizontal: 16.w),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
@@ -348,19 +356,19 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
                     product0.lotsCode ?? product0.code,
                     style: BaseText.baseTextStyle.copyWith(
                       color: ColorName.grey11Color,
-                      fontSize: 13,
+                      fontSize: 13.sp,
                       fontWeight: BaseText.light,
                     ),
                   ),
-                  10.height,
+                  SizedBox(height: 10.h),
                   Text(
                     product0.dateTime,
                     style: BaseText.baseTextStyle.copyWith(
-                      fontSize: 14,
+                      fontSize: 14.sp,
                       color: ColorName.dateTimeColor,
                     ),
                   ),
-                  10.height,
+                  SizedBox(height: 10.h),
                 ],
               ),
             ),
@@ -396,9 +404,9 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
 
     return Flexible(
       child: Container(
-        height: 60,
+        height: 60.h,
         width: MediaQuery.sizeOf(context).width / 2,
-        padding: const EdgeInsets.symmetric(vertical: 12),
+        padding: EdgeInsets.symmetric(vertical: 12.h),
         decoration: BoxDecoration(
           color: bgColor,
           borderRadius: BorderRadius.only(
@@ -416,7 +424,7 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
               TextSpan(
                 text: "$label\n",
                 style: BaseText.baseTextStyle.copyWith(
-                    fontSize: 13,
+                    fontSize: 13.sp,
                     color: (isReceive)
                         ? ColorName.receiveLabelColor
                         : ColorName.doneLabelColor),
@@ -424,7 +432,7 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
               TextSpan(
                 text: value,
                 style: BaseText.baseTextStyle.copyWith(
-                  fontSize: 14,
+                  fontSize: 14.sp,
                   color: (isReceive)
                       ? ColorName.receiveValueColor
                       : ColorName.doneValueColor,
@@ -475,7 +483,7 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
         Flexible(
             child: buildOutlineButton(context,
                 label: "Damage", labelTextStyle: labelTextStyle)),
-        12.width,
+        SizedBox(width: 12.w),
         Flexible(
             child: buildOutlineButton(context,
                 label: "Return", labelTextStyle: labelTextStyle)),

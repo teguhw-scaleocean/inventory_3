@@ -1,7 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 // import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import '../constants/local_images.dart';
 import '../theme/color/color_name.dart';
 import '../theme/text/base_text.dart';
 
@@ -55,10 +57,8 @@ class _SearchBarBorderState extends State<SearchBarBorder> {
         decoration: InputDecoration(
             prefixIcon: Container(
               padding: const EdgeInsets.only(left: 12, right: 6),
-              child: const Icon(
-                CupertinoIcons.search,
-                size: 14,
-              ),
+              child: SvgPicture.asset(LocalImages.searchIcon,
+                  height: 16, width: 16),
             ),
             prefixIconConstraints: const BoxConstraints(
               minHeight: 25,
@@ -66,10 +66,9 @@ class _SearchBarBorderState extends State<SearchBarBorder> {
             ),
             prefixIconColor: widget.iconColor ?? ColorName.grey1Color,
             // prefixIconColor: ColorName.greyColor,
-            // contentPadding: const EdgeInsets.symmetric(vertical: 10),
+            contentPadding: const EdgeInsets.symmetric(vertical: 10),
             hintText: "Search",
-            hintStyle: BaseText.grey1Text14.copyWith(
-              fontSize: 12,
+            hintStyle: BaseText.grey2Text14.copyWith(
               fontWeight: BaseText.light,
             ),
             enabledBorder: OutlineInputBorder(

@@ -10,7 +10,7 @@ class LocalImages {
   // Login
   static String get loginImage => "assets/login/login.svg";
 
-  // Receipt
+  // Scan Receipt
   static String get receiptPalleteImage => "assets/receipt/pallete.svg";
   static String get receiptProductImage => "assets/receipt/product.svg";
   static String get receiptBothImage => "assets/receipt/both.svg";
@@ -20,7 +20,12 @@ class LocalImages {
   // Receipt Detail
   static String get updatePalleteIcons => "assets/receipt/update-pallete.svg";
 
+  // Stepper
   static String get receiveIcon => "assets/receipt/stepper/receive.svg";
   static String get destinationIcon => "assets/receipt/stepper/destination.svg";
   static String get lineIcon => "assets/receipt/stepper/line.svg";
+
+  // List Receipt
+  static String get backIcon => "assets/receipt/icon/arrow_left_alt.svg";
+  static String get searchIcon => "assets/receipt/icon/search.svg";
 }

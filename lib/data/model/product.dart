@@ -195,7 +195,7 @@ List<Product> products = [
     palletCode: "A490",
     productName: "Surgical Instruments",
     code: "SUR_12942",
-    dateTime: "Exp. Date: 12/07/2024 - 15:30",
+    dateTime: "Sch. Date: 12/07/2024 - 15:30",
     productQty: 11,
   ),
   Product(
@@ -203,7 +203,7 @@ List<Product> products = [
     palletCode: "A491",
     productName: "Surgical Masks",
     code: "MASK_12942 ",
-    dateTime: "Exp. Date: 28/07/2024 - 14:00",
+    dateTime: "Sch. Date: 28/07/2024 - 14:00",
     productQty: 12,
   ),
   Product(
@@ -211,7 +211,7 @@ List<Product> products = [
     palletCode: "A492",
     productName: "Essence Mascara",
     code: "EM_12942",
-    dateTime: "Exp. Date: 02/07/2024 - 14:00",
+    dateTime: "Sch. Date: 02/07/2024 - 14:00",
     productQty: 14,
   ),
 ];
@@ -223,7 +223,7 @@ List<Product> products2 = [
     productName: "Nebulizer Machine",
     code: "NEB_14578",
     lotsCode: "LOTS-2024-001B",
-    dateTime: "Exp. Date: 12/07/2024 - 15:30",
+    dateTime: "Sch. Date: 12/07/2024 - 15:30",
     productQty: 11,
   ),
   Product(
@@ -232,7 +232,7 @@ List<Product> products2 = [
     productName: "Surgical Masks",
     code: "MASK_12942 ",
     lotsCode: "LOTS-2024-002B",
-    dateTime: "Exp. Date: 28/07/2024 - 14:00",
+    dateTime: "Sch. Date: 28/07/2024 - 14:00",
     productQty: 12,
   ),
   Product(
@@ -241,7 +241,7 @@ List<Product> products2 = [
     productName: "Essence Mascara",
     code: "EM_12942",
     lotsCode: "LOTS-2024-003B",
-    dateTime: "Exp. Date: 02/07/2024 - 14:00",
+    dateTime: "Sch. Date: 02/07/2024 - 14:00",
     productQty: 14,
   ),
 ];
@@ -254,7 +254,7 @@ List<Product> products3 = [
     productName: "Nebulizer Machine",
     code: "NEB_14578",
     // lotsCode: "LOTS-2024-001A",
-    dateTime: "Exp. Date: 12/07/2024 - 15:30",
+    dateTime: "Sch. Date: 12/07/2024 - 15:30",
     productQty: 11,
   ),
   Product(
@@ -263,7 +263,7 @@ List<Product> products3 = [
     productName: "Surgical Masks",
     code: "MASK_12942 ",
     // lotsCode: "LOTS-2024-002A",
-    dateTime: "Exp. Date: 28/07/2024 - 14:00",
+    dateTime: "Sch. Date: 28/07/2024 - 14:00",
     productQty: 12,
   ),
   Product(
@@ -272,7 +272,7 @@ List<Product> products3 = [
     productName: "Essence Mascara",
     code: "EM_12942",
     // lotsCode: "LOTS-2024-003A",
-    dateTime: "Exp. Date: 02/07/2024 - 14:00",
+    dateTime: "Sch. Date: 02/07/2024 - 14:00",
     productQty: 14,
   ),
 ];

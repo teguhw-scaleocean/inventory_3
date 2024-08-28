@@ -48,8 +48,8 @@ class _ReceiptProductDetailScreenState
     return SafeArea(
       child: Scaffold(
         appBar: const CustomAppBar(title: "Product Detail"),
-        body: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        body: ListView(
+          // crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
               padding: EdgeInsets.symmetric(horizontal: 16.w),
@@ -113,7 +113,8 @@ class _ReceiptProductDetailScreenState
                     ))),
             (tracking.toLowerCase().contains("serial number"))
                 ? Flexible(
-                    child: SizedBox(
+                    child: Container(
+                      padding: EdgeInsets.symmetric(horizontal: 16.w),
                       height: 36.h,
                       width: double.infinity,
                       child: SearchBarBorder(
@@ -123,6 +124,7 @@ class _ReceiptProductDetailScreenState
                         keySearch: searchKey,
                         controller: searchSerialNumberController,
                         queryKey: searchSerialNumberController.text,
+                        borderColor: ColorName.grey9Color,
                       ),
                     ),
                   )
@@ -130,28 +132,23 @@ class _ReceiptProductDetailScreenState
             SizedBox(height: 12.h),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.w),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  (tracking.toLowerCase().contains("serial number"))
-                      ? SizedBox(
-                          height: 600.h,
-                          child: ListView.builder(
-                              shrinkWrap: true,
-                              physics: const AlwaysScrollableScrollPhysics(),
-                              scrollDirection: Axis.vertical,
-                              itemCount: 11,
-                              itemBuilder: (context, index) {
-                                String code = "SM-2024-${product.code}";
+              child: (tracking.toLowerCase().contains("serial number"))
+                  ? SizedBox(
+                      height: 600.h,
+                      child: ListView.builder(
+                          shrinkWrap: true,
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          scrollDirection: Axis.vertical,
+                          itemCount: 11,
+                          itemBuilder: (context, index) {
+                            String code = "SM-2024-${product.code}";
 
-                                return Padding(
-                                    padding: EdgeInsets.only(bottom: 8.h),
-                                    child: buildItemQuantity(code));
-                              }),
-                        )
-                      : buildItemQuantity(product.lotsCode ?? product.code)
-                ],
-              ),
+                            return Padding(
+                                padding: EdgeInsets.only(bottom: 8.h),
+                                child: buildItemQuantity(code));
+                          }),
+                    )
+                  : buildItemQuantity(product.lotsCode ?? product.code),
             )
           ],
         ),
@@ -206,7 +203,7 @@ class _ReceiptProductDetailScreenState
                   width: 60.w,
                   child: Center(
                     child: Text(
-                      "11",
+                      (tracking.toLowerCase().contains("serial")) ? "1" : "11",
                       textAlign: TextAlign.center,
                       style: BaseText.black2Text14.copyWith(
                         fontWeight: BaseText.regular,

@@ -95,7 +95,7 @@ class _QRViewExampleState extends State<QRViewExample> {
                                 isFlashOn = snapshot.data ?? false;
 
                                 return Icon(
-                                    (snapshot.data == true)
+                                    (isFlashOn)
                                         ? Icons.flash_on
                                         : Icons.flash_off,
                                     size: 20.h,
@@ -111,17 +111,22 @@ class _QRViewExampleState extends State<QRViewExample> {
                         GestureDetector(
                           onTap: () async {
                             await controller!.flipCamera();
-                            var isCameraFlip =
-                                await controller!.getCameraInfo();
+                            setState(() {});
 
-                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                                content: Text(isCameraFlip.toString())));
+                            // ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                            //     content: Text(isCameraFlip.toString())));
                           },
-                          child: Icon(
-                            Icons.flip_camera_android,
-                            size: 20.h,
-                            color: ColorName.whiteColor,
-                          ),
+                          child: FutureBuilder(
+                              future: controller?.getCameraInfo(),
+                              builder: (context, snapshot) {
+                                debugPrint("snapshot.data: ${snapshot.data}");
+
+                                return Icon(
+                                  Icons.flip_camera_android,
+                                  size: 20.h,
+                                  color: ColorName.whiteColor,
+                                );
+                              }),
                         )
                       ],
                     ),

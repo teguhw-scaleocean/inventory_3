@@ -35,7 +35,7 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
 
   String date = "";
   String time = "";
-  String _scanBarcode = "";
+  String _scanBarcode = "0.00";
 
   @override
   void initState() {
@@ -141,10 +141,21 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.w),
               child: buildScanAndUpdateSection(
-                onScan: () => Navigator.push(
+                onScan: () async {
+                  final scanResult = await Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => const QRViewExample())),
+                      builder: (context) => const QRViewExample(),
+                    ),
+                  ).then((value) {
+                    if (value != null) {
+                      setState(() {
+                        _scanBarcode = value;
+                      });
+                      debugPrint("scanResultValue: $value");
+                    }
+                  });
+                },
                 status: receipt.status,
               ),
             ),
@@ -496,7 +507,7 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
                 ),
                 _buildBottomCardSection(
                   label: "Done",
-                  value: "1.00 Unit",
+                  value: "$_scanBarcode Unit",
                 )
               ],
             ),

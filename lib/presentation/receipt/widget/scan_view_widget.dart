@@ -265,9 +265,15 @@ class _QRViewExampleState extends State<QRViewExample> {
         result = scanData;
       });
 
-      // });
-      // Future.delayed(const Duration(seconds: 3), () {
-      //   Navigator.of(context).pop("9");
+      // if (result != null) {
+      //   Navigator.of(context).pop("18.00");
+      // }
+    });
+    Future.delayed(const Duration(seconds: 10), () {
+      controller.stopCamera();
+      Navigator.of(context).pop("18.00");
+
+      log("pop");
     });
   }
 

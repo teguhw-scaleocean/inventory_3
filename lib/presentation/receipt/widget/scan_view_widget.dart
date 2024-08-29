@@ -22,6 +22,8 @@ class _QRViewExampleState extends State<QRViewExample> {
   Barcode? result;
   QRViewController? controller;
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
+  Color bgColor = Colors.transparent;
+  bool isFlashOn = false;
 
   // In order to get hot reload to work we need to pause the camera if the platform
   // is android, or resume the camera if the platform is iOS.
@@ -35,10 +37,22 @@ class _QRViewExampleState extends State<QRViewExample> {
   }
 
   @override
+  void initState() {
+    super.initState();
+  }
+
+  Future getFlashStatus() async {
+    await controller!.getFlashStatus().then((value) => setState(() {
+          isFlashOn = value!;
+          log("isFlashOn $isFlashOn");
+        }));
+  }
+
+  @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        backgroundColor: Colors.transparent,
+        backgroundColor: bgColor,
         body: Stack(
           children: <Widget>[
             Expanded(flex: 1, child: _buildQrView(context)),
@@ -73,13 +87,20 @@ class _QRViewExampleState extends State<QRViewExample> {
                         GestureDetector(
                           onTap: () async {
                             await controller!.toggleFlash();
-                            var isFlashOn = await controller!.getFlashStatus();
-
-                            ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text(isFlashOn.toString())));
+                            setState(() {});
                           },
-                          child: Icon(Icons.flash_off,
-                              size: 20.h, color: ColorName.whiteColor),
+                          child: FutureBuilder(
+                              future: controller?.getFlashStatus(),
+                              builder: (context, snapshot) {
+                                isFlashOn = snapshot.data ?? false;
+
+                                return Icon(
+                                    (snapshot.data == true)
+                                        ? Icons.flash_on
+                                        : Icons.flash_off,
+                                    size: 20.h,
+                                    color: ColorName.whiteColor);
+                              }),
                         ),
                       ],
                     ),
@@ -238,6 +259,10 @@ class _QRViewExampleState extends State<QRViewExample> {
       setState(() {
         result = scanData;
       });
+
+      // });
+      // Future.delayed(const Duration(seconds: 3), () {
+      //   Navigator.of(context).pop("9");
     });
   }
 

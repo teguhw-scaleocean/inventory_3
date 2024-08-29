@@ -20,9 +20,10 @@ import '../../../common/theme/color/color_name.dart';
 import '../../../common/theme/text/base_text.dart';
 
 class ReceiptDetailScreen extends StatefulWidget {
-  final Receipt receipt;
+  final Receipt? receipt;
+  final String? scanBarcode;
 
-  const ReceiptDetailScreen({super.key, required this.receipt});
+  const ReceiptDetailScreen({super.key, this.receipt, this.scanBarcode = ""});
 
   @override
   State<ReceiptDetailScreen> createState() => _ReceiptDetailScreenState();
@@ -34,14 +35,21 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
 
   String date = "";
   String time = "";
-  final String _scanBarcode = "";
+  String _scanBarcode = "";
 
   @override
   void initState() {
     super.initState();
 
-    receipt = widget.receipt;
-    debugPrint(receipt.toJson());
+    if (widget.receipt != null) {
+      receipt = widget.receipt!;
+      debugPrint(receipt.toJson());
+    }
+
+    if (widget.scanBarcode != null) {
+      _scanBarcode = widget.scanBarcode!;
+      debugPrint("_scanBarcode: $_scanBarcode");
+    }
 
     if (receipt.packageStatus
         .toString()

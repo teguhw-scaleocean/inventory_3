@@ -1,12 +1,14 @@
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:inventory_v3/common/constants/text_constants.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 
+import '../../../common/components/primary_button.dart';
 import '../../../common/constants/local_images.dart';
 import '../../../common/theme/color/color_name.dart';
 import '../../../common/theme/text/base_text.dart';
@@ -265,16 +267,24 @@ class _QRViewExampleState extends State<QRViewExample> {
         result = scanData;
       });
 
-      // if (result != null) {
-      //   Navigator.of(context).pop("18.00");
-      // }
+      if (result != null) {
+        try {
+          controller.stopCamera();
+          Navigator.of(context).pop("18.00");
+        } on Exception catch (e) {
+          Future.delayed(const Duration(seconds: 2), () async {
+            await controller.pauseCamera();
+            onShowErrorDialog();
+          });
+        }
+      }
     });
-    Future.delayed(const Duration(seconds: 10), () {
-      controller.stopCamera();
-      Navigator.of(context).pop("18.00");
+    // Future.delayed(const Duration(seconds: 10), () {
+    //   controller.stopCamera();
+    //   Navigator.of(context).pop("18.00");
 
-      log("pop");
-    });
+    //   log("pop");
+    // });
   }
 
   void _onPermissionSet(BuildContext context, QRViewController ctrl, bool p) {
@@ -284,6 +294,68 @@ class _QRViewExampleState extends State<QRViewExample> {
         const SnackBar(content: Text('no Permission')),
       );
     }
+  }
+
+  onShowErrorDialog() {
+    return AwesomeDialog(
+      context: context,
+      animType: AnimType.bottomSlide,
+      headerAnimationLoop: false,
+      dialogType: DialogType.error,
+      showCloseIcon: true,
+      width: double.infinity,
+      // padding: EdgeInsets.symmetric(horizontal: 16.w),
+      body: SizedBox(
+        // width: MediaQuery.sizeOf(context).width,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(height: 10.h),
+            Text(
+              'Scan Error',
+              style: BaseText.black2TextStyle.copyWith(
+                fontSize: 16.sp,
+                fontWeight: BaseText.semiBold,
+              ),
+            ),
+            Container(height: 4.h),
+            Text('Scan incorrect, please try again.',
+                style:
+                    BaseText.grey2Text14.copyWith(fontWeight: BaseText.light)),
+            Container(height: 1.h),
+            Text("Pallet B654",
+                textAlign: TextAlign.center,
+                style: BaseText.mainText14
+                    .copyWith(fontWeight: BaseText.semiBold)),
+            SizedBox(height: 24.h),
+          ],
+        ),
+      ),
+      btnOkOnPress: () {
+        debugPrint('OnClcik');
+      },
+      // btnOkIcon: Icons.check_circle,
+      btnOk: PrimaryButton(
+        onPressed: () async {
+          debugPrint('OnClcik OK');
+          await controller?.resumeCamera();
+          Navigator.of(context).pop();
+        },
+        height: 40.h,
+        icon: SvgPicture.asset(
+          LocalImages.scanIcons,
+          width: 16.w,
+          height: 16.w,
+          color: ColorName.whiteColor,
+        ),
+        title: "Rescan",
+      ),
+      onDismissCallback: (type) {
+        debugPrint('Dialog Dissmiss from callback $type');
+      },
+    ).show();
   }
 
   @override

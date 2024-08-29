@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+// import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:flutter_dash/flutter_dash.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -10,6 +12,7 @@ import 'package:inventory_v3/common/constants/local_images.dart';
 import 'package:inventory_v3/data/model/product.dart';
 import 'package:inventory_v3/data/model/receipt.dart';
 import 'package:inventory_v3/presentation/receipt/screens/receipt_product_detail.dart';
+import 'package:inventory_v3/presentation/receipt/widget/scan_view_widget.dart';
 
 import '../../../common/components/status_badge.dart';
 import '../../../common/extensions/empty_space_extension.dart';
@@ -31,6 +34,7 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
 
   String date = "";
   String time = "";
+  final String _scanBarcode = "";
 
   @override
   void initState() {
@@ -59,6 +63,27 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
     date = receipt.dateTime.substring(0, 10);
     time = receipt.dateTime.substring(13, 18);
   }
+
+  // Future<void> scanBarcodeNormal() async {
+  //   String barcodeScanRes;
+  //   // Platform messages may fail, so we use a try/catch PlatformException.
+  //   try {
+  //     barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
+  //         '#ff6666', 'Cancel', true, ScanMode.BARCODE);
+  //     print(barcodeScanRes);
+  //   } on PlatformException {
+  //     barcodeScanRes = 'Failed to get platform version.';
+  //   }
+
+  //   // If the widget was removed from the tree while the asynchronous platform
+  //   // message was in flight, we want to discard the reply rather than calling
+  //   // setState to update our non-existent appearance.
+  //   if (!mounted) return;
+
+  //   setState(() {
+  //     _scanBarcode = barcodeScanRes;
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -107,7 +132,13 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
             SizedBox(height: 16.h),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.w),
-              child: buildScanAndUpdateSection(status: receipt.status),
+              child: buildScanAndUpdateSection(
+                onScan: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const QRViewExample())),
+                status: receipt.status,
+              ),
             ),
             SizedBox(height: 16.h),
             const CustomDivider(height: 1.0, color: ColorName.grey9Color),
@@ -243,7 +274,7 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
     );
   }
 
-  Row buildScanAndUpdateSection({required String status}) {
+  Row buildScanAndUpdateSection({required String status, Function()? onScan}) {
     Color? scanButtonColor;
     Color? updateButtonColor;
 
@@ -264,17 +295,20 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
     return Row(
       children: [
         Flexible(
-          child: DisableButton(
-            height: 40.h,
-            width: double.infinity,
-            iconWidget: SvgPicture.asset(
-              LocalImages.scanIcons,
-              color: ColorName.whiteColor,
-              height: 16.w,
-              width: 16.w,
+          child: GestureDetector(
+            onTap: onScan,
+            child: DisableButton(
+              height: 40.h,
+              width: double.infinity,
+              iconWidget: SvgPicture.asset(
+                LocalImages.scanIcons,
+                color: ColorName.whiteColor,
+                height: 16.w,
+                width: 16.w,
+              ),
+              title: "Scan",
+              color: scanButtonColor,
             ),
-            title: "Scan",
-            color: scanButtonColor,
           ),
         ),
         SizedBox(width: 16.w),

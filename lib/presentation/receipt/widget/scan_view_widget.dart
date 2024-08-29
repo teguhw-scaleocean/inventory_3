@@ -70,18 +70,37 @@ class _QRViewExampleState extends State<QRViewExample> {
                             )
                           ],
                         ),
-                        Icon(Icons.flash_off,
-                            size: 20.h, color: ColorName.whiteColor),
+                        GestureDetector(
+                          onTap: () async {
+                            await controller!.toggleFlash();
+                            var isFlashOn = await controller!.getFlashStatus();
+
+                            ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text(isFlashOn.toString())));
+                          },
+                          child: Icon(Icons.flash_off,
+                              size: 20.h, color: ColorName.whiteColor),
+                        ),
                       ],
                     ),
                     SizedBox(height: 24.h),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        Icon(
-                          Icons.flip_camera_android,
-                          size: 20.h,
-                          color: ColorName.whiteColor,
+                        GestureDetector(
+                          onTap: () async {
+                            await controller!.flipCamera();
+                            var isCameraFlip =
+                                await controller!.getCameraInfo();
+
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                content: Text(isCameraFlip.toString())));
+                          },
+                          child: Icon(
+                            Icons.flip_camera_android,
+                            size: 20.h,
+                            color: ColorName.whiteColor,
+                          ),
                         )
                       ],
                     ),

@@ -74,4 +74,12 @@ List<Pallet> pallets = [
   Pallet(id: 11, code: "A4900"),
   Pallet(id: 12, code: "A4901"),
   Pallet(id: 13, code: "A4902"),
+  Pallet(id: 14, code: "A4903"),
+  Pallet(id: 15, code: "A4904"),
+  Pallet(id: 16, code: "A4905"),
+  Pallet(id: 17, code: "A4906"),
+  Pallet(id: 18, code: "A4907"),
+  Pallet(id: 19, code: "A4908"),
+  Pallet(id: 20, code: "A4909"),
+  Pallet(id: 21, code: "A4910"),
 ];

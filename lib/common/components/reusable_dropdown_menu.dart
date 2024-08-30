@@ -128,6 +128,13 @@ class _ReusableDropdownMenuState extends State<ReusableDropdownMenu> {
                     ),
                     color: ColorName.whiteColor,
                   ),
+                  scrollbarTheme: ScrollbarThemeData(
+                      radius: const Radius.circular(99),
+                      thickness: MaterialStateProperty.all(6),
+                      thumbColor: MaterialStateColor.resolveWith(
+                          (states) => ColorName.grey15Color)
+                      // thumbVisibility: MaterialStateProperty.all(true),
+                      ),
                 ),
                 menuItemStyleData: const MenuItemStyleData(
                   padding: EdgeInsets.zero,

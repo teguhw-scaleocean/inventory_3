@@ -19,4 +19,7 @@ class TextConstants {
   static String get readyToReceive => "Ready to receive items?";
   static String get chooseSubTitle =>
       "Choose to scan a Pallet, Product, or Both";
+
+  static String get scanPalletTittle =>
+      "Scan your pallet barcode\nto confirm receipt.";
 }

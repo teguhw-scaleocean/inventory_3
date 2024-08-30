@@ -1,4 +1,7 @@
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+// import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:flutter_dash/flutter_dash.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -10,6 +13,7 @@ import 'package:inventory_v3/common/constants/local_images.dart';
 import 'package:inventory_v3/data/model/product.dart';
 import 'package:inventory_v3/data/model/receipt.dart';
 import 'package:inventory_v3/presentation/receipt/screens/receipt_product_detail.dart';
+import 'package:inventory_v3/presentation/receipt/widget/scan_view_widget.dart';
 
 import '../../../common/components/status_badge.dart';
 import '../../../common/extensions/empty_space_extension.dart';
@@ -17,9 +21,10 @@ import '../../../common/theme/color/color_name.dart';
 import '../../../common/theme/text/base_text.dart';
 
 class ReceiptDetailScreen extends StatefulWidget {
-  final Receipt receipt;
+  final Receipt? receipt;
+  final String? scanBarcode;
 
-  const ReceiptDetailScreen({super.key, required this.receipt});
+  const ReceiptDetailScreen({super.key, this.receipt, this.scanBarcode = ""});
 
   @override
   State<ReceiptDetailScreen> createState() => _ReceiptDetailScreenState();
@@ -31,13 +36,21 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
 
   String date = "";
   String time = "";
+  String _scanBarcode = "0.00";
 
   @override
   void initState() {
     super.initState();
 
-    receipt = widget.receipt;
-    debugPrint(receipt.toJson());
+    if (widget.receipt != null) {
+      receipt = widget.receipt!;
+      debugPrint(receipt.toJson());
+    }
+
+    // if (widget.scanBarcode != null) {
+    //   _scanBarcode = widget.scanBarcode!;
+    //   debugPrint("_scanBarcode: $_scanBarcode");
+    // }
 
     if (receipt.packageStatus
         .toString()
@@ -58,6 +71,82 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
 
     date = receipt.dateTime.substring(0, 10);
     time = receipt.dateTime.substring(13, 18);
+  }
+
+  // Future<void> scanBarcodeNormal() async {
+  //   String barcodeScanRes;
+  //   // Platform messages may fail, so we use a try/catch PlatformException.
+  //   try {
+  //     barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
+  //         '#ff6666', 'Cancel', true, ScanMode.BARCODE);
+  //     print(barcodeScanRes);
+  //   } on PlatformException {
+  //     barcodeScanRes = 'Failed to get platform version.';
+  //   }
+
+  //   // If the widget was removed from the tree while the asynchronous platform
+  //   // message was in flight, we want to discard the reply rather than calling
+  //   // setState to update our non-existent appearance.
+  //   if (!mounted) return;
+
+  //   setState(() {
+  //     _scanBarcode = barcodeScanRes;
+  //   });
+  // }
+
+  onShowSuccessDialog() {
+    return AwesomeDialog(
+      context: context,
+      animType: AnimType.bottomSlide,
+      headerAnimationLoop: false,
+      dialogType: DialogType.success,
+      showCloseIcon: true,
+      width: double.infinity,
+      // padding: EdgeInsets.symmetric(horizontal: 16.w),
+      body: SizedBox(
+        // width: MediaQuery.sizeOf(context).width,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(height: 10.h),
+            Text(
+              'Scan Successful!',
+              style: BaseText.black2TextStyle.copyWith(
+                fontSize: 16.sp,
+                fontWeight: BaseText.semiBold,
+              ),
+            ),
+            Container(height: 4.h),
+            Text('Great job! You successfully scanned',
+                style:
+                    BaseText.grey2Text14.copyWith(fontWeight: BaseText.light)),
+            Container(height: 1.h),
+            Text("Pallet B654",
+                textAlign: TextAlign.center,
+                style: BaseText.mainText14
+                    .copyWith(fontWeight: BaseText.semiBold)),
+            SizedBox(height: 24.h),
+          ],
+        ),
+      ),
+      btnOkOnPress: () {
+        debugPrint('OnClcik');
+      },
+      // btnOkIcon: Icons.check_circle,
+      btnOk: PrimaryButton(
+        onPressed: () {
+          debugPrint('OnClcik OK');
+          Navigator.of(context).pop();
+        },
+        height: 40.h,
+        title: "OK",
+      ),
+      onDismissCallback: (type) {
+        debugPrint('Dialog Dissmiss from callback $type');
+      },
+    ).show();
   }
 
   @override
@@ -107,7 +196,28 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
             SizedBox(height: 16.h),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.w),
-              child: buildScanAndUpdateSection(status: receipt.status),
+              child: buildScanAndUpdateSection(
+                onScan: () async {
+                  final scanResult = await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const QRViewExample(),
+                    ),
+                  ).then((value) {
+                    if (value != null) {
+                      setState(() {
+                        _scanBarcode = value;
+                      });
+                      debugPrint("scanResultValue: $value");
+
+                      Future.delayed(const Duration(seconds: 2), () {
+                        onShowSuccessDialog();
+                      });
+                    }
+                  });
+                },
+                status: receipt.status,
+              ),
             ),
             SizedBox(height: 16.h),
             const CustomDivider(height: 1.0, color: ColorName.grey9Color),
@@ -243,7 +353,7 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
     );
   }
 
-  Row buildScanAndUpdateSection({required String status}) {
+  Row buildScanAndUpdateSection({required String status, Function()? onScan}) {
     Color? scanButtonColor;
     Color? updateButtonColor;
 
@@ -264,17 +374,20 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
     return Row(
       children: [
         Flexible(
-          child: DisableButton(
-            height: 40.h,
-            width: double.infinity,
-            iconWidget: SvgPicture.asset(
-              LocalImages.scanIcons,
-              color: ColorName.whiteColor,
-              height: 16.w,
-              width: 16.w,
+          child: GestureDetector(
+            onTap: onScan,
+            child: DisableButton(
+              height: 40.h,
+              width: double.infinity,
+              iconWidget: SvgPicture.asset(
+                LocalImages.scanIcons,
+                color: ColorName.whiteColor,
+                height: 16.w,
+                width: 16.w,
+              ),
+              title: "Scan",
+              color: scanButtonColor,
             ),
-            title: "Scan",
-            color: scanButtonColor,
           ),
         ),
         SizedBox(width: 16.w),
@@ -454,7 +567,7 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
                 ),
                 _buildBottomCardSection(
                   label: "Done",
-                  value: "1.00 Unit",
+                  value: "$_scanBarcode Unit",
                 )
               ],
             ),

@@ -425,7 +425,16 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
             padding: EdgeInsets.only(
                 top: (hasUpdateFocus) ? 36.h : 24.h, bottom: 24.h),
             child: PrimaryButton(
-              onPressed: () {},
+              onPressed: () {
+                Navigator.pop(context);
+
+                updateSetState(() {
+                  _scanBarcode = "18.00";
+                  log("scanbarcode: $_scanBarcode");
+
+                  onShowSuccessDialog();
+                });
+              },
               height: 40.h,
               title: "Submit",
             ),
@@ -474,7 +483,16 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
             padding: EdgeInsets.only(
                 top: (hasUpdateFocus) ? 36.h : 24.h, bottom: 24.h),
             child: PrimaryButton(
-              onPressed: () {},
+              onPressed: () {
+                Navigator.pop(context);
+
+                updateSetState(() {
+                  _scanBarcode = "18.00";
+                  log("scanbarcode: $_scanBarcode");
+
+                  onShowSuccessDialog();
+                });
+              },
               height: 40.h,
               title: "Submit",
             ),

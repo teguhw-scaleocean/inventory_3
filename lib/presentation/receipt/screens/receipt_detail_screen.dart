@@ -239,30 +239,16 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
                   },
                   onUpdate: () {
                     bool hasUpdateFocus = false;
-                    reusableBottomSheet(context, isShowDragHandle: false,
-                        StatefulBuilder(builder: (context, updateSetState) {
-                      var dropdownGap = 100.h;
-                      var submitButtonGap = 48.h;
-
-                      return Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 16.w),
-                        child: SingleChildScrollView(
-                          child: Column(
-                            children: [
-                              Center(child: reusableDragHandle()),
-                              SizedBox(height: 16.h),
-                              reusableTitleBottomSheet(context,
-                                  title: "Update Pallet", isMainColor: false),
-                              SizedBox(height: 24.h),
-                              // buildDropdownMinHeight(
-                              //     updateSetState, hasUpdateFocus)
-                              buildDropdownMaxHeight(
-                                  updateSetState, hasUpdateFocus),
-                            ],
-                          ),
-                        ),
-                      );
-                    }));
+                    reusableBottomSheet(
+                        context,
+                        isShowDragHandle: false,
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 16.w),
+                          child: SingleChildScrollView(
+                              child: (palletUpdates.length < 5)
+                                  ? buildDropdownMinHeight(hasUpdateFocus)
+                                  : buildDropdownMaxHeight(hasUpdateFocus)),
+                        ));
                   }),
             ),
             SizedBox(height: 16.h),
@@ -399,86 +385,103 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
     );
   }
 
-  Column buildDropdownMaxHeight(
-      StateSetter updateSetState, bool hasUpdateFocus) {
-    return Column(
-      children: [
-        ReusableDropdownMenu(
-          label: "Pallet",
-          maxHeight: 500.h,
-          offset: const Offset(0, 560),
-          controller: _searchController,
-          borderColor: ColorName.grey9Color,
-          listOfItemsValue: palletUpdates,
-          selectedValue: selectedUpdatePallet,
-          onChange: (v) {},
-          onTap: (onTapValue) {
-            updateSetState(() {
-              // selectedUpdatePallet = onTapValue;
-              // dropdownGap = 142.h;
-              // submitButtonGap = 48.h;
-              hasUpdateFocus = !hasUpdateFocus;
-              log("hasUPdateFocus: $hasUpdateFocus");
-            });
-          },
-        ),
-        (hasUpdateFocus)
-            ? Container(
-                height: 505.h,
-              )
-            : Container(height: 0),
-        Padding(
-          padding: EdgeInsets.only(
-              top: (hasUpdateFocus) ? 36.h : 24.h, bottom: 24.h),
-          child: PrimaryButton(
-            onPressed: () {},
-            height: 40.h,
-            title: "Submit",
+  buildDropdownMaxHeight(bool hasUpdateFocus) {
+    return StatefulBuilder(builder: (context, updateSetState) {
+      log("hasUpdateFocus: $hasUpdateFocus ");
+      return Column(
+        children: [
+          Center(child: reusableDragHandle()),
+          SizedBox(height: 16.h),
+          reusableTitleBottomSheet(context,
+              title: "Update Pallet", isMainColor: false),
+          SizedBox(height: 24.h),
+          // buildDropdownMinHeight(
+          //     updateSetState, hasUpdateFocus)
+          ReusableDropdownMenu(
+            label: "Pallet",
+            maxHeight: 500.h,
+            offset: const Offset(0, 560),
+            controller: _searchController,
+            borderColor: ColorName.grey9Color,
+            listOfItemsValue: palletUpdates,
+            selectedValue: selectedUpdatePallet,
+            onChange: (v) {},
+            onTap: (onTapValue) {
+              updateSetState(() {
+                // selectedUpdatePallet = onTapValue;
+                // dropdownGap = 142.h;
+                // submitButtonGap = 48.h;
+                hasUpdateFocus = !hasUpdateFocus;
+                log("hasUPdateFocus: $hasUpdateFocus");
+              });
+            },
           ),
-        )
-      ],
-    );
+          (hasUpdateFocus)
+              ? Container(
+                  height: 505.h,
+                )
+              : Container(height: 0),
+          Padding(
+            padding: EdgeInsets.only(
+                top: (hasUpdateFocus) ? 36.h : 24.h, bottom: 24.h),
+            child: PrimaryButton(
+              onPressed: () {},
+              height: 40.h,
+              title: "Submit",
+            ),
+          )
+        ],
+      );
+    });
   }
 
-  Column buildDropdownMinHeight(
-      StateSetter updateSetState, bool hasUpdateFocus) {
-    return Column(
-      children: [
-        ReusableDropdownMenu(
-          label: "Pallet",
-          maxHeight: 120.h,
-          offset: const Offset(0, 121),
-          controller: _searchController,
-          borderColor: ColorName.grey9Color,
-          listOfItemsValue: palletUpdates,
-          selectedValue: selectedUpdatePallet,
-          onChange: (v) {},
-          onTap: (onTapValue) {
-            updateSetState(() {
-              // selectedUpdatePallet = onTapValue;
-              // dropdownGap = 142.h;
-              // submitButtonGap = 48.h;
-              hasUpdateFocus = !hasUpdateFocus;
-              log("hasUPdateFocus: $hasUpdateFocus");
-            });
-          },
-        ),
-        (hasUpdateFocus)
-            ? Container(
-                height: 110.h,
-              )
-            : Container(height: 0),
-        Padding(
-          padding: EdgeInsets.only(
-              top: (hasUpdateFocus) ? 36.h : 24.h, bottom: 24.h),
-          child: PrimaryButton(
-            onPressed: () {},
-            height: 40.h,
-            title: "Submit",
+  buildDropdownMinHeight(bool hasUpdateFocus) {
+    return StatefulBuilder(builder: (context, updateSetState) {
+      return Column(
+        children: [
+          Center(child: reusableDragHandle()),
+          SizedBox(height: 16.h),
+          reusableTitleBottomSheet(context,
+              title: "Update Pallet", isMainColor: false),
+          SizedBox(height: 24.h),
+          // buildDropdownMinHeight(
+          //     updateSetState, hasUpdateFocus)
+          ReusableDropdownMenu(
+            label: "Pallet",
+            maxHeight: 120.h,
+            offset: const Offset(0, 121),
+            controller: _searchController,
+            borderColor: ColorName.grey9Color,
+            listOfItemsValue: palletUpdates,
+            selectedValue: selectedUpdatePallet,
+            onChange: (v) {},
+            onTap: (onTapValue) {
+              updateSetState(() {
+                // selectedUpdatePallet = onTapValue;
+                // dropdownGap = 142.h;
+                // submitButtonGap = 48.h;
+                hasUpdateFocus = !hasUpdateFocus;
+                log("hasUPdateFocus: $hasUpdateFocus");
+              });
+            },
           ),
-        )
-      ],
-    );
+          (hasUpdateFocus)
+              ? Container(
+                  height: 110.h,
+                )
+              : Container(height: 0),
+          Padding(
+            padding: EdgeInsets.only(
+                top: (hasUpdateFocus) ? 36.h : 24.h, bottom: 24.h),
+            child: PrimaryButton(
+              onPressed: () {},
+              height: 40.h,
+              title: "Submit",
+            ),
+          )
+        ],
+      );
+    });
   }
 
   Row buildScanAndUpdateSection(

@@ -267,11 +267,16 @@ class _QRViewExampleState extends State<QRViewExample> {
         result = scanData;
       });
 
-      if (result != null) {
+      if (result?.format == BarcodeFormat.qrcode) {
         try {
           controller.stopCamera();
           Navigator.of(context).pop("18.00");
-        } on Exception catch (e) {
+        } on FormatException {
+          Future.delayed(const Duration(seconds: 2), () async {
+            await controller.pauseCamera();
+            onShowErrorDialog();
+          });
+        } on Exception {
           Future.delayed(const Duration(seconds: 2), () async {
             await controller.pauseCamera();
             onShowErrorDialog();

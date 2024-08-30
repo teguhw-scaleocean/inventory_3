@@ -84,9 +84,9 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
     time = receipt.dateTime.substring(13, 18);
 
     pallets.map((e) {
-      // if (e.id < 5) {
-      palletUpdates.add(e.code);
-      // }
+      if (e.id < 5) {
+        palletUpdates.add(e.code);
+      }
     }).toList();
 
     // palletUpdates.sublist(0, 1);
@@ -238,6 +238,7 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
                     });
                   },
                   onUpdate: () {
+                    bool hasUpdateFocus = false;
                     reusableBottomSheet(context, isShowDragHandle: false,
                         StatefulBuilder(builder: (context, updateSetState) {
                       var dropdownGap = 100.h;
@@ -255,8 +256,8 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
                               SizedBox(height: 24.h),
                               ReusableDropdownMenu(
                                 label: "Pallet",
-                                maxHeight: 320.h,
-                                offset: const Offset(0, -16),
+                                maxHeight: 120.h,
+                                offset: const Offset(0, 121),
                                 controller: _searchController,
                                 borderColor: ColorName.grey9Color,
                                 listOfItemsValue: palletUpdates,
@@ -267,15 +268,20 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
                                     // selectedUpdatePallet = onTapValue;
                                     // dropdownGap = 142.h;
                                     // submitButtonGap = 48.h;
+                                    hasUpdateFocus = !hasUpdateFocus;
+                                    log("hasUPdateFocus: $hasUpdateFocus");
                                   });
                                 },
                               ),
-                              (palletUpdates.length > 4)
-                                  ? Container(color: Colors.blue, height: 600.h)
-                                  : Container(height: dropdownGap),
+                              (hasUpdateFocus)
+                                  ? Container(
+                                      height: 110.h,
+                                    )
+                                  : Container(height: 0),
                               Padding(
                                 padding: EdgeInsets.only(
-                                    top: submitButtonGap, bottom: 24.h),
+                                    top: (hasUpdateFocus) ? 36.h : 24.h,
+                                    bottom: 24.h),
                                 child: PrimaryButton(
                                   onPressed: () {},
                                   height: 40.h,

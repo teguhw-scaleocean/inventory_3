@@ -120,7 +120,7 @@ class _ReusableDropdownMenuState extends State<ReusableDropdownMenu> {
                 dropdownStyleData: DropdownStyleData(
                   maxHeight: widget.maxHeight,
                   offset: widget.offset ?? const Offset(0, -10),
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 8.h),
                   elevation: 1,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.all(
@@ -129,6 +129,8 @@ class _ReusableDropdownMenuState extends State<ReusableDropdownMenu> {
                     color: ColorName.whiteColor,
                   ),
                   scrollbarTheme: ScrollbarThemeData(
+                      crossAxisMargin: 8.w,
+                      mainAxisMargin: 8.h,
                       radius: const Radius.circular(99),
                       thickness: MaterialStateProperty.all(6),
                       thumbColor: MaterialStateColor.resolveWith(
@@ -136,8 +138,11 @@ class _ReusableDropdownMenuState extends State<ReusableDropdownMenu> {
                       // thumbVisibility: MaterialStateProperty.all(true),
                       ),
                 ),
-                menuItemStyleData: const MenuItemStyleData(
-                  padding: EdgeInsets.zero,
+                menuItemStyleData: MenuItemStyleData(
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 8.w, vertical: 12.h),
+                  overlayColor:
+                      const MaterialStatePropertyAll(ColorName.grey6Color),
                 ),
                 onMenuStateChange: widget.onTap,
                 dropdownSearchData: DropdownSearchData(

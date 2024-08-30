@@ -84,9 +84,9 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
     time = receipt.dateTime.substring(13, 18);
 
     pallets.map((e) {
-      // if (e.id < 5) {
-      palletUpdates.add(e.code);
-      // }
+      if (e.id < 5) {
+        palletUpdates.add(e.code);
+      }
     }).toList();
 
     // palletUpdates.sublist(0, 1);

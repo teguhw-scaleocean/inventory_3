@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -8,8 +10,12 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:inventory_v3/common/components/custom_app_bar.dart';
 import 'package:inventory_v3/common/components/custom_divider.dart';
 import 'package:inventory_v3/common/components/primary_button.dart';
+import 'package:inventory_v3/common/components/reusable_bottom_sheet.dart';
+import 'package:inventory_v3/common/components/reusable_dropdown_menu.dart';
+import 'package:inventory_v3/common/components/reusable_dropdown_search.dart';
 import 'package:inventory_v3/common/components/reusable_floating_action_button.dart';
 import 'package:inventory_v3/common/constants/local_images.dart';
+import 'package:inventory_v3/data/model/pallet.dart';
 import 'package:inventory_v3/data/model/product.dart';
 import 'package:inventory_v3/data/model/receipt.dart';
 import 'package:inventory_v3/presentation/receipt/screens/receipt_product_detail.dart';
@@ -31,12 +37,17 @@ class ReceiptDetailScreen extends StatefulWidget {
 }
 
 class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
+  final TextEditingController _searchController = TextEditingController();
   late Receipt receipt;
   List<Product> listProducts = <Product>[];
 
   String date = "";
   String time = "";
   String _scanBarcode = "0.00";
+
+  List<dynamic> palletUpdates = [];
+
+  var selectedUpdatePallet;
 
   @override
   void initState() {
@@ -71,6 +82,15 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
 
     date = receipt.dateTime.substring(0, 10);
     time = receipt.dateTime.substring(13, 18);
+
+    pallets.map((e) {
+      if (e.id < 5) {
+        palletUpdates.add(e.code);
+      }
+    }).toList();
+
+    // palletUpdates.sublist(0, 1);
+    log("palletUpdates: ${palletUpdates.length}");
   }
 
   // Future<void> scanBarcodeNormal() async {
@@ -197,27 +217,39 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.w),
               child: buildScanAndUpdateSection(
-                onScan: () async {
-                  final scanResult = await Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const QRViewExample(),
-                    ),
-                  ).then((value) {
-                    if (value != null) {
-                      setState(() {
-                        _scanBarcode = value;
-                      });
-                      debugPrint("scanResultValue: $value");
+                  status: receipt.status,
+                  onScan: () async {
+                    final scanResult = await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const QRViewExample(),
+                      ),
+                    ).then((value) {
+                      if (value != null) {
+                        setState(() {
+                          _scanBarcode = value;
+                        });
+                        debugPrint("scanResultValue: $value");
 
-                      Future.delayed(const Duration(seconds: 2), () {
-                        onShowSuccessDialog();
-                      });
-                    }
-                  });
-                },
-                status: receipt.status,
-              ),
+                        Future.delayed(const Duration(seconds: 2), () {
+                          onShowSuccessDialog();
+                        });
+                      }
+                    });
+                  },
+                  onUpdate: () {
+                    bool hasUpdateFocus = false;
+                    reusableBottomSheet(
+                        context,
+                        isShowDragHandle: false,
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 16.w),
+                          child: SingleChildScrollView(
+                              child: (palletUpdates.length < 5)
+                                  ? buildDropdownMinHeight(hasUpdateFocus)
+                                  : buildDropdownMaxHeight(hasUpdateFocus)),
+                        ));
+                  }),
             ),
             SizedBox(height: 16.h),
             const CustomDivider(height: 1.0, color: ColorName.grey9Color),
@@ -353,7 +385,151 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
     );
   }
 
-  Row buildScanAndUpdateSection({required String status, Function()? onScan}) {
+  buildDropdownMaxHeight(bool hasUpdateFocus) {
+    return StatefulBuilder(builder: (context, updateSetState) {
+      log("hasUpdateFocus: $hasUpdateFocus ");
+
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Center(child: reusableDragHandle()),
+          SizedBox(height: 16.h),
+          reusableTitleBottomSheet(context,
+              title: "Update Pallet", isMainColor: false),
+          SizedBox(height: 24.h),
+          // buildDropdownMinHeight(
+          //     updateSetState, hasUpdateFocus)
+          buildLabelUpdatePallet(),
+          SizedBox(height: 6.h),
+          ReusableDropdownMenu(
+            label: "",
+            maxHeight: 500.h,
+            offset: const Offset(0, 560),
+            controller: _searchController,
+            borderColor: ColorName.grey9Color,
+            listOfItemsValue: palletUpdates,
+            selectedValue: selectedUpdatePallet,
+            isExpand: hasUpdateFocus,
+            onChange: (v) {},
+            onTap: (onTapValue) {
+              updateSetState(() {
+                // selectedUpdatePallet = onTapValue;
+                // dropdownGap = 142.h;
+                // submitButtonGap = 48.h;
+                hasUpdateFocus = !hasUpdateFocus;
+                log("hasUPdateFocus: $hasUpdateFocus");
+              });
+            },
+          ),
+          (hasUpdateFocus)
+              ? Container(
+                  height: 505.h,
+                )
+              : Container(height: 0),
+          Padding(
+            padding: EdgeInsets.only(
+                top: (hasUpdateFocus) ? 36.h : 24.h, bottom: 24.h),
+            child: PrimaryButton(
+              onPressed: () {
+                Navigator.pop(context);
+
+                updateSetState(() {
+                  _scanBarcode = "18.00";
+                  log("scanbarcode: $_scanBarcode");
+
+                  onShowSuccessDialog();
+                });
+              },
+              height: 40.h,
+              title: "Submit",
+            ),
+          )
+        ],
+      );
+    });
+  }
+
+  buildDropdownMinHeight(bool hasUpdateFocus) {
+    return StatefulBuilder(builder: (context, updateSetState) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Center(child: reusableDragHandle()),
+          SizedBox(height: 16.h),
+          reusableTitleBottomSheet(context,
+              title: "Update Pallet", isMainColor: false),
+          SizedBox(height: 24.h),
+          // buildDropdownMinHeight(
+          //     updateSetState, hasUpdateFocus)
+          buildLabelUpdatePallet(),
+          SizedBox(height: 6.h),
+          ReusableDropdownMenu(
+            label: "",
+            maxHeight: 120.h,
+            offset: const Offset(0, 121),
+            controller: _searchController,
+            borderColor: ColorName.grey9Color,
+            listOfItemsValue: palletUpdates,
+            selectedValue: selectedUpdatePallet,
+            isExpand: hasUpdateFocus,
+            onChange: (v) {},
+            onTap: (onTapValue) {
+              updateSetState(() {
+                // selectedUpdatePallet = onTapValue;
+                // dropdownGap = 142.h;
+                // submitButtonGap = 48.h;
+                hasUpdateFocus = !hasUpdateFocus;
+                log("hasUPdateFocus: $hasUpdateFocus");
+              });
+            },
+          ),
+          (hasUpdateFocus)
+              ? Container(
+                  height: 110.h,
+                )
+              : Container(height: 0),
+          Padding(
+            padding: EdgeInsets.only(
+                top: (hasUpdateFocus) ? 36.h : 24.h, bottom: 24.h),
+            child: PrimaryButton(
+              onPressed: () {
+                Navigator.pop(context);
+
+                updateSetState(() {
+                  _scanBarcode = "18.00";
+                  log("scanbarcode: $_scanBarcode");
+
+                  onShowSuccessDialog();
+                });
+              },
+              height: 40.h,
+              title: "Submit",
+            ),
+          )
+        ],
+      );
+    });
+  }
+
+  RichText buildLabelUpdatePallet() {
+    return RichText(
+      text: TextSpan(
+          text: "Pallet",
+          style: BaseText.grey2Text12.copyWith(fontWeight: BaseText.regular),
+          children: [
+            TextSpan(
+              text: " *",
+              style: BaseText.redText14.copyWith(
+                fontWeight: BaseText.medium,
+                color: ColorName.badgeRedColor,
+              ),
+            ),
+          ]),
+    );
+  }
+
+  Row buildScanAndUpdateSection(
+      {required String status, Function()? onScan, Function()? onUpdate}) {
     Color? scanButtonColor;
     Color? updateButtonColor;
 
@@ -392,17 +568,20 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
         ),
         SizedBox(width: 16.w),
         Flexible(
-          child: DisableButton(
-            height: 40.h,
-            width: double.infinity,
-            // width: 156,
-            iconWidget: SvgPicture.asset(
-              LocalImages.updatePalleteIcons,
-              height: 16.w,
-              width: 16.w,
+          child: GestureDetector(
+            onTap: onUpdate,
+            child: DisableButton(
+              height: 40.h,
+              width: double.infinity,
+              // width: 156,
+              iconWidget: SvgPicture.asset(
+                LocalImages.updatePalleteIcons,
+                height: 16.w,
+                width: 16.w,
+              ),
+              title: "Update Pallet",
+              color: updateButtonColor,
             ),
-            title: "Update Pallet",
-            color: updateButtonColor,
           ),
         ),
       ],

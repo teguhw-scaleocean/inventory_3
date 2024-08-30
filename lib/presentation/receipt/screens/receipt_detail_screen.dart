@@ -388,7 +388,9 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
   buildDropdownMaxHeight(bool hasUpdateFocus) {
     return StatefulBuilder(builder: (context, updateSetState) {
       log("hasUpdateFocus: $hasUpdateFocus ");
+
       return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Center(child: reusableDragHandle()),
           SizedBox(height: 16.h),
@@ -397,14 +399,17 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
           SizedBox(height: 24.h),
           // buildDropdownMinHeight(
           //     updateSetState, hasUpdateFocus)
+          buildLabelUpdatePallet(),
+          SizedBox(height: 6.h),
           ReusableDropdownMenu(
-            label: "Pallet",
+            label: "",
             maxHeight: 500.h,
             offset: const Offset(0, 560),
             controller: _searchController,
             borderColor: ColorName.grey9Color,
             listOfItemsValue: palletUpdates,
             selectedValue: selectedUpdatePallet,
+            isExpand: hasUpdateFocus,
             onChange: (v) {},
             onTap: (onTapValue) {
               updateSetState(() {
@@ -447,6 +452,7 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
   buildDropdownMinHeight(bool hasUpdateFocus) {
     return StatefulBuilder(builder: (context, updateSetState) {
       return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Center(child: reusableDragHandle()),
           SizedBox(height: 16.h),
@@ -455,14 +461,17 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
           SizedBox(height: 24.h),
           // buildDropdownMinHeight(
           //     updateSetState, hasUpdateFocus)
+          buildLabelUpdatePallet(),
+          SizedBox(height: 6.h),
           ReusableDropdownMenu(
-            label: "Pallet",
+            label: "",
             maxHeight: 120.h,
             offset: const Offset(0, 121),
             controller: _searchController,
             borderColor: ColorName.grey9Color,
             listOfItemsValue: palletUpdates,
             selectedValue: selectedUpdatePallet,
+            isExpand: hasUpdateFocus,
             onChange: (v) {},
             onTap: (onTapValue) {
               updateSetState(() {
@@ -500,6 +509,23 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
         ],
       );
     });
+  }
+
+  RichText buildLabelUpdatePallet() {
+    return RichText(
+      text: TextSpan(
+          text: "Pallet",
+          style: BaseText.grey2Text12.copyWith(fontWeight: BaseText.regular),
+          children: [
+            TextSpan(
+              text: " *",
+              style: BaseText.redText14.copyWith(
+                fontWeight: BaseText.medium,
+                color: ColorName.badgeRedColor,
+              ),
+            ),
+          ]),
+    );
   }
 
   Row buildScanAndUpdateSection(

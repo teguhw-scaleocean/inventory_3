@@ -24,6 +24,7 @@ class _AddPalletScreenState extends State<AddPalletScreen> {
   TextEditingController snController = TextEditingController();
 
   var selectedProduct;
+  var selectedObjectProduct;
   bool hasProductFocus = false;
 
   @override
@@ -54,7 +55,8 @@ class _AddPalletScreenState extends State<AddPalletScreen> {
               buildRequiredLabel("Product"),
               SizedBox(height: 4.h),
               ReusableDropdownMenu(
-                maxHeight: 120.h,
+                maxHeight: 160.h,
+                offset: const Offset(0, -15),
                 label: "",
                 listOfItemsValue: products3.map((e) => e.productName).toList(),
                 selectedValue: selectedProduct,
@@ -70,9 +72,23 @@ class _AddPalletScreenState extends State<AddPalletScreen> {
                   });
                   debugPrint("hasProductFocus: $hasProductFocus");
                 },
-                onChange: (value) {},
+                onChange: (value) {
+                  setState(() {
+                    selectedProduct = value;
+                    selectedObjectProduct = products3
+                        .firstWhere((element) => element.productName == value);
+                  });
+                  debugPrint(
+                      "selectedObjectProduct: ${selectedObjectProduct.toString()}");
+                },
               ),
               SizedBox(height: 14.h),
+              (selectedProduct != null)
+                  ? buildDisableField(
+                      label: "SKU",
+                      value: selectedObjectProduct.sku,
+                    )
+                  : const SizedBox(),
               buildRequiredLabel("Serial Number"),
               SizedBox(height: 4.h),
               Row(
@@ -163,6 +179,52 @@ class _AddPalletScreenState extends State<AddPalletScreen> {
           ),
         ),
       ),
+    );
+  }
+
+  Column buildDisableField({
+    required String label,
+    required String value,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: BaseText.grey1Text14.copyWith(fontWeight: BaseText.regular),
+        ),
+        SizedBox(height: 4.h),
+        Container(
+          height: 40.h,
+          width: double.infinity,
+          padding: EdgeInsets.symmetric(horizontal: 16.w),
+          clipBehavior: Clip.antiAlias,
+          decoration: ShapeDecoration(
+            color: ColorName.grey16Color,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(6.w),
+              side: const BorderSide(
+                color: ColorName.grey9Color,
+              ),
+            ),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text(
+                value,
+                style: BaseText.grey1Text14.copyWith(
+                  color: ColorName.grey17Color,
+                  fontWeight: BaseText.regular,
+                ),
+              )
+            ],
+          ),
+        ),
+        SizedBox(height: 14.h),
+      ],
     );
   }
 

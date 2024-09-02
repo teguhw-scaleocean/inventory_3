@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -27,7 +29,7 @@ class _AddPalletScreenState extends State<AddPalletScreen> {
   final formKey = GlobalKey<FormState>();
 
   var selectedProduct;
-  var selectedObjectProduct;
+  late Product selectedObjectProduct;
   bool hasProductFocus = false;
 
   @override
@@ -36,6 +38,41 @@ class _AddPalletScreenState extends State<AddPalletScreen> {
 
     // listSnController.add(snController);
   }
+
+  List<Product> listProduct = [
+    Product(
+      id: 2,
+      palletCode: "B490",
+      productName: "Stethoscope",
+      code: "ST_12942",
+      dateTime: "Sch. Date: 12/07/2024 - 15:30",
+      productQty: 1,
+    ),
+    Product(
+      id: 3,
+      palletCode: "B491",
+      productName: "Blood Pressure Monitor",
+      code: "BP_12942",
+      dateTime: "Sch. Date: 12/07/2024 - 15:30",
+      productQty: 1,
+    ),
+    Product(
+      id: 4,
+      palletCode: "B492",
+      productName: "Thermometer",
+      code: "TH_12942",
+      dateTime: "Sch. Date: 12/07/2024 - 15:30",
+      productQty: 1,
+    ),
+    Product(
+      id: 5,
+      palletCode: "B493",
+      productName: "Pulse Oximeter",
+      code: "PO_12942",
+      dateTime: "Sch. Date: 12/07/2024 - 15:30",
+      productQty: 1,
+    ),
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -73,7 +110,7 @@ class _AddPalletScreenState extends State<AddPalletScreen> {
                         offset: const Offset(0, -15),
                         label: "",
                         listOfItemsValue:
-                            products3.map((e) => e.productName).toList(),
+                            listProduct.map((e) => e.productName).toList(),
                         selectedValue: selectedProduct,
                         isExpand: hasProductFocus,
                         hintText: "  Select Product",
@@ -90,7 +127,7 @@ class _AddPalletScreenState extends State<AddPalletScreen> {
                         onChange: (value) {
                           setState(() {
                             selectedProduct = value;
-                            selectedObjectProduct = products3.firstWhere(
+                            selectedObjectProduct = listProduct.firstWhere(
                                 (element) => element.productName == value);
                           });
                           debugPrint(
@@ -101,7 +138,7 @@ class _AddPalletScreenState extends State<AddPalletScreen> {
                       (selectedProduct != null)
                           ? buildDisableField(
                               label: "SKU",
-                              value: selectedObjectProduct.sku,
+                              value: selectedObjectProduct.sku!,
                             )
                           : const SizedBox(),
                       buildRequiredLabel("Serial Number"),
@@ -212,6 +249,32 @@ class _AddPalletScreenState extends State<AddPalletScreen> {
             onPressed: () {
               if (formKey.currentState!.validate()) {
                 debugPrint("valid");
+
+                selectedObjectProduct.serialNumber?.map((e) {
+                  if (listSnController.isEmpty) {
+                    SerialNumber serialNumber = SerialNumber(
+                      id: Random().nextInt(100),
+                      label: snController.text,
+                      expiredDateTime: e.expiredDateTime,
+                      quantity: 1,
+                    );
+                  } else {
+                    listSnController.map((ted) {
+                      SerialNumber serialNumber = SerialNumber(
+                        id: Random().nextInt(100),
+                        label: ted.text,
+                        expiredDateTime: e.expiredDateTime,
+                        quantity: 1,
+                      );
+
+                      selectedObjectProduct.serialNumber?.add(serialNumber);
+                    }).toList();
+                  }
+
+                  // return
+                }).toList();
+
+                // listProduct.insert(0, element);
               }
             },
             height: 40,

@@ -18,6 +18,7 @@ import 'package:inventory_v3/common/constants/local_images.dart';
 import 'package:inventory_v3/data/model/pallet.dart';
 import 'package:inventory_v3/data/model/product.dart';
 import 'package:inventory_v3/data/model/receipt.dart';
+import 'package:inventory_v3/presentation/receipt/screens/pallet/add_pallet_screen.dart';
 import 'package:inventory_v3/presentation/receipt/screens/receipt_product_detail.dart';
 import 'package:inventory_v3/presentation/receipt/widget/scan_view_widget.dart';
 
@@ -44,6 +45,7 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
   String date = "";
   String time = "";
   String _scanBarcode = "0.00";
+  String tracking = "";
 
   List<dynamic> palletUpdates = [];
 
@@ -366,7 +368,7 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
                       primary: false,
                       itemBuilder: (context, index) {
                         Product item = listProducts[index];
-                        String tracking = "";
+
                         tracking = receipt.packageStatus.substring(10);
                         debugPrint("tracking: $tracking");
 
@@ -378,7 +380,19 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
           ],
         ),
         floatingActionButton: reusableFloatingActionButton(
-          onTap: () {},
+          onTap: () {
+            switch (tracking) {
+              case "Serial Number":
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const AddPalletScreen(index: 0),
+                  ),
+                );
+                break;
+              default:
+            }
+          },
           icon: Icons.add,
         ),
       ),

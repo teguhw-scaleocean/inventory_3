@@ -9,6 +9,7 @@ class Product {
   String productName;
   String code;
   String dateTime;
+  String? sku;
   String? lotsCode;
   int productQty;
   List<SerialNumber>? serialNumber;
@@ -19,6 +20,7 @@ class Product {
     required this.productName,
     required this.code,
     required this.dateTime,
+    this.sku,
     this.lotsCode,
     required this.productQty,
     this.serialNumber,
@@ -30,6 +32,7 @@ class Product {
     String? productName,
     String? code,
     String? dateTime,
+    String? sku,
     String? lotsCode,
     int? productQty,
     List<SerialNumber>? serialNumber,
@@ -40,6 +43,7 @@ class Product {
       productName: productName ?? this.productName,
       code: code ?? this.code,
       dateTime: dateTime ?? this.dateTime,
+      sku: sku ?? this.sku,
       lotsCode: lotsCode ?? this.lotsCode,
       productQty: productQty ?? this.productQty,
       serialNumber: serialNumber ?? this.serialNumber,
@@ -53,6 +57,7 @@ class Product {
       'productName': productName,
       'code': code,
       'dateTime': dateTime,
+      'sku': sku,
       'lotsCode': lotsCode,
       'productQty': productQty,
       'serialNumber': serialNumber?.map((x) => x.toMap()).toList(),
@@ -66,6 +71,7 @@ class Product {
       productName: map['productName'] as String,
       code: map['code'] as String,
       dateTime: map['dateTime'] as String,
+      sku: map['sku'] != null ? map['sku'] as String : null,
       lotsCode: map['lotsCode'] != null ? map['lotsCode'] as String : null,
       productQty: map['productQty'] as int,
       serialNumber: map['serialNumber'] != null
@@ -85,7 +91,7 @@ class Product {
 
   @override
   String toString() {
-    return 'Product(id: $id, palletCode: $palletCode, productName: $productName, code: $code, dateTime: $dateTime, lotsCode: $lotsCode, productQty: $productQty, serialNumber: $serialNumber)';
+    return 'Product(id: $id, palletCode: $palletCode, productName: $productName, code: $code, dateTime: $dateTime, sku: $sku, lotsCode: $lotsCode, productQty: $productQty, serialNumber: $serialNumber)';
   }
 
   @override
@@ -97,6 +103,7 @@ class Product {
         other.productName == productName &&
         other.code == code &&
         other.dateTime == dateTime &&
+        other.sku == sku &&
         other.lotsCode == lotsCode &&
         other.productQty == productQty &&
         listEquals(other.serialNumber, serialNumber);
@@ -109,6 +116,7 @@ class Product {
         productName.hashCode ^
         code.hashCode ^
         dateTime.hashCode ^
+        sku.hashCode ^
         lotsCode.hashCode ^
         productQty.hashCode ^
         serialNumber.hashCode;
@@ -252,6 +260,7 @@ List<Product> products3 = [
     id: 1,
     palletCode: "A4910",
     productName: "Nebulizer Machine",
+    sku: "BPM201-345",
     code: "NEB_14578",
     // lotsCode: "LOTS-2024-001A",
     dateTime: "Sch. Date: 12/07/2024 - 15:30",
@@ -261,6 +270,7 @@ List<Product> products3 = [
     id: 2,
     palletCode: "A4910",
     productName: "Surgical Masks",
+    sku: "BPM201-346",
     code: "MASK_12942 ",
     // lotsCode: "LOTS-2024-002A",
     dateTime: "Sch. Date: 28/07/2024 - 14:00",
@@ -270,6 +280,7 @@ List<Product> products3 = [
     id: 3,
     palletCode: "A4910",
     productName: "Essence Mascara",
+    sku: "BPM201-347",
     code: "EM_12942",
     // lotsCode: "LOTS-2024-003A",
     dateTime: "Sch. Date: 02/07/2024 - 14:00",

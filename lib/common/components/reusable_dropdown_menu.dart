@@ -16,6 +16,7 @@ import '../theme/text/base_text.dart';
 class ReusableDropdownMenu<T> extends StatelessWidget {
   final String label;
   final String? hintText;
+  final TextStyle? hintTextStyle;
   final List<T> listOfItemsValue;
   final T selectedValue;
   final Function(T?)? onChange;
@@ -41,6 +42,7 @@ class ReusableDropdownMenu<T> extends StatelessWidget {
     this.borderColor,
     this.isExpand = false,
     this.controller,
+    this.hintTextStyle,
   }) : super(key: key);
 
   @override
@@ -67,10 +69,11 @@ class ReusableDropdownMenu<T> extends StatelessWidget {
               child: DropdownButtonFormField2<T>(
                 decoration: InputDecoration.collapsed(
                   hintText: hintText,
-                  hintStyle: BaseText.grey2Text12.copyWith(
-                    color: ColorName.grey2Color,
-                    fontWeight: BaseText.light,
-                  ),
+                  hintStyle: hintTextStyle ??
+                      BaseText.grey2Text12.copyWith(
+                        color: ColorName.grey2Color,
+                        fontWeight: BaseText.light,
+                      ),
                 ),
                 // icon: const Icon(Icons.keyboard_arrow_down_rounded),
                 value: selectedValue,

@@ -40,4 +40,6 @@ class ColorName {
   static const Color doneLabelColor = Color(0xFFB2D37A);
   static const Color doneValueColor = Color(0xFF7BB31A);
   static const Color updateButtonColor = Color(0xFF00AA5B);
+  static const Color blue1Color = Color(0xFF106AA7);
+  static const Color blue2Color = Color(0xFFEDF7FD);
 }

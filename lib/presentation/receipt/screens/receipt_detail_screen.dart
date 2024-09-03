@@ -390,26 +390,33 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
           ),
           floatingActionButton: reusableFloatingActionButton(
             onTap: () {
+              int indexToAddPallet = 0;
+
               switch (tracking) {
                 case "Serial Number":
-                  final addPalletResult = Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const AddPalletScreen(index: 0),
-                    ),
-                  ).then((value) {
-                    debugPrint("addPalletResult: ${value.toString()}");
-
-                    if (value != null) {
-                      setState(() {
-                        listProducts = value as List<Product>;
-                      });
-                    }
-                  });
-
                   break;
+                case "Lots":
+                  indexToAddPallet = 1;
+                  break;
+
                 default:
               }
+
+              final addPalletResult = Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) =>
+                      AddPalletScreen(index: indexToAddPallet),
+                ),
+              ).then((value) {
+                debugPrint("addPalletResult: ${value.toString()}");
+
+                if (value != null) {
+                  setState(() {
+                    listProducts = value as List<Product>;
+                  });
+                }
+              });
             },
             icon: Icons.add,
           ),

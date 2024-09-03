@@ -7,6 +7,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:inventory_v3/common/components/custom_app_bar.dart';
 import 'package:inventory_v3/common/components/custom_form.dart';
+import 'package:inventory_v3/common/components/custom_quantity_button.dart';
 import 'package:inventory_v3/common/components/primary_button.dart';
 import 'package:inventory_v3/common/components/reusable_dropdown_menu.dart';
 import 'package:inventory_v3/data/model/product.dart';
@@ -35,11 +36,14 @@ class _AddPalletScreenState extends State<AddPalletScreen> {
   late Product selectedObjectProduct;
   bool hasProductFocus = false;
 
+  int index = 0;
+
   @override
   void initState() {
     super.initState();
 
     // listSnController.add(snController);
+    index = widget.index;
   }
 
   List<Product> listProduct = [
@@ -148,90 +152,94 @@ class _AddPalletScreenState extends State<AddPalletScreen> {
                               value: selectedObjectProduct.sku!,
                             )
                           : const SizedBox(),
-                      buildRequiredLabel("Serial Number"),
-                      SizedBox(height: 4.h),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Flexible(
-                            child: LimitedBox(
-                              maxWidth: 280.w,
-                              child: CustomFormField(
-                                title: "",
-                                hintText: "Input Serial Number",
-                                isShowTitle: false,
-                                isRequired: true,
-                                controller: snController,
-                                validator: (v) {
-                                  if (v == null || v.isEmpty) {
-                                    var icon = CupertinoIcons
-                                        .info_circle_fill.codePoint
-                                        .toRadixString(16);
+                      if (index == 0) buildRequiredLabel("Serial Number"),
+                      if (index == 0) SizedBox(height: 4.h),
+                      if (index == 0)
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Flexible(
+                              child: LimitedBox(
+                                maxWidth: 280.w,
+                                child: CustomFormField(
+                                  title: "",
+                                  hintText: "Input Serial Number",
+                                  isShowTitle: false,
+                                  isRequired: true,
+                                  controller: snController,
+                                  validator: (v) {
+                                    if (v == null || v.isEmpty) {
+                                      var icon = CupertinoIcons
+                                          .info_circle_fill.codePoint
+                                          .toRadixString(16);
 
-                                    debugPrint(icon);
-                                    return "This field is required. Please fill it in.";
-                                  }
-                                  return null;
-                                },
-                                // onChanged: (v) {
-                                //   snController.text = v;
-                                // },
+                                      debugPrint(icon);
+                                      return "This field is required. Please fill it in.";
+                                    }
+                                    return null;
+                                  },
+                                  // onChanged: (v) {
+                                  //   snController.text = v;
+                                  // },
+                                ),
                               ),
                             ),
-                          ),
-                          SizedBox(width: 8.w),
-                          buildScanButton()
-                        ],
-                      ),
+                            SizedBox(width: 8.w),
+                            buildScanButton()
+                          ],
+                        ),
                       SizedBox(height: 6.h),
-                      ListView.builder(
-                          shrinkWrap: true,
-                          itemCount: listSnController.length,
-                          itemBuilder: (context, index) {
-                            return Column(
-                              children: [
-                                Row(
-                                  children: [
-                                    LimitedBox(
-                                      maxWidth: 280.w,
-                                      child: CustomFormField(
-                                        title: "",
-                                        hintText: "",
-                                        controller: listSnController[index],
-                                        isShowTitle: false,
-                                        onChanged: (v) {
-                                          setState(() {
-                                            debugPrint("onChanged: $v");
-                                          });
-                                        },
+                      if (index == 0)
+                        ListView.builder(
+                            shrinkWrap: true,
+                            itemCount: listSnController.length,
+                            itemBuilder: (context, index) {
+                              return Column(
+                                children: [
+                                  Row(
+                                    children: [
+                                      LimitedBox(
+                                        maxWidth: 280.w,
+                                        child: CustomFormField(
+                                          title: "",
+                                          hintText: "",
+                                          controller: listSnController[index],
+                                          isShowTitle: false,
+                                          onChanged: (v) {
+                                            setState(() {
+                                              debugPrint("onChanged: $v");
+                                            });
+                                          },
+                                        ),
                                       ),
-                                    ),
-                                    SizedBox(width: 8.w),
-                                    buildDeleteButton(() {
-                                      setState(() {
-                                        listSnController[index].clear();
-                                        listSnController[index].dispose();
-                                        listSnController.removeAt(index);
-                                      });
+                                      SizedBox(width: 8.w),
+                                      buildDeleteButton(() {
+                                        setState(() {
+                                          listSnController[index].clear();
+                                          listSnController[index].dispose();
+                                          listSnController.removeAt(index);
+                                        });
 
-                                      debugPrint(
-                                          "listSnController: ${listSnController.length}");
-                                    })
-                                  ],
-                                ),
-                                SizedBox(height: 6.h),
-                              ],
-                            );
-                          }),
-                      SizedBox(height: 6.h),
-                      buildAddSerialNumberButton(onTap: () {
-                        setState(() {
-                          listSnController.add(TextEditingController());
+                                        debugPrint(
+                                            "listSnController: ${listSnController.length}");
+                                      })
+                                    ],
+                                  ),
+                                  SizedBox(height: 6.h),
+                                ],
+                              );
+                            }),
+                      if (index == 0) SizedBox(height: 6.h),
+                      if (index == 0)
+                        buildAddSerialNumberButton(onTap: () {
+                          setState(() {
+                            listSnController.add(TextEditingController());
 
-                          debugPrint(
-                              "listSnController.length: ${listSnController.length}");
-                        });
-                      }),
+                            debugPrint(
+                                "listSnController.length: ${listSnController.length}");
+                          });
+                        }),
+                      if (index == 1) const CustomQuantityButton(),
                       SizedBox(height: 6.h),
                     ],
                   ),

@@ -25,6 +25,8 @@ class ColorName {
   static const Color grey13Color = Color(0xFFD8D8D8);
   static const Color grey14Color = Color(0xFF999999);
   static const Color grey15Color = Color(0xFFDEDFE0);
+  static const Color grey16Color = Color(0xFFF7F7F7);
+  static const Color grey17Color = Color(0xFFC8C8C8);
   static const Color borderColor = Color(0xFFE9E9E9);
   static const Color backgroundColor = Color(0xFFF9F9F9);
   static const Color redColor = Color(0xFFE81A0C);
@@ -40,4 +42,6 @@ class ColorName {
   static const Color doneLabelColor = Color(0xFFB2D37A);
   static const Color doneValueColor = Color(0xFF7BB31A);
   static const Color updateButtonColor = Color(0xFF00AA5B);
+  static const Color blue1Color = Color(0xFF106AA7);
+  static const Color blue2Color = Color(0xFFEDF7FD);
 }

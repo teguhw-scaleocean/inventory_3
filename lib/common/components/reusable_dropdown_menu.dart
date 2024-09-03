@@ -13,12 +13,13 @@ import '../theme/text/base_text.dart';
 // import '../theme/theme.dart';
 
 // ignore: must_be_immutable
-class ReusableDropdownMenu extends StatefulWidget {
+class ReusableDropdownMenu<T> extends StatelessWidget {
   final String label;
   final String? hintText;
-  final List<dynamic> listOfItemsValue;
-  final dynamic selectedValue;
-  final Function(dynamic)? onChange;
+  final TextStyle? hintTextStyle;
+  final List<T> listOfItemsValue;
+  final T selectedValue;
+  final Function(T?)? onChange;
   final Function(bool)? onTap;
   final double? maxHeight;
   // bool isSimpleWidget;
@@ -41,13 +42,9 @@ class ReusableDropdownMenu extends StatefulWidget {
     this.borderColor,
     this.isExpand = false,
     this.controller,
+    this.hintTextStyle,
   }) : super(key: key);
 
-  @override
-  State<ReusableDropdownMenu> createState() => _ReusableDropdownMenuState();
-}
-
-class _ReusableDropdownMenuState extends State<ReusableDropdownMenu> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -55,13 +52,11 @@ class _ReusableDropdownMenuState extends State<ReusableDropdownMenu> {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          if (widget.label.isNotEmpty)
-            Text(widget.label,
+          if (label.isNotEmpty)
+            Text(label,
                 style: BaseText.grey2Text12.copyWith(
                     fontWeight: BaseText.regular, color: ColorName.grey2Color)),
-          (widget.label.isEmpty)
-              ? const SizedBox(height: 0)
-              : SizedBox(height: 4.h),
+          (label.isEmpty) ? const SizedBox(height: 0) : SizedBox(height: 4.h),
           DropdownButtonHideUnderline(
             child: Container(
               // height: 45,
@@ -69,35 +64,36 @@ class _ReusableDropdownMenuState extends State<ReusableDropdownMenu> {
               decoration: BoxDecoration(
                   color: ColorName.whiteColor,
                   borderRadius: BorderRadius.circular(8.r),
-                  border: Border.all(
-                      color: widget.borderColor ?? ColorName.borderColor)),
-              child: DropdownButtonFormField2(
+                  border:
+                      Border.all(color: borderColor ?? ColorName.borderColor)),
+              child: DropdownButtonFormField2<T>(
                 decoration: InputDecoration.collapsed(
-                  hintText: widget.hintText,
-                  hintStyle: BaseText.grey2Text12.copyWith(
-                    color: ColorName.grey2Color,
-                    fontWeight: BaseText.light,
-                  ),
+                  hintText: hintText,
+                  hintStyle: hintTextStyle ??
+                      BaseText.grey2Text12.copyWith(
+                        color: ColorName.grey2Color,
+                        fontWeight: BaseText.light,
+                      ),
                 ),
                 // icon: const Icon(Icons.keyboard_arrow_down_rounded),
-                value: widget.selectedValue,
-                items: widget.listOfItemsValue.map<DropdownMenuItem>((e) {
-                  return DropdownMenuItem(
+                value: selectedValue,
+                items: listOfItemsValue.map((T e) {
+                  return DropdownMenuItem<T>(
                       value: e,
                       child: Text(
-                        e,
+                        e.toString(),
                         style: BaseText.grey2Text12
                             .copyWith(fontWeight: BaseText.light),
                       ));
                 }).toList(),
-                onChanged: widget.onChange,
+                onChanged: onChange,
                 //            onSaved: (value) {
                 //   selectedValue = value.toString();
                 // },
 
-                selectedItemBuilder: (context) => widget.listOfItemsValue
+                selectedItemBuilder: (context) => listOfItemsValue
                     .map((e) => Text(
-                          e,
+                          e.toString(),
                           style: BaseText.grey2Text12
                               .copyWith(fontWeight: BaseText.regular),
                         ))
@@ -108,7 +104,7 @@ class _ReusableDropdownMenuState extends State<ReusableDropdownMenu> {
                 iconStyleData: IconStyleData(
                   icon: Padding(
                     padding: EdgeInsets.only(right: 16.w),
-                    child: (widget.isExpand)
+                    child: (isExpand)
                         ? const Icon(Icons.keyboard_arrow_up_rounded,
                             color: ColorName.grey2Color)
                         : const Icon(
@@ -118,8 +114,8 @@ class _ReusableDropdownMenuState extends State<ReusableDropdownMenu> {
                   ),
                 ),
                 dropdownStyleData: DropdownStyleData(
-                  maxHeight: widget.maxHeight,
-                  offset: widget.offset ?? const Offset(0, -10),
+                  maxHeight: maxHeight,
+                  offset: offset ?? const Offset(0, -10),
                   padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 8.h),
                   elevation: 1,
                   decoration: BoxDecoration(
@@ -144,26 +140,26 @@ class _ReusableDropdownMenuState extends State<ReusableDropdownMenu> {
                   overlayColor:
                       const MaterialStatePropertyAll(ColorName.grey6Color),
                 ),
-                onMenuStateChange: widget.onTap,
+                onMenuStateChange: onTap,
                 dropdownSearchData: DropdownSearchData(
-                  searchController: widget.controller,
+                  searchController: controller,
                   searchMatchFn: (item, searchValue) {
-                    // final searchResult = widget.listOfItemsValue
+                    // final searchResult = listOfItemsValue
                     //     .firstWhere((element) => element == item);
                     final result = item.value.toString().contains(searchValue);
                     log("result: $result");
                     return result;
                   },
                   searchInnerWidgetHeight: 45.h,
-                  searchInnerWidget: (widget.listOfItemsValue.length <= 4)
+                  searchInnerWidget: (listOfItemsValue.length <= 4)
                       ? const SizedBox()
                       : Container(
                           height: 45.h,
                           margin: EdgeInsets.all(8.w),
                           child: TextFormField(
-                              controller: widget.controller,
+                              controller: controller,
                               decoration: InputDecoration(
-                                hintText: widget.hintText,
+                                hintText: hintText,
                                 hintStyle: BaseText.grey2Text14.copyWith(
                                   fontWeight: BaseText.regular,
                                   color: ColorName.grey12Color,
@@ -193,23 +189,23 @@ class _ReusableDropdownMenuState extends State<ReusableDropdownMenu> {
                 ),
                 //  ??
                 //     (value) {
-                //       if (!widget.isExpand) {
+                //       if (!isExpand) {
                 //         setState(() {
-                //           widget.isExpand = true;
+                //           isExpand = true;
                 //         });
                 //       } else {
                 //         setState(() {
-                //           widget.isExpand = false;
+                //           isExpand = false;
                 //         });
                 //       }
 
-                // debugPrint(widget.isExpand.toString());
+                // debugPrint(isExpand.toString());
                 // },
                 // (value) {
-                //   widget.newSetState!(() {
-                //     widget.selectedValue = value;
+                //   newSetState!(() {
+                //     selectedValue = value;
 
-                //     log(widget.selectedValue.name);
+                //     log(selectedValue.name);
                 //   });
                 // }
               ),

@@ -287,3 +287,5 @@ List<Product> products3 = [
     productQty: 14,
   ),
 ];
+
+List<Product> listProducts = <Product>[];

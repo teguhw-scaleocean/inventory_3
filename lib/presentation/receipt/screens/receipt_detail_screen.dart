@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 // import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:flutter_dash/flutter_dash.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -18,6 +19,7 @@ import 'package:inventory_v3/common/constants/local_images.dart';
 import 'package:inventory_v3/data/model/pallet.dart';
 import 'package:inventory_v3/data/model/product.dart';
 import 'package:inventory_v3/data/model/receipt.dart';
+import 'package:inventory_v3/presentation/receipt/cubit/add_pallet_cubit/add_pallet_state.dart';
 import 'package:inventory_v3/presentation/receipt/screens/pallet/add_pallet_screen.dart';
 import 'package:inventory_v3/presentation/receipt/screens/receipt_product_detail.dart';
 import 'package:inventory_v3/presentation/receipt/widget/scan_view_widget.dart';
@@ -26,6 +28,7 @@ import '../../../common/components/status_badge.dart';
 import '../../../common/extensions/empty_space_extension.dart';
 import '../../../common/theme/color/color_name.dart';
 import '../../../common/theme/text/base_text.dart';
+import '../cubit/add_pallet_cubit/add_pallet_cubit.dart';
 
 class ReceiptDetailScreen extends StatefulWidget {
   final Receipt? receipt;
@@ -40,7 +43,6 @@ class ReceiptDetailScreen extends StatefulWidget {
 class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
   final TextEditingController _searchController = TextEditingController();
   late Receipt receipt;
-  List<Product> listProducts = <Product>[];
 
   String date = "";
   String time = "";
@@ -174,226 +176,234 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: Scaffold(
-        appBar: const CustomAppBar(title: "Receipt Detail"),
-        body: ListView(
-          children: [
-            Container(
-              padding: EdgeInsets.all(16.w),
-              child: Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        receipt.name,
-                        style: BaseText.blackText17
-                            .copyWith(fontWeight: BaseText.medium),
-                      ),
-                      StatusBadge(
-                        status: receipt.status,
-                        color: receipt.statusColor,
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 8.h),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        receipt.packageName,
-                        style: BaseText.grey1Text13
-                            .copyWith(fontWeight: BaseText.light),
-                      ),
-                      Text(
-                        receipt.packageStatus,
-                        style: BaseText.grey1Text13
-                            .copyWith(fontWeight: BaseText.light),
-                      )
-                    ],
-                  ),
-                ],
+      child: BlocProvider<AddPalletCubit>(
+        create: (context) => AddPalletCubit(),
+        child: Scaffold(
+          appBar: const CustomAppBar(title: "Receipt Detail"),
+          body: ListView(
+            children: [
+              Container(
+                padding: EdgeInsets.all(16.w),
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          receipt.name,
+                          style: BaseText.blackText17
+                              .copyWith(fontWeight: BaseText.medium),
+                        ),
+                        StatusBadge(
+                          status: receipt.status,
+                          color: receipt.statusColor,
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 8.h),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          receipt.packageName,
+                          style: BaseText.grey1Text13
+                              .copyWith(fontWeight: BaseText.light),
+                        ),
+                        Text(
+                          receipt.packageStatus,
+                          style: BaseText.grey1Text13
+                              .copyWith(fontWeight: BaseText.light),
+                        )
+                      ],
+                    ),
+                  ],
+                ),
               ),
-            ),
-            SizedBox(height: 16.h),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16.w),
-              child: buildScanAndUpdateSection(
-                  status: receipt.status,
-                  onScan: () async {
-                    final scanResult = await Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const QRViewExample(),
-                      ),
-                    ).then((value) {
-                      if (value != null) {
-                        setState(() {
-                          _scanBarcode = value;
-                        });
-                        debugPrint("scanResultValue: $value");
-
-                        Future.delayed(const Duration(seconds: 2), () {
-                          onShowSuccessDialog();
-                        });
-                      }
-                    });
-                  },
-                  onUpdate: () {
-                    bool hasUpdateFocus = false;
-                    reusableBottomSheet(
-                        context,
-                        isShowDragHandle: false,
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 16.w),
-                          child: SingleChildScrollView(
-                              child: (palletUpdates.length < 5)
-                                  ? buildDropdownMinHeight(hasUpdateFocus)
-                                  : buildDropdownMaxHeight(hasUpdateFocus)),
-                        ));
-                  }),
-            ),
-            SizedBox(height: 16.h),
-            const CustomDivider(height: 1.0, color: ColorName.grey9Color),
-            Container(
-              padding: EdgeInsets.all(16.w),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  RichText(
-                    text: TextSpan(children: [
-                      TextSpan(
-                        text: "Sch. Date: ",
-                        style: BaseText.baseTextStyle.copyWith(
-                          fontSize: 14.sp,
-                          fontWeight: BaseText.regular,
-                          color: ColorName.dateTimeColor,
-                        ),
-                      ),
-                      TextSpan(
-                        text: date,
-                        style: BaseText.baseTextStyle.copyWith(
-                          fontSize: 14.sp,
-                          fontWeight: BaseText.medium,
-                          color: ColorName.dateTimeColor,
-                        ),
-                      ),
-                      WidgetSpan(
-                          child: Padding(
-                        padding: EdgeInsets.symmetric(
-                            vertical: 6.h, horizontal: 2.5.w),
-                        child: Container(
-                          width: 7.w,
-                          height: 1.h,
-                          color: ColorName.grey2Color,
-                          alignment: Alignment.center,
-                        ),
-                      )),
-                      TextSpan(
-                        text: time,
-                        style: BaseText.baseTextStyle.copyWith(
-                          fontSize: 14.sp,
-                          fontWeight: BaseText.medium,
-                          color: ColorName.dateTimeColor,
-                        ),
-                      ),
-                    ]),
-                  ),
-                  SizedBox(height: 8.h),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          SvgPicture.asset(LocalImages.receiveIcon),
-                          const Dash(
-                            dashColor: ColorName.grey2Color,
-                            direction: Axis.vertical,
-                            dashLength: 5,
-                            length: 50,
-                          ),
-                          SvgPicture.asset(LocalImages.destinationIcon),
-                        ],
-                      ),
-                      SizedBox(width: 16.w),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          buildPlaceStepper(
-                            label: "Receive From",
-                            location: "Main Storage Area",
-                          ),
-                          SizedBox(height: 20.h),
-                          buildPlaceStepper(
-                            label: "Destination Location",
-                            location: "Medical Storage",
-                          )
-                        ],
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-            const CustomDivider(height: 1.0, color: ColorName.grey9Color),
-            Container(
-              color: ColorName.backgroundColor,
-              padding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 16.w),
-              child: Column(
-                children: [
-                  Row(
-                    children: [
-                      Text(
-                        "Pallet ",
-                        style: BaseText.black2Text15
-                            .copyWith(fontWeight: BaseText.medium),
-                      ),
-                      Text(
-                        "(7)",
-                        style: BaseText.black2Text15
-                            .copyWith(fontWeight: BaseText.regular),
-                      )
-                    ],
-                  ),
-                  SizedBox(height: 12.h),
-                  buildPalletButtonSection(
+              SizedBox(height: 16.h),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16.w),
+                child: buildScanAndUpdateSection(
                     status: receipt.status,
-                  ),
-                  SizedBox(height: 14.h),
-                  ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: listProducts.length,
-                      physics: const NeverScrollableScrollPhysics(),
-                      primary: false,
-                      itemBuilder: (context, index) {
-                        Product item = listProducts[index];
+                    onScan: () async {
+                      final scanResult = await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const QRViewExample(),
+                        ),
+                      ).then((value) {
+                        if (value != null) {
+                          setState(() {
+                            _scanBarcode = value;
+                          });
+                          debugPrint("scanResultValue: $value");
 
-                        tracking = receipt.packageStatus.substring(10);
-                        debugPrint("tracking: $tracking");
-
-                        return buildPalleteItemCard(item, tracking);
-                      })
-                ],
+                          Future.delayed(const Duration(seconds: 2), () {
+                            onShowSuccessDialog();
+                          });
+                        }
+                      });
+                    },
+                    onUpdate: () {
+                      bool hasUpdateFocus = false;
+                      reusableBottomSheet(
+                          context,
+                          isShowDragHandle: false,
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 16.w),
+                            child: SingleChildScrollView(
+                                child: (palletUpdates.length < 5)
+                                    ? buildDropdownMinHeight(hasUpdateFocus)
+                                    : buildDropdownMaxHeight(hasUpdateFocus)),
+                          ));
+                    }),
               ),
-            )
-          ],
-        ),
-        floatingActionButton: reusableFloatingActionButton(
-          onTap: () {
-            switch (tracking) {
-              case "Serial Number":
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const AddPalletScreen(index: 0),
-                  ),
-                );
-                break;
-              default:
-            }
-          },
-          icon: Icons.add,
+              SizedBox(height: 16.h),
+              const CustomDivider(height: 1.0, color: ColorName.grey9Color),
+              Container(
+                padding: EdgeInsets.all(16.w),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    RichText(
+                      text: TextSpan(children: [
+                        TextSpan(
+                          text: "Sch. Date: ",
+                          style: BaseText.baseTextStyle.copyWith(
+                            fontSize: 14.sp,
+                            fontWeight: BaseText.regular,
+                            color: ColorName.dateTimeColor,
+                          ),
+                        ),
+                        TextSpan(
+                          text: date,
+                          style: BaseText.baseTextStyle.copyWith(
+                            fontSize: 14.sp,
+                            fontWeight: BaseText.medium,
+                            color: ColorName.dateTimeColor,
+                          ),
+                        ),
+                        WidgetSpan(
+                            child: Padding(
+                          padding: EdgeInsets.symmetric(
+                              vertical: 6.h, horizontal: 2.5.w),
+                          child: Container(
+                            width: 7.w,
+                            height: 1.h,
+                            color: ColorName.grey2Color,
+                            alignment: Alignment.center,
+                          ),
+                        )),
+                        TextSpan(
+                          text: time,
+                          style: BaseText.baseTextStyle.copyWith(
+                            fontSize: 14.sp,
+                            fontWeight: BaseText.medium,
+                            color: ColorName.dateTimeColor,
+                          ),
+                        ),
+                      ]),
+                    ),
+                    SizedBox(height: 8.h),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            SvgPicture.asset(LocalImages.receiveIcon),
+                            const Dash(
+                              dashColor: ColorName.grey2Color,
+                              direction: Axis.vertical,
+                              dashLength: 5,
+                              length: 50,
+                            ),
+                            SvgPicture.asset(LocalImages.destinationIcon),
+                          ],
+                        ),
+                        SizedBox(width: 16.w),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            buildPlaceStepper(
+                              label: "Receive From",
+                              location: "Main Storage Area",
+                            ),
+                            SizedBox(height: 20.h),
+                            buildPlaceStepper(
+                              label: "Destination Location",
+                              location: "Medical Storage",
+                            )
+                          ],
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              const CustomDivider(height: 1.0, color: ColorName.grey9Color),
+              Container(
+                color: ColorName.backgroundColor,
+                padding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 16.w),
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        Text(
+                          "Pallet ",
+                          style: BaseText.black2Text15
+                              .copyWith(fontWeight: BaseText.medium),
+                        ),
+                        Text(
+                          "(7)",
+                          style: BaseText.black2Text15
+                              .copyWith(fontWeight: BaseText.regular),
+                        )
+                      ],
+                    ),
+                    SizedBox(height: 12.h),
+                    buildPalletButtonSection(
+                      status: receipt.status,
+                    ),
+                    SizedBox(height: 14.h),
+                    BlocBuilder<AddPalletCubit, AddPalletState>(
+                        builder: (context, state) {
+                      final list = state.products;
+
+                      return ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: list.length,
+                          physics: const NeverScrollableScrollPhysics(),
+                          primary: false,
+                          itemBuilder: (context, index) {
+                            Product item = list[index];
+
+                            tracking = receipt.packageStatus.substring(10);
+                            debugPrint("tracking: $tracking");
+
+                            return buildPalleteItemCard(item, tracking);
+                          });
+                    })
+                  ],
+                ),
+              )
+            ],
+          ),
+          floatingActionButton: reusableFloatingActionButton(
+            onTap: () {
+              switch (tracking) {
+                case "Serial Number":
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const AddPalletScreen(index: 0),
+                    ),
+                  );
+                  break;
+                default:
+              }
+            },
+            icon: Icons.add,
+          ),
         ),
       ),
     );

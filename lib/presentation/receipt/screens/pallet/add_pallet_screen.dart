@@ -2,12 +2,15 @@ import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:inventory_v3/common/components/custom_app_bar.dart';
 import 'package:inventory_v3/common/components/custom_form.dart';
 import 'package:inventory_v3/common/components/primary_button.dart';
 import 'package:inventory_v3/common/components/reusable_dropdown_menu.dart';
 import 'package:inventory_v3/data/model/product.dart';
+import 'package:inventory_v3/presentation/receipt/cubit/add_pallet_cubit/add_pallet_cubit.dart';
 
 import '../../../../common/constants/local_images.dart';
 import '../../../../common/theme/color/color_name.dart';
@@ -45,6 +48,7 @@ class _AddPalletScreenState extends State<AddPalletScreen> {
       palletCode: "B490",
       productName: "Stethoscope",
       code: "ST_12942",
+      sku: "BPM201-345",
       dateTime: "Sch. Date: 12/07/2024 - 15:30",
       productQty: 1,
     ),
@@ -53,6 +57,7 @@ class _AddPalletScreenState extends State<AddPalletScreen> {
       palletCode: "B491",
       productName: "Blood Pressure Monitor",
       code: "BP_12942",
+      sku: "BPM201-346",
       dateTime: "Sch. Date: 12/07/2024 - 15:30",
       productQty: 1,
     ),
@@ -61,6 +66,7 @@ class _AddPalletScreenState extends State<AddPalletScreen> {
       palletCode: "B492",
       productName: "Thermometer",
       code: "TH_12942",
+      sku: "BPM201-347",
       dateTime: "Sch. Date: 12/07/2024 - 15:30",
       productQty: 1,
     ),
@@ -69,6 +75,7 @@ class _AddPalletScreenState extends State<AddPalletScreen> {
       palletCode: "B493",
       productName: "Pulse Oximeter",
       code: "PO_12942",
+      sku: "BPM201-348",
       dateTime: "Sch. Date: 12/07/2024 - 15:30",
       productQty: 1,
     ),
@@ -78,12 +85,12 @@ class _AddPalletScreenState extends State<AddPalletScreen> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        appBar: AppBar(),
+        appBar: const CustomAppBar(title: "Add Pallet"),
         body: Column(
           children: [
             Expanded(
               child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 16.w),
+                padding: EdgeInsets.all(16.w),
                 child: Form(
                   key: formKey,
                   child: Column(
@@ -165,6 +172,9 @@ class _AddPalletScreenState extends State<AddPalletScreen> {
                                     return "This field is required. Please fill it in.";
                                   }
                                   return null;
+                                },
+                                onChanged: (v) {
+                                  snController.text = v;
                                 },
                               ),
                             ),
@@ -258,6 +268,7 @@ class _AddPalletScreenState extends State<AddPalletScreen> {
                       expiredDateTime: e.expiredDateTime,
                       quantity: 1,
                     );
+                    selectedObjectProduct.serialNumber?.add(serialNumber);
                   } else {
                     listSnController.map((ted) {
                       SerialNumber serialNumber = SerialNumber(
@@ -274,7 +285,14 @@ class _AddPalletScreenState extends State<AddPalletScreen> {
                   // return
                 }).toList();
 
-                // listProduct.insert(0, element);
+                selectedObjectProduct.palletCode = palletIdController.text;
+                // listProducts.insert(0, selectedObjectProduct);
+                BlocProvider.of<AddPalletCubit>(context)
+                    .onSubmit(product: selectedObjectProduct);
+
+                debugPrint(
+                    "listProduct: ${listProduct.map((e) => e.toString()).toList()}");
+                Navigator.pop(context);
               }
             },
             height: 40,

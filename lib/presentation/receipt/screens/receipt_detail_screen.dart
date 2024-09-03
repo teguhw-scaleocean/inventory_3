@@ -371,11 +371,11 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
 
                       return ListView.builder(
                           shrinkWrap: true,
-                          itemCount: list.length,
+                          itemCount: listProducts.length,
                           physics: const NeverScrollableScrollPhysics(),
                           primary: false,
                           itemBuilder: (context, index) {
-                            Product item = list[index];
+                            Product item = listProducts[index];
 
                             tracking = receipt.packageStatus.substring(10);
                             debugPrint("tracking: $tracking");
@@ -392,12 +392,21 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
             onTap: () {
               switch (tracking) {
                 case "Serial Number":
-                  Navigator.push(
+                  final addPalletResult = Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (context) => const AddPalletScreen(index: 0),
                     ),
-                  );
+                  ).then((value) {
+                    debugPrint("addPalletResult: ${value.toString()}");
+
+                    if (value != null) {
+                      setState(() {
+                        listProducts = value as List<Product>;
+                      });
+                    }
+                  });
+
                   break;
                 default:
               }

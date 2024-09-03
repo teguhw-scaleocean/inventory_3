@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:inventory_v3/common/components/custom_app_bar.dart';
 import 'package:inventory_v3/common/components/reusable_floating_action_button.dart';
 import 'package:inventory_v3/common/extensions/empty_space_extension.dart';
 import 'package:inventory_v3/data/model/product.dart';
+import 'package:inventory_v3/presentation/receipt/cubit/add_pallet_cubit/add_pallet_cubit.dart';
 
 import '../../../common/components/custom_divider.dart';
 import '../../../common/components/reusable_search_bar_border.dart';
@@ -139,9 +141,11 @@ class _ReceiptProductDetailScreenState
                           shrinkWrap: true,
                           physics: const AlwaysScrollableScrollPhysics(),
                           scrollDirection: Axis.vertical,
-                          itemCount: 11,
+                          itemCount: widget.product.serialNumber?.length,
                           itemBuilder: (context, index) {
-                            String code = "SM-2024-${product.code}";
+                            String code = "";
+                            var item = widget.product.serialNumber?[index];
+                            code = item?.label ?? "";
 
                             return Padding(
                                 padding: EdgeInsets.only(bottom: 8.h),

@@ -173,9 +173,9 @@ class _AddPalletScreenState extends State<AddPalletScreen> {
                                   }
                                   return null;
                                 },
-                                onChanged: (v) {
-                                  snController.text = v;
-                                },
+                                // onChanged: (v) {
+                                //   snController.text = v;
+                                // },
                               ),
                             ),
                           ),
@@ -260,39 +260,43 @@ class _AddPalletScreenState extends State<AddPalletScreen> {
               if (formKey.currentState!.validate()) {
                 debugPrint("valid");
 
-                selectedObjectProduct.serialNumber?.map((e) {
-                  if (listSnController.isEmpty) {
+                // TextField to SerialNumber 1
+                debugPrint("serialNumber: -----");
+                SerialNumber serialNumber = SerialNumber(
+                  id: Random().nextInt(100),
+                  label: snController.text,
+                  expiredDateTime: "Exp. Date: 02/07/2024 - 14:00",
+                  quantity: 1,
+                );
+                selectedObjectProduct.serialNumber = [serialNumber];
+
+                // TextField to SerialNumber Other
+                if (listSnController.isNotEmpty) {
+                  debugPrint("serialNumber: -----not empty");
+                  var listSerialNumber = listSnController.map((ted) {
                     SerialNumber serialNumber = SerialNumber(
                       id: Random().nextInt(100),
-                      label: snController.text,
-                      expiredDateTime: e.expiredDateTime,
+                      label: ted.text,
+                      expiredDateTime: "Exp. Date: 02/07/2024 - 14:00",
                       quantity: 1,
                     );
                     selectedObjectProduct.serialNumber?.add(serialNumber);
-                  } else {
-                    listSnController.map((ted) {
-                      SerialNumber serialNumber = SerialNumber(
-                        id: Random().nextInt(100),
-                        label: ted.text,
-                        expiredDateTime: e.expiredDateTime,
-                        quantity: 1,
-                      );
-
-                      selectedObjectProduct.serialNumber?.add(serialNumber);
-                    }).toList();
-                  }
-
-                  // return
-                }).toList();
-
-                selectedObjectProduct.palletCode = palletIdController.text;
-                // listProducts.insert(0, selectedObjectProduct);
-                BlocProvider.of<AddPalletCubit>(context)
-                    .onSubmit(product: selectedObjectProduct);
+                  }).toList();
+                }
 
                 debugPrint(
-                    "listProduct: ${listProduct.map((e) => e.toString()).toList()}");
-                Navigator.pop(context);
+                    "serialNumber: ${selectedObjectProduct.serialNumber?.map((e) => e.toString()).toList()}");
+
+                selectedObjectProduct.palletCode = palletIdController.text;
+                listProducts.insert(0, selectedObjectProduct);
+
+                // context
+                //     .read<AddPalletCubit>()
+                //     .onSubmit(product: selectedObjectProduct);
+
+                debugPrint(
+                    "listProducts: ${listProducts.map((e) => e.toString()).toList()}");
+                Navigator.pop(context, listProducts);
               }
             },
             height: 40,

@@ -395,7 +395,7 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
               switch (tracking) {
                 case "Serial Number":
                   break;
-                case "Lots":
+                case "No Tracking":
                   indexToAddPallet = 1;
                   break;
 

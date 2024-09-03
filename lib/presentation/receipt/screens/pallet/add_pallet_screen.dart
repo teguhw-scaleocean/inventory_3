@@ -249,49 +249,56 @@ class _AddPalletScreenState extends State<AddPalletScreen> {
                           });
                         }),
                       if (index == 1)
-                        CustomQuantityButton(
-                          controller: qtyController,
-                          iconColor: qtyIconColor,
-                          textColor: qtyTextColor,
-                          onChanged: (v) {
-                            // double? inputValue = 0.00;
-                          },
-                          onSubmitted: (v) {
-                            setState(() {
-                              totalQty = double.tryParse(v) ?? 0.00;
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            buildRequiredLabel("Quantity"),
+                            SizedBox(height: 4.h),
+                            CustomQuantityButton(
+                              controller: qtyController,
+                              iconColor: qtyIconColor,
+                              textColor: qtyTextColor,
+                              onChanged: (v) {
+                                // double? inputValue = 0.00;
+                              },
+                              onSubmitted: (v) {
+                                setState(() {
+                                  totalQty = double.tryParse(v) ?? 0.00;
 
-                              setState(() {
-                                qtyController.value = TextEditingValue(
-                                  text: totalQty.toString(),
-                                );
-                              });
-                            });
-                          },
-                          onDecreased: () {
-                            if (totalQty > 0) {
-                              setState(() {
-                                totalQty--;
-                                qtyController.text = totalQty.toString();
-                                qtyIconColor = ColorName.grey10Color;
-                                qtyTextColor = ColorName.grey10Color;
-                              });
-                            } else {
-                              setState(() {
-                                qtyIconColor = ColorName.grey18Color;
-                                qtyTextColor = ColorName.grey12Color;
-                              });
-                            }
-                          },
-                          onIncreased: () {
-                            setState(() {
-                              totalQty++;
-                              qtyController.text = totalQty.toString();
-                              if (totalQty > 0) {
-                                qtyIconColor = ColorName.grey10Color;
-                                qtyTextColor = ColorName.grey10Color;
-                              }
-                            });
-                          },
+                                  setState(() {
+                                    qtyController.value = TextEditingValue(
+                                      text: totalQty.toString(),
+                                    );
+
+                                    if (totalQty >= 1) {
+                                      qtyIconColor = ColorName.grey10Color;
+                                      qtyTextColor = ColorName.grey10Color;
+                                    }
+                                  });
+                                });
+                              },
+                              onDecreased: () {
+                                if (totalQty >= 1) {
+                                  setState(() {
+                                    totalQty--;
+                                    qtyController.text = totalQty.toString();
+                                    qtyIconColor = ColorName.grey10Color;
+                                    qtyTextColor = ColorName.grey10Color;
+                                  });
+                                }
+                              },
+                              onIncreased: () {
+                                // if (totalQty >= 1) {
+                                setState(() {
+                                  totalQty++;
+                                  qtyController.text = totalQty.toString();
+                                  qtyIconColor = ColorName.grey10Color;
+                                  qtyTextColor = ColorName.grey10Color;
+                                });
+                                // }
+                              },
+                            ),
+                          ],
                         ),
                       // ColorName.grey10Color,
                       SizedBox(height: 6.h),
@@ -322,35 +329,14 @@ class _AddPalletScreenState extends State<AddPalletScreen> {
               if (formKey.currentState!.validate()) {
                 debugPrint("valid");
 
-                // TextField to SerialNumber 1
-                debugPrint("serialNumber: -----");
-                SerialNumber serialNumber = SerialNumber(
-                  id: Random().nextInt(100),
-                  label: snController.text,
-                  expiredDateTime: "Exp. Date: 02/07/2024 - 14:00",
-                  quantity: 1,
-                );
-                selectedObjectProduct.serialNumber = [serialNumber];
-
-                // TextField to SerialNumber Other
-                if (listSnController.isNotEmpty) {
-                  debugPrint("serialNumber: -----not empty");
-                  var listSerialNumber = listSnController.map((ted) {
-                    SerialNumber serialNumber = SerialNumber(
-                      id: Random().nextInt(100),
-                      label: ted.text,
-                      expiredDateTime: "Exp. Date: 02/07/2024 - 14:00",
-                      quantity: 1,
-                    );
-                    selectedObjectProduct.serialNumber?.add(serialNumber);
-                  }).toList();
+                switch (index) {
+                  case 0:
+                    onSubmitSerialNumber();
+                    break;
+                  case 1:
+                    onSubmitNoTracking();
+                  default:
                 }
-
-                debugPrint(
-                    "serialNumber: ${selectedObjectProduct.serialNumber?.map((e) => e.toString()).toList()}");
-
-                selectedObjectProduct.palletCode = palletIdController.text;
-                listProducts.insert(0, selectedObjectProduct);
 
                 // context
                 //     .read<AddPalletCubit>()
@@ -367,6 +353,44 @@ class _AddPalletScreenState extends State<AddPalletScreen> {
         ),
       ),
     );
+  }
+
+  void onSubmitNoTracking() {
+    selectedObjectProduct.palletCode = palletIdController.text;
+    selectedObjectProduct.productQty = totalQty;
+    listProducts.insert(0, selectedObjectProduct);
+  }
+
+  void onSubmitSerialNumber() {
+    // TextField to SerialNumber 1
+    debugPrint("serialNumber: -----");
+    SerialNumber serialNumber = SerialNumber(
+      id: Random().nextInt(100),
+      label: snController.text,
+      expiredDateTime: "Exp. Date: 02/07/2024 - 14:00",
+      quantity: 1,
+    );
+    selectedObjectProduct.serialNumber = [serialNumber];
+
+    // TextField to SerialNumber Other
+    if (listSnController.isNotEmpty) {
+      debugPrint("serialNumber: -----not empty");
+      var listSerialNumber = listSnController.map((ted) {
+        SerialNumber serialNumber = SerialNumber(
+          id: Random().nextInt(100),
+          label: ted.text,
+          expiredDateTime: "Exp. Date: 02/07/2024 - 14:00",
+          quantity: 1,
+        );
+        selectedObjectProduct.serialNumber?.add(serialNumber);
+      }).toList();
+    }
+
+    debugPrint(
+        "serialNumber: ${selectedObjectProduct.serialNumber?.map((e) => e.toString()).toList()}");
+
+    selectedObjectProduct.palletCode = palletIdController.text;
+    listProducts.insert(0, selectedObjectProduct);
   }
 
   GestureDetector buildAddSerialNumberButton({void Function()? onTap}) {

@@ -46,6 +46,7 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
 
   String date = "";
   String time = "";
+  String _receive = "";
   String _scanBarcode = "0.00";
   String tracking = "";
 
@@ -666,6 +667,37 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
     Product product0;
     product0 = product;
 
+    // Code
+    String code = "";
+
+    // By tracking type
+    // if statement / switch
+    // Code, Receive
+
+    switch (tracking) {
+      case "Serial Number":
+        // Serial Number
+        if (product0.serialNumber != null) {
+          double? receiveDouble = product0.serialNumber?.length.toDouble();
+          _receive = receiveDouble.toString();
+        }
+        code = product0.code;
+        break;
+      case "No Tracking":
+        _receive = product0.productQty.toString();
+        code = product0.code;
+
+        break;
+      case "Lots":
+        code = product0.lotsCode.toString();
+        // _receive =
+        break;
+      default:
+    }
+
+    // No Tracking
+    _receive = product0.productQty.toString();
+
     return InkWell(
       onTap: () => Navigator.push(
           context,
@@ -727,7 +759,7 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
                     style: BaseText.grey1Text15,
                   ),
                   Text(
-                    product0.lotsCode ?? product0.code,
+                    code,
                     style: BaseText.baseTextStyle.copyWith(
                       color: ColorName.grey14Color,
                       fontSize: 13.sp,
@@ -782,7 +814,7 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
               children: [
                 _buildBottomCardSection(
                   label: "Receive",
-                  value: "11.00 Unit",
+                  value: "$_receive Unit",
                 ),
                 _buildBottomCardSection(
                   label: "Done",

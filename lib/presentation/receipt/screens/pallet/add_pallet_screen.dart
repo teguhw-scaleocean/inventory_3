@@ -29,6 +29,11 @@ class _AddPalletScreenState extends State<AddPalletScreen> {
   final TextEditingController palletIdController = TextEditingController();
   List<TextEditingController> listSnController = [];
   TextEditingController snController = TextEditingController();
+  TextEditingController qtyController = TextEditingController();
+  Color qtyIconColor = ColorName.grey18Color;
+  Color qtyTextColor = ColorName.grey12Color;
+
+  double totalQty = 0.00;
 
   final formKey = GlobalKey<FormState>();
 
@@ -44,6 +49,10 @@ class _AddPalletScreenState extends State<AddPalletScreen> {
 
     // listSnController.add(snController);
     index = widget.index;
+
+    if (index == 1) {
+      qtyController.text = totalQty.toString();
+    }
   }
 
   List<Product> listProduct = [
@@ -239,7 +248,52 @@ class _AddPalletScreenState extends State<AddPalletScreen> {
                                 "listSnController.length: ${listSnController.length}");
                           });
                         }),
-                      if (index == 1) const CustomQuantityButton(),
+                      if (index == 1)
+                        CustomQuantityButton(
+                          controller: qtyController,
+                          iconColor: qtyIconColor,
+                          textColor: qtyTextColor,
+                          onChanged: (v) {
+                            // double? inputValue = 0.00;
+                          },
+                          onSubmitted: (v) {
+                            setState(() {
+                              totalQty = double.tryParse(v) ?? 0.00;
+
+                              setState(() {
+                                qtyController.value = TextEditingValue(
+                                  text: totalQty.toString(),
+                                );
+                              });
+                            });
+                          },
+                          onDecreased: () {
+                            if (totalQty > 0) {
+                              setState(() {
+                                totalQty--;
+                                qtyController.text = totalQty.toString();
+                                qtyIconColor = ColorName.grey10Color;
+                                qtyTextColor = ColorName.grey10Color;
+                              });
+                            } else {
+                              setState(() {
+                                qtyIconColor = ColorName.grey18Color;
+                                qtyTextColor = ColorName.grey12Color;
+                              });
+                            }
+                          },
+                          onIncreased: () {
+                            setState(() {
+                              totalQty++;
+                              qtyController.text = totalQty.toString();
+                              if (totalQty > 0) {
+                                qtyIconColor = ColorName.grey10Color;
+                                qtyTextColor = ColorName.grey10Color;
+                              }
+                            });
+                          },
+                        ),
+                      // ColorName.grey10Color,
                       SizedBox(height: 6.h),
                     ],
                   ),

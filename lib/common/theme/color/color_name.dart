@@ -27,6 +27,7 @@ class ColorName {
   static const Color grey15Color = Color(0xFFDEDFE0);
   static const Color grey16Color = Color(0xFFF7F7F7);
   static const Color grey17Color = Color(0xFFC8C8C8);
+  static const Color grey18Color = Color(0xFFD4D4D4);
   static const Color borderColor = Color(0xFFE9E9E9);
   static const Color backgroundColor = Color(0xFFF9F9F9);
   static const Color redColor = Color(0xFFE81A0C);

@@ -27,6 +27,7 @@ class ReusableDropdownMenu<T> extends StatelessWidget {
   final Color? borderColor;
   final TextEditingController? controller;
   bool isExpand;
+  bool hasSearch;
 
   ReusableDropdownMenu({
     Key? key,
@@ -41,6 +42,7 @@ class ReusableDropdownMenu<T> extends StatelessWidget {
     this.offset,
     this.borderColor,
     this.isExpand = false,
+    required this.hasSearch,
     this.controller,
     this.hintTextStyle,
   }) : super(key: key);
@@ -151,7 +153,7 @@ class ReusableDropdownMenu<T> extends StatelessWidget {
                     return result;
                   },
                   searchInnerWidgetHeight: 45.h,
-                  searchInnerWidget: (listOfItemsValue.length <= 4)
+                  searchInnerWidget: (!hasSearch)
                       ? const SizedBox()
                       : Container(
                           height: 45.h,

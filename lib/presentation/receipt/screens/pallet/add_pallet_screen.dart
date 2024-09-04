@@ -52,8 +52,9 @@ class _AddPalletScreenState extends State<AddPalletScreen> {
     // listSnController.add(snController);
     index = widget.index;
 
-    if (index == 1) {
+    if (index == 1 || index == 2) {
       qtyController.text = totalQty.toString();
+      debugPrint("qtyController.text: ${qtyController.text}");
     }
   }
 
@@ -99,6 +100,7 @@ class _AddPalletScreenState extends State<AddPalletScreen> {
       palletCode: "B494",
       productName: "Surgical Gloves",
       code: "SG_12942",
+      sku: "BPM201-349",
       dateTime: "Sch. Date: 12/07/2024 - 15:30",
       productQty: 1,
     ),
@@ -107,7 +109,7 @@ class _AddPalletScreenState extends State<AddPalletScreen> {
       palletCode: "B495",
       productName: "Digital Thermometer",
       code: "DT_12942",
-      sku: "BPM201-349",
+      sku: "BPM201-350",
       dateTime: "Sch. Date: 12/07/2024 - 15:30",
       productQty: 1,
     ),
@@ -116,6 +118,7 @@ class _AddPalletScreenState extends State<AddPalletScreen> {
       palletCode: "B496",
       productName: "Nebulizer Machine",
       code: "NB_12942",
+      sku: "BPM201-351",
       dateTime: "Sch. Date: 12/07/2024 - 15:30",
       productQty: 1,
     ),
@@ -124,6 +127,7 @@ class _AddPalletScreenState extends State<AddPalletScreen> {
       palletCode: "B497",
       productName: "Monitor",
       code: "MN_12942",
+      sku: "BPM201-352",
       dateTime: "Sch. Date: 12/07/2024 - 15:30",
       productQty: 1,
     )
@@ -149,6 +153,7 @@ class _AddPalletScreenState extends State<AddPalletScreen> {
                         isShowTitle: true,
                         isRequired: true,
                         contentPadding: EdgeInsets.symmetric(horizontal: 16.w),
+                        fillTextStyle: BaseText.grey10Text14,
                         controller: palletIdController,
                         hintText: "Input Pallet ID",
                         validator: (v) {
@@ -357,6 +362,7 @@ class _AddPalletScreenState extends State<AddPalletScreen> {
                                     child: CustomFormField(
                                       title: "",
                                       hintText: "Input Lots Number",
+                                      fillTextStyle: BaseText.grey10Text14,
                                       contentPadding: EdgeInsets.symmetric(
                                           horizontal: 16.w),
                                       isShowTitle: false,
@@ -429,6 +435,10 @@ class _AddPalletScreenState extends State<AddPalletScreen> {
                     break;
                   case 1:
                     onSubmitNoTracking();
+                    break;
+                  case 2:
+                    onSubmitLots();
+                    break;
                   default:
                 }
 
@@ -447,6 +457,13 @@ class _AddPalletScreenState extends State<AddPalletScreen> {
         ),
       ),
     );
+  }
+
+  void onSubmitLots() {
+    selectedObjectProduct.palletCode = palletIdController.text;
+    selectedObjectProduct.productQty = totalQty;
+    selectedObjectProduct.lotsCode = lotsController.text;
+    listProducts.insert(0, selectedObjectProduct);
   }
 
   void onSubmitNoTracking() {

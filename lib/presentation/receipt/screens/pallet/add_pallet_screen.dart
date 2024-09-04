@@ -13,6 +13,9 @@ import 'package:inventory_v3/common/components/reusable_dropdown_menu.dart';
 import 'package:inventory_v3/data/model/product.dart';
 import 'package:inventory_v3/presentation/receipt/cubit/add_pallet_cubit/add_pallet_cubit.dart';
 
+import '../../../../common/components/reusable_add_serial_number_button.dart';
+import '../../../../common/components/reusable_scan_button.dart';
+import '../../../../common/components/reusable_widget.dart';
 import '../../../../common/constants/local_images.dart';
 import '../../../../common/theme/color/color_name.dart';
 import '../../../../common/theme/text/base_text.dart';
@@ -237,7 +240,7 @@ class _AddPalletScreenState extends State<AddPalletScreen> {
                               ),
                             ),
                             SizedBox(width: 8.w),
-                            buildScanButton()
+                            reusableScanButton()
                           ],
                         ),
                       if (index == 0) SizedBox(height: 6.h),
@@ -267,7 +270,7 @@ class _AddPalletScreenState extends State<AddPalletScreen> {
                                         ),
                                       ),
                                       SizedBox(width: 8.w),
-                                      buildDeleteButton(() {
+                                      reusableDeleteButton(() {
                                         setState(() {
                                           listSnController[index].clear();
                                           listSnController[index].dispose();
@@ -285,7 +288,7 @@ class _AddPalletScreenState extends State<AddPalletScreen> {
                             }),
                       if (index == 0) SizedBox(height: 6.h),
                       if (index == 0)
-                        buildAddSerialNumberButton(onTap: () {
+                        reusableAddSerialNumberButton(onTap: () {
                           setState(() {
                             listSnController.add(TextEditingController());
 
@@ -393,7 +396,7 @@ class _AddPalletScreenState extends State<AddPalletScreen> {
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
                                         SizedBox(width: 8.w),
-                                        buildScanButton(),
+                                        reusableScanButton(),
                                       ],
                                     ))
                               ],
@@ -502,163 +505,5 @@ class _AddPalletScreenState extends State<AddPalletScreen> {
 
     selectedObjectProduct.palletCode = palletIdController.text;
     listProducts.insert(0, selectedObjectProduct);
-  }
-
-  GestureDetector buildAddSerialNumberButton({void Function()? onTap}) {
-    return GestureDetector(
-      onTap: onTap,
-      child: SizedBox(
-        width: double.infinity,
-        child: Row(
-          children: [
-            Container(
-              constraints: BoxConstraints(
-                maxWidth: 155.w,
-              ),
-              padding: EdgeInsets.all(8.w),
-              decoration: BoxDecoration(
-                shape: BoxShape.rectangle,
-                borderRadius: BorderRadius.circular(6.w),
-                color: ColorName.blue2Color,
-              ),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Container(
-                    height: 16.w,
-                    width: 16.w,
-                    alignment: Alignment.center,
-                    child: Icon(
-                      Icons.add,
-                      color: ColorName.blue1Color,
-                      size: 13.h,
-                    ),
-                  ),
-                  SizedBox(width: 4.w),
-                  Text(
-                    "Add Serial Number",
-                    textAlign: TextAlign.center,
-                    style: BaseText.mainText12.copyWith(
-                      fontWeight: BaseText.medium,
-                      color: ColorName.blue1Color,
-                    ),
-                  )
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Column buildDisableField({
-    required String label,
-    required String value,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: BaseText.grey1Text14.copyWith(fontWeight: BaseText.regular),
-        ),
-        SizedBox(height: 4.h),
-        Container(
-          height: 40.h,
-          width: double.infinity,
-          padding: EdgeInsets.symmetric(horizontal: 16.w),
-          clipBehavior: Clip.antiAlias,
-          decoration: ShapeDecoration(
-            color: ColorName.grey16Color,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(6.w),
-              side: const BorderSide(
-                color: ColorName.grey9Color,
-              ),
-            ),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Text(
-                value,
-                style: BaseText.grey1Text14.copyWith(
-                  color: ColorName.grey17Color,
-                  fontWeight: BaseText.regular,
-                ),
-              )
-            ],
-          ),
-        ),
-        SizedBox(height: 14.h),
-      ],
-    );
-  }
-
-  GestureDetector buildScanButton({void Function()? onTap}) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        height: 40.w,
-        width: 40.w,
-        padding: EdgeInsets.all(12.w),
-        alignment: Alignment.center,
-        decoration: BoxDecoration(
-          shape: BoxShape.rectangle,
-          borderRadius: BorderRadius.circular(6.r),
-          border: Border.all(
-            color: ColorName.mainColor,
-          ),
-        ),
-        child: SvgPicture.asset(
-          LocalImages.scanIcons,
-          color: ColorName.mainColor,
-        ),
-      ),
-    );
-  }
-
-  GestureDetector buildDeleteButton(void Function()? onTap) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        height: 40.w,
-        width: 40.w,
-        padding: EdgeInsets.all(8.w),
-        alignment: Alignment.center,
-        decoration: BoxDecoration(
-          shape: BoxShape.rectangle,
-          borderRadius: BorderRadius.circular(6.r),
-          border: Border.all(
-            color: ColorName.badgeRedColor,
-          ),
-        ),
-        child: const Icon(
-          Icons.delete_outlined,
-          color: ColorName.badgeRedColor,
-        ),
-      ),
-    );
-  }
-
-  RichText buildRequiredLabel(String label) {
-    return RichText(
-      text: TextSpan(
-          text: label,
-          style: BaseText.grey1Text14.copyWith(fontWeight: BaseText.regular),
-          children: [
-            TextSpan(
-              text: " *",
-              style: BaseText.redText14.copyWith(
-                fontWeight: BaseText.medium,
-                color: ColorName.badgeRedColor,
-              ),
-            ),
-          ]),
-    );
   }
 }

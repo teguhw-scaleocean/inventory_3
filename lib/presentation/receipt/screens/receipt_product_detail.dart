@@ -6,6 +6,7 @@ import 'package:inventory_v3/common/components/reusable_floating_action_button.d
 import 'package:inventory_v3/common/extensions/empty_space_extension.dart';
 import 'package:inventory_v3/data/model/product.dart';
 import 'package:inventory_v3/presentation/receipt/cubit/add_pallet_cubit/add_pallet_cubit.dart';
+import 'package:inventory_v3/presentation/receipt/screens/product_detail/add_product_screen.dart';
 
 import '../../../common/components/custom_divider.dart';
 import '../../../common/components/reusable_search_bar_border.dart';
@@ -32,6 +33,8 @@ class _ReceiptProductDetailScreenState
   final searchSerialNumberController = TextEditingController();
   final searchKey = GlobalKey<FormState>();
 
+  List<SerialNumber> serialNumberList = [];
+
   @override
   void initState() {
     super.initState();
@@ -40,6 +43,10 @@ class _ReceiptProductDetailScreenState
 
     product = widget.product;
     tracking = widget.tracking;
+
+    // Serial Number
+    serialNumberList = widget.product.serialNumber ?? <SerialNumber>[];
+    debugPrint("serialNumberList: $serialNumberList.map((e) => e.toJson())");
   }
 
   _onSearch() {}
@@ -92,20 +99,18 @@ class _ReceiptProductDetailScreenState
             const CustomDivider(),
             buildTrackingLabel(tracking),
             (tracking.toLowerCase().contains("serial number"))
-                ? Flexible(
-                    child: Container(
-                      padding: EdgeInsets.symmetric(horizontal: 16.w),
-                      height: 36.h,
-                      width: double.infinity,
-                      child: SearchBarBorder(
-                        context,
-                        onSearch: _onSearch(),
-                        clearData: _onClearData(),
-                        keySearch: searchKey,
-                        controller: searchSerialNumberController,
-                        queryKey: searchSerialNumberController.text,
-                        borderColor: ColorName.grey9Color,
-                      ),
+                ? Container(
+                    padding: EdgeInsets.symmetric(horizontal: 16.w),
+                    height: 36.h,
+                    width: double.infinity,
+                    child: SearchBarBorder(
+                      context,
+                      onSearch: _onSearch(),
+                      clearData: _onClearData(),
+                      keySearch: searchKey,
+                      controller: searchSerialNumberController,
+                      queryKey: searchSerialNumberController.text,
+                      borderColor: ColorName.grey9Color,
                     ),
                   )
                 : const SizedBox(),
@@ -119,11 +124,11 @@ class _ReceiptProductDetailScreenState
                           shrinkWrap: true,
                           physics: const AlwaysScrollableScrollPhysics(),
                           scrollDirection: Axis.vertical,
-                          itemCount: widget.product.serialNumber?.length,
+                          itemCount: serialNumberList.length,
                           itemBuilder: (context, index) {
                             String code = "";
-                            var item = widget.product.serialNumber?[index];
-                            code = item?.label ?? "";
+                            var item = serialNumberList[index];
+                            code = item.label;
 
                             return Padding(
                                 padding: EdgeInsets.only(bottom: 8.h),
@@ -137,14 +142,39 @@ class _ReceiptProductDetailScreenState
             )
           ],
         ),
-        floatingActionButton:
-            reusableFloatingActionButton(onTap: () {}, icon: Icons.add),
+        floatingActionButton: reusableFloatingActionButton(
+          onTap: () {
+            int indexToAddProduct = 0;
+
+            switch (tracking) {
+              case "Serial Number":
+                break;
+              case "No Tracking":
+                indexToAddProduct = 1;
+                break;
+              case "Lots":
+                indexToAddProduct = 2;
+                break;
+              default:
+            }
+
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => AddProductScreen(
+                  addType: indexToAddProduct,
+                ),
+              ),
+            );
+          },
+          icon: Icons.add,
+        ),
       ),
     );
   }
 
   Container buildTrackingLabel(String tracking) {
-    String receive = "";
+    String receive = "0";
 
     switch (tracking) {
       case "Serial Number":

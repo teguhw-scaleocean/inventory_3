@@ -152,7 +152,10 @@ class _ReceiptProductDetailScreenState
                                 child: buildItemQuantity(code));
                           }),
                     )
-                  : buildItemQuantity(product.lotsCode ?? product.code),
+                  : buildItemQuantity(
+                      product.lotsCode ?? product.code,
+                      itemProduct: product,
+                    ),
             )
           ],
         ),
@@ -162,7 +165,14 @@ class _ReceiptProductDetailScreenState
     );
   }
 
-  Container buildItemQuantity(String code) {
+  Container buildItemQuantity(String code, {Product? itemProduct}) {
+    String quantity = "";
+
+    if (itemProduct != null) {
+      int? quantityInt = itemProduct.productQty.toInt();
+      quantity = quantityInt.toString();
+    }
+
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 12.h, vertical: 10.h),
       decoration: BoxDecoration(
@@ -207,7 +217,9 @@ class _ReceiptProductDetailScreenState
                   width: 60.w,
                   child: Center(
                     child: Text(
-                      (tracking.toLowerCase().contains("serial")) ? "1" : "11",
+                      (tracking.toLowerCase().contains("serial"))
+                          ? "1"
+                          : quantity,
                       textAlign: TextAlign.center,
                       style: BaseText.black2Text14.copyWith(
                         fontWeight: BaseText.regular,

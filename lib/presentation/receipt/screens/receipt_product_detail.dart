@@ -7,6 +7,7 @@ import 'package:inventory_v3/common/extensions/empty_space_extension.dart';
 import 'package:inventory_v3/data/model/product.dart';
 import 'package:inventory_v3/presentation/receipt/cubit/add_pallet_cubit/add_pallet_cubit.dart';
 import 'package:inventory_v3/presentation/receipt/screens/product_detail/add_product_screen.dart';
+import 'package:smooth_highlight/smooth_highlight.dart';
 
 import '../../../common/components/custom_divider.dart';
 import '../../../common/components/reusable_search_bar_border.dart';
@@ -34,6 +35,7 @@ class _ReceiptProductDetailScreenState
   final searchKey = GlobalKey<FormState>();
 
   List<SerialNumber> serialNumberList = [];
+  List<SerialNumber> serialNumberResult = [];
 
   @override
   void initState() {
@@ -130,9 +132,16 @@ class _ReceiptProductDetailScreenState
                             var item = serialNumberList[index];
                             code = item.label;
 
+                            bool isHighlighted = false;
+                            isHighlighted = serialNumberResult.contains(item);
+                            debugPrint("isHighlighted: $isHighlighted");
+
                             return Padding(
                                 padding: EdgeInsets.only(bottom: 8.h),
-                                child: buildItemQuantity(code));
+                                child: buildItemQuantity(
+                                  code,
+                                  isHighlighted: isHighlighted,
+                                ));
                           }),
                     )
                   : buildItemQuantity(
@@ -167,7 +176,8 @@ class _ReceiptProductDetailScreenState
               ),
             );
             resultOfAddProduct.then((value) => setState(() {
-                  serialNumberList = value as List<SerialNumber>;
+                  serialNumberResult = value as List<SerialNumber>;
+                  serialNumberList.insertAll(0, serialNumberResult);
                 }));
           },
           icon: Icons.add,
@@ -215,7 +225,8 @@ class _ReceiptProductDetailScreenState
         ));
   }
 
-  Container buildItemQuantity(String code, {Product? itemProduct}) {
+  Widget buildItemQuantity(String code,
+      {Product? itemProduct, bool isHighlighted = false}) {
     String quantity = "";
 
     if (itemProduct != null) {
@@ -223,64 +234,69 @@ class _ReceiptProductDetailScreenState
       quantity = quantityInt.toString();
     }
 
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 12.h, vertical: 10.h),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(6.r),
-        border: Border.all(
-          color: ColorName.grey9Color,
-        ),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                code,
-                style: BaseText.black2Text14
-                    .copyWith(fontWeight: BaseText.regular),
-              ),
-              Text(
-                "Exp. Date: 12/07/2024 - 15:00",
-                style: BaseText.baseTextStyle.copyWith(
-                  color: ColorName.dateTimeColor,
-                  fontSize: 12.sp,
-                  fontWeight: BaseText.light,
-                ),
-              )
-            ],
+    return SmoothHighlight(
+      color: ColorName.highlightColor,
+      duration: const Duration(seconds: 3),
+      enabled: isHighlighted,
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 12.h, vertical: 10.h),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(6.r),
+          border: Border.all(
+            color: ColorName.grey9Color,
           ),
-          IntrinsicHeight(
-            child: Row(
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 0),
-                  child: VerticalDivider(
-                    color: ColorName.grey9Color,
-                    thickness: 1.0,
-                  ),
+                Text(
+                  code,
+                  style: BaseText.black2Text14
+                      .copyWith(fontWeight: BaseText.regular),
                 ),
-                SizedBox(
-                  height: 36.h,
-                  width: 60.w,
-                  child: Center(
-                    child: Text(
-                      (tracking.toLowerCase().contains("serial"))
-                          ? "1"
-                          : quantity,
-                      textAlign: TextAlign.center,
-                      style: BaseText.black2Text14.copyWith(
-                        fontWeight: BaseText.regular,
+                Text(
+                  "Exp. Date: 12/07/2024 - 15:00",
+                  style: BaseText.baseTextStyle.copyWith(
+                    color: ColorName.dateTimeColor,
+                    fontSize: 12.sp,
+                    fontWeight: BaseText.light,
+                  ),
+                )
+              ],
+            ),
+            IntrinsicHeight(
+              child: Row(
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 0),
+                    child: VerticalDivider(
+                      color: ColorName.grey9Color,
+                      thickness: 1.0,
+                    ),
+                  ),
+                  SizedBox(
+                    height: 36.h,
+                    width: 60.w,
+                    child: Center(
+                      child: Text(
+                        (tracking.toLowerCase().contains("serial"))
+                            ? "1"
+                            : quantity,
+                        textAlign: TextAlign.center,
+                        style: BaseText.black2Text14.copyWith(
+                          fontWeight: BaseText.regular,
+                        ),
                       ),
                     ),
                   ),
-                ),
-              ],
-            ),
-          )
-        ],
+                ],
+              ),
+            )
+          ],
+        ),
       ),
     );
   }

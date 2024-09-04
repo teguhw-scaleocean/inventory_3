@@ -41,6 +41,7 @@ class _AddPalletScreenState extends State<AddPalletScreen> {
   var selectedProduct;
   late Product selectedObjectProduct;
   bool hasProductFocus = false;
+  bool hasLotShow = true;
 
   int index = 0;
 
@@ -355,7 +356,7 @@ class _AddPalletScreenState extends State<AddPalletScreen> {
                                     maxWidth: 280.w,
                                     child: CustomFormField(
                                       title: "",
-                                      hintText: "Input Lots",
+                                      hintText: "Input Lots Number",
                                       contentPadding: EdgeInsets.symmetric(
                                           horizontal: 16.w),
                                       isShowTitle: false,
@@ -372,14 +373,23 @@ class _AddPalletScreenState extends State<AddPalletScreen> {
                                         }
                                         return null;
                                       },
-                                      // onChanged: (v) {
-                                      //   snController.text = v;
-                                      // },
+                                      onChanged: (v) {
+                                        hasLotShow = v.isEmpty;
+                                        setState(() {});
+                                        //   snController.text = v;
+                                      },
                                     ),
                                   ),
                                 ),
-                                SizedBox(width: 8.w),
-                                buildScanButton()
+                                Visibility(
+                                    visible: hasLotShow,
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        SizedBox(width: 8.w),
+                                        buildScanButton(),
+                                      ],
+                                    ))
                               ],
                             ),
                           ],

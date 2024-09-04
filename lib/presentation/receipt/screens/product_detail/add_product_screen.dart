@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:inventory_v3/common/components/custom_app_bar.dart';
@@ -8,6 +10,7 @@ import '../../../../common/components/reusable_add_serial_number_button.dart';
 import '../../../../common/components/reusable_scan_button.dart';
 import '../../../../common/components/reusable_widget.dart';
 import '../../../../common/theme/color/color_name.dart';
+import '../../../../data/model/product.dart';
 
 class AddProductScreen extends StatefulWidget {
   final int addType;
@@ -22,11 +25,13 @@ class AddProductScreen extends StatefulWidget {
 }
 
 class _AddProductScreenState extends State<AddProductScreen> {
+  final formSnKey = GlobalKey<FormState>();
   int addType = 0;
   String tracking = "";
 
   final serialNumberConhtroller = TextEditingController();
   List<TextEditingController> listSnController = [];
+  List<SerialNumber> listSerialNumber = [];
 
   bool hasScanButton = true;
 
@@ -62,7 +67,35 @@ class _AddProductScreenState extends State<AddProductScreen> {
             color: ColorName.whiteColor,
           ),
           child: PrimaryButton(
-            onPressed: () {},
+            onPressed: () {
+              if (formSnKey.currentState!.validate()) {
+                if (addType == 0) {
+                  if (listSnController.isNotEmpty) {
+                    listSnController.map((e) {
+                      SerialNumber serialNumber = SerialNumber(
+                        id: Random().nextInt(100),
+                        label: e.text,
+                        expiredDateTime: "Exp. Date: 02/07/2024 - 14:00",
+                        quantity: 1,
+                      );
+                      listSerialNumber.add(serialNumber);
+                    }).toList();
+                  } else {
+                    SerialNumber serialNumber = SerialNumber(
+                      id: Random().nextInt(100),
+                      label: serialNumberConhtroller.text,
+                      expiredDateTime: "Exp. Date: 02/07/2024 - 14:00",
+                      quantity: 1,
+                    );
+                    listSerialNumber.add(serialNumber);
+                  }
+                }
+
+                debugPrint(
+                    "listSerialNumber: $listSerialNumber.map((e) => e.toJson())");
+                Navigator.pop(context, listSerialNumber);
+              }
+            },
             height: 40.h,
             title: "Submit",
           ),
@@ -71,99 +104,106 @@ class _AddProductScreenState extends State<AddProductScreen> {
     );
   }
 
-  Column _buildSerialNumberSection() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        buildRequiredLabel("Serial Number"),
-        SizedBox(height: 4.h),
-        (hasScanButton)
-            ? Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Flexible(
-                    child: LimitedBox(
-                      maxWidth: 280.w,
-                      child: CustomFormField(
-                        title: "",
-                        hintText: "Input Serial Number",
-                        isShowTitle: false,
-                        isRequired: true,
-                        controller: serialNumberConhtroller,
-                        validator: (v) {
-                          if (v == null || v.isEmpty) {
-                            return "This field is required. Please fill it in.";
-                          }
-                          return null;
-                        },
-                        // onChanged: (v) {
-                        //   hasScanButton = v.isEmpty;
-                        //   setState(() {});
-                        // },
+  Form _buildSerialNumberSection() {
+    return Form(
+      key: formSnKey,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          buildRequiredLabel("Serial Number"),
+          SizedBox(height: 4.h),
+          (hasScanButton)
+              ? Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Flexible(
+                      child: LimitedBox(
+                        maxWidth: 280.w,
+                        child: CustomFormField(
+                          title: "",
+                          hintText: "Input Serial Number",
+                          isShowTitle: false,
+                          isRequired: true,
+                          controller: serialNumberConhtroller,
+                          validator: (v) {
+                            if (v == null || v.isEmpty) {
+                              return "This field is required. Please fill it in.";
+                            }
+                            return null;
+                          },
+                          // onChanged: (v) {
+                          //   hasScanButton = v.isEmpty;
+                          //   setState(() {});
+                          // },
+                        ),
                       ),
                     ),
-                  ),
-                  SizedBox(width: 8.w),
-                  reusableScanButton()
-                ],
-              )
-            : ListView.builder(
-                shrinkWrap: true,
-                itemCount: listSnController.length,
-                itemBuilder: (context, index) {
-                  return Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Row(
-                        children: [
-                          LimitedBox(
-                            maxWidth: 280.w,
-                            child: CustomFormField(
-                              title: "",
-                              hintText: "Input Serial Number",
-                              contentPadding:
-                                  EdgeInsets.symmetric(horizontal: 16.w),
-                              controller: listSnController[index],
-                              isShowTitle: false,
-                              onChanged: (v) {
-                                setState(() {
-                                  debugPrint("onChanged: $v");
-                                });
-                              },
+                    SizedBox(width: 8.w),
+                    reusableScanButton()
+                  ],
+                )
+              : ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: listSnController.length,
+                  itemBuilder: (context, index) {
+                    return Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Row(
+                          children: [
+                            LimitedBox(
+                              maxWidth: 280.w,
+                              child: CustomFormField(
+                                title: "",
+                                hintText: "Input Serial Number",
+                                contentPadding:
+                                    EdgeInsets.symmetric(horizontal: 16.w),
+                                controller: listSnController[index],
+                                isShowTitle: false,
+                                onChanged: (v) {
+                                  setState(() {
+                                    debugPrint("onChanged: $v");
+                                  });
+                                },
+                              ),
                             ),
-                          ),
-                          SizedBox(width: 8.w),
-                          reusableDeleteButton(() {
-                            setState(() {
-                              listSnController[index].clear();
-                              listSnController[index].dispose();
-                              listSnController.removeAt(index);
-                            });
+                            SizedBox(width: 8.w),
+                            reusableDeleteButton(() {
+                              setState(() {
+                                listSnController[index].clear();
+                                listSnController[index].dispose();
+                                listSnController.removeAt(index);
+                              });
 
-                            debugPrint(
-                                "listSnController: ${listSnController.length}");
-                          })
-                        ],
-                      ),
-                      SizedBox(height: 6.h),
-                    ],
-                  );
-                }),
-        SizedBox(height: 6.h),
-        reusableAddSerialNumberButton(
-          onTap: () {
-            setState(() {
-              listSnController.add(TextEditingController());
-              hasScanButton = false;
-            });
+                              debugPrint(
+                                  "listSnController: ${listSnController.length}");
 
-            debugPrint("listSnController: ${listSnController.length}");
-          },
-          maxwidth: MediaQuery.sizeOf(context).width - 32.w,
-          isCenterTitle: true,
-        )
-      ],
+                              if (listSnController.isEmpty) {
+                                setState(() => hasScanButton = true);
+                              }
+                            })
+                          ],
+                        ),
+                        SizedBox(height: 6.h),
+                      ],
+                    );
+                  }),
+          SizedBox(height: 6.h),
+          reusableAddSerialNumberButton(
+            onTap: () {
+              setState(() {
+                listSnController.add(TextEditingController());
+                hasScanButton = false;
+              });
+
+              debugPrint("listSnController: ${listSnController.length}");
+            },
+            maxwidth: MediaQuery.sizeOf(context).width - 32.w,
+            isCenterTitle: true,
+          )
+        ],
+      ),
     );
   }
 }

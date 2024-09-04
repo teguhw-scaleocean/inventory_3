@@ -158,7 +158,7 @@ class _ReceiptProductDetailScreenState
               default:
             }
 
-            Navigator.push(
+            final resultOfAddProduct = Navigator.push(
               context,
               MaterialPageRoute(
                 builder: (context) => AddProductScreen(
@@ -166,6 +166,9 @@ class _ReceiptProductDetailScreenState
                 ),
               ),
             );
+            resultOfAddProduct.then((value) => setState(() {
+                  serialNumberList = value as List<SerialNumber>;
+                }));
           },
           icon: Icons.add,
         ),
@@ -178,8 +181,8 @@ class _ReceiptProductDetailScreenState
 
     switch (tracking) {
       case "Serial Number":
-        if (product.serialNumber != null) {
-          double? receiveDouble = product.serialNumber?.length.toDouble();
+        if (serialNumberList.isNotEmpty) {
+          int receiveDouble = serialNumberList.length.toInt();
           receive = receiveDouble.toString();
         }
         break;

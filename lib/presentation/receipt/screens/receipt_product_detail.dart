@@ -90,29 +90,7 @@ class _ReceiptProductDetailScreenState
               ),
             ),
             const CustomDivider(),
-            Flexible(
-                child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 16.w),
-                    height: 43.h,
-                    // padding: const EdgeInsets.symmetric(vertical: 16),
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: RichText(
-                          text: TextSpan(children: [
-                        TextSpan(
-                          text: "$tracking ",
-                          style: BaseText.blackText15.copyWith(
-                            fontWeight: BaseText.medium,
-                          ),
-                        ),
-                        TextSpan(
-                          text: "(11)",
-                          style: BaseText.blackText15.copyWith(
-                            fontWeight: BaseText.regular,
-                          ),
-                        )
-                      ])),
-                    ))),
+            buildTrackingLabel(tracking),
             (tracking.toLowerCase().contains("serial number"))
                 ? Flexible(
                     child: Container(
@@ -163,6 +141,45 @@ class _ReceiptProductDetailScreenState
             reusableFloatingActionButton(onTap: () {}, icon: Icons.add),
       ),
     );
+  }
+
+  Container buildTrackingLabel(String tracking) {
+    String receive = "";
+
+    switch (tracking) {
+      case "Serial Number":
+        if (product.serialNumber != null) {
+          double? receiveDouble = product.serialNumber?.length.toDouble();
+          receive = receiveDouble.toString();
+        }
+        break;
+      default:
+        int receiveInt = product.productQty.toInt();
+        receive = receiveInt.toString();
+    }
+
+    return Container(
+        padding: EdgeInsets.symmetric(horizontal: 16.w),
+        height: 43.h,
+        // padding: const EdgeInsets.symmetric(vertical: 16),
+        child: Align(
+          alignment: Alignment.centerLeft,
+          child: RichText(
+              text: TextSpan(children: [
+            TextSpan(
+              text: "$tracking ",
+              style: BaseText.blackText15.copyWith(
+                fontWeight: BaseText.medium,
+              ),
+            ),
+            TextSpan(
+              text: "($receive)",
+              style: BaseText.blackText15.copyWith(
+                fontWeight: BaseText.regular,
+              ),
+            )
+          ])),
+        ));
   }
 
   Container buildItemQuantity(String code, {Product? itemProduct}) {

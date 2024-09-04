@@ -2,12 +2,16 @@ import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:inventory_v3/common/components/custom_app_bar.dart';
 import 'package:inventory_v3/common/components/custom_form.dart';
+import 'package:inventory_v3/common/components/custom_quantity_button.dart';
 import 'package:inventory_v3/common/components/primary_button.dart';
 import 'package:inventory_v3/common/components/reusable_dropdown_menu.dart';
 import 'package:inventory_v3/data/model/product.dart';
+import 'package:inventory_v3/presentation/receipt/cubit/add_pallet_cubit/add_pallet_cubit.dart';
 
 import '../../../../common/constants/local_images.dart';
 import '../../../../common/theme/color/color_name.dart';
@@ -25,6 +29,11 @@ class _AddPalletScreenState extends State<AddPalletScreen> {
   final TextEditingController palletIdController = TextEditingController();
   List<TextEditingController> listSnController = [];
   TextEditingController snController = TextEditingController();
+  TextEditingController qtyController = TextEditingController();
+  Color qtyIconColor = ColorName.grey18Color;
+  Color qtyTextColor = ColorName.grey12Color;
+
+  double totalQty = 0.00;
 
   final formKey = GlobalKey<FormState>();
 
@@ -32,11 +41,18 @@ class _AddPalletScreenState extends State<AddPalletScreen> {
   late Product selectedObjectProduct;
   bool hasProductFocus = false;
 
+  int index = 0;
+
   @override
   void initState() {
     super.initState();
 
     // listSnController.add(snController);
+    index = widget.index;
+
+    if (index == 1) {
+      qtyController.text = totalQty.toString();
+    }
   }
 
   List<Product> listProduct = [
@@ -45,6 +61,7 @@ class _AddPalletScreenState extends State<AddPalletScreen> {
       palletCode: "B490",
       productName: "Stethoscope",
       code: "ST_12942",
+      sku: "BPM201-345",
       dateTime: "Sch. Date: 12/07/2024 - 15:30",
       productQty: 1,
     ),
@@ -53,6 +70,7 @@ class _AddPalletScreenState extends State<AddPalletScreen> {
       palletCode: "B491",
       productName: "Blood Pressure Monitor",
       code: "BP_12942",
+      sku: "BPM201-346",
       dateTime: "Sch. Date: 12/07/2024 - 15:30",
       productQty: 1,
     ),
@@ -61,6 +79,7 @@ class _AddPalletScreenState extends State<AddPalletScreen> {
       palletCode: "B492",
       productName: "Thermometer",
       code: "TH_12942",
+      sku: "BPM201-347",
       dateTime: "Sch. Date: 12/07/2024 - 15:30",
       productQty: 1,
     ),
@@ -69,6 +88,7 @@ class _AddPalletScreenState extends State<AddPalletScreen> {
       palletCode: "B493",
       productName: "Pulse Oximeter",
       code: "PO_12942",
+      sku: "BPM201-348",
       dateTime: "Sch. Date: 12/07/2024 - 15:30",
       productQty: 1,
     ),
@@ -78,12 +98,12 @@ class _AddPalletScreenState extends State<AddPalletScreen> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        appBar: AppBar(),
+        appBar: const CustomAppBar(title: "Add Pallet"),
         body: Column(
           children: [
             Expanded(
               child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 16.w),
+                padding: EdgeInsets.all(16.w),
                 child: Form(
                   key: formKey,
                   child: Column(
@@ -141,87 +161,146 @@ class _AddPalletScreenState extends State<AddPalletScreen> {
                               value: selectedObjectProduct.sku!,
                             )
                           : const SizedBox(),
-                      buildRequiredLabel("Serial Number"),
-                      SizedBox(height: 4.h),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Flexible(
-                            child: LimitedBox(
-                              maxWidth: 280.w,
-                              child: CustomFormField(
-                                title: "",
-                                hintText: "Input Serial Number",
-                                isShowTitle: false,
-                                isRequired: true,
-                                controller: snController,
-                                validator: (v) {
-                                  if (v == null || v.isEmpty) {
-                                    var icon = CupertinoIcons
-                                        .info_circle_fill.codePoint
-                                        .toRadixString(16);
+                      if (index == 0) buildRequiredLabel("Serial Number"),
+                      if (index == 0) SizedBox(height: 4.h),
+                      if (index == 0)
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Flexible(
+                              child: LimitedBox(
+                                maxWidth: 280.w,
+                                child: CustomFormField(
+                                  title: "",
+                                  hintText: "Input Serial Number",
+                                  isShowTitle: false,
+                                  isRequired: true,
+                                  controller: snController,
+                                  validator: (v) {
+                                    if (v == null || v.isEmpty) {
+                                      var icon = CupertinoIcons
+                                          .info_circle_fill.codePoint
+                                          .toRadixString(16);
 
-                                    debugPrint(icon);
-                                    return "This field is required. Please fill it in.";
-                                  }
-                                  return null;
-                                },
+                                      debugPrint(icon);
+                                      return "This field is required. Please fill it in.";
+                                    }
+                                    return null;
+                                  },
+                                  // onChanged: (v) {
+                                  //   snController.text = v;
+                                  // },
+                                ),
                               ),
                             ),
-                          ),
-                          SizedBox(width: 8.w),
-                          buildScanButton()
-                        ],
-                      ),
+                            SizedBox(width: 8.w),
+                            buildScanButton()
+                          ],
+                        ),
                       SizedBox(height: 6.h),
-                      ListView.builder(
-                          shrinkWrap: true,
-                          itemCount: listSnController.length,
-                          itemBuilder: (context, index) {
-                            return Column(
-                              children: [
-                                Row(
-                                  children: [
-                                    LimitedBox(
-                                      maxWidth: 280.w,
-                                      child: CustomFormField(
-                                        title: "",
-                                        hintText: "",
-                                        controller: listSnController[index],
-                                        isShowTitle: false,
-                                        onChanged: (v) {
-                                          setState(() {
-                                            debugPrint("onChanged: $v");
-                                          });
-                                        },
+                      if (index == 0)
+                        ListView.builder(
+                            shrinkWrap: true,
+                            itemCount: listSnController.length,
+                            itemBuilder: (context, index) {
+                              return Column(
+                                children: [
+                                  Row(
+                                    children: [
+                                      LimitedBox(
+                                        maxWidth: 280.w,
+                                        child: CustomFormField(
+                                          title: "",
+                                          hintText: "",
+                                          controller: listSnController[index],
+                                          isShowTitle: false,
+                                          onChanged: (v) {
+                                            setState(() {
+                                              debugPrint("onChanged: $v");
+                                            });
+                                          },
+                                        ),
                                       ),
-                                    ),
-                                    SizedBox(width: 8.w),
-                                    buildDeleteButton(() {
-                                      setState(() {
-                                        listSnController[index].clear();
-                                        listSnController[index].dispose();
-                                        listSnController.removeAt(index);
-                                      });
+                                      SizedBox(width: 8.w),
+                                      buildDeleteButton(() {
+                                        setState(() {
+                                          listSnController[index].clear();
+                                          listSnController[index].dispose();
+                                          listSnController.removeAt(index);
+                                        });
 
-                                      debugPrint(
-                                          "listSnController: ${listSnController.length}");
-                                    })
-                                  ],
-                                ),
-                                SizedBox(height: 6.h),
-                              ],
-                            );
-                          }),
-                      SizedBox(height: 6.h),
-                      buildAddSerialNumberButton(onTap: () {
-                        setState(() {
-                          listSnController.add(TextEditingController());
+                                        debugPrint(
+                                            "listSnController: ${listSnController.length}");
+                                      })
+                                    ],
+                                  ),
+                                  SizedBox(height: 6.h),
+                                ],
+                              );
+                            }),
+                      if (index == 0) SizedBox(height: 6.h),
+                      if (index == 0)
+                        buildAddSerialNumberButton(onTap: () {
+                          setState(() {
+                            listSnController.add(TextEditingController());
 
-                          debugPrint(
-                              "listSnController.length: ${listSnController.length}");
-                        });
-                      }),
+                            debugPrint(
+                                "listSnController.length: ${listSnController.length}");
+                          });
+                        }),
+                      if (index == 1)
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            buildRequiredLabel("Quantity"),
+                            SizedBox(height: 4.h),
+                            CustomQuantityButton(
+                              controller: qtyController,
+                              iconColor: qtyIconColor,
+                              textColor: qtyTextColor,
+                              onChanged: (v) {
+                                // double? inputValue = 0.00;
+                              },
+                              onSubmitted: (v) {
+                                setState(() {
+                                  totalQty = double.tryParse(v) ?? 0.00;
+
+                                  setState(() {
+                                    qtyController.value = TextEditingValue(
+                                      text: totalQty.toString(),
+                                    );
+
+                                    if (totalQty >= 1) {
+                                      qtyIconColor = ColorName.grey10Color;
+                                      qtyTextColor = ColorName.grey10Color;
+                                    }
+                                  });
+                                });
+                              },
+                              onDecreased: () {
+                                if (totalQty >= 1) {
+                                  setState(() {
+                                    totalQty--;
+                                    qtyController.text = totalQty.toString();
+                                    qtyIconColor = ColorName.grey10Color;
+                                    qtyTextColor = ColorName.grey10Color;
+                                  });
+                                }
+                              },
+                              onIncreased: () {
+                                // if (totalQty >= 1) {
+                                setState(() {
+                                  totalQty++;
+                                  qtyController.text = totalQty.toString();
+                                  qtyIconColor = ColorName.grey10Color;
+                                  qtyTextColor = ColorName.grey10Color;
+                                });
+                                // }
+                              },
+                            ),
+                          ],
+                        ),
+                      // ColorName.grey10Color,
                       SizedBox(height: 6.h),
                     ],
                   ),
@@ -250,31 +329,22 @@ class _AddPalletScreenState extends State<AddPalletScreen> {
               if (formKey.currentState!.validate()) {
                 debugPrint("valid");
 
-                selectedObjectProduct.serialNumber?.map((e) {
-                  if (listSnController.isEmpty) {
-                    SerialNumber serialNumber = SerialNumber(
-                      id: Random().nextInt(100),
-                      label: snController.text,
-                      expiredDateTime: e.expiredDateTime,
-                      quantity: 1,
-                    );
-                  } else {
-                    listSnController.map((ted) {
-                      SerialNumber serialNumber = SerialNumber(
-                        id: Random().nextInt(100),
-                        label: ted.text,
-                        expiredDateTime: e.expiredDateTime,
-                        quantity: 1,
-                      );
+                switch (index) {
+                  case 0:
+                    onSubmitSerialNumber();
+                    break;
+                  case 1:
+                    onSubmitNoTracking();
+                  default:
+                }
 
-                      selectedObjectProduct.serialNumber?.add(serialNumber);
-                    }).toList();
-                  }
+                // context
+                //     .read<AddPalletCubit>()
+                //     .onSubmit(product: selectedObjectProduct);
 
-                  // return
-                }).toList();
-
-                // listProduct.insert(0, element);
+                debugPrint(
+                    "listProducts: ${listProducts.map((e) => e.toString()).toList()}");
+                Navigator.pop(context, listProducts);
               }
             },
             height: 40,
@@ -283,6 +353,44 @@ class _AddPalletScreenState extends State<AddPalletScreen> {
         ),
       ),
     );
+  }
+
+  void onSubmitNoTracking() {
+    selectedObjectProduct.palletCode = palletIdController.text;
+    selectedObjectProduct.productQty = totalQty;
+    listProducts.insert(0, selectedObjectProduct);
+  }
+
+  void onSubmitSerialNumber() {
+    // TextField to SerialNumber 1
+    debugPrint("serialNumber: -----");
+    SerialNumber serialNumber = SerialNumber(
+      id: Random().nextInt(100),
+      label: snController.text,
+      expiredDateTime: "Exp. Date: 02/07/2024 - 14:00",
+      quantity: 1,
+    );
+    selectedObjectProduct.serialNumber = [serialNumber];
+
+    // TextField to SerialNumber Other
+    if (listSnController.isNotEmpty) {
+      debugPrint("serialNumber: -----not empty");
+      var listSerialNumber = listSnController.map((ted) {
+        SerialNumber serialNumber = SerialNumber(
+          id: Random().nextInt(100),
+          label: ted.text,
+          expiredDateTime: "Exp. Date: 02/07/2024 - 14:00",
+          quantity: 1,
+        );
+        selectedObjectProduct.serialNumber?.add(serialNumber);
+      }).toList();
+    }
+
+    debugPrint(
+        "serialNumber: ${selectedObjectProduct.serialNumber?.map((e) => e.toString()).toList()}");
+
+    selectedObjectProduct.palletCode = palletIdController.text;
+    listProducts.insert(0, selectedObjectProduct);
   }
 
   GestureDetector buildAddSerialNumberButton({void Function()? onTap}) {

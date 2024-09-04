@@ -11,7 +11,7 @@ class Product {
   String dateTime;
   String? sku;
   String? lotsCode;
-  int productQty;
+  double productQty;
   List<SerialNumber>? serialNumber;
 
   Product({
@@ -34,7 +34,7 @@ class Product {
     String? dateTime,
     String? sku,
     String? lotsCode,
-    int? productQty,
+    double? productQty,
     List<SerialNumber>? serialNumber,
   }) {
     return Product(
@@ -73,7 +73,7 @@ class Product {
       dateTime: map['dateTime'] as String,
       sku: map['sku'] != null ? map['sku'] as String : null,
       lotsCode: map['lotsCode'] != null ? map['lotsCode'] as String : null,
-      productQty: map['productQty'] as int,
+      productQty: map['productQty'] as double,
       serialNumber: map['serialNumber'] != null
           ? List<SerialNumber>.from(
               (map['serialNumber'] as List<int>).map<SerialNumber?>(
@@ -287,3 +287,5 @@ List<Product> products3 = [
     productQty: 14,
   ),
 ];
+
+List<Product> listProducts = <Product>[];

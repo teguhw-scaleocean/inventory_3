@@ -90,29 +90,7 @@ class _ReceiptProductDetailScreenState
               ),
             ),
             const CustomDivider(),
-            Flexible(
-                child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 16.w),
-                    height: 43.h,
-                    // padding: const EdgeInsets.symmetric(vertical: 16),
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: RichText(
-                          text: TextSpan(children: [
-                        TextSpan(
-                          text: "$tracking ",
-                          style: BaseText.blackText15.copyWith(
-                            fontWeight: BaseText.medium,
-                          ),
-                        ),
-                        TextSpan(
-                          text: "(11)",
-                          style: BaseText.blackText15.copyWith(
-                            fontWeight: BaseText.regular,
-                          ),
-                        )
-                      ])),
-                    ))),
+            buildTrackingLabel(tracking),
             (tracking.toLowerCase().contains("serial number"))
                 ? Flexible(
                     child: Container(
@@ -152,7 +130,10 @@ class _ReceiptProductDetailScreenState
                                 child: buildItemQuantity(code));
                           }),
                     )
-                  : buildItemQuantity(product.lotsCode ?? product.code),
+                  : buildItemQuantity(
+                      product.lotsCode ?? product.code,
+                      itemProduct: product,
+                    ),
             )
           ],
         ),
@@ -162,7 +143,53 @@ class _ReceiptProductDetailScreenState
     );
   }
 
-  Container buildItemQuantity(String code) {
+  Container buildTrackingLabel(String tracking) {
+    String receive = "";
+
+    switch (tracking) {
+      case "Serial Number":
+        if (product.serialNumber != null) {
+          double? receiveDouble = product.serialNumber?.length.toDouble();
+          receive = receiveDouble.toString();
+        }
+        break;
+      default:
+        int receiveInt = product.productQty.toInt();
+        receive = receiveInt.toString();
+    }
+
+    return Container(
+        padding: EdgeInsets.symmetric(horizontal: 16.w),
+        height: 43.h,
+        // padding: const EdgeInsets.symmetric(vertical: 16),
+        child: Align(
+          alignment: Alignment.centerLeft,
+          child: RichText(
+              text: TextSpan(children: [
+            TextSpan(
+              text: "$tracking ",
+              style: BaseText.blackText15.copyWith(
+                fontWeight: BaseText.medium,
+              ),
+            ),
+            TextSpan(
+              text: "($receive)",
+              style: BaseText.blackText15.copyWith(
+                fontWeight: BaseText.regular,
+              ),
+            )
+          ])),
+        ));
+  }
+
+  Container buildItemQuantity(String code, {Product? itemProduct}) {
+    String quantity = "";
+
+    if (itemProduct != null) {
+      int? quantityInt = itemProduct.productQty.toInt();
+      quantity = quantityInt.toString();
+    }
+
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 12.h, vertical: 10.h),
       decoration: BoxDecoration(
@@ -207,7 +234,9 @@ class _ReceiptProductDetailScreenState
                   width: 60.w,
                   child: Center(
                     child: Text(
-                      (tracking.toLowerCase().contains("serial")) ? "1" : "11",
+                      (tracking.toLowerCase().contains("serial"))
+                          ? "1"
+                          : quantity,
                       textAlign: TextAlign.center,
                       style: BaseText.black2Text14.copyWith(
                         fontWeight: BaseText.regular,

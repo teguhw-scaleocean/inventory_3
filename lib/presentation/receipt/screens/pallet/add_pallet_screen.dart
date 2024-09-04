@@ -30,6 +30,7 @@ class _AddPalletScreenState extends State<AddPalletScreen> {
   List<TextEditingController> listSnController = [];
   TextEditingController snController = TextEditingController();
   TextEditingController qtyController = TextEditingController();
+  TextEditingController lotsController = TextEditingController();
   Color qtyIconColor = ColorName.grey18Color;
   Color qtyTextColor = ColorName.grey12Color;
 
@@ -40,6 +41,7 @@ class _AddPalletScreenState extends State<AddPalletScreen> {
   var selectedProduct;
   late Product selectedObjectProduct;
   bool hasProductFocus = false;
+  bool hasLotShow = true;
 
   int index = 0;
 
@@ -50,8 +52,9 @@ class _AddPalletScreenState extends State<AddPalletScreen> {
     // listSnController.add(snController);
     index = widget.index;
 
-    if (index == 1) {
+    if (index == 1 || index == 2) {
       qtyController.text = totalQty.toString();
+      debugPrint("qtyController.text: ${qtyController.text}");
     }
   }
 
@@ -92,6 +95,42 @@ class _AddPalletScreenState extends State<AddPalletScreen> {
       dateTime: "Sch. Date: 12/07/2024 - 15:30",
       productQty: 1,
     ),
+    Product(
+      id: 6,
+      palletCode: "B494",
+      productName: "Surgical Gloves",
+      code: "SG_12942",
+      sku: "BPM201-349",
+      dateTime: "Sch. Date: 12/07/2024 - 15:30",
+      productQty: 1,
+    ),
+    Product(
+      id: 7,
+      palletCode: "B495",
+      productName: "Digital Thermometer",
+      code: "DT_12942",
+      sku: "BPM201-350",
+      dateTime: "Sch. Date: 12/07/2024 - 15:30",
+      productQty: 1,
+    ),
+    Product(
+      id: 8,
+      palletCode: "B496",
+      productName: "Nebulizer Machine",
+      code: "NB_12942",
+      sku: "BPM201-351",
+      dateTime: "Sch. Date: 12/07/2024 - 15:30",
+      productQty: 1,
+    ),
+    Product(
+      id: 1,
+      palletCode: "B497",
+      productName: "Monitor",
+      code: "MN_12942",
+      sku: "BPM201-352",
+      dateTime: "Sch. Date: 12/07/2024 - 15:30",
+      productQty: 1,
+    )
   ];
 
   @override
@@ -113,6 +152,8 @@ class _AddPalletScreenState extends State<AddPalletScreen> {
                         title: "Pallet ID",
                         isShowTitle: true,
                         isRequired: true,
+                        contentPadding: EdgeInsets.symmetric(horizontal: 16.w),
+                        fillTextStyle: BaseText.grey10Text14,
                         controller: palletIdController,
                         hintText: "Input Pallet ID",
                         validator: (v) {
@@ -126,14 +167,15 @@ class _AddPalletScreenState extends State<AddPalletScreen> {
                       buildRequiredLabel("Product"),
                       SizedBox(height: 4.h),
                       ReusableDropdownMenu(
-                        maxHeight: 160.h,
+                        maxHeight: 500.h,
                         offset: const Offset(0, -15),
+                        hasSearch: false,
                         label: "",
                         listOfItemsValue:
                             listProduct.map((e) => e.productName).toList(),
                         selectedValue: selectedProduct,
                         isExpand: hasProductFocus,
-                        hintText: "  Select Product",
+                        hintText: "   Select Product",
                         hintTextStyle: BaseText.grey1Text14.copyWith(
                           fontWeight: BaseText.regular,
                           color: ColorName.grey12Color,
@@ -175,14 +217,15 @@ class _AddPalletScreenState extends State<AddPalletScreen> {
                                   hintText: "Input Serial Number",
                                   isShowTitle: false,
                                   isRequired: true,
+
                                   controller: snController,
                                   validator: (v) {
                                     if (v == null || v.isEmpty) {
-                                      var icon = CupertinoIcons
-                                          .info_circle_fill.codePoint
-                                          .toRadixString(16);
+                                      // var icon = CupertinoIcons
+                                      //     .info_circle_fill.codePoint
+                                      //     .toRadixString(16);
 
-                                      debugPrint(icon);
+                                      // debugPrint(icon);
                                       return "This field is required. Please fill it in.";
                                     }
                                     return null;
@@ -197,7 +240,7 @@ class _AddPalletScreenState extends State<AddPalletScreen> {
                             buildScanButton()
                           ],
                         ),
-                      SizedBox(height: 6.h),
+                      if (index == 0) SizedBox(height: 6.h),
                       if (index == 0)
                         ListView.builder(
                             shrinkWrap: true,
@@ -212,6 +255,8 @@ class _AddPalletScreenState extends State<AddPalletScreen> {
                                         child: CustomFormField(
                                           title: "",
                                           hintText: "",
+                                          contentPadding: EdgeInsets.symmetric(
+                                              horizontal: 16.w),
                                           controller: listSnController[index],
                                           isShowTitle: false,
                                           onChanged: (v) {
@@ -248,10 +293,11 @@ class _AddPalletScreenState extends State<AddPalletScreen> {
                                 "listSnController.length: ${listSnController.length}");
                           });
                         }),
-                      if (index == 1)
+                      if (index == 1 || index == 2)
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
+                            // SizedBox(height: 14.h),
                             buildRequiredLabel("Quantity"),
                             SizedBox(height: 4.h),
                             CustomQuantityButton(
@@ -300,6 +346,60 @@ class _AddPalletScreenState extends State<AddPalletScreen> {
                             ),
                           ],
                         ),
+                      if (index == 2 && selectedProduct != null)
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SizedBox(height: 14.h),
+                            buildRequiredLabel("Lots"),
+                            SizedBox(height: 4.h),
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Flexible(
+                                  child: LimitedBox(
+                                    maxWidth: 280.w,
+                                    child: CustomFormField(
+                                      title: "",
+                                      hintText: "Input Lots Number",
+                                      fillTextStyle: BaseText.grey10Text14,
+                                      contentPadding: EdgeInsets.symmetric(
+                                          horizontal: 16.w),
+                                      isShowTitle: false,
+                                      isRequired: true,
+                                      controller: lotsController,
+                                      validator: (v) {
+                                        if (v == null || v.isEmpty) {
+                                          // var icon = CupertinoIcons
+                                          //     .info_circle_fill.codePoint
+                                          //     .toRadixString(16);
+
+                                          // debugPrint(icon);
+                                          return "This field is required. Please fill it in.";
+                                        }
+                                        return null;
+                                      },
+                                      onChanged: (v) {
+                                        hasLotShow = v.isEmpty;
+                                        setState(() {});
+                                        //   snController.text = v;
+                                      },
+                                    ),
+                                  ),
+                                ),
+                                Visibility(
+                                    visible: hasLotShow,
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        SizedBox(width: 8.w),
+                                        buildScanButton(),
+                                      ],
+                                    ))
+                              ],
+                            ),
+                          ],
+                        ),
                       // ColorName.grey10Color,
                       SizedBox(height: 6.h),
                     ],
@@ -335,6 +435,10 @@ class _AddPalletScreenState extends State<AddPalletScreen> {
                     break;
                   case 1:
                     onSubmitNoTracking();
+                    break;
+                  case 2:
+                    onSubmitLots();
+                    break;
                   default:
                 }
 
@@ -353,6 +457,13 @@ class _AddPalletScreenState extends State<AddPalletScreen> {
         ),
       ),
     );
+  }
+
+  void onSubmitLots() {
+    selectedObjectProduct.palletCode = palletIdController.text;
+    selectedObjectProduct.productQty = totalQty;
+    selectedObjectProduct.lotsCode = lotsController.text;
+    listProducts.insert(0, selectedObjectProduct);
   }
 
   void onSubmitNoTracking() {

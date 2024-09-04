@@ -399,6 +399,9 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
                 case "No Tracking":
                   indexToAddPallet = 1;
                   break;
+                case "Lots":
+                  indexToAddPallet = 2;
+                  break;
 
                 default:
               }
@@ -446,6 +449,7 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
             label: "",
             maxHeight: 500.h,
             offset: const Offset(0, 560),
+            hasSearch: true,
             controller: _searchController,
             borderColor: ColorName.grey9Color,
             listOfItemsValue: palletUpdates,
@@ -506,6 +510,7 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
           SizedBox(height: 6.h),
           ReusableDropdownMenu(
             label: "",
+            hasSearch: false,
             maxHeight: 120.h,
             offset: const Offset(0, 121),
             controller: _searchController,
@@ -689,8 +694,8 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
 
         break;
       case "Lots":
+        _receive = product0.productQty.toString();
         code = product0.lotsCode.toString();
-        // _receive =
         break;
       default:
     }

@@ -96,8 +96,10 @@ class ReusableDropdownMenu<T> extends StatelessWidget {
                 selectedItemBuilder: (context) => listOfItemsValue
                     .map((e) => Text(
                           e.toString(),
-                          style: BaseText.grey2Text12
-                              .copyWith(fontWeight: BaseText.regular),
+                          style: BaseText.grey2Text14.copyWith(
+                            fontWeight: BaseText.regular,
+                            color: ColorName.grey10Color,
+                          ),
                         ))
                     .toList(),
                 buttonStyleData: const ButtonStyleData(

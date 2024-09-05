@@ -11,7 +11,8 @@ import 'receipt_pallet/screens/receipt_list_screen.dart';
 
 class ReceiptScreen extends StatelessWidget {
   ReceiptScreen({super.key});
-  List<String> receiptList = ["PALLETE", "PRODUCT", "BOTH"];
+
+  final List<String> receiptList = ["PALLETE", "PRODUCT", "BOTH"];
 
   @override
   Widget build(BuildContext context) {
@@ -88,6 +89,13 @@ class ReceiptScreen extends StatelessWidget {
                 MaterialPageRoute(
                     builder: (context) =>
                         const ReceiptListScreen(title: "Receipt: Pallete")));
+            break;
+          case 1:
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) =>
+                        const ReceiptListScreen(title: "Receipt: Product")));
             break;
           default:
         }

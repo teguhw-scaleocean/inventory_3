@@ -7,10 +7,10 @@ import 'package:inventory_v3/common/components/top_logo_section.dart';
 import 'package:inventory_v3/common/constants/local_images.dart';
 import 'package:inventory_v3/common/constants/text_constants.dart';
 import 'package:inventory_v3/common/extensions/empty_space_extension.dart';
-import 'package:inventory_v3/presentation/receipt/screens/receipt_screen.dart';
+import 'package:inventory_v3/presentation/receipt/receipt_screen.dart';
 
 import '../../../common/theme/text/base_text.dart';
-import '../../receipt/screens/receipt_list_screen.dart';
+import '../../receipt/receipt_pallet/screens/receipt_list_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -90,11 +90,8 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               40.height,
               PrimaryButton(
-                onPressed: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const ReceiptListScreen(
-                            title: "Receipt: Pallete"))),
+                onPressed: () => Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => ReceiptScreen())),
                 height: 40,
                 title: "Login",
                 width: double.infinity,

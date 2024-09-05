@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-import '../../../common/components/custom_app_bar.dart';
-import '../../../common/constants/local_images.dart';
-import '../../../common/constants/text_constants.dart';
-import '../../../common/extensions/empty_space_extension.dart';
-import '../../../common/theme/color/color_name.dart';
-import '../../../common/theme/text/base_text.dart';
-import 'receipt_list_screen.dart';
+import '../../common/components/custom_app_bar.dart';
+import '../../common/constants/local_images.dart';
+import '../../common/constants/text_constants.dart';
+import '../../common/extensions/empty_space_extension.dart';
+import '../../common/theme/color/color_name.dart';
+import '../../common/theme/text/base_text.dart';
+import 'receipt_pallet/screens/receipt_list_screen.dart';
 
 class ReceiptScreen extends StatelessWidget {
   ReceiptScreen({super.key});
@@ -83,11 +83,11 @@ class ReceiptScreen extends StatelessWidget {
       onTap: () {
         switch (index) {
           case 0:
-            // Navigator.push(
-            //     context,
-            //     MaterialPageRoute(
-            //         builder: (context) =>
-            //             const ReceiptListScreen(title: "Receipt: Pallete")));
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) =>
+                        const ReceiptListScreen(title: "Receipt: Pallete")));
             break;
           default:
         }

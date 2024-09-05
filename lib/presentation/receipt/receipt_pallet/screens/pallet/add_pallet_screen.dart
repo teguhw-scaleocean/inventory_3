@@ -11,14 +11,14 @@ import 'package:inventory_v3/common/components/custom_quantity_button.dart';
 import 'package:inventory_v3/common/components/primary_button.dart';
 import 'package:inventory_v3/common/components/reusable_dropdown_menu.dart';
 import 'package:inventory_v3/data/model/product.dart';
-import 'package:inventory_v3/presentation/receipt/cubit/add_pallet_cubit/add_pallet_cubit.dart';
+import 'package:inventory_v3/presentation/receipt/receipt_pallet/cubit/add_pallet_cubit/add_pallet_cubit.dart';
 
-import '../../../../common/components/reusable_add_serial_number_button.dart';
-import '../../../../common/components/reusable_scan_button.dart';
-import '../../../../common/components/reusable_widget.dart';
-import '../../../../common/constants/local_images.dart';
-import '../../../../common/theme/color/color_name.dart';
-import '../../../../common/theme/text/base_text.dart';
+import '../../../../../common/components/reusable_add_serial_number_button.dart';
+import '../../../../../common/components/reusable_scan_button.dart';
+import '../../../../../common/components/reusable_widget.dart';
+import '../../../../../common/constants/local_images.dart';
+import '../../../../../common/theme/color/color_name.dart';
+import '../../../../../common/theme/text/base_text.dart';
 
 class AddPalletScreen extends StatefulWidget {
   final int index;

@@ -5,14 +5,14 @@ import 'package:inventory_v3/common/components/custom_app_bar.dart';
 import 'package:inventory_v3/common/components/reusable_floating_action_button.dart';
 import 'package:inventory_v3/common/extensions/empty_space_extension.dart';
 import 'package:inventory_v3/data/model/product.dart';
-import 'package:inventory_v3/presentation/receipt/cubit/add_pallet_cubit/add_pallet_cubit.dart';
-import 'package:inventory_v3/presentation/receipt/screens/product_detail/add_product_screen.dart';
+import 'package:inventory_v3/presentation/receipt/receipt_pallet/cubit/add_pallet_cubit/add_pallet_cubit.dart';
+import 'package:inventory_v3/presentation/receipt/receipt_pallet/screens/product_detail/add_product_screen.dart';
 import 'package:smooth_highlight/smooth_highlight.dart';
 
-import '../../../common/components/custom_divider.dart';
-import '../../../common/components/reusable_search_bar_border.dart';
-import '../../../common/theme/color/color_name.dart';
-import '../../../common/theme/text/base_text.dart';
+import '../../../../common/components/custom_divider.dart';
+import '../../../../common/components/reusable_search_bar_border.dart';
+import '../../../../common/theme/color/color_name.dart';
+import '../../../../common/theme/text/base_text.dart';
 
 class ReceiptProductDetailScreen extends StatefulWidget {
   final Product product;

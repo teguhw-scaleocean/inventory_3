@@ -5,17 +5,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:inventory_v3/data/model/receipt.dart';
-import 'package:inventory_v3/presentation/receipt/screens/receipt_screen.dart';
+import 'package:inventory_v3/presentation/receipt/receipt_screen.dart';
 
-import '../../../common/components/custom_app_bar.dart';
-import '../../../common/components/receipt_item_card.dart';
-import '../../../common/components/reusable_search_bar_border.dart';
-import '../../../common/components/reusable_tab_bar.dart';
-import '../../../common/components/status_badge.dart';
-import '../../../common/constants/local_images.dart';
-import '../../../common/extensions/empty_space_extension.dart';
-import '../../../common/theme/color/color_name.dart';
-import '../../../common/theme/text/base_text.dart';
+import '../../../../common/components/custom_app_bar.dart';
+import '../../../../common/components/receipt_item_card.dart';
+import '../../../../common/components/reusable_search_bar_border.dart';
+import '../../../../common/components/reusable_tab_bar.dart';
+import '../../../../common/components/reusable_widget.dart';
+import '../../../../common/components/status_badge.dart';
+import '../../../../common/constants/local_images.dart';
+import '../../../../common/extensions/empty_space_extension.dart';
+import '../../../../common/theme/color/color_name.dart';
+import '../../../../common/theme/text/base_text.dart';
 
 class ReceiptListScreen extends StatefulWidget {
   final String title;
@@ -170,44 +171,6 @@ class _ReceiptListScreenState extends State<ReceiptListScreen>
                 children: tabs.map<Widget>((e) {
                   return _buildListSection();
                 }).toList(),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  GestureDetector buildScanButton() {
-    return GestureDetector(
-      onTap: () => Navigator.push(
-          context, MaterialPageRoute(builder: (context) => ReceiptScreen())),
-      child: Container(
-        height: 36.h,
-        width: 82.w,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(6.r),
-          border: Border.all(color: ColorName.mainColor),
-        ),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            SvgPicture.asset(
-              LocalImages.scanIcons,
-              height: 16.w,
-              width: 16.w,
-            ),
-            SizedBox(width: 8.w),
-            LimitedBox(
-              maxHeight: 16.h,
-              child: Text(
-                "Scan",
-                style: BaseText.mainText14.copyWith(
-                  color: ColorName.mainColor,
-                  fontWeight: BaseText.medium,
-                ),
               ),
             ),
           ],

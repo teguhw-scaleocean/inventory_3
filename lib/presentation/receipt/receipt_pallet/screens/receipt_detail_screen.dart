@@ -19,15 +19,15 @@ import 'package:inventory_v3/common/constants/local_images.dart';
 import 'package:inventory_v3/data/model/pallet.dart';
 import 'package:inventory_v3/data/model/product.dart';
 import 'package:inventory_v3/data/model/receipt.dart';
-import 'package:inventory_v3/presentation/receipt/cubit/add_pallet_cubit/add_pallet_state.dart';
-import 'package:inventory_v3/presentation/receipt/screens/pallet/add_pallet_screen.dart';
-import 'package:inventory_v3/presentation/receipt/screens/receipt_product_detail.dart';
-import 'package:inventory_v3/presentation/receipt/widget/scan_view_widget.dart';
+import 'package:inventory_v3/presentation/receipt/receipt_pallet/cubit/add_pallet_cubit/add_pallet_state.dart';
+import 'package:inventory_v3/presentation/receipt/receipt_pallet/screens/pallet/add_pallet_screen.dart';
+import 'package:inventory_v3/presentation/receipt/receipt_pallet/screens/receipt_product_detail.dart';
+import 'package:inventory_v3/presentation/receipt/receipt_pallet/widget/scan_view_widget.dart';
 
-import '../../../common/components/status_badge.dart';
-import '../../../common/extensions/empty_space_extension.dart';
-import '../../../common/theme/color/color_name.dart';
-import '../../../common/theme/text/base_text.dart';
+import '../../../../common/components/status_badge.dart';
+import '../../../../common/extensions/empty_space_extension.dart';
+import '../../../../common/theme/color/color_name.dart';
+import '../../../../common/theme/text/base_text.dart';
 import '../cubit/add_pallet_cubit/add_pallet_cubit.dart';
 
 class ReceiptDetailScreen extends StatefulWidget {

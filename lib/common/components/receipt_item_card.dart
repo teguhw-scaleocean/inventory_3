@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:inventory_v3/presentation/receipt/screens/receipt_detail_screen.dart';
+import 'package:inventory_v3/presentation/receipt/receipt_pallet/screens/receipt_detail_screen.dart';
 
 import '../../data/model/receipt.dart';
 import '../extensions/empty_space_extension.dart';

@@ -3,14 +3,14 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:inventory_v3/presentation/receipt/screens/receipt_screen.dart';
+import 'package:inventory_v3/presentation/receipt/receipt_screen.dart';
 
 import '../common/theme/color/color_name.dart';
 import '../common/theme/color/colors.dart';
 import '../presentation/onboarding/screens/onboarding_screen.dart';
-import '../presentation/receipt/screens/receipt_detail_screen.dart';
-import '../presentation/receipt/screens/receipt_list_screen.dart';
-import '../presentation/receipt/screens/receipt_product_detail.dart';
+import '../presentation/receipt/receipt_pallet/screens/receipt_detail_screen.dart';
+import '../presentation/receipt/receipt_pallet/screens/receipt_list_screen.dart';
+import '../presentation/receipt/receipt_pallet/screens/receipt_product_detail.dart';
 
 class MainApp extends StatelessWidget {
   const MainApp({super.key});

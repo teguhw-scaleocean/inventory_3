@@ -4,14 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:inventory_v3/common/components/custom_app_bar.dart';
 
-import '../../../../common/components/custom_form.dart';
-import '../../../../common/components/custom_quantity_button.dart';
-import '../../../../common/components/primary_button.dart';
-import '../../../../common/components/reusable_add_serial_number_button.dart';
-import '../../../../common/components/reusable_scan_button.dart';
-import '../../../../common/components/reusable_widget.dart';
-import '../../../../common/theme/color/color_name.dart';
-import '../../../../data/model/product.dart';
+import '../../../../../common/components/custom_form.dart';
+import '../../../../../common/components/custom_quantity_button.dart';
+import '../../../../../common/components/primary_button.dart';
+import '../../../../../common/components/reusable_add_serial_number_button.dart';
+import '../../../../../common/components/reusable_scan_button.dart';
+import '../../../../../common/components/reusable_widget.dart';
+import '../../../../../common/theme/color/color_name.dart';
+import '../../../../../data/model/product.dart';
 
 class AddProductScreen extends StatefulWidget {
   final int addType;

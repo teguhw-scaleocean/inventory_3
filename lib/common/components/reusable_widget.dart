@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
+import '../constants/local_images.dart';
 import '../theme/color/color_name.dart';
 import '../theme/text/base_text.dart';
 
@@ -64,5 +66,42 @@ Column buildDisableField({
       ),
       SizedBox(height: 14.h),
     ],
+  );
+}
+
+GestureDetector buildScanButton() {
+  return GestureDetector(
+    onTap: () {},
+    child: Container(
+      height: 36.h,
+      width: 82.w,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(6.r),
+        border: Border.all(color: ColorName.mainColor),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          SvgPicture.asset(
+            LocalImages.scanIcons,
+            height: 16.w,
+            width: 16.w,
+          ),
+          SizedBox(width: 8.w),
+          LimitedBox(
+            maxHeight: 16.h,
+            child: Text(
+              "Scan",
+              style: BaseText.mainText14.copyWith(
+                color: ColorName.mainColor,
+                fontWeight: BaseText.medium,
+              ),
+            ),
+          ),
+        ],
+      ),
+    ),
   );
 }

@@ -8,10 +8,10 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:inventory_v3/common/constants/text_constants.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 
-import '../../../common/components/primary_button.dart';
-import '../../../common/constants/local_images.dart';
-import '../../../common/theme/color/color_name.dart';
-import '../../../common/theme/text/base_text.dart';
+import '../../../../common/components/primary_button.dart';
+import '../../../../common/constants/local_images.dart';
+import '../../../../common/theme/color/color_name.dart';
+import '../../../../common/theme/text/base_text.dart';
 
 class QRViewExample extends StatefulWidget {
   const QRViewExample({Key? key}) : super(key: key);

@@ -4,24 +4,25 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../common/components/custom_app_bar.dart';
-import '../../../../common/components/receipt_item_card.dart';
+import '../../../../common/components/receipt_product_item_card.dart';
 import '../../../../common/components/reusable_search_bar_border.dart';
 import '../../../../common/components/reusable_tab_bar.dart';
 import '../../../../common/components/reusable_widget.dart';
 import '../../../../common/theme/color/color_name.dart';
 import '../../../../data/model/receipt.dart';
 
-class ReceiptProductListScreen extends StatefulWidget {
+class ReceiptProductMenuListScreen extends StatefulWidget {
   final String title;
 
-  const ReceiptProductListScreen({super.key, required this.title});
+  const ReceiptProductMenuListScreen({super.key, required this.title});
 
   @override
-  State<ReceiptProductListScreen> createState() =>
-      _ReceiptProductListScreenState();
+  State<ReceiptProductMenuListScreen> createState() =>
+      _ReceiptProductMenuListScreenState();
 }
 
-class _ReceiptProductListScreenState extends State<ReceiptProductListScreen>
+class _ReceiptProductMenuListScreenState
+    extends State<ReceiptProductMenuListScreen>
     with SingleTickerProviderStateMixin {
   String appBarTitle = "";
 
@@ -184,7 +185,7 @@ class _ReceiptProductListScreenState extends State<ReceiptProductListScreen>
           itemBuilder: (context, index) {
             var item = listReceipt[index];
 
-            return ReceiptItemCard(receipt: item);
+            return ReceiptProductItemCard(receipt: item);
           }),
     );
   }

@@ -8,6 +8,7 @@ import '../../common/extensions/empty_space_extension.dart';
 import '../../common/theme/color/color_name.dart';
 import '../../common/theme/text/base_text.dart';
 import 'receipt_pallet/screens/receipt_list_screen.dart';
+import 'receipt_product/screens/receipt_product_menu_list_screen.dart';
 
 class ReceiptScreen extends StatelessWidget {
   ReceiptScreen({super.key});
@@ -85,17 +86,21 @@ class ReceiptScreen extends StatelessWidget {
         switch (index) {
           case 0:
             Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) =>
-                        const ReceiptListScreen(title: "Receipt: Pallete")));
+              context,
+              MaterialPageRoute(
+                builder: (context) =>
+                    const ReceiptListScreen(title: "Receipt: Pallete"),
+              ),
+            );
             break;
           case 1:
             Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) =>
-                        const ReceiptListScreen(title: "Receipt: Product")));
+              context,
+              MaterialPageRoute(
+                builder: (context) => const ReceiptProductMenuListScreen(
+                    title: "Receipt: Product"),
+              ),
+            );
             break;
           default:
         }

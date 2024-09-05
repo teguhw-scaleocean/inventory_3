@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:inventory_v3/common/components/custom_app_bar.dart';
 
 import '../../../../common/components/custom_form.dart';
+import '../../../../common/components/custom_quantity_button.dart';
 import '../../../../common/components/primary_button.dart';
 import '../../../../common/components/reusable_add_serial_number_button.dart';
 import '../../../../common/components/reusable_scan_button.dart';
@@ -26,14 +27,20 @@ class AddProductScreen extends StatefulWidget {
 
 class _AddProductScreenState extends State<AddProductScreen> {
   final formSnKey = GlobalKey<FormState>();
+  final noTrackingKey = GlobalKey<FormState>();
   int addType = 0;
   String tracking = "";
 
+  final qtyController = TextEditingController();
   final serialNumberConhtroller = TextEditingController();
   List<TextEditingController> listSnController = [];
   List<SerialNumber> listSerialNumber = [];
 
   bool hasScanButton = true;
+
+  double totalQty = 0.00;
+  Color qtyIconColor = ColorName.grey18Color;
+  Color qtyTextColor = ColorName.grey12Color;
 
   @override
   void initState() {
@@ -43,6 +50,10 @@ class _AddProductScreenState extends State<AddProductScreen> {
 
     if (addType == 0) {
       tracking = "Serial Number";
+    } else if (addType == 1) {
+      tracking = "Qty No Tracking";
+    } else {
+      tracking = "Qty Lots";
     }
   }
 
@@ -55,9 +66,9 @@ class _AddProductScreenState extends State<AddProductScreen> {
           padding: EdgeInsets.all(16.w),
           child: (addType == 0)
               ? _buildSerialNumberSection()
-              : Container(
-                  color: Colors.amber,
-                ),
+              : (addType == 1)
+                  ? _buildNoTrackingSection()
+                  : _buildLotsSection(),
         ),
         bottomNavigationBar: Container(
           width: double.infinity,
@@ -68,8 +79,8 @@ class _AddProductScreenState extends State<AddProductScreen> {
           ),
           child: PrimaryButton(
             onPressed: () {
-              if (formSnKey.currentState!.validate()) {
-                if (addType == 0) {
+              if (addType == 0) {
+                if (formSnKey.currentState!.validate()) {
                   if (listSnController.isNotEmpty) {
                     listSnController.map((e) {
                       SerialNumber serialNumber = SerialNumber(
@@ -94,6 +105,11 @@ class _AddProductScreenState extends State<AddProductScreen> {
                 debugPrint(
                     "listSerialNumber: $listSerialNumber.map((e) => e.toJson())");
                 Navigator.pop(context, listSerialNumber);
+              } else if (addType == 1) {
+                if (noTrackingKey.currentState!.validate()) {
+                  debugPrint("totalQty: $totalQty");
+                  // Navigator.pop(context, totalQty);
+                }
               }
             },
             height: 40.h,
@@ -101,6 +117,74 @@ class _AddProductScreenState extends State<AddProductScreen> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildLotsSection() {
+    return const Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [],
+    );
+  }
+
+  Widget _buildNoTrackingSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        buildDisableField(label: "SKU", value: "value"),
+        SizedBox(height: 14.h),
+        buildRequiredLabel("Quantity"),
+        SizedBox(height: 4.h),
+        Form(
+          key: noTrackingKey,
+          child: CustomQuantityButton(
+            controller: qtyController,
+            iconColor: qtyIconColor,
+            textColor: qtyTextColor,
+            onChanged: (v) {
+              // double? inputValue = 0.00;
+            },
+            onSubmitted: (v) {
+              setState(() {
+                totalQty = double.tryParse(v) ?? 0.00;
+
+                setState(() {
+                  qtyController.value = TextEditingValue(
+                    text: totalQty.toString(),
+                  );
+
+                  if (totalQty >= 1) {
+                    qtyIconColor = ColorName.grey10Color;
+                    qtyTextColor = ColorName.grey10Color;
+                  }
+                });
+              });
+            },
+            onDecreased: () {
+              if (totalQty >= 1) {
+                setState(() {
+                  totalQty--;
+                  qtyController.text = totalQty.toString();
+                  qtyIconColor = ColorName.grey10Color;
+                  qtyTextColor = ColorName.grey10Color;
+                });
+              }
+            },
+            onIncreased: () {
+              // if (totalQty >= 1) {
+              setState(() {
+                totalQty++;
+                qtyController.text = totalQty.toString();
+                qtyIconColor = ColorName.grey10Color;
+                qtyTextColor = ColorName.grey10Color;
+              });
+              // }
+            },
+          ),
+        ),
+      ],
     );
   }
 

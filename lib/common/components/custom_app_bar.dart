@@ -9,10 +9,12 @@ import '../theme/text/base_text.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
+  final void Function()? onTap;
 
   const CustomAppBar({
     super.key,
     required this.title,
+    this.onTap,
   });
   @override
   Size get preferredSize => const Size.fromHeight(56);
@@ -26,7 +28,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
         leading: Container(
           padding: EdgeInsets.only(left: 16.w),
           child: InkWell(
-            onTap: () => Navigator.pop(context),
+            onTap: onTap ?? () => Navigator.pop(context),
             child: SvgPicture.asset(
               LocalImages.backIcon,
               height: 24.w,

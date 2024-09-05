@@ -58,7 +58,10 @@ class _ReceiptProductDetailScreenState
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        appBar: const CustomAppBar(title: "Product Detail"),
+        appBar: CustomAppBar(
+          onTap: () => Navigator.of(context).pop(product),
+          title: "Product Detail",
+        ),
         body: ListView(
           // crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -175,10 +178,15 @@ class _ReceiptProductDetailScreenState
                 ),
               ),
             );
-            resultOfAddProduct.then((value) => setState(() {
+            resultOfAddProduct.then((value) {
+              if (value != null) {
+                setState(() {
                   serialNumberResult = value as List<SerialNumber>;
                   serialNumberList.insertAll(0, serialNumberResult);
-                }));
+                  product.serialNumber = serialNumberList;
+                });
+              }
+            });
           },
           icon: Icons.add,
         ),

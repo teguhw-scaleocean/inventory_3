@@ -682,10 +682,7 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
     switch (tracking) {
       case "Serial Number":
         // Serial Number
-        if (product0.serialNumber != null) {
-          double? receiveDouble = product0.serialNumber?.length.toDouble();
-          _receive = receiveDouble.toString();
-        }
+        assignToReceive(product0);
         code = product0.code;
         break;
       case "No Tracking":
@@ -704,11 +701,23 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
     _receive = product0.productQty.toString();
 
     return InkWell(
-      onTap: () => Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => ReceiptProductDetailScreen(
-                  product: product0, tracking: tracking))),
+      onTap: () {
+        final resultOfProduct = Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => ReceiptProductDetailScreen(
+                    product: product0, tracking: tracking)));
+
+        resultOfProduct.then((value) {
+          if (value != null) {
+            debugPrint("value: $value");
+            setState(() {
+              product0 = value as Product;
+              assignToReceive(product0);
+            });
+          }
+        });
+      },
       child: Container(
         margin: EdgeInsets.only(bottom: 12.h),
         // semanticContainer: true,
@@ -831,6 +840,13 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
         ),
       ),
     );
+  }
+
+  void assignToReceive(Product product0) {
+    if (product0.serialNumber != null) {
+      double? receiveDouble = product0.serialNumber?.length.toDouble();
+      _receive = receiveDouble.toString();
+    }
   }
 
   Widget _buildBottomCardSection(

@@ -15,10 +15,12 @@ import '../../../../data/model/product.dart';
 
 class AddProductScreen extends StatefulWidget {
   final int addType;
+  final String code;
 
   const AddProductScreen({
     super.key,
     required this.addType,
+    this.code = "",
   });
 
   @override
@@ -38,6 +40,8 @@ class _AddProductScreenState extends State<AddProductScreen> {
 
   bool hasScanButton = true;
 
+  String label = "";
+  String code = "";
   double totalQty = 0.00;
   Color qtyIconColor = ColorName.grey18Color;
   Color qtyTextColor = ColorName.grey12Color;
@@ -52,9 +56,14 @@ class _AddProductScreenState extends State<AddProductScreen> {
       tracking = "Serial Number";
     } else if (addType == 1) {
       tracking = "Qty No Tracking";
+      label = "SKU";
+      code = widget.code;
       qtyController.text = totalQty.toString();
     } else {
       tracking = "Qty Lots";
+      label = "LOTS";
+      code = widget.code;
+      qtyController.text = totalQty.toString();
     }
   }
 
@@ -67,9 +76,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
           padding: EdgeInsets.all(16.w),
           child: (addType == 0)
               ? _buildSerialNumberSection()
-              : (addType == 1)
-                  ? _buildNoTrackingSection()
-                  : _buildLotsSection(),
+              : _buildOtherSection(label, code),
         ),
         bottomNavigationBar: Container(
           width: double.infinity,
@@ -106,7 +113,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                 debugPrint(
                     "listSerialNumber: $listSerialNumber.map((e) => e.toJson())");
                 Navigator.pop(context, listSerialNumber);
-              } else if (addType == 1) {
+              } else {
                 if (noTrackingKey.currentState!.validate()) {
                   debugPrint("totalQty: $totalQty");
                   // Navigator.pop(context, totalQty);
@@ -133,14 +140,14 @@ class _AddProductScreenState extends State<AddProductScreen> {
     );
   }
 
-  Widget _buildNoTrackingSection() {
+  Widget _buildOtherSection(String labels, String code) {
     return Form(
       key: noTrackingKey,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          buildDisableField(label: "SKU", value: "value"),
+          buildDisableField(label: labels, value: code),
           SizedBox(height: 14.h),
           buildRequiredLabel("Quantity"),
           SizedBox(height: 4.h),

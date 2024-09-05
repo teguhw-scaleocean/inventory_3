@@ -37,6 +37,7 @@ class _ReceiptProductDetailScreenState
   List<SerialNumber> serialNumberList = [];
   List<SerialNumber> serialNumberResult = [];
 
+  String code = "";
   String quantity = "";
 
   @override
@@ -51,6 +52,10 @@ class _ReceiptProductDetailScreenState
     // Serial Number
     serialNumberList = widget.product.serialNumber ?? <SerialNumber>[];
     debugPrint("serialNumberList: $serialNumberList.map((e) => e.toJson())");
+
+    if (!(tracking.toLowerCase().contains("serial number"))) {
+      code = product.lotsCode ?? product.code;
+    }
   }
 
   _onSearch() {}
@@ -137,7 +142,6 @@ class _ReceiptProductDetailScreenState
                             scrollDirection: Axis.vertical,
                             itemCount: serialNumberList.length,
                             itemBuilder: (context, index) {
-                              String code = "";
                               var item = serialNumberList[index];
                               code = item.label;
 
@@ -154,7 +158,7 @@ class _ReceiptProductDetailScreenState
                             }),
                       )
                     : buildItemQuantity(
-                        product.lotsCode ?? product.code,
+                        code,
                         itemProduct: product,
                       ),
               )
@@ -182,6 +186,7 @@ class _ReceiptProductDetailScreenState
               MaterialPageRoute(
                 builder: (context) => AddProductScreen(
                   addType: indexToAddProduct,
+                  code: code,
                 ),
               ),
             );

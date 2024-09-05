@@ -37,6 +37,8 @@ class _ReceiptProductDetailScreenState
   List<SerialNumber> serialNumberList = [];
   List<SerialNumber> serialNumberResult = [];
 
+  String quantity = "";
+
   @override
   void initState() {
     super.initState();
@@ -62,97 +64,102 @@ class _ReceiptProductDetailScreenState
           onTap: () => Navigator.of(context).pop(product),
           title: "Product Detail",
         ),
-        body: ListView(
-          // crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 16.w),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(height: 16.h),
-                  Text(
-                    product.productName,
-                    style: BaseText.blackText17
-                        .copyWith(fontWeight: BaseText.medium),
-                  ),
-                  SizedBox(height: 8.h),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(product.code,
-                          style: BaseText.grey1Text13
-                              .copyWith(fontWeight: BaseText.light)),
-                      Text("Pallet ${product.palletCode}",
-                          style: BaseText.grey1Text13
-                              .copyWith(fontWeight: BaseText.light)),
-                    ],
-                  ),
-                  SizedBox(height: 16.h),
-                  Text(
-                    product.dateTime,
-                    style: BaseText.baseTextStyle.copyWith(
-                      fontWeight: BaseText.regular,
-                      fontSize: 13.sp,
-                      color: ColorName.dateTimeColor,
+        body: RefreshIndicator(
+          onRefresh: () => Future.delayed(const Duration(seconds: 1), () {
+            setState(() {});
+          }),
+          child: ListView(
+            // crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 16.w),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(height: 16.h),
+                    Text(
+                      product.productName,
+                      style: BaseText.blackText17
+                          .copyWith(fontWeight: BaseText.medium),
                     ),
-                  ),
-                  SizedBox(height: 16.h),
-                ],
+                    SizedBox(height: 8.h),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(product.code,
+                            style: BaseText.grey1Text13
+                                .copyWith(fontWeight: BaseText.light)),
+                        Text("Pallet ${product.palletCode}",
+                            style: BaseText.grey1Text13
+                                .copyWith(fontWeight: BaseText.light)),
+                      ],
+                    ),
+                    SizedBox(height: 16.h),
+                    Text(
+                      product.dateTime,
+                      style: BaseText.baseTextStyle.copyWith(
+                        fontWeight: BaseText.regular,
+                        fontSize: 13.sp,
+                        color: ColorName.dateTimeColor,
+                      ),
+                    ),
+                    SizedBox(height: 16.h),
+                  ],
+                ),
               ),
-            ),
-            const CustomDivider(),
-            buildTrackingLabel(tracking),
-            (tracking.toLowerCase().contains("serial number"))
-                ? Container(
-                    padding: EdgeInsets.symmetric(horizontal: 16.w),
-                    height: 36.h,
-                    width: double.infinity,
-                    child: SearchBarBorder(
-                      context,
-                      onSearch: _onSearch(),
-                      clearData: _onClearData(),
-                      keySearch: searchKey,
-                      controller: searchSerialNumberController,
-                      queryKey: searchSerialNumberController.text,
-                      borderColor: ColorName.grey9Color,
-                    ),
-                  )
-                : const SizedBox(),
-            SizedBox(height: 12.h),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16.w),
-              child: (tracking.toLowerCase().contains("serial number"))
-                  ? SizedBox(
-                      height: 600.h,
-                      child: ListView.builder(
-                          shrinkWrap: true,
-                          physics: const AlwaysScrollableScrollPhysics(),
-                          scrollDirection: Axis.vertical,
-                          itemCount: serialNumberList.length,
-                          itemBuilder: (context, index) {
-                            String code = "";
-                            var item = serialNumberList[index];
-                            code = item.label;
-
-                            bool isHighlighted = false;
-                            isHighlighted = serialNumberResult.contains(item);
-                            debugPrint("isHighlighted: $isHighlighted");
-
-                            return Padding(
-                                padding: EdgeInsets.only(bottom: 8.h),
-                                child: buildItemQuantity(
-                                  code,
-                                  isHighlighted: isHighlighted,
-                                ));
-                          }),
+              const CustomDivider(),
+              buildTrackingLabel(tracking),
+              (tracking.toLowerCase().contains("serial number"))
+                  ? Container(
+                      padding: EdgeInsets.symmetric(horizontal: 16.w),
+                      height: 36.h,
+                      width: double.infinity,
+                      child: SearchBarBorder(
+                        context,
+                        onSearch: _onSearch(),
+                        clearData: _onClearData(),
+                        keySearch: searchKey,
+                        controller: searchSerialNumberController,
+                        queryKey: searchSerialNumberController.text,
+                        borderColor: ColorName.grey9Color,
+                      ),
                     )
-                  : buildItemQuantity(
-                      product.lotsCode ?? product.code,
-                      itemProduct: product,
-                    ),
-            )
-          ],
+                  : const SizedBox(),
+              SizedBox(height: 12.h),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16.w),
+                child: (tracking.toLowerCase().contains("serial number"))
+                    ? SizedBox(
+                        height: 600.h,
+                        child: ListView.builder(
+                            shrinkWrap: true,
+                            physics: const AlwaysScrollableScrollPhysics(),
+                            scrollDirection: Axis.vertical,
+                            itemCount: serialNumberList.length,
+                            itemBuilder: (context, index) {
+                              String code = "";
+                              var item = serialNumberList[index];
+                              code = item.label;
+
+                              bool isHighlighted = false;
+                              isHighlighted = serialNumberResult.contains(item);
+                              debugPrint("isHighlighted: $isHighlighted");
+
+                              return Padding(
+                                  padding: EdgeInsets.only(bottom: 8.h),
+                                  child: buildItemQuantity(
+                                    code,
+                                    isHighlighted: isHighlighted,
+                                  ));
+                            }),
+                      )
+                    : buildItemQuantity(
+                        product.lotsCode ?? product.code,
+                        itemProduct: product,
+                      ),
+              )
+            ],
+          ),
         ),
         floatingActionButton: reusableFloatingActionButton(
           onTap: () {
@@ -179,12 +186,23 @@ class _ReceiptProductDetailScreenState
               ),
             );
             resultOfAddProduct.then((value) {
-              if (value != null) {
+              if (value != null && value is double) {
+                debugPrint("resultOfAddProduct: $value");
+                setState(() {
+                  var quantityDouble = value;
+                  product.productQty = quantityDouble;
+                  // quantity = quantityDouble.toString();
+                  debugPrint("quantityDouble: ${product.productQty}");
+                });
+              } else if (value != null) {
                 setState(() {
                   serialNumberResult = value as List<SerialNumber>;
                   serialNumberList.insertAll(0, serialNumberResult);
                   product.serialNumber = serialNumberList;
                 });
+
+                debugPrint(
+                    "serialNumberResult: $serialNumberResult.map((e) => e.toJson())");
               }
             });
           },
@@ -235,8 +253,6 @@ class _ReceiptProductDetailScreenState
 
   Widget buildItemQuantity(String code,
       {Product? itemProduct, bool isHighlighted = false}) {
-    String quantity = "";
-
     if (itemProduct != null) {
       int? quantityInt = itemProduct.productQty.toInt();
       quantity = quantityInt.toString();

@@ -52,6 +52,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
       tracking = "Serial Number";
     } else if (addType == 1) {
       tracking = "Qty No Tracking";
+      qtyController.text = totalQty.toString();
     } else {
       tracking = "Qty Lots";
     }
@@ -109,6 +110,10 @@ class _AddProductScreenState extends State<AddProductScreen> {
                 if (noTrackingKey.currentState!.validate()) {
                   debugPrint("totalQty: $totalQty");
                   // Navigator.pop(context, totalQty);
+                  if (totalQty > 0) {
+                    Navigator.pop(context, totalQty);
+                  }
+                  return;
                 }
               }
             },
@@ -129,17 +134,17 @@ class _AddProductScreenState extends State<AddProductScreen> {
   }
 
   Widget _buildNoTrackingSection() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        buildDisableField(label: "SKU", value: "value"),
-        SizedBox(height: 14.h),
-        buildRequiredLabel("Quantity"),
-        SizedBox(height: 4.h),
-        Form(
-          key: noTrackingKey,
-          child: CustomQuantityButton(
+    return Form(
+      key: noTrackingKey,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          buildDisableField(label: "SKU", value: "value"),
+          SizedBox(height: 14.h),
+          buildRequiredLabel("Quantity"),
+          SizedBox(height: 4.h),
+          CustomQuantityButton(
             controller: qtyController,
             iconColor: qtyIconColor,
             textColor: qtyTextColor,
@@ -183,8 +188,8 @@ class _AddProductScreenState extends State<AddProductScreen> {
               // }
             },
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 

@@ -28,6 +28,7 @@ import '../../../../common/components/status_badge.dart';
 import '../../../../common/extensions/empty_space_extension.dart';
 import '../../../../common/theme/color/color_name.dart';
 import '../../../../common/theme/text/base_text.dart';
+import 'receipt_product_menu_of_product_detail_screen.dart';
 
 class ReceiptProductMenuDetailScreen extends StatefulWidget {
   final Receipt? receipt;
@@ -339,20 +340,20 @@ class _ReceiptProductMenuDetailScreenState
               default:
             }
 
-            final addPalletResult = Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => AddPalletScreen(index: indexToAddPallet),
-              ),
-            ).then((value) {
-              debugPrint("addPalletResult: ${value.toString()}");
+            // final addPalletResult = Navigator.push(
+            //   context,
+            //   MaterialPageRoute(
+            //     builder: (context) => AddPalletScreen(index: indexToAddPallet),
+            //   ),
+            // ).then((value) {
+            //   debugPrint("addPalletResult: ${value.toString()}");
 
-              if (value != null) {
-                setState(() {
-                  listProducts = value as List<Product>;
-                });
-              }
-            });
+            //   if (value != null) {
+            //     setState(() {
+            //       listProducts = value as List<Product>;
+            //     });
+            //   }
+            // });
           },
           icon: Icons.add,
         ),
@@ -634,10 +635,14 @@ class _ReceiptProductMenuDetailScreenState
     return InkWell(
       onTap: () {
         final resultOfProduct = Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => ReceiptProductDetailScreen(
-                    product: product0, tracking: tracking)));
+          context,
+          MaterialPageRoute(
+            builder: (context) => ReceiptProductMenuOfProductDetailScreen(
+              product: product0,
+              tracking: tracking,
+            ),
+          ),
+        );
 
         resultOfProduct.then((value) {
           if (value != null) {

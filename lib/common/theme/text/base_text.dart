@@ -31,6 +31,11 @@ class BaseText {
     color: ColorName.redColor,
   );
 
+  static TextStyle redErrorTextStyle = const TextStyle(
+    fontFamily: "Lexend",
+    color: ColorName.badgeRedColor,
+  );
+
   static TextStyle whiteTextStyle = const TextStyle(
     fontFamily: "Lexend",
     color: ColorName.whiteColor,
@@ -91,6 +96,9 @@ class BaseText {
 
   static TextStyle whiteText12 = whiteTextStyle.copyWith(fontSize: 12.sp);
   static TextStyle whiteText14 = whiteTextStyle.copyWith(fontSize: 14.sp);
+
+  //Error
+  static TextStyle red2Text12 = redTextStyle.copyWith(fontSize: 12.sp);
 
   static TextStyle redText14 = redTextStyle.copyWith(fontSize: 14.sp);
 

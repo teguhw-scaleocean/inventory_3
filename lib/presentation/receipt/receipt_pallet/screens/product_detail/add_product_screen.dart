@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -14,6 +15,7 @@ import '../../../../../common/components/reusable_add_serial_number_button.dart'
 import '../../../../../common/components/reusable_scan_button.dart';
 import '../../../../../common/components/reusable_widget.dart';
 import '../../../../../common/theme/color/color_name.dart';
+import '../../../../../common/theme/text/base_text.dart';
 import '../../../../../data/model/product.dart';
 
 class AddProductScreen extends StatefulWidget {
@@ -252,6 +254,33 @@ class _AddProductScreenState extends State<AddProductScreen> {
                 // qtyController =
                 //     TextEditingController(text: state.quantity.toString());
               },
+            );
+          }),
+          BlocBuilder<CountCubit, CountState>(builder: (context, state) {
+            if (isQtyButtonEnabled) {
+              return const SizedBox();
+            }
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(height: 4.h),
+                Row(
+                  children: [
+                    Icon(
+                      CupertinoIcons.info_circle_fill,
+                      color: ColorName.badgeRedColor,
+                      size: 13.w,
+                    ),
+                    SizedBox(width: 4.w),
+                    Text(
+                      "This field is required. Please fill it in.",
+                      style: BaseText.red2Text12.copyWith(
+                        fontWeight: BaseText.light,
+                      ),
+                    )
+                  ],
+                )
+              ],
             );
           }),
         ],

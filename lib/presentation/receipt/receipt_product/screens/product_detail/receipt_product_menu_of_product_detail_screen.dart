@@ -64,12 +64,27 @@ class _ReceiptProductMenuOfProductDetailScreenState
     tracking = widget.tracking;
     status = widget.status;
 
-    // Serial Number
-    serialNumberList = widget.product.serialNumber ?? <SerialNumber>[];
-    debugPrint("serialNumberList: $serialNumberList.map((e) => e.toJson())");
-
     if (!(tracking.toLowerCase().contains("serial number"))) {
       code = product.lotsCode ?? product.code;
+    } else {
+      // Serial Number
+      serialNumberList = widget.product.serialNumber ?? <SerialNumber>[];
+      debugPrint("serialNumberList: $serialNumberList.map((e) => e.toJson())");
+
+      serialNumberList = [
+        SerialNumber(
+          id: Random().nextInt(100),
+          label: "BP1234567845",
+          expiredDateTime: "Exp. Date: 12/07/2024 - 16:00",
+          quantity: 1,
+        ),
+        SerialNumber(
+          id: Random().nextInt(100),
+          label: "BP1234567846",
+          expiredDateTime: "Exp. Date: 12/07/2024 - 16:00",
+          quantity: 1,
+        )
+      ];
     }
   }
 
@@ -143,19 +158,35 @@ class _ReceiptProductMenuOfProductDetailScreenState
                     )
                   : const SizedBox(),
               Container(
+                height: 38.h,
                 padding: EdgeInsets.symmetric(horizontal: 16.w),
                 child: reusableTabBar(
                   tabs: _tabs.map((e) {
                     bool isSelectedTab = false;
                     isSelectedTab = tabController.index == _tabs.indexOf(e);
+                    // Total Not Done
+                    int totalInt = 0;
+                    String total = "";
+                    // Total Done
+                    int totalDoneInt = 0;
+                    String totalDone = "";
 
-                    int totalInt =
-                        _tabs[0] == e ? product.productQty.toInt() : 0;
-                    final total = totalInt.toString();
+                    if (tracking.toLowerCase().contains("serial number")) {
+                      totalInt = serialNumberList.length;
+                      total = totalInt.toString();
+
+                      totalDoneInt = (serialNumberResult.isNotEmpty)
+                          ? serialNumberList.length
+                          : 0;
+                      totalDone = totalDoneInt.toString();
+                    } else {
+                      totalInt = _tabs[0] == e ? product.productQty.toInt() : 0;
+                      total = totalInt.toString();
+                    }
 
                     return buildTabLabel(
                       label: e,
-                      total: "($total)",
+                      total: (_tabs[0] == e) ? "($total)" : "($totalDone)",
                       isSelected: isSelectedTab,
                     );
                   }).toList(),
@@ -172,15 +203,41 @@ class _ReceiptProductMenuOfProductDetailScreenState
                     Container(
                       padding: EdgeInsets.symmetric(
                           horizontal: 16.w, vertical: 12.h),
-                      child: Column(
-                        children: [
-                          buildItemQuantity(
-                            code,
-                            itemProduct: product,
-                            isHighlighted: isCardHighlighted,
-                          ),
-                        ],
-                      ),
+                      child: (tracking.toLowerCase().contains("serial number"))
+                          ? SizedBox(
+                              height: 600.h,
+                              child: ListView.builder(
+                                  shrinkWrap: true,
+                                  physics:
+                                      const AlwaysScrollableScrollPhysics(),
+                                  scrollDirection: Axis.vertical,
+                                  itemCount: serialNumberList.length,
+                                  itemBuilder: (context, index) {
+                                    var item = serialNumberList[index];
+                                    code = item.label;
+
+                                    bool isHighlighted = false;
+                                    isHighlighted =
+                                        serialNumberResult.contains(item);
+                                    debugPrint("isHighlighted: $isHighlighted");
+
+                                    return Padding(
+                                        padding: EdgeInsets.only(bottom: 8.h),
+                                        child: buildItemQuantity(
+                                          code,
+                                          isHighlighted: isHighlighted,
+                                        ));
+                                  }),
+                            )
+                          : Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                buildItemQuantity(
+                                  code,
+                                  itemProduct: product,
+                                ),
+                              ],
+                            ),
                     ),
                     Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -201,37 +258,6 @@ class _ReceiptProductMenuOfProductDetailScreenState
                   ],
                 ),
               )
-              // Padding(
-              //   padding: EdgeInsets.symmetric(horizontal: 16.w),
-              //   child: (tracking.toLowerCase().contains("serial number"))
-              //       ? SizedBox(
-              //           height: 600.h,
-              //           child: ListView.builder(
-              //               shrinkWrap: true,
-              //               physics: const AlwaysScrollableScrollPhysics(),
-              //               scrollDirection: Axis.vertical,
-              //               itemCount: serialNumberList.length,
-              //               itemBuilder: (context, index) {
-              //                 var item = serialNumberList[index];
-              //                 code = item.label;
-
-              //                 bool isHighlighted = false;
-              //                 isHighlighted = serialNumberResult.contains(item);
-              //                 debugPrint("isHighlighted: $isHighlighted");
-
-              //                 return Padding(
-              //                     padding: EdgeInsets.only(bottom: 8.h),
-              //                     child: buildItemQuantity(
-              //                       code,
-              //                       isHighlighted: isHighlighted,
-              //                     ));
-              //               }),
-              //         )
-              //       : buildItemQuantity(
-              //           code,
-              //           itemProduct: product,
-              //         ),
-              // )
             ],
           ),
           floatingActionButton: reusableFloatingActionButton(

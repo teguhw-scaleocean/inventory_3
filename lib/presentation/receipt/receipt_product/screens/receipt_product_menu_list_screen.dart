@@ -43,13 +43,23 @@ class _ReceiptProductMenuListScreenState
     tabs = ["All", "Waiting", "Ready", "Late"];
     listReceipt = [
       Receipt(
+        id: 8,
+        name: "WH/IN/00018",
+        status: "Ready",
+        packageName: "Package: Pallet",
+        packageStatus: "Tracking: Serial Number",
+        dateTime: "18/08/2024 - 15:00",
+        destination: "To: Main Storage Area",
+        statusColor: ColorName.readyColor,
+      ),
+      Receipt(
         id: 7,
         name: "WH/IN/00017",
         status: "Late",
         packageName: "Package: Pallet",
         packageStatus: "Tracking: No Tracking",
         dateTime: "17/07/2024 - 15:00",
-        destination: "Shipping and Receive Dock",
+        destination: "To: Shipping and Receive Dock",
         statusColor: ColorName.lateColor,
       ),
       Receipt(
@@ -59,7 +69,7 @@ class _ReceiptProductMenuListScreenState
         packageName: "Package: Pallet",
         packageStatus: "Tracking: Lots",
         dateTime: "14/06/2024 - 15:00",
-        destination: "Medical Storage",
+        destination: "To: Medical Storage",
         statusColor: ColorName.waitingColor,
       ),
       Receipt(

@@ -258,7 +258,7 @@ class _ReceiptProductMenuOfProductDetailScreenState
                   debugPrint("resultOfAddProduct: $value");
                   setState(() {
                     var quantityDouble = value;
-                    product.productQty = quantityDouble;
+                    product.productQty = product.productQty + quantityDouble;
                     // quantity = quantityDouble.toString();
                     debugPrint("quantityDouble: ${product.productQty}");
                   });

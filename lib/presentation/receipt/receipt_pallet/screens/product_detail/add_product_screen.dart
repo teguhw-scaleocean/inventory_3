@@ -120,14 +120,14 @@ class _AddProductScreenState extends State<AddProductScreen> {
                     "listSerialNumber: $listSerialNumber.map((e) => e.toJson())");
                 Navigator.pop(context, listSerialNumber);
               } else {
-                if (noTrackingKey.currentState!.validate()) {
-                  debugPrint("totalQty: $totalQty");
-                  // Navigator.pop(context, totalQty);
-                  if (totalQty > 0) {
-                    Navigator.pop(context, totalQty);
-                  }
-                  return;
+                var checkResultQty = context.read<CountCubit>().state.quantity;
+                debugPrint("checkResultQty: $checkResultQty");
+                totalQty = checkResultQty;
+                debugPrint("totalQty: $totalQty");
+                if (totalQty > 0) {
+                  Navigator.pop(context, totalQty);
                 }
+                return;
               }
             },
             height: 40.h,

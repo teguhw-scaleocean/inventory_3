@@ -70,17 +70,16 @@ class _ReceiptProductMenuOfProductDetailScreenState
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: Scaffold(
-        appBar: CustomAppBar(
-          onTap: () => Navigator.of(context).pop(product),
-          title: "Product Detail",
-        ),
-        body: RefreshIndicator(
-          onRefresh: () => Future.delayed(const Duration(seconds: 1), () {
-            setState(() {});
-          }),
-          child: ListView(
+      child: DefaultTabController(
+        length: _tabs.length,
+        child: Scaffold(
+          appBar: CustomAppBar(
+            onTap: () => Navigator.of(context).pop(product),
+            title: "Product Detail",
+          ),
+          body: Column(
             // crossAxisAlignment: CrossAxisAlignment.start,
+            // shrinkWrap: true,
             children: [
               Container(
                 padding: EdgeInsets.symmetric(horizontal: 16.w),
@@ -154,88 +153,120 @@ class _ReceiptProductMenuOfProductDetailScreenState
                   setState: setState,
                 ),
               ),
-              SizedBox(height: 12.h),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16.w),
-                child: (tracking.toLowerCase().contains("serial number"))
-                    ? SizedBox(
-                        height: 600.h,
-                        child: ListView.builder(
-                            shrinkWrap: true,
-                            physics: const AlwaysScrollableScrollPhysics(),
-                            scrollDirection: Axis.vertical,
-                            itemCount: serialNumberList.length,
-                            itemBuilder: (context, index) {
-                              var item = serialNumberList[index];
-                              code = item.label;
-
-                              bool isHighlighted = false;
-                              isHighlighted = serialNumberResult.contains(item);
-                              debugPrint("isHighlighted: $isHighlighted");
-
-                              return Padding(
-                                  padding: EdgeInsets.only(bottom: 8.h),
-                                  child: buildItemQuantity(
-                                    code,
-                                    isHighlighted: isHighlighted,
-                                  ));
-                            }),
-                      )
-                    : buildItemQuantity(
-                        code,
-                        itemProduct: product,
+              // SizedBox(height: 12.h),
+              Expanded(
+                child: TabBarView(
+                  controller: tabController,
+                  children: [
+                    Container(
+                      padding: EdgeInsets.symmetric(
+                          horizontal: 16.w, vertical: 12.h),
+                      child: Column(
+                        children: [
+                          buildItemQuantity(code, itemProduct: product),
+                        ],
                       ),
+                    ),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text(
+                          "No items scanned or updated yet",
+                          style: BaseText.grey10Text14,
+                        ),
+                        Text(
+                          "Completed items will be shown here.",
+                          style: BaseText.grey1Text14.copyWith(
+                            fontWeight: BaseText.light,
+                          ),
+                        )
+                      ],
+                    )
+                  ],
+                ),
               )
+              // Padding(
+              //   padding: EdgeInsets.symmetric(horizontal: 16.w),
+              //   child: (tracking.toLowerCase().contains("serial number"))
+              //       ? SizedBox(
+              //           height: 600.h,
+              //           child: ListView.builder(
+              //               shrinkWrap: true,
+              //               physics: const AlwaysScrollableScrollPhysics(),
+              //               scrollDirection: Axis.vertical,
+              //               itemCount: serialNumberList.length,
+              //               itemBuilder: (context, index) {
+              //                 var item = serialNumberList[index];
+              //                 code = item.label;
+
+              //                 bool isHighlighted = false;
+              //                 isHighlighted = serialNumberResult.contains(item);
+              //                 debugPrint("isHighlighted: $isHighlighted");
+
+              //                 return Padding(
+              //                     padding: EdgeInsets.only(bottom: 8.h),
+              //                     child: buildItemQuantity(
+              //                       code,
+              //                       isHighlighted: isHighlighted,
+              //                     ));
+              //               }),
+              //         )
+              //       : buildItemQuantity(
+              //           code,
+              //           itemProduct: product,
+              //         ),
+              // )
             ],
           ),
-        ),
-        floatingActionButton: reusableFloatingActionButton(
-          onTap: () {
-            int indexToAddProduct = 0;
+          floatingActionButton: reusableFloatingActionButton(
+            onTap: () {
+              int indexToAddProduct = 0;
 
-            switch (tracking) {
-              case "Serial Number":
-                break;
-              case "No Tracking":
-                indexToAddProduct = 1;
-                break;
-              case "Lots":
-                indexToAddProduct = 2;
-                break;
-              default:
-            }
-
-            final resultOfAddProduct = Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => AddProductScreen(
-                  addType: indexToAddProduct,
-                  code: code,
-                ),
-              ),
-            );
-            resultOfAddProduct.then((value) {
-              if (value != null && value is double) {
-                debugPrint("resultOfAddProduct: $value");
-                setState(() {
-                  var quantityDouble = value;
-                  product.productQty = quantityDouble;
-                  // quantity = quantityDouble.toString();
-                  debugPrint("quantityDouble: ${product.productQty}");
-                });
-              } else if (value != null) {
-                setState(() {
-                  serialNumberResult = value as List<SerialNumber>;
-                  serialNumberList.insertAll(0, serialNumberResult);
-                  product.serialNumber = serialNumberList;
-                });
-
-                debugPrint(
-                    "serialNumberResult: $serialNumberResult.map((e) => e.toJson())");
+              switch (tracking) {
+                case "Serial Number":
+                  break;
+                case "No Tracking":
+                  indexToAddProduct = 1;
+                  break;
+                case "Lots":
+                  indexToAddProduct = 2;
+                  break;
+                default:
               }
-            });
-          },
-          icon: Icons.add,
+
+              final resultOfAddProduct = Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => AddProductScreen(
+                    addType: indexToAddProduct,
+                    code: code,
+                  ),
+                ),
+              );
+              resultOfAddProduct.then((value) {
+                if (value != null && value is double) {
+                  debugPrint("resultOfAddProduct: $value");
+                  setState(() {
+                    var quantityDouble = value;
+                    product.productQty = quantityDouble;
+                    // quantity = quantityDouble.toString();
+                    debugPrint("quantityDouble: ${product.productQty}");
+                  });
+                } else if (value != null) {
+                  setState(() {
+                    serialNumberResult = value as List<SerialNumber>;
+                    serialNumberList.insertAll(0, serialNumberResult);
+                    product.serialNumber = serialNumberList;
+                  });
+
+                  debugPrint(
+                      "serialNumberResult: $serialNumberResult.map((e) => e.toJson())");
+                }
+              });
+            },
+            icon: Icons.add,
+          ),
         ),
       ),
     );

@@ -50,6 +50,8 @@ class _ReceiptProductMenuOfProductDetailScreenState
   final _tabs = ["Not Done", "Done"];
   late TabController tabController;
 
+  bool isCardHighlighted = false;
+
   @override
   void initState() {
     super.initState();
@@ -172,7 +174,11 @@ class _ReceiptProductMenuOfProductDetailScreenState
                           horizontal: 16.w, vertical: 12.h),
                       child: Column(
                         children: [
-                          buildItemQuantity(code, itemProduct: product),
+                          buildItemQuantity(
+                            code,
+                            itemProduct: product,
+                            isHighlighted: isCardHighlighted,
+                          ),
                         ],
                       ),
                     ),
@@ -259,8 +265,9 @@ class _ReceiptProductMenuOfProductDetailScreenState
                   setState(() {
                     var quantityDouble = value;
                     product.productQty = product.productQty + quantityDouble;
-                    // quantity = quantityDouble.toString();
-                    debugPrint("quantityDouble: ${product.productQty}");
+                    isCardHighlighted = true;
+                    debugPrint(
+                        "quantityDouble: ${product.productQty}, isCardHighlighted: $isCardHighlighted");
                   });
                 } else if (value != null) {
                   setState(() {

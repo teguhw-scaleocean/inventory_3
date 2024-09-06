@@ -1,8 +1,11 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:inventory_v3/common/components/custom_app_bar.dart';
+import 'package:inventory_v3/presentation/receipt/receipt_pallet/cubit/count_cubit.dart';
+import 'package:inventory_v3/presentation/receipt/receipt_pallet/cubit/count_state.dart';
 
 import '../../../../../common/components/custom_form.dart';
 import '../../../../../common/components/custom_quantity_button.dart';
@@ -33,7 +36,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
   int addType = 0;
   String tracking = "";
 
-  final qtyController = TextEditingController();
+  var qtyController = TextEditingController();
   final serialNumberConhtroller = TextEditingController();
   List<TextEditingController> listSnController = [];
   List<SerialNumber> listSerialNumber = [];
@@ -45,6 +48,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
   double totalQty = 0.00;
   Color qtyIconColor = ColorName.grey18Color;
   Color qtyTextColor = ColorName.grey12Color;
+  Color borderColor = ColorName.borderColor;
 
   @override
   void initState() {
@@ -141,9 +145,8 @@ class _AddProductScreenState extends State<AddProductScreen> {
   }
 
   Widget _buildOtherSection(String labels, String code) {
-    return Form(
-      key: noTrackingKey,
-      child: Column(
+    return StatefulBuilder(builder: (context, otherSetState) {
+      return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -151,53 +154,88 @@ class _AddProductScreenState extends State<AddProductScreen> {
           SizedBox(height: 14.h),
           buildRequiredLabel("Quantity"),
           SizedBox(height: 4.h),
-          CustomQuantityButton(
-            controller: qtyController,
-            iconColor: qtyIconColor,
-            textColor: qtyTextColor,
-            onChanged: (v) {
-              // double? inputValue = 0.00;
-            },
-            onSubmitted: (v) {
-              setState(() {
-                totalQty = double.tryParse(v) ?? 0.00;
+          BlocConsumer<CountCubit, CountState>(listener: (context, state) {
+            debugPrint("qtyController listen: ${qtyController.text}");
+            qtyController.value = TextEditingValue(
+              text: state.quantity.toString(),
+            );
+          }, builder: (context, state) {
+            return CustomQuantityButton(
+              controller: qtyController,
+              borderColor: borderColor,
+              iconColor: qtyIconColor,
+              textColor: qtyTextColor,
+              onChanged: (v) {
+                // double? inputValue = 0.00;
+                if (v.isEmpty || v == "0") {
+                  otherSetState(() {
+                    borderColor = ColorName.badgeRedColor;
+                  });
+                } else {
+                  otherSetState(() {
+                    borderColor = ColorName.borderColor;
+                  });
+                }
+                debugPrint("borderColor: $borderColor, v: $v");
+              },
+              onSubmitted: (v) {
+                otherSetState(() {
+                  // totalQty = double.tryParse(v) ?? 0.00;
 
-                setState(() {
-                  qtyController.value = TextEditingValue(
-                    text: totalQty.toString(),
-                  );
+                  // // setState(() {
+                  // qtyController.value = TextEditingValue(
+                  //   text: totalQty.toString(),
+                  // );
 
-                  if (totalQty >= 1) {
-                    qtyIconColor = ColorName.grey10Color;
-                    qtyTextColor = ColorName.grey10Color;
-                  }
+                  // if (totalQty >= 1) {
+                  //   qtyIconColor = ColorName.grey10Color;
+                  //   qtyTextColor = ColorName.grey10Color;
+                  // }
+                  // });
                 });
-              });
-            },
-            onDecreased: () {
-              if (totalQty >= 1) {
-                setState(() {
-                  totalQty--;
-                  qtyController.text = totalQty.toString();
-                  qtyIconColor = ColorName.grey10Color;
-                  qtyTextColor = ColorName.grey10Color;
-                });
-              }
-            },
-            onIncreased: () {
-              // if (totalQty >= 1) {
-              setState(() {
-                totalQty++;
-                qtyController.text = totalQty.toString();
-                qtyIconColor = ColorName.grey10Color;
-                qtyTextColor = ColorName.grey10Color;
-              });
-              // }
-            },
-          ),
+              },
+              onDecreased: () {
+                // if (totalQty != 0.0) {
+                //   otherSetState(() {
+                //     totalQty--;
+                //     qtyController =
+                //         TextEditingController(text: totalQty.toString());
+                //     qtyIconColor = ColorName.grey10Color;
+                //     qtyTextColor = ColorName.grey10Color;
+                //     debugPrint("totalQty Increased: $totalQty");
+                //   });
+                // } else {
+                //   otherSetState(() {
+                //     borderColor = ColorName.badgeRedColor;
+                //     qtyIconColor = ColorName.grey18Color;
+                //   });
+                // }
+                if (state.quantity >= 1) {
+                  context.read<CountCubit>().decrement();
+                  // qtyController =
+                  //     TextEditingController(text: state.quantity.toString());
+                }
+              },
+              onIncreased: () {
+                // if (totalQty >= 1) {
+                // otherSetState(() {
+                //   qtyIconColor = ColorName.grey10Color;
+                //   qtyTextColor = ColorName.grey10Color;
+                //   borderColor = ColorName.borderColor;
+                //   totalQty++;
+                //   qtyController =
+                //       TextEditingController(text: totalQty.toString());
+                // });
+                // }
+                context.read<CountCubit>().increment();
+                // qtyController =
+                //     TextEditingController(text: state.quantity.toString());
+              },
+            );
+          }),
         ],
-      ),
-    );
+      );
+    });
   }
 
   Form _buildSerialNumberSection() {

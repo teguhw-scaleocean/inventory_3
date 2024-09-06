@@ -11,6 +11,7 @@ class CustomQuantityButton extends StatelessWidget {
     required this.controller,
     required this.iconColor,
     required this.textColor,
+    this.borderColor,
     required this.onDecreased,
     required this.onIncreased,
     this.onChanged,
@@ -24,6 +25,7 @@ class CustomQuantityButton extends StatelessWidget {
 
   final Color iconColor;
   final Color textColor;
+  final Color? borderColor;
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +35,8 @@ class CustomQuantityButton extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       decoration: ShapeDecoration(
         shape: RoundedRectangleBorder(
-          side: const BorderSide(width: 1, color: Color(0xFFE9E9E9)),
+          side:
+              BorderSide(width: 1, color: borderColor ?? ColorName.borderColor),
           borderRadius: BorderRadius.circular(6.r),
         ),
       ),
@@ -108,7 +111,9 @@ class CustomQuantityButton extends StatelessWidget {
                 fontFamily: 'Lexend',
                 fontWeight: FontWeight.w400,
               ),
-              decoration: const InputDecoration.collapsed(hintText: ""),
+              decoration: const InputDecoration.collapsed(
+                hintText: "",
+              ),
               onSubmitted: onSubmitted,
               onChanged: onChanged,
               inputFormatters: <TextInputFormatter>[

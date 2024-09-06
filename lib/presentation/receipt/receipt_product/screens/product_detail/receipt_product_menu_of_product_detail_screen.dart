@@ -4,22 +4,27 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:smooth_highlight/smooth_highlight.dart';
 
-import '../../../../common/components/custom_app_bar.dart';
-import '../../../../common/components/custom_divider.dart';
-import '../../../../common/components/reusable_floating_action_button.dart';
-import '../../../../common/components/reusable_search_bar_border.dart';
-import '../../../../common/components/reusable_tab_bar.dart';
-import '../../../../common/theme/color/color_name.dart';
-import '../../../../common/theme/text/base_text.dart';
-import '../../../../data/model/product.dart';
-import '../../receipt_pallet/screens/product_detail/add_product_screen.dart';
+import '../../../../../common/components/custom_app_bar.dart';
+import '../../../../../common/components/custom_divider.dart';
+import '../../../../../common/components/reusable_floating_action_button.dart';
+import '../../../../../common/components/reusable_search_bar_border.dart';
+import '../../../../../common/components/reusable_tab_bar.dart';
+import '../../../../../common/components/reusable_widget.dart';
+import '../../../../../common/theme/color/color_name.dart';
+import '../../../../../common/theme/text/base_text.dart';
+import '../../../../../data/model/product.dart';
+import '../../../receipt_pallet/screens/product_detail/add_product_screen.dart';
 
 class ReceiptProductMenuOfProductDetailScreen extends StatefulWidget {
   final Product product;
   final String tracking;
+  final String status;
 
   const ReceiptProductMenuOfProductDetailScreen(
-      {super.key, required this.product, required this.tracking});
+      {super.key,
+      required this.product,
+      required this.tracking,
+      required this.status});
 
   @override
   State<ReceiptProductMenuOfProductDetailScreen> createState() =>
@@ -31,6 +36,7 @@ class _ReceiptProductMenuOfProductDetailScreenState
     with SingleTickerProviderStateMixin {
   late Product product;
   String tracking = "";
+  String status = "";
 
   final searchSerialNumberController = TextEditingController();
   final searchKey = GlobalKey<FormState>();
@@ -54,6 +60,7 @@ class _ReceiptProductMenuOfProductDetailScreenState
 
     product = widget.product;
     tracking = widget.tracking;
+    status = widget.status;
 
     // Serial Number
     serialNumberList = widget.product.serialNumber ?? <SerialNumber>[];
@@ -109,6 +116,8 @@ class _ReceiptProductMenuOfProductDetailScreenState
                         color: ColorName.dateTimeColor,
                       ),
                     ),
+                    SizedBox(height: 18.h),
+                    buildScanAndUpdateSection(status: status),
                     SizedBox(height: 16.h),
                   ],
                 ),

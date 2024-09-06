@@ -28,7 +28,7 @@ import '../../../../common/components/status_badge.dart';
 import '../../../../common/extensions/empty_space_extension.dart';
 import '../../../../common/theme/color/color_name.dart';
 import '../../../../common/theme/text/base_text.dart';
-import 'receipt_product_menu_of_product_detail_screen.dart';
+import 'product_detail/receipt_product_menu_of_product_detail_screen.dart';
 
 class ReceiptProductMenuDetailScreen extends StatefulWidget {
   final Receipt? receipt;
@@ -640,6 +640,7 @@ class _ReceiptProductMenuDetailScreenState
             builder: (context) => ReceiptProductMenuOfProductDetailScreen(
               product: product0,
               tracking: tracking,
+              status: receipt.status,
             ),
           ),
         );

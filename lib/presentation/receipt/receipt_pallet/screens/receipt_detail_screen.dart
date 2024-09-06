@@ -24,6 +24,7 @@ import 'package:inventory_v3/presentation/receipt/receipt_pallet/screens/pallet/
 import 'package:inventory_v3/presentation/receipt/receipt_pallet/screens/receipt_product_detail.dart';
 import 'package:inventory_v3/presentation/receipt/receipt_pallet/widget/scan_view_widget.dart';
 
+import '../../../../common/components/reusable_widget.dart';
 import '../../../../common/components/status_badge.dart';
 import '../../../../common/extensions/empty_space_extension.dart';
 import '../../../../common/theme/color/color_name.dart';
@@ -571,66 +572,6 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
               ),
             ),
           ]),
-    );
-  }
-
-  Row buildScanAndUpdateSection(
-      {required String status, Function()? onScan, Function()? onUpdate}) {
-    Color? scanButtonColor;
-    Color? updateButtonColor;
-
-    switch (status) {
-      case "Late":
-        scanButtonColor = ColorName.mainColor;
-        updateButtonColor = ColorName.updateButtonColor;
-        break;
-      case "Ready":
-        scanButtonColor = ColorName.mainColor;
-        updateButtonColor = ColorName.updateButtonColor;
-        break;
-      default:
-        scanButtonColor = null;
-        updateButtonColor = null;
-    }
-
-    return Row(
-      children: [
-        Flexible(
-          child: GestureDetector(
-            onTap: onScan,
-            child: DisableButton(
-              height: 40.h,
-              width: double.infinity,
-              iconWidget: SvgPicture.asset(
-                LocalImages.scanIcons,
-                color: ColorName.whiteColor,
-                height: 16.w,
-                width: 16.w,
-              ),
-              title: "Scan",
-              color: scanButtonColor,
-            ),
-          ),
-        ),
-        SizedBox(width: 16.w),
-        Flexible(
-          child: GestureDetector(
-            onTap: onUpdate,
-            child: DisableButton(
-              height: 40.h,
-              width: double.infinity,
-              // width: 156,
-              iconWidget: SvgPicture.asset(
-                LocalImages.updatePalleteIcons,
-                height: 16.w,
-                width: 16.w,
-              ),
-              title: "Update Pallet",
-              color: updateButtonColor,
-            ),
-          ),
-        ),
-      ],
     );
   }
 

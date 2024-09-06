@@ -9,8 +9,10 @@ import 'status_badge.dart';
 
 class ReceiptProductItemCard extends StatelessWidget {
   final Receipt receipt;
+  final int index;
 
-  const ReceiptProductItemCard({super.key, required this.receipt});
+  const ReceiptProductItemCard(
+      {super.key, required this.receipt, required this.index});
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +31,7 @@ class ReceiptProductItemCard extends StatelessWidget {
       },
       child: Container(
         margin: EdgeInsets.only(
-          top: (receipt.id == 1) ? 8.h : 0,
+          top: (index == 0) ? 12.h : 0,
           bottom: 10.h,
         ),
         padding: EdgeInsets.fromLTRB(14.w, 12.h, 14.w, 10.h),

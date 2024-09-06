@@ -43,6 +43,16 @@ class _ReceiptProductMenuListScreenState
     tabs = ["All", "Waiting", "Ready", "Late"];
     listReceipt = [
       Receipt(
+        id: 7,
+        name: "WH/IN/00017",
+        status: "Late",
+        packageName: "Package: Pallet",
+        packageStatus: "Tracking: No Tracking",
+        dateTime: "17/07/2024 - 15:00",
+        destination: "Shipping and Receive Dock",
+        statusColor: ColorName.lateColor,
+      ),
+      Receipt(
         id: 6,
         name: "WH/IN/00016",
         status: "Waiting",
@@ -195,7 +205,10 @@ class _ReceiptProductMenuListScreenState
           itemBuilder: (context, index) {
             var item = listReceipt[index];
 
-            return ReceiptProductItemCard(receipt: item);
+            return ReceiptProductItemCard(
+              receipt: item,
+              index: index,
+            );
           }),
     );
   }

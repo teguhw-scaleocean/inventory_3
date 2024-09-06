@@ -145,7 +145,10 @@ class _AddProductScreenState extends State<AddProductScreen> {
   }
 
   Widget _buildOtherSection(String labels, String code) {
+    bool isQtyButtonEnabled = false;
+
     return StatefulBuilder(builder: (context, otherSetState) {
+      double value = 0.0;
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
@@ -155,44 +158,61 @@ class _AddProductScreenState extends State<AddProductScreen> {
           buildRequiredLabel("Quantity"),
           SizedBox(height: 4.h),
           BlocConsumer<CountCubit, CountState>(listener: (context, state) {
-            debugPrint("qtyController listen: ${qtyController.text}");
             qtyController.value = TextEditingValue(
               text: state.quantity.toString(),
             );
+            debugPrint("qtyController listen: ${qtyController.text}");
+
+            isQtyButtonEnabled = state.quantity > 0;
           }, builder: (context, state) {
+            borderColor = (isQtyButtonEnabled)
+                ? ColorName.borderColor
+                : ColorName.badgeRedColor;
+
+            qtyIconColor = (isQtyButtonEnabled)
+                ? ColorName.grey10Color
+                : ColorName.grey18Color;
+            qtyTextColor = (isQtyButtonEnabled)
+                ? ColorName.grey10Color
+                : ColorName.grey12Color;
+
             return CustomQuantityButton(
               controller: qtyController,
               borderColor: borderColor,
               iconColor: qtyIconColor,
               textColor: qtyTextColor,
               onChanged: (v) {
-                // double? inputValue = 0.00;
-                if (v.isEmpty || v == "0") {
+                if (v.isEmpty || v == "0.0") {
                   otherSetState(() {
-                    borderColor = ColorName.badgeRedColor;
+                    isQtyButtonEnabled = false;
                   });
                 } else {
                   otherSetState(() {
-                    borderColor = ColorName.borderColor;
+                    isQtyButtonEnabled = true;
                   });
                 }
-                debugPrint("borderColor: $borderColor, v: $v");
               },
               onSubmitted: (v) {
                 otherSetState(() {
-                  // totalQty = double.tryParse(v) ?? 0.00;
-
-                  // // setState(() {
-                  // qtyController.value = TextEditingValue(
-                  //   text: totalQty.toString(),
-                  // );
-
-                  // if (totalQty >= 1) {
-                  //   qtyIconColor = ColorName.grey10Color;
-                  //   qtyTextColor = ColorName.grey10Color;
-                  // }
-                  // });
+                  value = double.parse(v);
+                  qtyController.value = TextEditingValue(
+                    text: value.toString(),
+                  );
                 });
+                // otherSetState(() {
+                // totalQty = double.tryParse(v) ?? 0.00;
+
+                // // setState(() {
+                // qtyController.value = TextEditingValue(
+                //   text: totalQty.toString(),
+                // );
+
+                // if (totalQty >= 1) {
+                //   qtyIconColor = ColorName.grey10Color;
+                //   qtyTextColor = ColorName.grey10Color;
+                // }
+                // });
+                // });
               },
               onDecreased: () {
                 // if (totalQty != 0.0) {
@@ -211,12 +231,13 @@ class _AddProductScreenState extends State<AddProductScreen> {
                 //   });
                 // }
                 if (state.quantity >= 1) {
-                  context.read<CountCubit>().decrement();
+                  context.read<CountCubit>().decrement(value);
                   // qtyController =
                   //     TextEditingController(text: state.quantity.toString());
                 }
               },
               onIncreased: () {
+                value = double.parse(qtyController.text);
                 // if (totalQty >= 1) {
                 // otherSetState(() {
                 //   qtyIconColor = ColorName.grey10Color;
@@ -227,7 +248,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                 //       TextEditingController(text: totalQty.toString());
                 // });
                 // }
-                context.read<CountCubit>().increment();
+                context.read<CountCubit>().increment(value);
                 // qtyController =
                 //     TextEditingController(text: state.quantity.toString());
               },

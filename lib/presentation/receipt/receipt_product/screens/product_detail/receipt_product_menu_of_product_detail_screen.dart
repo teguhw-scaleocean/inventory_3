@@ -160,9 +160,12 @@ class _ReceiptProductMenuOfProductDetailScreenState
                             // debugPrint("scanResultValue: $value");
 
                             Future.delayed(const Duration(seconds: 2), () {
+                              String scannedItem =
+                                  "Serial Number: $_scanBarcode";
+
                               onShowSuccessDialog(
                                 context: context,
-                                scannedItem: _scanBarcode,
+                                scannedItem: scannedItem,
                               );
                             });
                           }
@@ -458,14 +461,32 @@ class _ReceiptProductMenuOfProductDetailScreenState
                   style: BaseText.black2Text14
                       .copyWith(fontWeight: BaseText.regular),
                 ),
-                Text(
-                  "Exp. Date: 12/07/2024 - 15:00",
-                  style: BaseText.baseTextStyle.copyWith(
-                    color: ColorName.dateTimeColor,
-                    fontSize: 12.sp,
-                    fontWeight: BaseText.light,
-                  ),
-                ),
+                (isInput == true)
+                    ? RichText(
+                        text: TextSpan(children: [
+                        TextSpan(
+                          text: "Exp. Date: ",
+                          style: BaseText.baseTextStyle.copyWith(
+                            color: ColorName.dateTimeColor,
+                            fontSize: 12.sp,
+                            fontWeight: BaseText.light,
+                          ),
+                        ),
+                        TextSpan(
+                            text: "-",
+                            style: BaseText.grey1Text13.copyWith(
+                              color: ColorName.mainColor,
+                              fontWeight: BaseText.medium,
+                            ))
+                      ]))
+                    : Text(
+                        "Exp. Date: 12/07/2024 - 15:00",
+                        style: BaseText.baseTextStyle.copyWith(
+                          color: ColorName.dateTimeColor,
+                          fontSize: 12.sp,
+                          fontWeight: BaseText.light,
+                        ),
+                      ),
                 SizedBox(height: 12.h),
                 (isInput == true)
                     ? buildExpDateButton(

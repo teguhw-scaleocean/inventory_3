@@ -13,6 +13,7 @@ class Product {
   String? lotsCode;
   double productQty;
   List<SerialNumber>? serialNumber;
+  List<SerialNumber>? scannedSerialNumber;
 
   Product({
     required this.id,
@@ -24,6 +25,7 @@ class Product {
     this.lotsCode,
     required this.productQty,
     this.serialNumber,
+    this.scannedSerialNumber,
   });
 
   Product copyWith({
@@ -36,6 +38,7 @@ class Product {
     String? lotsCode,
     double? productQty,
     List<SerialNumber>? serialNumber,
+    List<SerialNumber>? scannedSerialNumber,
   }) {
     return Product(
       id: id ?? this.id,
@@ -47,6 +50,7 @@ class Product {
       lotsCode: lotsCode ?? this.lotsCode,
       productQty: productQty ?? this.productQty,
       serialNumber: serialNumber ?? this.serialNumber,
+      scannedSerialNumber: scannedSerialNumber ?? this.scannedSerialNumber,
     );
   }
 
@@ -61,6 +65,8 @@ class Product {
       'lotsCode': lotsCode,
       'productQty': productQty,
       'serialNumber': serialNumber?.map((x) => x.toMap()).toList(),
+      'scannedSerialNumber':
+          scannedSerialNumber?.map((x) => x.toMap()).toList(),
     };
   }
 
@@ -81,6 +87,13 @@ class Product {
               ),
             )
           : null,
+      scannedSerialNumber: map['scannedSerialNumber'] != null
+          ? List<SerialNumber>.from(
+              (map['scannedSerialNumber'] as List<int>).map<SerialNumber?>(
+                (x) => SerialNumber.fromMap(x as Map<String, dynamic>),
+              ),
+            )
+          : null,
     );
   }
 
@@ -91,7 +104,7 @@ class Product {
 
   @override
   String toString() {
-    return 'Product(id: $id, palletCode: $palletCode, productName: $productName, code: $code, dateTime: $dateTime, sku: $sku, lotsCode: $lotsCode, productQty: $productQty, serialNumber: $serialNumber)';
+    return 'Product(id: $id, palletCode: $palletCode, productName: $productName, code: $code, dateTime: $dateTime, sku: $sku, lotsCode: $lotsCode, productQty: $productQty, serialNumber: $serialNumber, scannedSerialNumber: $scannedSerialNumber)';
   }
 
   @override
@@ -106,7 +119,8 @@ class Product {
         other.sku == sku &&
         other.lotsCode == lotsCode &&
         other.productQty == productQty &&
-        listEquals(other.serialNumber, serialNumber);
+        listEquals(other.serialNumber, serialNumber) &&
+        listEquals(other.scannedSerialNumber, scannedSerialNumber);
   }
 
   @override
@@ -119,7 +133,8 @@ class Product {
         sku.hashCode ^
         lotsCode.hashCode ^
         productQty.hashCode ^
-        serialNumber.hashCode;
+        serialNumber.hashCode ^
+        scannedSerialNumber.hashCode;
   }
 }
 
@@ -281,24 +296,24 @@ List<Product> products3 = [
     code: "NEB_14578",
     // lotsCode: "LOTS-2024-001A",
     dateTime: "Sch. Date: 12/07/2024 - 15:30",
-    productQty: 11,
-  ),
-  Product(
-    id: 2,
-    palletCode: "A4910",
-    productName: "Surgical Masks",
-    sku: "BPM201-346",
-    code: "MASK_12942 ",
-    // lotsCode: "LOTS-2024-002A",
-    dateTime: "Sch. Date: 28/07/2024 - 14:00",
     productQty: 12,
   ),
   Product(
+    id: 2,
+    palletCode: "A4912",
+    productName: "Surgical Masks",
+    sku: "BPM201-342",
+    code: "MASK_12942 ",
+    // lotsCode: "LOTS-2024-002A",
+    dateTime: "Sch. Date: 28/07/2024 - 14:00",
+    productQty: 11,
+  ),
+  Product(
     id: 3,
-    palletCode: "A4910",
+    palletCode: "A4920",
     productName: "Essence Mascara",
-    sku: "BPM201-347",
-    code: "EM_12942",
+    sku: "BPM201-350",
+    code: "EM_12944",
     // lotsCode: "LOTS-2024-003A",
     dateTime: "Sch. Date: 02/07/2024 - 14:00",
     productQty: 14,

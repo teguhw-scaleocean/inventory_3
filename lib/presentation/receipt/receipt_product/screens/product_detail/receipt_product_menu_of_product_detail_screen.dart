@@ -158,6 +158,7 @@ class _ReceiptProductMenuOfProductDetailScreenState
                               serialNumberList.removeWhere(
                                   (element) => element == selectedSerialNumber);
                               serialNumberResult.add(selectedSerialNumber);
+                              product.scannedSerialNumber = serialNumberResult;
                             });
                             // debugPrint("scanResultValue: $value");
 

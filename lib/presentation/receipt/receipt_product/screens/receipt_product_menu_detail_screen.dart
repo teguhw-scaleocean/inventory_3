@@ -56,6 +56,8 @@ class _ReceiptProductMenuDetailScreenState
 
   List<dynamic> palletUpdates = [];
 
+  bool isSchDateEnabled = true;
+
   var selectedUpdatePallet;
 
   @override
@@ -649,7 +651,12 @@ class _ReceiptProductMenuDetailScreenState
       case "Serial Number":
         // Serial Number
         assignToReceive(product0);
+        assignToDone(product0);
         code = product0.code;
+
+        debugPrint(
+            "listScanned: ${listProducts[1].scannedSerialNumber?.length.toString()}");
+
         break;
       case "No Tracking":
         _receive = product0.productQty.toString();
@@ -682,10 +689,12 @@ class _ReceiptProductMenuDetailScreenState
         resultOfProduct.then((value) {
           if (value != null) {
             debugPrint("value: $value");
-            setState(() {
-              product0 = value as Product;
-              assignToReceive(product0);
-            });
+            setState(() {});
+            // setState(() {
+            //   product0 = value as Product;
+            //   assignToReceive(product0);
+            //   assignToDone(product0);
+            // });
           }
         });
       },
@@ -736,45 +745,26 @@ class _ReceiptProductMenuDetailScreenState
                     ),
                   ),
                   SizedBox(height: 10.h),
-                  RichText(
-                    text: TextSpan(children: [
-                      TextSpan(
-                        text: "Sch. Date: ",
-                        style: BaseText.baseTextStyle.copyWith(
-                          fontSize: 14.sp,
-                          fontWeight: BaseText.light,
-                          color: ColorName.dateTimeColor,
-                        ),
-                      ),
-                      TextSpan(
-                        text: date,
-                        style: BaseText.baseTextStyle.copyWith(
-                          fontSize: 14.sp,
-                          fontWeight: BaseText.regular,
-                          color: ColorName.dateTimeColor,
-                        ),
-                      ),
-                      WidgetSpan(
-                          child: Padding(
-                        padding: EdgeInsets.symmetric(
-                            vertical: 6.h, horizontal: 2.5.w),
-                        child: Container(
-                          width: 7.w,
-                          height: 1.h,
-                          color: ColorName.grey2Color,
-                          alignment: Alignment.center,
-                        ),
-                      )),
-                      TextSpan(
-                        text: time,
-                        style: BaseText.baseTextStyle.copyWith(
-                          fontSize: 14.sp,
-                          fontWeight: BaseText.regular,
-                          color: ColorName.dateTimeColor,
-                        ),
-                      ),
-                    ]),
+                  buildDateTime(
+                    label: "Sch. Date: ",
+                    date: date,
+                    time: time,
+                    isEnable: isSchDateEnabled,
                   ),
+                  (_scanBarcode != "0.00")
+                      ? Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            buildDateTime(
+                              label: "Act. Date: ",
+                              date: date,
+                              time: time,
+                              isEnable: true,
+                            ),
+                            SizedBox(height: 6.h),
+                          ],
+                        )
+                      : const SizedBox(),
                   SizedBox(height: 10.h),
                 ],
               ),
@@ -797,10 +787,66 @@ class _ReceiptProductMenuDetailScreenState
     );
   }
 
+  RichText buildDateTime({
+    required String label,
+    required String date,
+    required String time,
+    bool isEnable = true,
+  }) {
+    return RichText(
+      text: TextSpan(children: [
+        TextSpan(
+          text: label,
+          style: BaseText.baseTextStyle.copyWith(
+            fontSize: 14.sp,
+            fontWeight: BaseText.light,
+            color: (isEnable) ? ColorName.dateTimeColor : ColorName.grey2Color,
+          ),
+        ),
+        TextSpan(
+          text: date,
+          style: BaseText.baseTextStyle.copyWith(
+            fontSize: 14.sp,
+            fontWeight: BaseText.regular,
+            color: (isEnable) ? ColorName.dateTimeColor : ColorName.grey2Color,
+          ),
+        ),
+        WidgetSpan(
+            child: Padding(
+          padding: EdgeInsets.symmetric(vertical: 6.h, horizontal: 2.5.w),
+          child: Container(
+            width: 7.w,
+            height: 1.h,
+            color: ColorName.grey2Color,
+            alignment: Alignment.center,
+          ),
+        )),
+        TextSpan(
+          text: time,
+          style: BaseText.baseTextStyle.copyWith(
+            fontSize: 14.sp,
+            fontWeight: BaseText.regular,
+            color: (isEnable) ? ColorName.dateTimeColor : ColorName.grey2Color,
+          ),
+        ),
+      ]),
+    );
+  }
+
   void assignToReceive(Product product0) {
     if (product0.serialNumber != null) {
       double? receiveDouble = product0.serialNumber?.length.toDouble();
       _receive = receiveDouble.toString();
+    }
+  }
+
+  void assignToDone(Product product0) {
+    if (product0.scannedSerialNumber != null) {
+      double? doneDouble = product0.scannedSerialNumber?.length.toDouble();
+      _scanBarcode = doneDouble.toString();
+      isSchDateEnabled = false;
+    } else {
+      _scanBarcode = _scanBarcode;
     }
   }
 

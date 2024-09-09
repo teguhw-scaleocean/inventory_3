@@ -22,4 +22,6 @@ class TextConstants {
 
   static String get scanPalletTittle =>
       "Scan your pallet barcode\nto confirm receipt.";
+  static String get scanProductTittle =>
+      "Scan the product to instantly\nchoose it from the list.";
 }

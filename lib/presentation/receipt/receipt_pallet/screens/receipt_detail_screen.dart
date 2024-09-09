@@ -19,6 +19,7 @@ import 'package:inventory_v3/common/constants/local_images.dart';
 import 'package:inventory_v3/data/model/pallet.dart';
 import 'package:inventory_v3/data/model/product.dart';
 import 'package:inventory_v3/data/model/receipt.dart';
+import 'package:inventory_v3/data/model/scan_view.dart';
 import 'package:inventory_v3/presentation/receipt/receipt_pallet/cubit/add_pallet_cubit/add_pallet_state.dart';
 import 'package:inventory_v3/presentation/receipt/receipt_pallet/screens/pallet/add_pallet_screen.dart';
 import 'package:inventory_v3/presentation/receipt/receipt_pallet/screens/receipt_product_detail.dart';
@@ -175,8 +176,9 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
                       final scanResult = await Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const QRViewExample(
+                          builder: (context) => const ScanView(
                             expectedValue: "18.00",
+                            scanType: ScanViewType.pallet,
                           ),
                         ),
                       ).then((value) {

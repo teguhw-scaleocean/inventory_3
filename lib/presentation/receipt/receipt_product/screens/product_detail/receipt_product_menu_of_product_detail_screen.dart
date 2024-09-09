@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:inventory_v3/data/model/scan_view.dart';
 import 'package:smooth_highlight/smooth_highlight.dart';
 
 import '../../../../../common/components/custom_app_bar.dart';
@@ -139,8 +140,9 @@ class _ReceiptProductMenuOfProductDetailScreenState
                         final scanResult = await Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => const QRViewExample(
+                            builder: (context) => const ScanView(
                               expectedValue: "BP12345678450",
+                              scanType: ScanViewType.product,
                             ),
                           ),
                         ).then((value) {

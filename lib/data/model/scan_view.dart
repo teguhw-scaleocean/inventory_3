@@ -1,0 +1,1 @@
+enum ScanViewType { pallet, product }

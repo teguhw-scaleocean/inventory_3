@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:inventory_v3/common/constants/text_constants.dart';
+import 'package:inventory_v3/data/model/scan_view.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 
 import '../../../../common/components/primary_button.dart';
@@ -13,24 +14,31 @@ import '../../../../common/constants/local_images.dart';
 import '../../../../common/theme/color/color_name.dart';
 import '../../../../common/theme/text/base_text.dart';
 
-class QRViewExample extends StatefulWidget {
+class ScanView extends StatefulWidget {
   final String expectedValue;
+  final ScanViewType scanType;
 
-  const QRViewExample({Key? key, required this.expectedValue})
+  const ScanView(
+      {Key? key, required this.expectedValue, required this.scanType})
       : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => _QRViewExampleState();
+  State<StatefulWidget> createState() => _ScanViewState();
 }
 
-class _QRViewExampleState extends State<QRViewExample> {
+class _ScanViewState extends State<ScanView> {
   Barcode? result;
   QRViewController? controller;
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
   Color bgColor = Colors.transparent;
   bool isFlashOn = false;
 
+  late ScanViewType scanViewType;
+
   String expectedValue = "";
+
+  String appBarTitle = "";
+  String labelOfScan = "";
 
   // In order to get hot reload to work we need to pause the camera if the platform
   // is android, or resume the camera if the platform is iOS.
@@ -48,6 +56,19 @@ class _QRViewExampleState extends State<QRViewExample> {
     super.initState();
 
     expectedValue = widget.expectedValue;
+    scanViewType = widget.scanType;
+
+    switch (scanViewType) {
+      case ScanViewType.pallet:
+        appBarTitle = "Scan Pallet";
+        labelOfScan = TextConstants.scanPalletTittle;
+        break;
+      case ScanViewType.product:
+        appBarTitle = "Scan Product";
+        labelOfScan = TextConstants.scanProductTittle;
+        break;
+      default:
+    }
   }
 
   Future getFlashStatus() async {
@@ -87,7 +108,7 @@ class _QRViewExampleState extends State<QRViewExample> {
                               ),
                             ),
                             Text(
-                              "Scan Pallet",
+                              appBarTitle,
                               style: BaseText.whiteTextStyle.copyWith(
                                   fontSize: 16.sp, fontWeight: BaseText.medium),
                             )
@@ -143,7 +164,7 @@ class _QRViewExampleState extends State<QRViewExample> {
                     GestureDetector(
                       onTap: () async => await controller!.pauseCamera(),
                       child: Text(
-                        TextConstants.scanPalletTittle,
+                        labelOfScan,
                         textAlign: TextAlign.center,
                         style: BaseText.whiteTextStyle.copyWith(
                           fontSize: 18.sp,

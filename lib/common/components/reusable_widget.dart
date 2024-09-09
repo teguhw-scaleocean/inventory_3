@@ -1,3 +1,4 @@
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -165,4 +166,58 @@ Row buildScanAndUpdateSection(
       ),
     ],
   );
+}
+
+onShowSuccessDialog({required BuildContext context, String? scannedItem}) {
+  return AwesomeDialog(
+    context: context,
+    animType: AnimType.bottomSlide,
+    headerAnimationLoop: false,
+    dialogType: DialogType.success,
+    showCloseIcon: true,
+    width: double.infinity,
+    // padding: EdgeInsets.symmetric(horizontal: 16.w),
+    body: SizedBox(
+      // width: MediaQuery.sizeOf(context).width,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(height: 10.h),
+          Text(
+            'Scan Successful!',
+            style: BaseText.black2TextStyle.copyWith(
+              fontSize: 16.sp,
+              fontWeight: BaseText.semiBold,
+            ),
+          ),
+          Container(height: 4.h),
+          Text('Great job! You successfully scanned',
+              style: BaseText.grey2Text14.copyWith(fontWeight: BaseText.light)),
+          Container(height: 1.h),
+          Text(scannedItem ?? "",
+              textAlign: TextAlign.center,
+              style:
+                  BaseText.mainText14.copyWith(fontWeight: BaseText.semiBold)),
+          SizedBox(height: 24.h),
+        ],
+      ),
+    ),
+    btnOkOnPress: () {
+      debugPrint('OnClcik');
+    },
+    // btnOkIcon: Icons.check_circle,
+    btnOk: PrimaryButton(
+      onPressed: () {
+        debugPrint('OnClcik OK');
+        Navigator.of(context).pop();
+      },
+      height: 40.h,
+      title: "OK",
+    ),
+    onDismissCallback: (type) {
+      debugPrint('Dialog Dissmiss from callback $type');
+    },
+  ).show();
 }

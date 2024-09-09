@@ -14,6 +14,7 @@ import '../../../../../common/theme/color/color_name.dart';
 import '../../../../../common/theme/text/base_text.dart';
 import '../../../../../data/model/product.dart';
 import '../../../receipt_pallet/screens/product_detail/add_product_screen.dart';
+import '../../../receipt_pallet/widget/scan_view_widget.dart';
 
 class ReceiptProductMenuOfProductDetailScreen extends StatefulWidget {
   final Product product;
@@ -37,6 +38,8 @@ class _ReceiptProductMenuOfProductDetailScreenState
   late Product product;
   String tracking = "";
   String status = "";
+  // Scan Result
+  String _scanBarcode = "";
 
   final searchSerialNumberController = TextEditingController();
   final searchKey = GlobalKey<FormState>();
@@ -69,22 +72,16 @@ class _ReceiptProductMenuOfProductDetailScreenState
     } else {
       // Serial Number
       serialNumberList = widget.product.serialNumber ?? <SerialNumber>[];
-      debugPrint("serialNumberList: $serialNumberList.map((e) => e.toJson())");
-
-      serialNumberList = [
-        SerialNumber(
+      serialNumberList = List.generate(
+        product.productQty.toInt(),
+        (index) => SerialNumber(
           id: Random().nextInt(100),
-          label: "BP1234567845",
+          label: "BP1234567845$index",
           expiredDateTime: "Exp. Date: 12/07/2024 - 16:00",
           quantity: 1,
         ),
-        SerialNumber(
-          id: Random().nextInt(100),
-          label: "BP1234567846",
-          expiredDateTime: "Exp. Date: 12/07/2024 - 16:00",
-          quantity: 1,
-        )
-      ];
+      );
+      debugPrint("serialNumberList: $serialNumberList.map((e) => e.toJson())");
     }
   }
 
@@ -134,7 +131,33 @@ class _ReceiptProductMenuOfProductDetailScreenState
                       ),
                     ),
                     SizedBox(height: 18.h),
-                    buildScanAndUpdateSection(status: status),
+                    buildScanAndUpdateSection(
+                      status: status,
+                      onScan: () async {
+                        final scanResult = await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const QRViewExample(
+                              expectedValue: "BP12345678450",
+                            ),
+                          ),
+                        ).then((value) {
+                          if (value != null) {
+                            setState(() {
+                              _scanBarcode = value;
+                            });
+                            debugPrint("scanResultValue: $value");
+
+                            Future.delayed(const Duration(seconds: 2), () {
+                              onShowSuccessDialog(
+                                context: context,
+                                scannedItem: _scanBarcode,
+                              );
+                            });
+                          }
+                        });
+                      },
+                    ),
                     SizedBox(height: 16.h),
                   ],
                 ),

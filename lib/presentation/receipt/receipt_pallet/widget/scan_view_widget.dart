@@ -14,7 +14,10 @@ import '../../../../common/theme/color/color_name.dart';
 import '../../../../common/theme/text/base_text.dart';
 
 class QRViewExample extends StatefulWidget {
-  const QRViewExample({Key? key}) : super(key: key);
+  final String expectedValue;
+
+  const QRViewExample({Key? key, required this.expectedValue})
+      : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _QRViewExampleState();

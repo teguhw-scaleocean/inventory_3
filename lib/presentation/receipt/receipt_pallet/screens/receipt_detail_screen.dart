@@ -189,7 +189,7 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
                           Future.delayed(const Duration(seconds: 2), () {
                             onShowSuccessDialog(
                               context: context,
-                              scannedItem: _scanBarcode,
+                              scannedItem: listProducts.first.palletCode,
                             );
                           });
                         }
@@ -435,7 +435,7 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
 
                   onShowSuccessDialog(
                     context: context,
-                    scannedItem: _scanBarcode,
+                    scannedItem: listProducts.first.palletCode,
                   );
                 });
               },
@@ -501,7 +501,7 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
 
                   onShowSuccessDialog(
                     context: context,
-                    scannedItem: _scanBarcode,
+                    scannedItem: listProducts.first.palletCode,
                   );
                 });
               },

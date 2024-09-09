@@ -47,6 +47,8 @@ class _ReceiptProductMenuOfProductDetailScreenState
   List<SerialNumber> serialNumberList = [];
   List<SerialNumber> serialNumberResult = [];
 
+  var selectedSerialNumber;
+
   String code = "";
   String quantity = "";
 
@@ -145,8 +147,15 @@ class _ReceiptProductMenuOfProductDetailScreenState
                           if (value != null) {
                             setState(() {
                               _scanBarcode = value;
+
+                              selectedSerialNumber =
+                                  serialNumberList.firstWhere((element) =>
+                                      element.label == _scanBarcode);
+                              serialNumberList.removeWhere(
+                                  (element) => element == selectedSerialNumber);
+                              serialNumberResult.add(selectedSerialNumber);
                             });
-                            debugPrint("scanResultValue: $value");
+                            // debugPrint("scanResultValue: $value");
 
                             Future.delayed(const Duration(seconds: 2), () {
                               onShowSuccessDialog(
@@ -199,7 +208,7 @@ class _ReceiptProductMenuOfProductDetailScreenState
                       total = totalInt.toString();
 
                       totalDoneInt = (serialNumberResult.isNotEmpty)
-                          ? serialNumberList.length
+                          ? serialNumberResult.length
                           : 0;
                       totalDone = totalDoneInt.toString();
                     } else {
@@ -262,22 +271,49 @@ class _ReceiptProductMenuOfProductDetailScreenState
                               ],
                             ),
                     ),
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Text(
-                          "No items scanned or updated yet",
-                          style: BaseText.grey10Text14,
-                        ),
-                        Text(
-                          "Completed items will be shown here.",
-                          style: BaseText.grey1Text14.copyWith(
-                            fontWeight: BaseText.light,
-                          ),
-                        )
-                      ],
-                    )
+                    (serialNumberResult.isNotEmpty)
+                        ? Container(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 16.w, vertical: 12.h),
+                            height: 600.h,
+                            child: ListView.builder(
+                                shrinkWrap: true,
+                                physics: const AlwaysScrollableScrollPhysics(),
+                                scrollDirection: Axis.vertical,
+                                itemCount: serialNumberResult.length,
+                                itemBuilder: (context, index) {
+                                  var item = serialNumberResult[index];
+                                  code = item.label;
+
+                                  bool isHighlighted = false;
+                                  isHighlighted = serialNumberResult
+                                      .contains(selectedSerialNumber);
+                                  debugPrint("isHighlighted: $isHighlighted");
+
+                                  return Padding(
+                                      padding: EdgeInsets.only(bottom: 8.h),
+                                      child: buildItemQuantity(
+                                        code,
+                                        isHighlighted: isHighlighted,
+                                      ));
+                                }),
+                          )
+                        : Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Text(
+                                "No items scanned or updated yet",
+                                style: BaseText.grey10Text14,
+                              ),
+                              Text(
+                                "Completed items will be shown here.",
+                                style: BaseText.grey1Text14.copyWith(
+                                  fontWeight: BaseText.light,
+                                ),
+                              )
+                            ],
+                          )
                   ],
                 ),
               )
@@ -343,7 +379,8 @@ class _ReceiptProductMenuOfProductDetailScreenState
     switch (tracking) {
       case "Serial Number":
         if (serialNumberList.isNotEmpty) {
-          int receiveDouble = serialNumberList.length.toInt();
+          int receiveDouble = serialNumberList.length.toInt() +
+              serialNumberResult.length.toInt();
           receive = receiveDouble.toString();
         }
         break;

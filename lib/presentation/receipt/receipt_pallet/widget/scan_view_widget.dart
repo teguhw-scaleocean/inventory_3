@@ -30,6 +30,8 @@ class _QRViewExampleState extends State<QRViewExample> {
   Color bgColor = Colors.transparent;
   bool isFlashOn = false;
 
+  String expectedValue = "";
+
   // In order to get hot reload to work we need to pause the camera if the platform
   // is android, or resume the camera if the platform is iOS.
   @override
@@ -44,6 +46,8 @@ class _QRViewExampleState extends State<QRViewExample> {
   @override
   void initState() {
     super.initState();
+
+    expectedValue = widget.expectedValue;
   }
 
   Future getFlashStatus() async {
@@ -270,29 +274,29 @@ class _QRViewExampleState extends State<QRViewExample> {
         result = scanData;
       });
 
-      if (result?.format == BarcodeFormat.qrcode) {
-        try {
-          controller.stopCamera();
-          Navigator.of(context).pop("18.00");
-        } on FormatException {
-          Future.delayed(const Duration(seconds: 2), () async {
-            await controller.pauseCamera();
-            onShowErrorDialog();
-          });
-        } on Exception {
-          Future.delayed(const Duration(seconds: 2), () async {
-            await controller.pauseCamera();
-            onShowErrorDialog();
-          });
-        }
-      }
+      // if (result?.format == BarcodeFormat.qrcode) {
+      //   try {
+      //     controller.stopCamera();
+      //     Navigator.of(context).pop("18.00");
+      //   } on FormatException {
+      //     Future.delayed(const Duration(seconds: 2), () async {
+      //       await controller.pauseCamera();
+      //       onShowErrorDialog();
+      //     });
+      //   } on Exception {
+      //     Future.delayed(const Duration(seconds: 2), () async {
+      //       await controller.pauseCamera();
+      //       onShowErrorDialog();
+      //     });
+      //   }
+      // }
     });
-    // Future.delayed(const Duration(seconds: 10), () {
-    //   controller.stopCamera();
-    //   Navigator.of(context).pop("18.00");
+    Future.delayed(const Duration(seconds: 3), () {
+      controller.stopCamera();
+      Navigator.of(context).pop(expectedValue);
 
-    //   log("pop");
-    // });
+      log("expectedValue: $expectedValue");
+    });
   }
 
   void _onPermissionSet(BuildContext context, QRViewController ctrl, bool p) {

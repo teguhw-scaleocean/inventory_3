@@ -260,6 +260,7 @@ class _ReceiptProductMenuOfProductDetailScreenState
                                         child: buildItemQuantity(
                                           code,
                                           isHighlighted: isHighlighted,
+                                          index: index,
                                         ));
                                   }),
                             )
@@ -416,7 +417,7 @@ class _ReceiptProductMenuOfProductDetailScreenState
   }
 
   Widget buildItemQuantity(String code,
-      {Product? itemProduct, bool isHighlighted = false}) {
+      {Product? itemProduct, bool isHighlighted = false, int? index}) {
     if (itemProduct != null) {
       int? quantityInt = itemProduct.productQty.toInt();
       quantity = quantityInt.toString();
@@ -452,35 +453,47 @@ class _ReceiptProductMenuOfProductDetailScreenState
                     fontSize: 12.sp,
                     fontWeight: BaseText.light,
                   ),
-                )
+                ),
+                SizedBox(height: 12.h),
+                (index == 1)
+                    ? Container(
+                        width: 226.w,
+                        padding: EdgeInsets.symmetric(vertical: 8.h),
+                        decoration: BoxDecoration(
+                            shape: BoxShape.rectangle,
+                            borderRadius: BorderRadius.circular(4.r),
+                            border: Border.all(color: ColorName.blue3Color)),
+                        child: Text(
+                          "Input Exp. Date",
+                          textAlign: TextAlign.center,
+                          style: BaseText.mainText12.copyWith(
+                            color: ColorName.blue3Color,
+                            fontWeight: BaseText.medium,
+                          ),
+                        ))
+                    : const SizedBox()
               ],
             ),
-            IntrinsicHeight(
-              child: Row(
-                children: [
-                  const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 0),
-                    child: VerticalDivider(
-                      color: ColorName.grey9Color,
-                      thickness: 1.0,
-                    ),
+            Container(
+              // height: double.infinity,
+              width: 1.w,
+              padding: EdgeInsets.symmetric(vertical: 12.h),
+              // decoration: BoxDecoration(
+              color: ColorName.grey9Color,
+              // ),
+            ),
+            SizedBox(
+              // height: double.infinity,
+              // height: 36.h,
+              width: 60.w,
+              child: Center(
+                child: Text(
+                  (tracking.toLowerCase().contains("serial")) ? "1" : quantity,
+                  textAlign: TextAlign.center,
+                  style: BaseText.black2Text14.copyWith(
+                    fontWeight: BaseText.regular,
                   ),
-                  SizedBox(
-                    height: 36.h,
-                    width: 60.w,
-                    child: Center(
-                      child: Text(
-                        (tracking.toLowerCase().contains("serial"))
-                            ? "1"
-                            : quantity,
-                        textAlign: TextAlign.center,
-                        style: BaseText.black2Text14.copyWith(
-                          fontWeight: BaseText.regular,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
+                ),
               ),
             )
           ],

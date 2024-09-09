@@ -221,3 +221,22 @@ onShowSuccessDialog({required BuildContext context, String? scannedItem}) {
     },
   ).show();
 }
+
+Container buildExpDateButton({required String label, required Color eColor}) {
+  return Container(
+    width: 226.w,
+    padding: EdgeInsets.symmetric(vertical: 8.h),
+    decoration: BoxDecoration(
+        shape: BoxShape.rectangle,
+        borderRadius: BorderRadius.circular(4.r),
+        border: Border.all(color: eColor)),
+    child: Text(
+      label,
+      textAlign: TextAlign.center,
+      style: BaseText.mainText12.copyWith(
+        color: eColor,
+        fontWeight: BaseText.medium,
+      ),
+    ),
+  );
+}

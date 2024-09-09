@@ -255,12 +255,16 @@ class _ReceiptProductMenuOfProductDetailScreenState
                                         serialNumberResult.contains(item);
                                     debugPrint("isHighlighted: $isHighlighted");
 
+                                    bool isInput = item == serialNumberList[1];
+                                    bool isEdit = item == serialNumberList[2];
+
                                     return Padding(
                                         padding: EdgeInsets.only(bottom: 8.h),
                                         child: buildItemQuantity(
                                           code,
                                           isHighlighted: isHighlighted,
-                                          index: index,
+                                          isInput: isInput,
+                                          isEdit: isEdit,
                                         ));
                                   }),
                             )
@@ -416,12 +420,20 @@ class _ReceiptProductMenuOfProductDetailScreenState
         ));
   }
 
-  Widget buildItemQuantity(String code,
-      {Product? itemProduct, bool isHighlighted = false, int? index}) {
+  Widget buildItemQuantity(
+    String code, {
+    Product? itemProduct,
+    bool isHighlighted = false,
+    bool? isInput = false,
+    bool? isEdit = false,
+  }) {
     if (itemProduct != null) {
       int? quantityInt = itemProduct.productQty.toInt();
       quantity = quantityInt.toString();
     }
+
+    var qtyHeight = (isInput == true || isEdit == true) ? 80.h : 36.h;
+    var qtyWidth = 60.w;
 
     return SmoothHighlight(
       color: ColorName.highlightColor,
@@ -455,37 +467,35 @@ class _ReceiptProductMenuOfProductDetailScreenState
                   ),
                 ),
                 SizedBox(height: 12.h),
-                (index == 1)
-                    ? Container(
-                        width: 226.w,
-                        padding: EdgeInsets.symmetric(vertical: 8.h),
-                        decoration: BoxDecoration(
-                            shape: BoxShape.rectangle,
-                            borderRadius: BorderRadius.circular(4.r),
-                            border: Border.all(color: ColorName.blue3Color)),
-                        child: Text(
-                          "Input Exp. Date",
-                          textAlign: TextAlign.center,
-                          style: BaseText.mainText12.copyWith(
-                            color: ColorName.blue3Color,
-                            fontWeight: BaseText.medium,
-                          ),
-                        ))
-                    : const SizedBox()
+                (isInput == true)
+                    ? buildExpDateButton(
+                        label: 'Input Exp. Date',
+                        eColor: ColorName.blue3Color,
+                      )
+                    : (isEdit == true)
+                        ? buildExpDateButton(
+                            label: "Edit Exp. Date",
+                            eColor: ColorName.yellow2Color,
+                          )
+                        : const SizedBox()
               ],
             ),
+            // Container(
+            //   // height: double.infinity,
+            //   width: 1.w,
+            //   // padding: EdgeInsets.symmetric(vertical: 12.h),
+            //   // decoration: BoxDecoration(
+            //   color: ColorName.grey9Color,
+            //   // ),
+            // ),
             Container(
               // height: double.infinity,
-              width: 1.w,
-              padding: EdgeInsets.symmetric(vertical: 12.h),
-              // decoration: BoxDecoration(
-              color: ColorName.grey9Color,
-              // ),
-            ),
-            SizedBox(
-              // height: double.infinity,
-              // height: 36.h,
-              width: 60.w,
+              height: qtyHeight,
+              width: qtyWidth,
+              decoration: const BoxDecoration(
+                  border: Border(
+                left: BorderSide(color: ColorName.grey9Color),
+              )),
               child: Center(
                 child: Text(
                   (tracking.toLowerCase().contains("serial")) ? "1" : quantity,

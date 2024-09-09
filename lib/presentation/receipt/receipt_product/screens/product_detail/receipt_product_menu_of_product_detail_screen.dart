@@ -75,15 +75,17 @@ class _ReceiptProductMenuOfProductDetailScreenState
     } else {
       // Serial Number
       serialNumberList = widget.product.serialNumber ?? <SerialNumber>[];
-      serialNumberList = List.generate(
-        product.productQty.toInt(),
-        (index) => SerialNumber(
-          id: Random().nextInt(100),
-          label: "BP1234567845$index",
-          expiredDateTime: "Exp. Date: 12/07/2024 - 16:00",
-          quantity: 1,
-        ),
-      );
+      // if (product.id == 2) {
+      //   serialNumberList = List.generate(
+      //     product.productQty.toInt(),
+      //     (index) => SerialNumber(
+      //       id: Random().nextInt(100),
+      //       label: "BP1234567845$index",
+      //       expiredDateTime: "Exp. Date: 12/07/2024 - 16:00",
+      //       quantity: 1,
+      //     ),
+      //   );
+      // }
       debugPrint("serialNumberList: $serialNumberList.map((e) => e.toJson())");
     }
   }
@@ -258,16 +260,12 @@ class _ReceiptProductMenuOfProductDetailScreenState
                                         serialNumberResult.contains(item);
                                     debugPrint("isHighlighted: $isHighlighted");
 
-                                    bool isInput = item == serialNumberList[1];
-                                    bool isEdit = item == serialNumberList[2];
-
                                     return Padding(
                                         padding: EdgeInsets.only(bottom: 8.h),
                                         child: buildItemQuantity(
                                           code,
                                           isHighlighted: isHighlighted,
-                                          isInput: isInput,
-                                          isEdit: isEdit,
+                                          itemSerialNumber: item,
                                         ));
                                   }),
                             )
@@ -427,15 +425,17 @@ class _ReceiptProductMenuOfProductDetailScreenState
     String code, {
     Product? itemProduct,
     bool isHighlighted = false,
-    bool? isInput = false,
-    bool? isEdit = false,
+    SerialNumber? itemSerialNumber,
   }) {
     if (itemProduct != null) {
       int? quantityInt = itemProduct.productQty.toInt();
       quantity = quantityInt.toString();
     }
 
-    var qtyHeight = (isInput == true || isEdit == true) ? 80.h : 36.h;
+    var qtyHeight = (itemSerialNumber?.isInputDate == true ||
+            itemSerialNumber?.isInputDate == true)
+        ? 80.h
+        : 36.h;
     var qtyWidth = 60.w;
 
     return SmoothHighlight(
@@ -461,7 +461,7 @@ class _ReceiptProductMenuOfProductDetailScreenState
                   style: BaseText.black2Text14
                       .copyWith(fontWeight: BaseText.regular),
                 ),
-                (isInput == true)
+                (itemSerialNumber?.isInputDate == true)
                     ? RichText(
                         text: TextSpan(children: [
                         TextSpan(
@@ -488,12 +488,12 @@ class _ReceiptProductMenuOfProductDetailScreenState
                         ),
                       ),
                 SizedBox(height: 12.h),
-                (isInput == true)
+                (itemSerialNumber?.isInputDate == true)
                     ? buildExpDateButton(
                         label: 'Input Exp. Date',
                         eColor: ColorName.blue3Color,
                       )
-                    : (isEdit == true)
+                    : (itemSerialNumber?.isEditDate == true)
                         ? buildExpDateButton(
                             label: "Edit Exp. Date",
                             eColor: ColorName.yellow2Color,

@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:math' as math;
 
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
@@ -86,6 +87,39 @@ class _ReceiptProductMenuDetailScreenState
         .toLowerCase()
         .contains("serial number")) {
       listProducts = products3;
+
+      listProducts.map((e) {
+        if (e.id == 2) {
+          var serialNumberList = List.generate(
+            e.productQty.toInt(),
+            (index) => SerialNumber(
+              id: math.Random().nextInt(100),
+              label: "BP1234567845$index",
+              expiredDateTime: "Exp. Date: 12/07/2024 - 16:00",
+              quantity: 1,
+            ),
+          );
+          e.serialNumber = serialNumberList;
+        } else if (e.id == 1) {
+          var serialNumberList = List.generate(
+            e.productQty.toInt(),
+            (index) => SerialNumber(
+              id: math.Random().nextInt(100),
+              label: "BP1234567845$index",
+              expiredDateTime: "Exp. Date: 12/07/2024 - 16:00",
+              isInputDate: (index == 1) ? true : false,
+              isEditDate: (index == 2) ? true : false,
+              quantity: 1,
+            ),
+          );
+          e.serialNumber = serialNumberList;
+        }
+      }).toList();
+
+      debugPrint(listProducts
+          .map((e) => e.serialNumber?.map((e) => e.toJson()))
+          .toList()
+          .toString());
     }
 
     date = receipt.dateTime.substring(0, 10);

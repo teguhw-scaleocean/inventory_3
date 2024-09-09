@@ -128,12 +128,16 @@ class SerialNumber {
   String label;
   String expiredDateTime;
   int quantity;
+  bool? isInputDate;
+  bool? isEditDate;
 
   SerialNumber({
     required this.id,
     required this.label,
     required this.expiredDateTime,
     required this.quantity,
+    this.isInputDate,
+    this.isEditDate,
   });
 
   SerialNumber copyWith({
@@ -141,12 +145,16 @@ class SerialNumber {
     String? label,
     String? expiredDateTime,
     int? quantity,
+    bool? isInputDate,
+    bool? isEditDate,
   }) {
     return SerialNumber(
       id: id ?? this.id,
       label: label ?? this.label,
       expiredDateTime: expiredDateTime ?? this.expiredDateTime,
       quantity: quantity ?? this.quantity,
+      isInputDate: isInputDate ?? this.isInputDate,
+      isEditDate: isEditDate ?? this.isEditDate,
     );
   }
 
@@ -156,6 +164,8 @@ class SerialNumber {
       'label': label,
       'expiredDateTime': expiredDateTime,
       'quantity': quantity,
+      'isInputDate': isInputDate,
+      'isEditDate': isEditDate,
     };
   }
 
@@ -165,6 +175,9 @@ class SerialNumber {
       label: map['label'] as String,
       expiredDateTime: map['expiredDateTime'] as String,
       quantity: map['quantity'] as int,
+      isInputDate:
+          map['isInputDate'] != null ? map['isInputDate'] as bool : null,
+      isEditDate: map['isEditDate'] != null ? map['isEditDate'] as bool : null,
     );
   }
 
@@ -175,7 +188,7 @@ class SerialNumber {
 
   @override
   String toString() {
-    return 'SerialNumber(id: $id, label: $label, expiredDateTime: $expiredDateTime, quantity: $quantity)';
+    return 'SerialNumber(id: $id, label: $label, expiredDateTime: $expiredDateTime, quantity: $quantity, isInputDate: $isInputDate, isEditDate: $isEditDate)';
   }
 
   @override
@@ -185,7 +198,9 @@ class SerialNumber {
     return other.id == id &&
         other.label == label &&
         other.expiredDateTime == expiredDateTime &&
-        other.quantity == quantity;
+        other.quantity == quantity &&
+        other.isInputDate == isInputDate &&
+        other.isEditDate == isEditDate;
   }
 
   @override
@@ -193,7 +208,9 @@ class SerialNumber {
     return id.hashCode ^
         label.hashCode ^
         expiredDateTime.hashCode ^
-        quantity.hashCode;
+        quantity.hashCode ^
+        isInputDate.hashCode ^
+        isEditDate.hashCode;
   }
 }
 

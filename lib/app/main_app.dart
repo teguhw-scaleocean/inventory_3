@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:inventory_v3/presentation/receipt/receipt_pallet/cubit/count_cubit.dart';
+import 'package:inventory_v3/presentation/receipt/receipt_product/cubit/product_detail/product_menu_product_detail_cubit.dart';
 import 'package:inventory_v3/presentation/receipt/receipt_screen.dart';
 
 import '../common/theme/color/color_name.dart';
@@ -31,6 +32,9 @@ class MainApp extends StatelessWidget {
             BlocProvider<CountCubit>(
               create: (context) => CountCubit(),
             ),
+            BlocProvider<ProductMenuProductDetailCubit>(
+              create: (context) => ProductMenuProductDetailCubit(),
+            )
           ],
           child: MaterialApp(
             debugShowCheckedModeBanner: false,

@@ -19,6 +19,7 @@ import 'package:inventory_v3/common/constants/local_images.dart';
 import 'package:inventory_v3/data/model/pallet.dart';
 import 'package:inventory_v3/data/model/product.dart';
 import 'package:inventory_v3/data/model/receipt.dart';
+import 'package:inventory_v3/data/model/scan_view.dart';
 import 'package:inventory_v3/presentation/receipt/receipt_pallet/cubit/add_pallet_cubit/add_pallet_state.dart';
 import 'package:inventory_v3/presentation/receipt/receipt_pallet/screens/pallet/add_pallet_screen.dart';
 import 'package:inventory_v3/presentation/receipt/receipt_pallet/screens/receipt_product_detail.dart';
@@ -120,61 +121,6 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
   //   });
   // }
 
-  onShowSuccessDialog() {
-    return AwesomeDialog(
-      context: context,
-      animType: AnimType.bottomSlide,
-      headerAnimationLoop: false,
-      dialogType: DialogType.success,
-      showCloseIcon: true,
-      width: double.infinity,
-      // padding: EdgeInsets.symmetric(horizontal: 16.w),
-      body: SizedBox(
-        // width: MediaQuery.sizeOf(context).width,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(height: 10.h),
-            Text(
-              'Scan Successful!',
-              style: BaseText.black2TextStyle.copyWith(
-                fontSize: 16.sp,
-                fontWeight: BaseText.semiBold,
-              ),
-            ),
-            Container(height: 4.h),
-            Text('Great job! You successfully scanned',
-                style:
-                    BaseText.grey2Text14.copyWith(fontWeight: BaseText.light)),
-            Container(height: 1.h),
-            Text("Pallet B654",
-                textAlign: TextAlign.center,
-                style: BaseText.mainText14
-                    .copyWith(fontWeight: BaseText.semiBold)),
-            SizedBox(height: 24.h),
-          ],
-        ),
-      ),
-      btnOkOnPress: () {
-        debugPrint('OnClcik');
-      },
-      // btnOkIcon: Icons.check_circle,
-      btnOk: PrimaryButton(
-        onPressed: () {
-          debugPrint('OnClcik OK');
-          Navigator.of(context).pop();
-        },
-        height: 40.h,
-        title: "OK",
-      ),
-      onDismissCallback: (type) {
-        debugPrint('Dialog Dissmiss from callback $type');
-      },
-    ).show();
-  }
-
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -230,7 +176,10 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
                       final scanResult = await Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const QRViewExample(),
+                          builder: (context) => const ScanView(
+                            expectedValue: "18.00",
+                            scanType: ScanViewType.pallet,
+                          ),
                         ),
                       ).then((value) {
                         if (value != null) {
@@ -240,7 +189,10 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
                           debugPrint("scanResultValue: $value");
 
                           Future.delayed(const Duration(seconds: 2), () {
-                            onShowSuccessDialog();
+                            onShowSuccessDialog(
+                              context: context,
+                              scannedItem: listProducts.first.palletCode,
+                            );
                           });
                         }
                       });
@@ -483,7 +435,10 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
                   _scanBarcode = "18.00";
                   log("scanbarcode: $_scanBarcode");
 
-                  onShowSuccessDialog();
+                  onShowSuccessDialog(
+                    context: context,
+                    scannedItem: listProducts.first.palletCode,
+                  );
                 });
               },
               height: 40.h,
@@ -546,7 +501,10 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
                   _scanBarcode = "18.00";
                   log("scanbarcode: $_scanBarcode");
 
-                  onShowSuccessDialog();
+                  onShowSuccessDialog(
+                    context: context,
+                    scannedItem: listProducts.first.palletCode,
+                  );
                 });
               },
               height: 40.h,

@@ -9,10 +9,13 @@ class Product {
   String productName;
   String code;
   String dateTime;
+  bool? hasActualDateTime;
+  String? actualDateTime;
   String? sku;
   String? lotsCode;
   double productQty;
   List<SerialNumber>? serialNumber;
+  List<SerialNumber>? scannedSerialNumber;
 
   Product({
     required this.id,
@@ -20,10 +23,13 @@ class Product {
     required this.productName,
     required this.code,
     required this.dateTime,
+    this.hasActualDateTime,
+    this.actualDateTime,
     this.sku,
     this.lotsCode,
     required this.productQty,
     this.serialNumber,
+    this.scannedSerialNumber,
   });
 
   Product copyWith({
@@ -32,10 +38,13 @@ class Product {
     String? productName,
     String? code,
     String? dateTime,
+    bool? hasActualDateTime,
+    String? actualDateTime,
     String? sku,
     String? lotsCode,
     double? productQty,
     List<SerialNumber>? serialNumber,
+    List<SerialNumber>? scannedSerialNumber,
   }) {
     return Product(
       id: id ?? this.id,
@@ -43,10 +52,13 @@ class Product {
       productName: productName ?? this.productName,
       code: code ?? this.code,
       dateTime: dateTime ?? this.dateTime,
+      hasActualDateTime: hasActualDateTime ?? this.hasActualDateTime,
+      actualDateTime: actualDateTime ?? this.actualDateTime,
       sku: sku ?? this.sku,
       lotsCode: lotsCode ?? this.lotsCode,
       productQty: productQty ?? this.productQty,
       serialNumber: serialNumber ?? this.serialNumber,
+      scannedSerialNumber: scannedSerialNumber ?? this.scannedSerialNumber,
     );
   }
 
@@ -57,10 +69,14 @@ class Product {
       'productName': productName,
       'code': code,
       'dateTime': dateTime,
+      'hasActualDateTime': hasActualDateTime,
+      'actualDateTime': actualDateTime,
       'sku': sku,
       'lotsCode': lotsCode,
       'productQty': productQty,
       'serialNumber': serialNumber?.map((x) => x.toMap()).toList(),
+      'scannedSerialNumber':
+          scannedSerialNumber?.map((x) => x.toMap()).toList(),
     };
   }
 
@@ -71,12 +87,25 @@ class Product {
       productName: map['productName'] as String,
       code: map['code'] as String,
       dateTime: map['dateTime'] as String,
+      hasActualDateTime: map['hasActualDateTime'] != null
+          ? map['hasActualDateTime'] as bool
+          : null,
+      actualDateTime: map['actualDateTime'] != null
+          ? map['actualDateTime'] as String
+          : null,
       sku: map['sku'] != null ? map['sku'] as String : null,
       lotsCode: map['lotsCode'] != null ? map['lotsCode'] as String : null,
       productQty: map['productQty'] as double,
       serialNumber: map['serialNumber'] != null
           ? List<SerialNumber>.from(
               (map['serialNumber'] as List<int>).map<SerialNumber?>(
+                (x) => SerialNumber.fromMap(x as Map<String, dynamic>),
+              ),
+            )
+          : null,
+      scannedSerialNumber: map['scannedSerialNumber'] != null
+          ? List<SerialNumber>.from(
+              (map['scannedSerialNumber'] as List<int>).map<SerialNumber?>(
                 (x) => SerialNumber.fromMap(x as Map<String, dynamic>),
               ),
             )
@@ -91,7 +120,7 @@ class Product {
 
   @override
   String toString() {
-    return 'Product(id: $id, palletCode: $palletCode, productName: $productName, code: $code, dateTime: $dateTime, sku: $sku, lotsCode: $lotsCode, productQty: $productQty, serialNumber: $serialNumber)';
+    return 'Product(id: $id, palletCode: $palletCode, productName: $productName, code: $code, dateTime: $dateTime, hasActualDateTime: $hasActualDateTime, actualDateTime: $actualDateTime, sku: $sku, lotsCode: $lotsCode, productQty: $productQty, serialNumber: $serialNumber, scannedSerialNumber: $scannedSerialNumber)';
   }
 
   @override
@@ -103,10 +132,13 @@ class Product {
         other.productName == productName &&
         other.code == code &&
         other.dateTime == dateTime &&
+        other.hasActualDateTime == hasActualDateTime &&
+        other.actualDateTime == actualDateTime &&
         other.sku == sku &&
         other.lotsCode == lotsCode &&
         other.productQty == productQty &&
-        listEquals(other.serialNumber, serialNumber);
+        listEquals(other.serialNumber, serialNumber) &&
+        listEquals(other.scannedSerialNumber, scannedSerialNumber);
   }
 
   @override
@@ -116,10 +148,13 @@ class Product {
         productName.hashCode ^
         code.hashCode ^
         dateTime.hashCode ^
+        hasActualDateTime.hashCode ^
+        actualDateTime.hashCode ^
         sku.hashCode ^
         lotsCode.hashCode ^
         productQty.hashCode ^
-        serialNumber.hashCode;
+        serialNumber.hashCode ^
+        scannedSerialNumber.hashCode;
   }
 }
 
@@ -128,12 +163,16 @@ class SerialNumber {
   String label;
   String expiredDateTime;
   int quantity;
+  bool? isInputDate;
+  bool? isEditDate;
 
   SerialNumber({
     required this.id,
     required this.label,
     required this.expiredDateTime,
     required this.quantity,
+    this.isInputDate,
+    this.isEditDate,
   });
 
   SerialNumber copyWith({
@@ -141,12 +180,16 @@ class SerialNumber {
     String? label,
     String? expiredDateTime,
     int? quantity,
+    bool? isInputDate,
+    bool? isEditDate,
   }) {
     return SerialNumber(
       id: id ?? this.id,
       label: label ?? this.label,
       expiredDateTime: expiredDateTime ?? this.expiredDateTime,
       quantity: quantity ?? this.quantity,
+      isInputDate: isInputDate ?? this.isInputDate,
+      isEditDate: isEditDate ?? this.isEditDate,
     );
   }
 
@@ -156,6 +199,8 @@ class SerialNumber {
       'label': label,
       'expiredDateTime': expiredDateTime,
       'quantity': quantity,
+      'isInputDate': isInputDate,
+      'isEditDate': isEditDate,
     };
   }
 
@@ -165,6 +210,9 @@ class SerialNumber {
       label: map['label'] as String,
       expiredDateTime: map['expiredDateTime'] as String,
       quantity: map['quantity'] as int,
+      isInputDate:
+          map['isInputDate'] != null ? map['isInputDate'] as bool : null,
+      isEditDate: map['isEditDate'] != null ? map['isEditDate'] as bool : null,
     );
   }
 
@@ -175,7 +223,7 @@ class SerialNumber {
 
   @override
   String toString() {
-    return 'SerialNumber(id: $id, label: $label, expiredDateTime: $expiredDateTime, quantity: $quantity)';
+    return 'SerialNumber(id: $id, label: $label, expiredDateTime: $expiredDateTime, quantity: $quantity, isInputDate: $isInputDate, isEditDate: $isEditDate)';
   }
 
   @override
@@ -185,7 +233,9 @@ class SerialNumber {
     return other.id == id &&
         other.label == label &&
         other.expiredDateTime == expiredDateTime &&
-        other.quantity == quantity;
+        other.quantity == quantity &&
+        other.isInputDate == isInputDate &&
+        other.isEditDate == isEditDate;
   }
 
   @override
@@ -193,7 +243,9 @@ class SerialNumber {
     return id.hashCode ^
         label.hashCode ^
         expiredDateTime.hashCode ^
-        quantity.hashCode;
+        quantity.hashCode ^
+        isInputDate.hashCode ^
+        isEditDate.hashCode;
   }
 }
 
@@ -264,24 +316,24 @@ List<Product> products3 = [
     code: "NEB_14578",
     // lotsCode: "LOTS-2024-001A",
     dateTime: "Sch. Date: 12/07/2024 - 15:30",
-    productQty: 11,
-  ),
-  Product(
-    id: 2,
-    palletCode: "A4910",
-    productName: "Surgical Masks",
-    sku: "BPM201-346",
-    code: "MASK_12942 ",
-    // lotsCode: "LOTS-2024-002A",
-    dateTime: "Sch. Date: 28/07/2024 - 14:00",
     productQty: 12,
   ),
   Product(
+    id: 2,
+    palletCode: "A4912",
+    productName: "Surgical Masks",
+    sku: "BPM201-342",
+    code: "MASK_12942 ",
+    // lotsCode: "LOTS-2024-002A",
+    dateTime: "Sch. Date: 28/07/2024 - 14:00",
+    productQty: 11,
+  ),
+  Product(
     id: 3,
-    palletCode: "A4910",
+    palletCode: "A4920",
     productName: "Essence Mascara",
-    sku: "BPM201-347",
-    code: "EM_12942",
+    sku: "BPM201-350",
+    code: "EM_12944",
     // lotsCode: "LOTS-2024-003A",
     dateTime: "Sch. Date: 02/07/2024 - 14:00",
     productQty: 14,

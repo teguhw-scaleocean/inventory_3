@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:math' as math;
 
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
@@ -23,6 +24,8 @@ import 'package:inventory_v3/presentation/receipt/receipt_pallet/cubit/add_palle
 import 'package:inventory_v3/presentation/receipt/receipt_pallet/screens/pallet/add_pallet_screen.dart';
 import 'package:inventory_v3/presentation/receipt/receipt_pallet/screens/receipt_product_detail.dart';
 import 'package:inventory_v3/presentation/receipt/receipt_pallet/widget/scan_view_widget.dart';
+import 'package:inventory_v3/presentation/receipt/receipt_product/cubit/product_detail/product_menu_product_detail_cubit.dart';
+import 'package:inventory_v3/presentation/receipt/receipt_product/cubit/product_detail/product_menu_product_detail_state.dart';
 
 import '../../../../common/components/status_badge.dart';
 import '../../../../common/extensions/empty_space_extension.dart';
@@ -85,7 +88,8 @@ class _ReceiptProductMenuDetailScreenState
         .toString()
         .toLowerCase()
         .contains("serial number")) {
-      listProducts = products3;
+      BlocProvider.of<ProductMenuProductDetailCubit>(context)
+          .getInitListProduct();
     }
 
     date = receipt.dateTime.substring(0, 10);
@@ -301,16 +305,17 @@ class _ReceiptProductMenuDetailScreenState
                     status: receipt.status,
                   ),
                   SizedBox(height: 14.h),
-                  Builder(builder: (context) {
-                    // final list = state.products;
+                  BlocBuilder<ProductMenuProductDetailCubit,
+                      ProductMenuProductDetailState>(builder: (context, state) {
+                    final list = state.products;
 
                     return ListView.builder(
                         shrinkWrap: true,
-                        itemCount: listProducts.length,
+                        itemCount: list.length,
                         physics: const NeverScrollableScrollPhysics(),
                         primary: false,
                         itemBuilder: (context, index) {
-                          Product item = listProducts[index];
+                          Product item = list[index];
 
                           tracking = receipt.packageStatus.substring(10);
                           debugPrint("tracking: $tracking");
@@ -615,7 +620,9 @@ class _ReceiptProductMenuDetailScreenState
       case "Serial Number":
         // Serial Number
         assignToReceive(product0);
+        assignToDone(product0);
         code = product0.code;
+
         break;
       case "No Tracking":
         _receive = product0.productQty.toString();
@@ -647,11 +654,16 @@ class _ReceiptProductMenuDetailScreenState
 
         resultOfProduct.then((value) {
           if (value != null) {
-            debugPrint("value: $value");
-            setState(() {
-              product0 = value as Product;
-              assignToReceive(product0);
-            });
+            // debugPrint("value: $value");
+            // setState(() {});
+            // setState(() {
+            //   product0 = value as Product;
+            //   assignToReceive(product0);
+            //   assignToDone(product0);
+            // });
+
+            BlocProvider.of<ProductMenuProductDetailCubit>(context)
+                .scannedSerialNumberToProduct(value);
           }
         });
       },
@@ -702,45 +714,27 @@ class _ReceiptProductMenuDetailScreenState
                     ),
                   ),
                   SizedBox(height: 10.h),
-                  RichText(
-                    text: TextSpan(children: [
-                      TextSpan(
-                        text: "Sch. Date: ",
-                        style: BaseText.baseTextStyle.copyWith(
-                          fontSize: 14.sp,
-                          fontWeight: BaseText.light,
-                          color: ColorName.dateTimeColor,
-                        ),
-                      ),
-                      TextSpan(
-                        text: date,
-                        style: BaseText.baseTextStyle.copyWith(
-                          fontSize: 14.sp,
-                          fontWeight: BaseText.regular,
-                          color: ColorName.dateTimeColor,
-                        ),
-                      ),
-                      WidgetSpan(
-                          child: Padding(
-                        padding: EdgeInsets.symmetric(
-                            vertical: 6.h, horizontal: 2.5.w),
-                        child: Container(
-                          width: 7.w,
-                          height: 1.h,
-                          color: ColorName.grey2Color,
-                          alignment: Alignment.center,
-                        ),
-                      )),
-                      TextSpan(
-                        text: time,
-                        style: BaseText.baseTextStyle.copyWith(
-                          fontSize: 14.sp,
-                          fontWeight: BaseText.regular,
-                          color: ColorName.dateTimeColor,
-                        ),
-                      ),
-                    ]),
+                  buildDateTime(
+                    label: "Sch. Date: ",
+                    date: date,
+                    time: time,
+                    isEnable:
+                        (product0.hasActualDateTime == true) ? false : true,
                   ),
+                  (product0.hasActualDateTime == true)
+                      ? Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            buildDateTime(
+                              label: "Act. Date: ",
+                              date: date,
+                              time: time,
+                              isEnable: true,
+                            ),
+                            SizedBox(height: 6.h),
+                          ],
+                        )
+                      : const SizedBox(),
                   SizedBox(height: 10.h),
                 ],
               ),
@@ -753,7 +747,9 @@ class _ReceiptProductMenuDetailScreenState
                 ),
                 _buildBottomCardSection(
                   label: "Done",
-                  value: "$_scanBarcode Unit",
+                  value: (_scanBarcode.contains("null"))
+                      ? "0.00 Unit"
+                      : "$_scanBarcode Unit",
                 )
               ],
             ),
@@ -763,11 +759,66 @@ class _ReceiptProductMenuDetailScreenState
     );
   }
 
+  RichText buildDateTime({
+    required String label,
+    required String date,
+    required String time,
+    bool isEnable = true,
+  }) {
+    return RichText(
+      text: TextSpan(children: [
+        TextSpan(
+          text: label,
+          style: BaseText.baseTextStyle.copyWith(
+            fontSize: 14.sp,
+            fontWeight: BaseText.light,
+            color: (isEnable) ? ColorName.dateTimeColor : ColorName.grey2Color,
+          ),
+        ),
+        TextSpan(
+          text: date,
+          style: BaseText.baseTextStyle.copyWith(
+            fontSize: 14.sp,
+            fontWeight: BaseText.regular,
+            color: (isEnable) ? ColorName.dateTimeColor : ColorName.grey2Color,
+          ),
+        ),
+        WidgetSpan(
+            child: Padding(
+          padding: EdgeInsets.symmetric(vertical: 6.h, horizontal: 2.5.w),
+          child: Container(
+            width: 7.w,
+            height: 1.h,
+            color: ColorName.grey2Color,
+            alignment: Alignment.center,
+          ),
+        )),
+        TextSpan(
+          text: time,
+          style: BaseText.baseTextStyle.copyWith(
+            fontSize: 14.sp,
+            fontWeight: BaseText.regular,
+            color: (isEnable) ? ColorName.dateTimeColor : ColorName.grey2Color,
+          ),
+        ),
+      ]),
+    );
+  }
+
   void assignToReceive(Product product0) {
     if (product0.serialNumber != null) {
       double? receiveDouble = product0.serialNumber?.length.toDouble();
       _receive = receiveDouble.toString();
     }
+  }
+
+  void assignToDone(Product product0) {
+    double? doneDouble = 0.00;
+    doneDouble = product0.scannedSerialNumber?.length.toDouble();
+    _scanBarcode = doneDouble.toString();
+    // else {
+    //   _scanBarcode = _scanBarcode;
+    // }
   }
 
   Widget _buildBottomCardSection(

@@ -1,7 +1,10 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:inventory_v3/data/model/scan_view.dart';
+import 'package:inventory_v3/presentation/receipt/receipt_product/cubit/product_detail/product_menu_product_detail_cubit.dart';
 import 'package:smooth_highlight/smooth_highlight.dart';
 
 import '../../../../../common/components/custom_app_bar.dart';
@@ -14,6 +17,7 @@ import '../../../../../common/theme/color/color_name.dart';
 import '../../../../../common/theme/text/base_text.dart';
 import '../../../../../data/model/product.dart';
 import '../../../receipt_pallet/screens/product_detail/add_product_screen.dart';
+import '../../../receipt_pallet/widget/scan_view_widget.dart';
 
 class ReceiptProductMenuOfProductDetailScreen extends StatefulWidget {
   final Product product;
@@ -37,12 +41,16 @@ class _ReceiptProductMenuOfProductDetailScreenState
   late Product product;
   String tracking = "";
   String status = "";
+  // Scan Result
+  String _scanBarcode = "";
 
   final searchSerialNumberController = TextEditingController();
   final searchKey = GlobalKey<FormState>();
 
   List<SerialNumber> serialNumberList = [];
   List<SerialNumber> serialNumberResult = [];
+
+  var selectedSerialNumber;
 
   String code = "";
   String quantity = "";
@@ -69,22 +77,18 @@ class _ReceiptProductMenuOfProductDetailScreenState
     } else {
       // Serial Number
       serialNumberList = widget.product.serialNumber ?? <SerialNumber>[];
+      // if (product.id == 2) {
+      //   serialNumberList = List.generate(
+      //     product.productQty.toInt(),
+      //     (index) => SerialNumber(
+      //       id: Random().nextInt(100),
+      //       label: "BP1234567845$index",
+      //       expiredDateTime: "Exp. Date: 12/07/2024 - 16:00",
+      //       quantity: 1,
+      //     ),
+      //   );
+      // }
       debugPrint("serialNumberList: $serialNumberList.map((e) => e.toJson())");
-
-      serialNumberList = [
-        SerialNumber(
-          id: Random().nextInt(100),
-          label: "BP1234567845",
-          expiredDateTime: "Exp. Date: 12/07/2024 - 16:00",
-          quantity: 1,
-        ),
-        SerialNumber(
-          id: Random().nextInt(100),
-          label: "BP1234567846",
-          expiredDateTime: "Exp. Date: 12/07/2024 - 16:00",
-          quantity: 1,
-        )
-      ];
     }
   }
 
@@ -134,7 +138,51 @@ class _ReceiptProductMenuOfProductDetailScreenState
                       ),
                     ),
                     SizedBox(height: 18.h),
-                    buildScanAndUpdateSection(status: status),
+                    buildScanAndUpdateSection(
+                      status: status,
+                      onScan: () async {
+                        final scanResult = await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const ScanView(
+                              expectedValue: "BP12345678450",
+                              scanType: ScanViewType.product,
+                            ),
+                          ),
+                        ).then((value) {
+                          if (value != null) {
+                            setState(() {
+                              _scanBarcode = value;
+
+                              selectedSerialNumber =
+                                  serialNumberList.firstWhere((element) =>
+                                      element.label == _scanBarcode);
+                              serialNumberList.removeWhere(
+                                  (element) => element == selectedSerialNumber);
+                              serialNumberResult.add(selectedSerialNumber);
+                              product.scannedSerialNumber = serialNumberResult;
+                              product.hasActualDateTime = true;
+                              product.actualDateTime = product.dateTime;
+                            });
+
+                            // BlocProvider.of<ProductMenuProductDetailCubit>(
+                            //         context)
+                            //     .scannedSerialNumberToProduct(product);
+                            // debugPrint("scanResultValue: $value");
+
+                            Future.delayed(const Duration(seconds: 2), () {
+                              String scannedItem =
+                                  "Serial Number: $_scanBarcode";
+
+                              onShowSuccessDialog(
+                                context: context,
+                                scannedItem: scannedItem,
+                              );
+                            });
+                          }
+                        });
+                      },
+                    ),
                     SizedBox(height: 16.h),
                   ],
                 ),
@@ -176,7 +224,7 @@ class _ReceiptProductMenuOfProductDetailScreenState
                       total = totalInt.toString();
 
                       totalDoneInt = (serialNumberResult.isNotEmpty)
-                          ? serialNumberList.length
+                          ? serialNumberResult.length
                           : 0;
                       totalDone = totalDoneInt.toString();
                     } else {
@@ -226,6 +274,7 @@ class _ReceiptProductMenuOfProductDetailScreenState
                                         child: buildItemQuantity(
                                           code,
                                           isHighlighted: isHighlighted,
+                                          itemSerialNumber: item,
                                         ));
                                   }),
                             )
@@ -239,22 +288,49 @@ class _ReceiptProductMenuOfProductDetailScreenState
                               ],
                             ),
                     ),
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Text(
-                          "No items scanned or updated yet",
-                          style: BaseText.grey10Text14,
-                        ),
-                        Text(
-                          "Completed items will be shown here.",
-                          style: BaseText.grey1Text14.copyWith(
-                            fontWeight: BaseText.light,
-                          ),
-                        )
-                      ],
-                    )
+                    (serialNumberResult.isNotEmpty)
+                        ? Container(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 16.w, vertical: 12.h),
+                            height: 600.h,
+                            child: ListView.builder(
+                                shrinkWrap: true,
+                                physics: const AlwaysScrollableScrollPhysics(),
+                                scrollDirection: Axis.vertical,
+                                itemCount: serialNumberResult.length,
+                                itemBuilder: (context, index) {
+                                  var item = serialNumberResult[index];
+                                  code = item.label;
+
+                                  bool isHighlighted = false;
+                                  isHighlighted = serialNumberResult
+                                      .contains(selectedSerialNumber);
+                                  debugPrint("isHighlighted: $isHighlighted");
+
+                                  return Padding(
+                                      padding: EdgeInsets.only(bottom: 8.h),
+                                      child: buildItemQuantity(
+                                        code,
+                                        isHighlighted: isHighlighted,
+                                      ));
+                                }),
+                          )
+                        : Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Text(
+                                "No items scanned or updated yet",
+                                style: BaseText.grey10Text14,
+                              ),
+                              Text(
+                                "Completed items will be shown here.",
+                                style: BaseText.grey1Text14.copyWith(
+                                  fontWeight: BaseText.light,
+                                ),
+                              )
+                            ],
+                          )
                   ],
                 ),
               )
@@ -320,7 +396,8 @@ class _ReceiptProductMenuOfProductDetailScreenState
     switch (tracking) {
       case "Serial Number":
         if (serialNumberList.isNotEmpty) {
-          int receiveDouble = serialNumberList.length.toInt();
+          int receiveDouble = serialNumberList.length.toInt() +
+              serialNumberResult.length.toInt();
           receive = receiveDouble.toString();
         }
         break;
@@ -353,12 +430,22 @@ class _ReceiptProductMenuOfProductDetailScreenState
         ));
   }
 
-  Widget buildItemQuantity(String code,
-      {Product? itemProduct, bool isHighlighted = false}) {
+  Widget buildItemQuantity(
+    String code, {
+    Product? itemProduct,
+    bool isHighlighted = false,
+    SerialNumber? itemSerialNumber,
+  }) {
     if (itemProduct != null) {
       int? quantityInt = itemProduct.productQty.toInt();
       quantity = quantityInt.toString();
     }
+
+    var qtyHeight = (itemSerialNumber?.isInputDate == true ||
+            itemSerialNumber?.isInputDate == true)
+        ? 80.h
+        : 36.h;
+    var qtyWidth = 60.w;
 
     return SmoothHighlight(
       color: ColorName.highlightColor,
@@ -383,42 +470,70 @@ class _ReceiptProductMenuOfProductDetailScreenState
                   style: BaseText.black2Text14
                       .copyWith(fontWeight: BaseText.regular),
                 ),
-                Text(
-                  "Exp. Date: 12/07/2024 - 15:00",
-                  style: BaseText.baseTextStyle.copyWith(
-                    color: ColorName.dateTimeColor,
-                    fontSize: 12.sp,
-                    fontWeight: BaseText.light,
-                  ),
-                )
-              ],
-            ),
-            IntrinsicHeight(
-              child: Row(
-                children: [
-                  const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 0),
-                    child: VerticalDivider(
-                      color: ColorName.grey9Color,
-                      thickness: 1.0,
-                    ),
-                  ),
-                  SizedBox(
-                    height: 36.h,
-                    width: 60.w,
-                    child: Center(
-                      child: Text(
-                        (tracking.toLowerCase().contains("serial"))
-                            ? "1"
-                            : quantity,
-                        textAlign: TextAlign.center,
-                        style: BaseText.black2Text14.copyWith(
-                          fontWeight: BaseText.regular,
+                (itemSerialNumber?.isInputDate == true)
+                    ? RichText(
+                        text: TextSpan(children: [
+                        TextSpan(
+                          text: "Exp. Date: ",
+                          style: BaseText.baseTextStyle.copyWith(
+                            color: ColorName.dateTimeColor,
+                            fontSize: 12.sp,
+                            fontWeight: BaseText.light,
+                          ),
+                        ),
+                        TextSpan(
+                            text: "-",
+                            style: BaseText.grey1Text13.copyWith(
+                              color: ColorName.mainColor,
+                              fontWeight: BaseText.medium,
+                            ))
+                      ]))
+                    : Text(
+                        "Exp. Date: 12/07/2024 - 15:00",
+                        style: BaseText.baseTextStyle.copyWith(
+                          color: ColorName.dateTimeColor,
+                          fontSize: 12.sp,
+                          fontWeight: BaseText.light,
                         ),
                       ),
-                    ),
+                SizedBox(height: 12.h),
+                (itemSerialNumber?.isInputDate == true)
+                    ? buildExpDateButton(
+                        label: 'Input Exp. Date',
+                        eColor: ColorName.blue3Color,
+                      )
+                    : (itemSerialNumber?.isEditDate == true)
+                        ? buildExpDateButton(
+                            label: "Edit Exp. Date",
+                            eColor: ColorName.yellow2Color,
+                          )
+                        : const SizedBox()
+              ],
+            ),
+            // Container(
+            //   // height: double.infinity,
+            //   width: 1.w,
+            //   // padding: EdgeInsets.symmetric(vertical: 12.h),
+            //   // decoration: BoxDecoration(
+            //   color: ColorName.grey9Color,
+            //   // ),
+            // ),
+            Container(
+              // height: double.infinity,
+              height: qtyHeight,
+              width: qtyWidth,
+              decoration: const BoxDecoration(
+                  border: Border(
+                left: BorderSide(color: ColorName.grey9Color),
+              )),
+              child: Center(
+                child: Text(
+                  (tracking.toLowerCase().contains("serial")) ? "1" : quantity,
+                  textAlign: TextAlign.center,
+                  style: BaseText.black2Text14.copyWith(
+                    fontWeight: BaseText.regular,
                   ),
-                ],
+                ),
               ),
             )
           ],

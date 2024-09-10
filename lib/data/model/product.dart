@@ -9,6 +9,8 @@ class Product {
   String productName;
   String code;
   String dateTime;
+  bool? hasActualDateTime;
+  String? actualDateTime;
   String? sku;
   String? lotsCode;
   double productQty;
@@ -21,6 +23,8 @@ class Product {
     required this.productName,
     required this.code,
     required this.dateTime,
+    this.hasActualDateTime,
+    this.actualDateTime,
     this.sku,
     this.lotsCode,
     required this.productQty,
@@ -34,6 +38,8 @@ class Product {
     String? productName,
     String? code,
     String? dateTime,
+    bool? hasActualDateTime,
+    String? actualDateTime,
     String? sku,
     String? lotsCode,
     double? productQty,
@@ -46,6 +52,8 @@ class Product {
       productName: productName ?? this.productName,
       code: code ?? this.code,
       dateTime: dateTime ?? this.dateTime,
+      hasActualDateTime: hasActualDateTime ?? this.hasActualDateTime,
+      actualDateTime: actualDateTime ?? this.actualDateTime,
       sku: sku ?? this.sku,
       lotsCode: lotsCode ?? this.lotsCode,
       productQty: productQty ?? this.productQty,
@@ -61,6 +69,8 @@ class Product {
       'productName': productName,
       'code': code,
       'dateTime': dateTime,
+      'hasActualDateTime': hasActualDateTime,
+      'actualDateTime': actualDateTime,
       'sku': sku,
       'lotsCode': lotsCode,
       'productQty': productQty,
@@ -77,6 +87,12 @@ class Product {
       productName: map['productName'] as String,
       code: map['code'] as String,
       dateTime: map['dateTime'] as String,
+      hasActualDateTime: map['hasActualDateTime'] != null
+          ? map['hasActualDateTime'] as bool
+          : null,
+      actualDateTime: map['actualDateTime'] != null
+          ? map['actualDateTime'] as String
+          : null,
       sku: map['sku'] != null ? map['sku'] as String : null,
       lotsCode: map['lotsCode'] != null ? map['lotsCode'] as String : null,
       productQty: map['productQty'] as double,
@@ -104,7 +120,7 @@ class Product {
 
   @override
   String toString() {
-    return 'Product(id: $id, palletCode: $palletCode, productName: $productName, code: $code, dateTime: $dateTime, sku: $sku, lotsCode: $lotsCode, productQty: $productQty, serialNumber: $serialNumber, scannedSerialNumber: $scannedSerialNumber)';
+    return 'Product(id: $id, palletCode: $palletCode, productName: $productName, code: $code, dateTime: $dateTime, hasActualDateTime: $hasActualDateTime, actualDateTime: $actualDateTime, sku: $sku, lotsCode: $lotsCode, productQty: $productQty, serialNumber: $serialNumber, scannedSerialNumber: $scannedSerialNumber)';
   }
 
   @override
@@ -116,6 +132,8 @@ class Product {
         other.productName == productName &&
         other.code == code &&
         other.dateTime == dateTime &&
+        other.hasActualDateTime == hasActualDateTime &&
+        other.actualDateTime == actualDateTime &&
         other.sku == sku &&
         other.lotsCode == lotsCode &&
         other.productQty == productQty &&
@@ -130,6 +148,8 @@ class Product {
         productName.hashCode ^
         code.hashCode ^
         dateTime.hashCode ^
+        hasActualDateTime.hashCode ^
+        actualDateTime.hashCode ^
         sku.hashCode ^
         lotsCode.hashCode ^
         productQty.hashCode ^

@@ -24,6 +24,8 @@ import 'package:inventory_v3/presentation/receipt/receipt_pallet/cubit/add_palle
 import 'package:inventory_v3/presentation/receipt/receipt_pallet/screens/pallet/add_pallet_screen.dart';
 import 'package:inventory_v3/presentation/receipt/receipt_pallet/screens/receipt_product_detail.dart';
 import 'package:inventory_v3/presentation/receipt/receipt_pallet/widget/scan_view_widget.dart';
+import 'package:inventory_v3/presentation/receipt/receipt_product/cubit/product_detail/product_menu_product_detail_cubit.dart';
+import 'package:inventory_v3/presentation/receipt/receipt_product/cubit/product_detail/product_menu_product_detail_state.dart';
 
 import '../../../../common/components/status_badge.dart';
 import '../../../../common/extensions/empty_space_extension.dart';
@@ -56,8 +58,6 @@ class _ReceiptProductMenuDetailScreenState
 
   List<dynamic> palletUpdates = [];
 
-  bool isSchDateEnabled = true;
-
   var selectedUpdatePallet;
 
   @override
@@ -88,40 +88,8 @@ class _ReceiptProductMenuDetailScreenState
         .toString()
         .toLowerCase()
         .contains("serial number")) {
-      listProducts = products3;
-
-      listProducts.map((e) {
-        if (e.id == 2) {
-          var serialNumberList = List.generate(
-            e.productQty.toInt(),
-            (index) => SerialNumber(
-              id: math.Random().nextInt(100),
-              label: "BP1234567845$index",
-              expiredDateTime: "Exp. Date: 12/07/2024 - 16:00",
-              quantity: 1,
-            ),
-          );
-          e.serialNumber = serialNumberList;
-        } else if (e.id == 1) {
-          var serialNumberList = List.generate(
-            e.productQty.toInt(),
-            (index) => SerialNumber(
-              id: math.Random().nextInt(100),
-              label: "BP1234567845$index",
-              expiredDateTime: "Exp. Date: 12/07/2024 - 16:00",
-              isInputDate: (index == 1) ? true : false,
-              isEditDate: (index == 2) ? true : false,
-              quantity: 1,
-            ),
-          );
-          e.serialNumber = serialNumberList;
-        }
-      }).toList();
-
-      debugPrint(listProducts
-          .map((e) => e.serialNumber?.map((e) => e.toJson()))
-          .toList()
-          .toString());
+      BlocProvider.of<ProductMenuProductDetailCubit>(context)
+          .getInitListProduct();
     }
 
     date = receipt.dateTime.substring(0, 10);
@@ -337,16 +305,17 @@ class _ReceiptProductMenuDetailScreenState
                     status: receipt.status,
                   ),
                   SizedBox(height: 14.h),
-                  Builder(builder: (context) {
-                    // final list = state.products;
+                  BlocBuilder<ProductMenuProductDetailCubit,
+                      ProductMenuProductDetailState>(builder: (context, state) {
+                    final list = state.products;
 
                     return ListView.builder(
                         shrinkWrap: true,
-                        itemCount: listProducts.length,
+                        itemCount: list.length,
                         physics: const NeverScrollableScrollPhysics(),
                         primary: false,
                         itemBuilder: (context, index) {
-                          Product item = listProducts[index];
+                          Product item = list[index];
 
                           tracking = receipt.packageStatus.substring(10);
                           debugPrint("tracking: $tracking");
@@ -654,9 +623,6 @@ class _ReceiptProductMenuDetailScreenState
         assignToDone(product0);
         code = product0.code;
 
-        debugPrint(
-            "listScanned: ${listProducts[1].scannedSerialNumber?.length.toString()}");
-
         break;
       case "No Tracking":
         _receive = product0.productQty.toString();
@@ -688,13 +654,16 @@ class _ReceiptProductMenuDetailScreenState
 
         resultOfProduct.then((value) {
           if (value != null) {
-            debugPrint("value: $value");
-            setState(() {});
+            // debugPrint("value: $value");
+            // setState(() {});
             // setState(() {
             //   product0 = value as Product;
             //   assignToReceive(product0);
             //   assignToDone(product0);
             // });
+
+            BlocProvider.of<ProductMenuProductDetailCubit>(context)
+                .scannedSerialNumberToProduct(value);
           }
         });
       },
@@ -749,9 +718,10 @@ class _ReceiptProductMenuDetailScreenState
                     label: "Sch. Date: ",
                     date: date,
                     time: time,
-                    isEnable: isSchDateEnabled,
+                    isEnable:
+                        (product0.hasActualDateTime == true) ? false : true,
                   ),
-                  (_scanBarcode != "0.00")
+                  (product0.hasActualDateTime == true)
                       ? Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
@@ -777,7 +747,9 @@ class _ReceiptProductMenuDetailScreenState
                 ),
                 _buildBottomCardSection(
                   label: "Done",
-                  value: "$_scanBarcode Unit",
+                  value: (_scanBarcode.contains("null"))
+                      ? "0.00 Unit"
+                      : "$_scanBarcode Unit",
                 )
               ],
             ),
@@ -841,13 +813,12 @@ class _ReceiptProductMenuDetailScreenState
   }
 
   void assignToDone(Product product0) {
-    if (product0.scannedSerialNumber != null) {
-      double? doneDouble = product0.scannedSerialNumber?.length.toDouble();
-      _scanBarcode = doneDouble.toString();
-      isSchDateEnabled = false;
-    } else {
-      _scanBarcode = _scanBarcode;
-    }
+    double? doneDouble = 0.00;
+    doneDouble = product0.scannedSerialNumber?.length.toDouble();
+    _scanBarcode = doneDouble.toString();
+    // else {
+    //   _scanBarcode = _scanBarcode;
+    // }
   }
 
   Widget _buildBottomCardSection(

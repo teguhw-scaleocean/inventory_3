@@ -1,8 +1,10 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:inventory_v3/data/model/scan_view.dart';
+import 'package:inventory_v3/presentation/receipt/receipt_product/cubit/product_detail/product_menu_product_detail_cubit.dart';
 import 'package:smooth_highlight/smooth_highlight.dart';
 
 import '../../../../../common/components/custom_app_bar.dart';
@@ -159,7 +161,13 @@ class _ReceiptProductMenuOfProductDetailScreenState
                                   (element) => element == selectedSerialNumber);
                               serialNumberResult.add(selectedSerialNumber);
                               product.scannedSerialNumber = serialNumberResult;
+                              product.hasActualDateTime = true;
+                              product.actualDateTime = product.dateTime;
                             });
+
+                            // BlocProvider.of<ProductMenuProductDetailCubit>(
+                            //         context)
+                            //     .scannedSerialNumberToProduct(product);
                             // debugPrint("scanResultValue: $value");
 
                             Future.delayed(const Duration(seconds: 2), () {

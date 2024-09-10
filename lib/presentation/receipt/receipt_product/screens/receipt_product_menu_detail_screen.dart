@@ -372,12 +372,14 @@ class _ReceiptProductMenuDetailScreenState
                     debugPrint("listener");
 
                     Product currentProduct = state.product!;
+                    int totalReceive = state.totalToDone!;
 
                     debugPrint(currentProduct.serialNumber?.length.toString());
                     debugPrint(
                         currentProduct.scannedSerialNumber?.length.toString());
 
-                    if (currentProduct.scannedSerialNumber?.length == 11) {
+                    if (currentProduct.scannedSerialNumber?.length ==
+                        totalReceive) {
                       onShowSuccessReceiveCompleteDialog(
                           productName: currentProduct.productName.toString());
                     }

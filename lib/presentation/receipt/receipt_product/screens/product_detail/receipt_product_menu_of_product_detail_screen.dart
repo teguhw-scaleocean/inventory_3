@@ -89,6 +89,8 @@ class _ReceiptProductMenuOfProductDetailScreenState
       //   );
       // }
       debugPrint("serialNumberList: $serialNumberList.map((e) => e.toJson())");
+      BlocProvider.of<ProductMenuProductDetailCubit>(context)
+          .setTotalToDone(serialNumberList.length);
     }
   }
 

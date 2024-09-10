@@ -61,4 +61,9 @@ class ProductMenuProductDetailCubit
     log("currentProduct: ${currentProduct.productName}");
     emit(state.copyWith(product: currentProduct));
   }
+
+  setTotalToDone(int total) {
+    emit(state.copyWith(totalToDone: total));
+    log("setTotalToDone: ${state.totalToDone.toString()}");
+  }
 }

@@ -179,15 +179,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   ),
                 ),
                 const SizedBox(height: 8),
-                SizedBox(
-                  height: 40,
-                  width: 256,
-                  child: Text(
-                    subTitle,
-                    textAlign: TextAlign.center,
-                    style: BaseText.subText14.copyWith(
-                      fontWeight: BaseText.regular,
-                    ),
+                Text(
+                  subTitle,
+                  textAlign: TextAlign.center,
+                  style: BaseText.subText14.copyWith(
+                    fontWeight: BaseText.regular,
                   ),
                 ),
               ],

@@ -7,7 +7,7 @@ class TextConstants {
 
   static String get onBoardingTitle2 => "Easy Transfers";
   static String get onBoardingSubTitle2 =>
-      "Scan items for seamless internal\nmoves.";
+      "Scan items for seamless internal moves.";
 
   static String get onBoardingTitle3 => "Perfect Deliveries";
   static String get onBoardingSubTitle3 => "Scan to ensure timely dispatches.";

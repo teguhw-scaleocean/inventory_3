@@ -111,6 +111,7 @@ class _ScanViewState extends State<ScanView> {
       controller?.pauseCamera();
       // ignore: use_build_context_synchronously
       onShowErrorDialog(context,
+          isInputDate: true,
           body: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -430,7 +431,8 @@ class _ScanViewState extends State<ScanView> {
     }
   }
 
-  onShowErrorDialog(BuildContext context, {required Widget body}) {
+  onShowErrorDialog(BuildContext context,
+      {required Widget body, required bool isInputDate}) {
     return AwesomeDialog(
       context: context,
       animType: AnimType.bottomSlide,
@@ -444,21 +446,30 @@ class _ScanViewState extends State<ScanView> {
         debugPrint('OnClcik');
       },
       // btnOkIcon: Icons.check_circle,
-      btnOk: PrimaryButton(
-        onPressed: () async {
-          debugPrint('OnClcik OK');
-          await controller?.resumeCamera();
-          Navigator.of(context).pop();
-        },
-        height: 40.h,
-        icon: SvgPicture.asset(
-          LocalImages.scanIcons,
-          width: 16.w,
-          height: 16.w,
-          color: ColorName.whiteColor,
-        ),
-        title: "Rescan",
-      ),
+      btnOk: (isInputDate)
+          ? PrimaryButton(
+              onPressed: () async {
+                Navigator.of(context).pop();
+                Navigator.of(context).pop("inputExpirationDate");
+              },
+              height: 40.h,
+              title: "OK",
+            )
+          : PrimaryButton(
+              onPressed: () async {
+                debugPrint('OnClcik OK');
+                await controller?.resumeCamera();
+                Navigator.of(context).pop();
+              },
+              height: 40.h,
+              icon: SvgPicture.asset(
+                LocalImages.scanIcons,
+                width: 16.w,
+                height: 16.w,
+                color: ColorName.whiteColor,
+              ),
+              title: "Rescan",
+            ),
       onDismissCallback: (type) {
         debugPrint('Dialog Dissmiss from callback $type');
       },

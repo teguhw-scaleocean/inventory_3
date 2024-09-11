@@ -167,6 +167,30 @@ class _ReceiptProductMenuOfProductDetailScreenState
                           ),
                         ).then((value) {
                           if (value != null) {
+                            if (value
+                                .toString()
+                                .contains("inputExpirationDate")) {
+                              showDialog(
+                                context: context,
+                                builder: (context) {
+                                  return Dialog(
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(6.r))),
+                                    child: Column(
+                                      children: [
+                                        Text(
+                                          "Date and Time",
+                                          style: BaseText.black2Text14.copyWith(
+                                            fontWeight: BaseText.medium,
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                  );
+                                },
+                              );
+                            }
                             setState(() {
                               _scanBarcode = value;
 

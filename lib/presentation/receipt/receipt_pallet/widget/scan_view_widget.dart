@@ -108,8 +108,32 @@ class _ScanViewState extends State<ScanView> {
     debugPrint("serialNumber: $serialNumber");
 
     if (serialNumber?.isInputDate == true) {
-      await controller?.pauseCamera();
-      onShowErrorDialog(context, body: const SizedBox());
+      controller?.pauseCamera();
+      // ignore: use_build_context_synchronously
+      onShowErrorDialog(context,
+          body: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(height: 10.h),
+              Text(
+                'Scan Error',
+                style: BaseText.black2TextStyle.copyWith(
+                  fontSize: 16.sp,
+                  fontWeight: BaseText.semiBold,
+                ),
+              ),
+              Container(height: 4.h),
+              Text(
+                "Cannot scan.\nPlease input expiration date.",
+                textAlign: TextAlign.center,
+                style: BaseText.grey2Text14.copyWith(
+                  fontWeight: BaseText.light,
+                ),
+              )
+            ],
+          ));
       debugPrint("onSHowErrorDialog");
       return true;
     }
@@ -355,12 +379,16 @@ class _ScanViewState extends State<ScanView> {
       //   }
       // }
     });
-    Future.delayed(const Duration(seconds: 6), () {
-      controller.stopCamera();
-      Navigator.of(context).pop(expectedValue);
+    if (isItemInputDate) {
+      debugPrint("Pause camera");
+    } else {
+      Future.delayed(const Duration(seconds: 6), () {
+        controller.stopCamera();
+        Navigator.of(context).pop(expectedValue);
 
-      log("expectedValue: $expectedValue");
-    });
+        log("expectedValue: $expectedValue");
+      });
+    }
   }
 
   SizedBox _buildBodyErrorExceptionDialog() {

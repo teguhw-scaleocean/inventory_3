@@ -3,10 +3,13 @@ import 'dart:io';
 
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:inventory_v3/common/constants/text_constants.dart';
+import 'package:inventory_v3/data/model/product.dart';
 import 'package:inventory_v3/data/model/scan_view.dart';
+import 'package:inventory_v3/presentation/receipt/receipt_product/cubit/scan/scan_cubit.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 
 import '../../../../common/components/primary_button.dart';
@@ -40,6 +43,9 @@ class _ScanViewState extends State<ScanView> {
   String appBarTitle = "";
   String labelOfScan = "";
 
+  List<SerialNumber> serialNumberList = [];
+  SerialNumber? serialNumber;
+
   // In order to get hot reload to work we need to pause the camera if the platform
   // is android, or resume the camera if the platform is iOS.
   @override
@@ -71,11 +77,35 @@ class _ScanViewState extends State<ScanView> {
     }
   }
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    checkScanSerialNumber();
+  }
+
   Future getFlashStatus() async {
     await controller!.getFlashStatus().then((value) => setState(() {
           isFlashOn = value!;
           log("isFlashOn $isFlashOn");
         }));
+  }
+
+  checkScanSerialNumber() async {
+    serialNumberList =
+        BlocProvider.of<ScanCubit>(context).getListOfSerialNumber();
+
+    debugPrint(
+        "serialNumberList: ${serialNumberList.map((e) => e.label).toList().toString()}");
+    serialNumber = serialNumberList
+        .firstWhere((element) => element.label == expectedValue);
+    debugPrint("serialNumber: $serialNumber");
+
+    if (serialNumber?.isInputDate == true) {
+      await controller?.pauseCamera();
+      onShowErrorDialog(context, body: const SizedBox());
+      debugPrint("onSHowErrorDialog");
+    }
   }
 
   @override
@@ -295,6 +325,8 @@ class _ScanViewState extends State<ScanView> {
         result = scanData;
       });
 
+      //TODO Filter list
+
       // if (result?.format == BarcodeFormat.qrcode) {
       //   try {
       //     controller.stopCamera();
@@ -307,17 +339,50 @@ class _ScanViewState extends State<ScanView> {
       //   } on Exception {
       //     Future.delayed(const Duration(seconds: 2), () async {
       //       await controller.pauseCamera();
-      //       onShowErrorDialog();
+      // onShowErrorDialog(
+      //   context,
+      //   body: _buildBodyErrorExceptionDialog(),
+      // );
       //     });
       //   }
       // }
     });
-    Future.delayed(const Duration(seconds: 3), () {
+    Future.delayed(const Duration(seconds: 6), () {
       controller.stopCamera();
       Navigator.of(context).pop(expectedValue);
 
       log("expectedValue: $expectedValue");
     });
+  }
+
+  SizedBox _buildBodyErrorExceptionDialog() {
+    return SizedBox(
+      // width: MediaQuery.sizeOf(context).width,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(height: 10.h),
+          Text(
+            'Scan Error',
+            style: BaseText.black2TextStyle.copyWith(
+              fontSize: 16.sp,
+              fontWeight: BaseText.semiBold,
+            ),
+          ),
+          Container(height: 4.h),
+          Text('Scan incorrect, please try again.',
+              style: BaseText.grey2Text14.copyWith(fontWeight: BaseText.light)),
+          Container(height: 1.h),
+          Text("Pallet B654",
+              textAlign: TextAlign.center,
+              style:
+                  BaseText.mainText14.copyWith(fontWeight: BaseText.semiBold)),
+          SizedBox(height: 24.h),
+        ],
+      ),
+    );
   }
 
   void _onPermissionSet(BuildContext context, QRViewController ctrl, bool p) {
@@ -329,7 +394,7 @@ class _ScanViewState extends State<ScanView> {
     }
   }
 
-  onShowErrorDialog() {
+  onShowErrorDialog(BuildContext context, {required Widget body}) {
     return AwesomeDialog(
       context: context,
       animType: AnimType.bottomSlide,
@@ -338,34 +403,7 @@ class _ScanViewState extends State<ScanView> {
       showCloseIcon: true,
       width: double.infinity,
       // padding: EdgeInsets.symmetric(horizontal: 16.w),
-      body: SizedBox(
-        // width: MediaQuery.sizeOf(context).width,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(height: 10.h),
-            Text(
-              'Scan Error',
-              style: BaseText.black2TextStyle.copyWith(
-                fontSize: 16.sp,
-                fontWeight: BaseText.semiBold,
-              ),
-            ),
-            Container(height: 4.h),
-            Text('Scan incorrect, please try again.',
-                style:
-                    BaseText.grey2Text14.copyWith(fontWeight: BaseText.light)),
-            Container(height: 1.h),
-            Text("Pallet B654",
-                textAlign: TextAlign.center,
-                style: BaseText.mainText14
-                    .copyWith(fontWeight: BaseText.semiBold)),
-            SizedBox(height: 24.h),
-          ],
-        ),
-      ),
+      body: body,
       btnOkOnPress: () {
         debugPrint('OnClcik');
       },

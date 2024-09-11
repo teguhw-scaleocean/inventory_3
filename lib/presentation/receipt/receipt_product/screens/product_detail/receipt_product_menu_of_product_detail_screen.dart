@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:inventory_v3/data/model/scan_view.dart';
 import 'package:inventory_v3/presentation/receipt/receipt_product/cubit/product_detail/product_menu_product_detail_cubit.dart';
+import 'package:inventory_v3/presentation/receipt/receipt_product/cubit/scan/scan_cubit.dart';
 import 'package:smooth_highlight/smooth_highlight.dart';
 
 import '../../../../../common/components/custom_app_bar.dart';
@@ -91,6 +92,9 @@ class _ReceiptProductMenuOfProductDetailScreenState
       debugPrint("serialNumberList: $serialNumberList.map((e) => e.toJson())");
       BlocProvider.of<ProductMenuProductDetailCubit>(context)
           .setTotalToDone(serialNumberList.length);
+
+      BlocProvider.of<ScanCubit>(context)
+          .setListOfSerialNumber(serialNumberList);
     }
   }
 

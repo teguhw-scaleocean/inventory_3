@@ -160,6 +160,67 @@ class _ReceiptProductMenuDetailScreenState
     ).show();
   }
 
+  onShowSuccessReceiveCompleteDialog({required String productName}) {
+    return AwesomeDialog(
+      context: context,
+      animType: AnimType.bottomSlide,
+      headerAnimationLoop: false,
+      dialogType: DialogType.success,
+      showCloseIcon: true,
+      width: double.infinity,
+      // padding: EdgeInsets.symmetric(horizontal: 16.w),
+      body: SizedBox(
+        // width: MediaQuery.sizeOf(context).width,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(height: 10.h),
+            Text(
+              'Receive Complete!',
+              style: BaseText.black2TextStyle.copyWith(
+                fontSize: 16.sp,
+                fontWeight: BaseText.semiBold,
+              ),
+            ),
+            Container(height: 4.h),
+            Text(
+              'All $productName',
+              style: BaseText.mainText14.copyWith(
+                fontWeight: BaseText.medium,
+              ),
+            ),
+            Container(height: 1.h),
+            Text(
+              "have been successfully done",
+              textAlign: TextAlign.center,
+              style: BaseText.grey2Text14.copyWith(
+                fontWeight: BaseText.light,
+              ),
+            ),
+            SizedBox(height: 24.h),
+          ],
+        ),
+      ),
+      btnOkOnPress: () {
+        debugPrint('OnClcik');
+      },
+      // btnOkIcon: Icons.check_circle,
+      btnOk: PrimaryButton(
+        onPressed: () {
+          debugPrint('OnClcik OK');
+          Navigator.of(context).pop();
+        },
+        height: 40.h,
+        title: "OK",
+      ),
+      onDismissCallback: (type) {
+        debugPrint('Dialog Dissmiss from callback $type');
+      },
+    ).show();
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -305,8 +366,24 @@ class _ReceiptProductMenuDetailScreenState
                     status: receipt.status,
                   ),
                   SizedBox(height: 14.h),
-                  BlocBuilder<ProductMenuProductDetailCubit,
-                      ProductMenuProductDetailState>(builder: (context, state) {
+                  BlocConsumer<ProductMenuProductDetailCubit,
+                          ProductMenuProductDetailState>(
+                      listener: (context, state) {
+                    debugPrint("listener");
+
+                    Product currentProduct = state.product!;
+                    int totalReceive = state.totalToDone!;
+
+                    debugPrint(currentProduct.serialNumber?.length.toString());
+                    debugPrint(
+                        currentProduct.scannedSerialNumber?.length.toString());
+
+                    if (currentProduct.scannedSerialNumber?.length ==
+                        totalReceive) {
+                      onShowSuccessReceiveCompleteDialog(
+                          productName: currentProduct.productName.toString());
+                    }
+                  }, builder: (context, state) {
                     final list = state.products;
 
                     return ListView.builder(
@@ -655,7 +732,6 @@ class _ReceiptProductMenuDetailScreenState
         resultOfProduct.then((value) {
           if (value != null) {
             // debugPrint("value: $value");
-            // setState(() {});
             // setState(() {
             //   product0 = value as Product;
             //   assignToReceive(product0);
@@ -806,10 +882,10 @@ class _ReceiptProductMenuDetailScreenState
   }
 
   void assignToReceive(Product product0) {
-    if (product0.serialNumber != null) {
-      double? receiveDouble = product0.serialNumber?.length.toDouble();
-      _receive = receiveDouble.toString();
-    }
+    // if (product0.serialNumber != null) {
+    double? receiveDouble = product0.serialNumber?.length.toDouble();
+    _receive = receiveDouble.toString();
+    // }
   }
 
   void assignToDone(Product product0) {

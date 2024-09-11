@@ -47,6 +47,7 @@ class ProductMenuProductDetailCubit
 
   scannedSerialNumberToProduct(Product newProduct) {
     // emit(state.copyWith(product: newProduct));
+    getCurrentProduct(newProduct);
     List<Product> lastProducts = state.products;
 
     int index =
@@ -54,5 +55,15 @@ class ProductMenuProductDetailCubit
     lastProducts[index] = newProduct;
     emit(state.copyWith(products: lastProducts));
     log("scannedSerialNumberToProduct: ${lastProducts.map((e) => e.scannedSerialNumber?.length.toString()).toList()}");
+  }
+
+  getCurrentProduct(Product currentProduct) {
+    log("currentProduct: ${currentProduct.productName}");
+    emit(state.copyWith(product: currentProduct));
+  }
+
+  setTotalToDone(int total) {
+    emit(state.copyWith(totalToDone: total));
+    log("setTotalToDone: ${state.totalToDone.toString()}");
   }
 }

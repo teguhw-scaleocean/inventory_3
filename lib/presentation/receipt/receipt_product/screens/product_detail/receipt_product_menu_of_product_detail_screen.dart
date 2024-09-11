@@ -89,7 +89,17 @@ class _ReceiptProductMenuOfProductDetailScreenState
       //   );
       // }
       debugPrint("serialNumberList: $serialNumberList.map((e) => e.toJson())");
+      BlocProvider.of<ProductMenuProductDetailCubit>(context)
+          .setTotalToDone(serialNumberList.length);
     }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+
+    tabController.dispose();
+    searchSerialNumberController.dispose();
   }
 
   _onSearch() {}
@@ -141,11 +151,13 @@ class _ReceiptProductMenuOfProductDetailScreenState
                     buildScanAndUpdateSection(
                       status: status,
                       onScan: () async {
+                        var firstExpectedValue = serialNumberList.first.label;
+
                         final scanResult = await Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => const ScanView(
-                              expectedValue: "BP12345678450",
+                            builder: (context) => ScanView(
+                              expectedValue: firstExpectedValue,
                               scanType: ScanViewType.product,
                             ),
                           ),

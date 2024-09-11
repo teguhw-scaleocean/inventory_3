@@ -130,9 +130,7 @@ class _ReceiptProductMenuOfProductDetailScreenState
             listener: (context, state) {
               final itemInputDate = state.isItemInputDate;
               debugPrint("itemInputDate: $itemInputDate");
-              if (itemInputDate == true) {
-                debugPrint("itemInputDate minta true: $itemInputDate");
-              }
+              if (itemInputDate == true) {}
             },
             child: Column(
               // crossAxisAlignment: CrossAxisAlignment.start,
@@ -543,9 +541,58 @@ class _ReceiptProductMenuOfProductDetailScreenState
                       ),
                 SizedBox(height: 12.h),
                 (itemSerialNumber?.isInputDate == true)
-                    ? buildExpDateButton(
-                        label: 'Input Exp. Date',
-                        eColor: ColorName.blue3Color,
+                    ? InkWell(
+                        onTap: () {
+                          Future.delayed(const Duration(milliseconds: 600), () {
+                            showAdaptiveDialog(
+                              context: context,
+                              barrierDismissible: true,
+                              builder: (context) {
+                                return SimpleDialog(
+                                  // insetPadding: EdgeInsets.zero,
+                                  titlePadding: EdgeInsets.zero,
+                                  contentPadding: EdgeInsets.zero,
+                                  surfaceTintColor: ColorName.whiteColor,
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(6.r))),
+                                  children: [
+                                    Container(
+                                      margin: EdgeInsets.zero,
+                                      padding: const EdgeInsets.all(16.0),
+                                      width: double.infinity,
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Text(
+                                                "Date and Time",
+                                                style: BaseText.black2Text14
+                                                    .copyWith(
+                                                  fontWeight: BaseText.medium,
+                                                ),
+                                              ),
+                                              const Icon(Icons.close)
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    )
+                                  ],
+                                );
+                              },
+                            );
+                          });
+                        },
+                        child: buildExpDateButton(
+                          label: 'Input Exp. Date',
+                          eColor: ColorName.blue3Color,
+                        ),
                       )
                     : (itemSerialNumber?.isEditDate == true)
                         ? buildExpDateButton(

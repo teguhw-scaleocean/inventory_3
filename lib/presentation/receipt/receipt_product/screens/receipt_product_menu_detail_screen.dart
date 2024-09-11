@@ -370,18 +370,24 @@ class _ReceiptProductMenuDetailScreenState
                           ProductMenuProductDetailState>(
                       listener: (context, state) {
                     debugPrint("listener");
+                    Product? currentProduct;
+                    int? totalReceive;
 
-                    Product currentProduct = state.product!;
-                    int totalReceive = state.totalToDone!;
+                    if (state.product != null) {
+                      currentProduct = state.product!;
+                    }
+                    if (state.totalToDone != null) {
+                      totalReceive = state.totalToDone!;
+                    }
 
-                    debugPrint(currentProduct.serialNumber?.length.toString());
+                    debugPrint(currentProduct?.serialNumber?.length.toString());
                     debugPrint(
-                        currentProduct.scannedSerialNumber?.length.toString());
+                        currentProduct?.scannedSerialNumber?.length.toString());
 
-                    if (currentProduct.scannedSerialNumber?.length ==
+                    if (currentProduct?.scannedSerialNumber?.length ==
                         totalReceive) {
                       onShowSuccessReceiveCompleteDialog(
-                          productName: currentProduct.productName.toString());
+                          productName: currentProduct!.productName);
                     }
                   }, builder: (context, state) {
                     final list = state.products;

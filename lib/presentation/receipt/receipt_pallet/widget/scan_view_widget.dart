@@ -45,6 +45,7 @@ class _ScanViewState extends State<ScanView> {
 
   List<SerialNumber> serialNumberList = [];
   SerialNumber? serialNumber;
+  bool isItemInputDate = false;
 
   // In order to get hot reload to work we need to pause the camera if the platform
   // is android, or resume the camera if the platform is iOS.
@@ -81,7 +82,12 @@ class _ScanViewState extends State<ScanView> {
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    checkScanSerialNumber();
+    checkScanSerialNumber().then((value) {
+      setState(() {
+        isItemInputDate = value;
+        debugPrint("isItemInputDate: ${isItemInputDate.toString()}");
+      });
+    });
   }
 
   Future getFlashStatus() async {
@@ -91,7 +97,7 @@ class _ScanViewState extends State<ScanView> {
         }));
   }
 
-  checkScanSerialNumber() async {
+  Future<bool> checkScanSerialNumber() async {
     serialNumberList =
         BlocProvider.of<ScanCubit>(context).getListOfSerialNumber();
 
@@ -105,7 +111,9 @@ class _ScanViewState extends State<ScanView> {
       await controller?.pauseCamera();
       onShowErrorDialog(context, body: const SizedBox());
       debugPrint("onSHowErrorDialog");
+      return true;
     }
+    return false;
   }
 
   @override

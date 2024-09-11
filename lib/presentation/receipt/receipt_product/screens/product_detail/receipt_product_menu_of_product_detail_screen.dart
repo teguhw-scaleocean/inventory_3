@@ -6,6 +6,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:inventory_v3/data/model/scan_view.dart';
 import 'package:inventory_v3/presentation/receipt/receipt_product/cubit/product_detail/product_menu_product_detail_cubit.dart';
 import 'package:inventory_v3/presentation/receipt/receipt_product/cubit/scan/scan_cubit.dart';
+import 'package:inventory_v3/presentation/receipt/receipt_product/cubit/scan/scan_state.dart';
 import 'package:smooth_highlight/smooth_highlight.dart';
 
 import '../../../../../common/components/custom_app_bar.dart';
@@ -111,6 +112,12 @@ class _ReceiptProductMenuOfProductDetailScreenState
 
   @override
   Widget build(BuildContext context) {
+    // final itemInputDate = context.watch<ScanCubit>().state.isItemInputDate;
+
+    // debugPrint("itemInputDate: $itemInputDate");
+    // if (itemInputDate == true) {
+    //   debugPrint("itemInputDate minta true: $itemInputDate");
+    // }
     return SafeArea(
       child: DefaultTabController(
         length: _tabs.length,
@@ -119,194 +126,229 @@ class _ReceiptProductMenuOfProductDetailScreenState
             onTap: () => Navigator.of(context).pop(product),
             title: "Product Detail",
           ),
-          body: Column(
-            // crossAxisAlignment: CrossAxisAlignment.start,
-            // shrinkWrap: true,
-            children: [
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 16.w),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SizedBox(height: 16.h),
-                    Text(
-                      product.productName,
-                      style: BaseText.blackText17
-                          .copyWith(fontWeight: BaseText.medium),
-                    ),
-                    SizedBox(height: 8.h),
-                    Row(
-                      children: [
-                        Text(product.code,
-                            style: BaseText.grey1Text13
-                                .copyWith(fontWeight: BaseText.light)),
-                      ],
-                    ),
-                    SizedBox(height: 18.h),
-                    Text(
-                      product.dateTime,
-                      style: BaseText.baseTextStyle.copyWith(
-                        fontWeight: BaseText.regular,
-                        fontSize: 13.sp,
-                        color: ColorName.dateTimeColor,
+          body: BlocListener<ScanCubit, ScanState>(
+            listener: (context, state) {
+              final itemInputDate = state.isItemInputDate;
+              debugPrint("itemInputDate: $itemInputDate");
+              if (itemInputDate == true) {
+                debugPrint("itemInputDate minta true: $itemInputDate");
+              }
+            },
+            child: Column(
+              // crossAxisAlignment: CrossAxisAlignment.start,
+              // shrinkWrap: true,
+              children: [
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 16.w),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(height: 16.h),
+                      Text(
+                        product.productName,
+                        style: BaseText.blackText17
+                            .copyWith(fontWeight: BaseText.medium),
                       ),
-                    ),
-                    SizedBox(height: 18.h),
-                    buildScanAndUpdateSection(
-                      status: status,
-                      onScan: () async {
-                        var firstExpectedValue = serialNumberList.first.label;
+                      SizedBox(height: 8.h),
+                      Row(
+                        children: [
+                          Text(product.code,
+                              style: BaseText.grey1Text13
+                                  .copyWith(fontWeight: BaseText.light)),
+                        ],
+                      ),
+                      SizedBox(height: 18.h),
+                      Text(
+                        product.dateTime,
+                        style: BaseText.baseTextStyle.copyWith(
+                          fontWeight: BaseText.regular,
+                          fontSize: 13.sp,
+                          color: ColorName.dateTimeColor,
+                        ),
+                      ),
+                      SizedBox(height: 18.h),
+                      buildScanAndUpdateSection(
+                        status: status,
+                        onScan: () async {
+                          var firstExpectedValue = serialNumberList.first.label;
 
-                        final scanResult = await Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => ScanView(
-                              expectedValue: firstExpectedValue,
-                              scanType: ScanViewType.product,
+                          final scanResult = await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ScanView(
+                                expectedValue: firstExpectedValue,
+                                scanType: ScanViewType.product,
+                              ),
                             ),
-                          ),
-                        ).then((value) {
-                          if (value != null) {
-                            if (value
-                                .toString()
-                                .contains("inputExpirationDate")) {
-                              showDialog(
-                                context: context,
-                                builder: (context) {
-                                  return Dialog(
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(6.r))),
-                                    child: Column(
-                                      children: [
-                                        Text(
-                                          "Date and Time",
-                                          style: BaseText.black2Text14.copyWith(
-                                            fontWeight: BaseText.medium,
-                                          ),
-                                        )
-                                      ],
-                                    ),
+                          ).then((value) {
+                            if (value != null) {
+                              if (value
+                                  .toString()
+                                  .contains("inputExpirationDate")) {
+                                BlocProvider.of<ScanCubit>(context)
+                                    .setIsItemInputDate(true);
+                              } else {
+                                setState(() {
+                                  _scanBarcode = value;
+
+                                  selectedSerialNumber =
+                                      serialNumberList.firstWhere((element) =>
+                                          element.label == _scanBarcode);
+                                  serialNumberList.removeWhere((element) =>
+                                      element == selectedSerialNumber);
+                                  serialNumberResult.add(selectedSerialNumber);
+                                  product.scannedSerialNumber =
+                                      serialNumberResult;
+                                  product.hasActualDateTime = true;
+                                  product.actualDateTime = product.dateTime;
+                                });
+
+                                Future.delayed(const Duration(seconds: 2), () {
+                                  String scannedItem =
+                                      "Serial Number: $_scanBarcode";
+
+                                  onShowSuccessDialog(
+                                    context: context,
+                                    scannedItem: scannedItem,
                                   );
-                                },
-                              );
+                                });
+                              }
+
+                              // BlocProvider.of<ProductMenuProductDetailCubit>(
+                              //         context)
+                              //     .scannedSerialNumberToProduct(product);
+                              // debugPrint("scanResultValue: $value");
                             }
-                            setState(() {
-                              _scanBarcode = value;
-
-                              selectedSerialNumber =
-                                  serialNumberList.firstWhere((element) =>
-                                      element.label == _scanBarcode);
-                              serialNumberList.removeWhere(
-                                  (element) => element == selectedSerialNumber);
-                              serialNumberResult.add(selectedSerialNumber);
-                              product.scannedSerialNumber = serialNumberResult;
-                              product.hasActualDateTime = true;
-                              product.actualDateTime = product.dateTime;
-                            });
-
-                            // BlocProvider.of<ProductMenuProductDetailCubit>(
-                            //         context)
-                            //     .scannedSerialNumberToProduct(product);
-                            // debugPrint("scanResultValue: $value");
-
-                            Future.delayed(const Duration(seconds: 2), () {
-                              String scannedItem =
-                                  "Serial Number: $_scanBarcode";
-
-                              onShowSuccessDialog(
-                                context: context,
-                                scannedItem: scannedItem,
-                              );
-                            });
-                          }
-                        });
-                      },
-                    ),
-                    SizedBox(height: 16.h),
-                  ],
-                ),
-              ),
-              const CustomDivider(),
-              buildTrackingLabel(tracking),
-              (tracking.toLowerCase().contains("serial number"))
-                  ? Container(
-                      padding: EdgeInsets.symmetric(horizontal: 16.w),
-                      height: 36.h,
-                      width: double.infinity,
-                      child: SearchBarBorder(
-                        context,
-                        onSearch: _onSearch(),
-                        clearData: _onClearData(),
-                        keySearch: searchKey,
-                        controller: searchSerialNumberController,
-                        queryKey: searchSerialNumberController.text,
-                        borderColor: ColorName.grey9Color,
+                          });
+                        },
                       ),
-                    )
-                  : const SizedBox(),
-              Container(
-                height: 38.h,
-                padding: EdgeInsets.symmetric(horizontal: 16.w),
-                child: reusableTabBar(
-                  tabs: _tabs.map((e) {
-                    bool isSelectedTab = false;
-                    isSelectedTab = tabController.index == _tabs.indexOf(e);
-                    // Total Not Done
-                    int totalInt = 0;
-                    String total = "";
-                    // Total Done
-                    int totalDoneInt = 0;
-                    String totalDone = "";
-
-                    if (tracking.toLowerCase().contains("serial number")) {
-                      totalInt = serialNumberList.length;
-                      total = totalInt.toString();
-
-                      totalDoneInt = (serialNumberResult.isNotEmpty)
-                          ? serialNumberResult.length
-                          : 0;
-                      totalDone = totalDoneInt.toString();
-                    } else {
-                      totalInt = _tabs[0] == e ? product.productQty.toInt() : 0;
-                      total = totalInt.toString();
-                    }
-
-                    return buildTabLabel(
-                      label: e,
-                      total: (_tabs[0] == e) ? "($total)" : "($totalDone)",
-                      isSelected: isSelectedTab,
-                    );
-                  }).toList(),
-                  tabController: tabController,
-                  isScrollable: true,
-                  setState: setState,
+                      SizedBox(height: 16.h),
+                    ],
+                  ),
                 ),
-              ),
-              // SizedBox(height: 12.h),
-              Expanded(
-                child: TabBarView(
-                  controller: tabController,
-                  children: [
-                    Container(
-                      padding: EdgeInsets.symmetric(
-                          horizontal: 16.w, vertical: 12.h),
-                      child: (tracking.toLowerCase().contains("serial number"))
-                          ? SizedBox(
+                const CustomDivider(),
+                buildTrackingLabel(tracking),
+                (tracking.toLowerCase().contains("serial number"))
+                    ? Container(
+                        padding: EdgeInsets.symmetric(horizontal: 16.w),
+                        height: 36.h,
+                        width: double.infinity,
+                        child: SearchBarBorder(
+                          context,
+                          onSearch: _onSearch(),
+                          clearData: _onClearData(),
+                          keySearch: searchKey,
+                          controller: searchSerialNumberController,
+                          queryKey: searchSerialNumberController.text,
+                          borderColor: ColorName.grey9Color,
+                        ),
+                      )
+                    : const SizedBox(),
+                Container(
+                  height: 38.h,
+                  padding: EdgeInsets.symmetric(horizontal: 16.w),
+                  child: reusableTabBar(
+                    tabs: _tabs.map((e) {
+                      bool isSelectedTab = false;
+                      isSelectedTab = tabController.index == _tabs.indexOf(e);
+                      // Total Not Done
+                      int totalInt = 0;
+                      String total = "";
+                      // Total Done
+                      int totalDoneInt = 0;
+                      String totalDone = "";
+
+                      if (tracking.toLowerCase().contains("serial number")) {
+                        totalInt = serialNumberList.length;
+                        total = totalInt.toString();
+
+                        totalDoneInt = (serialNumberResult.isNotEmpty)
+                            ? serialNumberResult.length
+                            : 0;
+                        totalDone = totalDoneInt.toString();
+                      } else {
+                        totalInt =
+                            _tabs[0] == e ? product.productQty.toInt() : 0;
+                        total = totalInt.toString();
+                      }
+
+                      return buildTabLabel(
+                        label: e,
+                        total: (_tabs[0] == e) ? "($total)" : "($totalDone)",
+                        isSelected: isSelectedTab,
+                      );
+                    }).toList(),
+                    tabController: tabController,
+                    isScrollable: true,
+                    setState: setState,
+                  ),
+                ),
+                // SizedBox(height: 12.h),
+                Expanded(
+                  child: TabBarView(
+                    controller: tabController,
+                    children: [
+                      Container(
+                        padding: EdgeInsets.symmetric(
+                            horizontal: 16.w, vertical: 12.h),
+                        child: (tracking
+                                .toLowerCase()
+                                .contains("serial number"))
+                            ? SizedBox(
+                                height: 600.h,
+                                child: ListView.builder(
+                                    shrinkWrap: true,
+                                    physics:
+                                        const AlwaysScrollableScrollPhysics(),
+                                    scrollDirection: Axis.vertical,
+                                    itemCount: serialNumberList.length,
+                                    itemBuilder: (context, index) {
+                                      var item = serialNumberList[index];
+                                      code = item.label;
+
+                                      bool isHighlighted = false;
+                                      isHighlighted =
+                                          serialNumberResult.contains(item);
+                                      debugPrint(
+                                          "isHighlighted: $isHighlighted");
+
+                                      return Padding(
+                                          padding: EdgeInsets.only(bottom: 8.h),
+                                          child: buildItemQuantity(
+                                            code,
+                                            isHighlighted: isHighlighted,
+                                            itemSerialNumber: item,
+                                          ));
+                                    }),
+                              )
+                            : Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  buildItemQuantity(
+                                    code,
+                                    itemProduct: product,
+                                  ),
+                                ],
+                              ),
+                      ),
+                      (serialNumberResult.isNotEmpty)
+                          ? Container(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 16.w, vertical: 12.h),
                               height: 600.h,
                               child: ListView.builder(
                                   shrinkWrap: true,
                                   physics:
                                       const AlwaysScrollableScrollPhysics(),
                                   scrollDirection: Axis.vertical,
-                                  itemCount: serialNumberList.length,
+                                  itemCount: serialNumberResult.length,
                                   itemBuilder: (context, index) {
-                                    var item = serialNumberList[index];
+                                    var item = serialNumberResult[index];
                                     code = item.label;
 
                                     bool isHighlighted = false;
-                                    isHighlighted =
-                                        serialNumberResult.contains(item);
+                                    isHighlighted = serialNumberResult
+                                        .contains(selectedSerialNumber);
                                     debugPrint("isHighlighted: $isHighlighted");
 
                                     return Padding(
@@ -314,67 +356,30 @@ class _ReceiptProductMenuOfProductDetailScreenState
                                         child: buildItemQuantity(
                                           code,
                                           isHighlighted: isHighlighted,
-                                          itemSerialNumber: item,
                                         ));
                                   }),
                             )
                           : Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
-                                buildItemQuantity(
-                                  code,
-                                  itemProduct: product,
+                                Text(
+                                  "No items scanned or updated yet",
+                                  style: BaseText.grey10Text14,
                                 ),
+                                Text(
+                                  "Completed items will be shown here.",
+                                  style: BaseText.grey1Text14.copyWith(
+                                    fontWeight: BaseText.light,
+                                  ),
+                                )
                               ],
-                            ),
-                    ),
-                    (serialNumberResult.isNotEmpty)
-                        ? Container(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 16.w, vertical: 12.h),
-                            height: 600.h,
-                            child: ListView.builder(
-                                shrinkWrap: true,
-                                physics: const AlwaysScrollableScrollPhysics(),
-                                scrollDirection: Axis.vertical,
-                                itemCount: serialNumberResult.length,
-                                itemBuilder: (context, index) {
-                                  var item = serialNumberResult[index];
-                                  code = item.label;
-
-                                  bool isHighlighted = false;
-                                  isHighlighted = serialNumberResult
-                                      .contains(selectedSerialNumber);
-                                  debugPrint("isHighlighted: $isHighlighted");
-
-                                  return Padding(
-                                      padding: EdgeInsets.only(bottom: 8.h),
-                                      child: buildItemQuantity(
-                                        code,
-                                        isHighlighted: isHighlighted,
-                                      ));
-                                }),
-                          )
-                        : Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Text(
-                                "No items scanned or updated yet",
-                                style: BaseText.grey10Text14,
-                              ),
-                              Text(
-                                "Completed items will be shown here.",
-                                style: BaseText.grey1Text14.copyWith(
-                                  fontWeight: BaseText.light,
-                                ),
-                              )
-                            ],
-                          )
-                  ],
-                ),
-              )
-            ],
+                            )
+                    ],
+                  ),
+                )
+              ],
+            ),
           ),
           floatingActionButton: reusableFloatingActionButton(
             onTap: () {

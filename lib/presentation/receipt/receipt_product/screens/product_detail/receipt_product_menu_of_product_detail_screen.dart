@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:inventory_v3/data/model/date_time_button.dart';
 import 'package:inventory_v3/data/model/scan_view.dart';
 import 'package:inventory_v3/presentation/receipt/receipt_product/cubit/product_detail/product_menu_product_detail_cubit.dart';
 import 'package:inventory_v3/presentation/receipt/receipt_product/cubit/scan/scan_cubit.dart';
@@ -53,6 +54,11 @@ class _ReceiptProductMenuOfProductDetailScreenState
   List<SerialNumber> serialNumberResult = [];
 
   var selectedSerialNumber;
+
+  List<DateTimeButton> dateTimeButtons = [
+    DateTimeButton(index: 0, label: "Date"),
+    DateTimeButton(index: 1, label: "Time"),
+  ];
 
   String code = "";
   String quantity = "";
@@ -549,7 +555,7 @@ class _ReceiptProductMenuOfProductDetailScreenState
                               barrierDismissible: true,
                               builder: (context) {
                                 return SimpleDialog(
-                                  // insetPadding: EdgeInsets.zero,
+                                  insetPadding: EdgeInsets.zero,
                                   titlePadding: EdgeInsets.zero,
                                   contentPadding: EdgeInsets.zero,
                                   surfaceTintColor: ColorName.whiteColor,
@@ -557,32 +563,104 @@ class _ReceiptProductMenuOfProductDetailScreenState
                                       borderRadius: BorderRadius.all(
                                           Radius.circular(6.r))),
                                   children: [
-                                    Container(
-                                      margin: EdgeInsets.zero,
-                                      padding: const EdgeInsets.all(16.0),
-                                      width: double.infinity,
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              Text(
-                                                "Date and Time",
-                                                style: BaseText.black2Text14
-                                                    .copyWith(
-                                                  fontWeight: BaseText.medium,
+                                    StatefulBuilder(
+                                        builder: (context, dateTimeSetState) {
+                                      return Container(
+                                        margin: EdgeInsets.zero,
+                                        padding: const EdgeInsets.all(16.0),
+                                        width: double.infinity,
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: [
+                                                Text(
+                                                  "Date and Time",
+                                                  style: BaseText.black2Text14
+                                                      .copyWith(
+                                                    fontWeight: BaseText.medium,
+                                                  ),
                                                 ),
-                                              ),
-                                              const Icon(Icons.close)
-                                            ],
-                                          ),
-                                        ],
-                                      ),
-                                    )
+                                                GestureDetector(
+                                                    onTap: () =>
+                                                        Navigator.of(context)
+                                                            .pop(),
+                                                    child:
+                                                        const Icon(Icons.close))
+                                              ],
+                                            ),
+                                            SizedBox(height: 16.h),
+                                            // SizedBox(
+                                            //   height: 42.h,
+                                            //   width: double.infinity,
+                                            //   child: ListView.builder(
+                                            //     shrinkWrap: true,
+                                            //     scrollDirection: Axis.horizontal,
+                                            //     itemCount: dateTimeButtons.length,
+                                            //     itemBuilder: (context, index) {
+                                            //       var item =
+                                            //           dateTimeButtons[index];
+
+                                            //     },
+                                            //   ),
+                                            // )
+                                            Wrap(
+                                              direction: Axis.horizontal,
+                                              children:
+                                                  dateTimeButtons.map((e) {
+                                                int selectedIndex = 0;
+
+                                                return GestureDetector(
+                                                  onTap: () {
+                                                    dateTimeSetState(() {
+                                                      selectedIndex = e.index;
+
+                                                      debugPrint(selectedIndex
+                                                          .toString());
+                                                    });
+                                                  },
+                                                  child: Container(
+                                                    height: 40.h,
+                                                    width: 148.w,
+                                                    decoration: BoxDecoration(
+                                                        border: Border(
+                                                            bottom: BorderSide(
+                                                      color: (selectedIndex ==
+                                                              e.index)
+                                                          ? ColorName.mainColor
+                                                          : Colors.transparent,
+                                                      width: 1.8.h,
+                                                    ))),
+                                                    child: Center(
+                                                      child: Text(
+                                                        e.label,
+                                                        textAlign:
+                                                            TextAlign.center,
+                                                        style: (selectedIndex ==
+                                                                e.index)
+                                                            ? BaseText
+                                                                .mainText14
+                                                            : BaseText
+                                                                .grey2Text14
+                                                                .copyWith(
+                                                                    fontWeight:
+                                                                        BaseText
+                                                                            .light),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                );
+                                              }).toList(),
+                                            )
+                                          ],
+                                        ),
+                                      );
+                                    })
                                   ],
                                 );
                               },

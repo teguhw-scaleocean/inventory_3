@@ -3,10 +3,14 @@ import 'dart:io';
 
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:inventory_v3/common/constants/text_constants.dart';
+import 'package:inventory_v3/data/model/product.dart';
 import 'package:inventory_v3/data/model/scan_view.dart';
+import 'package:inventory_v3/presentation/receipt/receipt_product/cubit/scan/scan_cubit.dart';
+import 'package:inventory_v3/presentation/receipt/receipt_product/cubit/scan/scan_state.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 
 import '../../../../common/components/primary_button.dart';
@@ -40,6 +44,10 @@ class _ScanViewState extends State<ScanView> {
   String appBarTitle = "";
   String labelOfScan = "";
 
+  List<SerialNumber> serialNumberList = [];
+  SerialNumber? serialNumber;
+  bool isItemInputDate = false;
+
   // In order to get hot reload to work we need to pause the camera if the platform
   // is android, or resume the camera if the platform is iOS.
   @override
@@ -71,6 +79,13 @@ class _ScanViewState extends State<ScanView> {
     }
   }
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    checkScanSerialNumber();
+  }
+
   Future getFlashStatus() async {
     await controller!.getFlashStatus().then((value) => setState(() {
           isFlashOn = value!;
@@ -78,187 +93,246 @@ class _ScanViewState extends State<ScanView> {
         }));
   }
 
+  checkScanSerialNumber() {
+    serialNumberList =
+        BlocProvider.of<ScanCubit>(context).getListOfSerialNumber();
+
+    debugPrint(
+        "serialNumberList: ${serialNumberList.map((e) => e.label).toList().toString()}");
+    serialNumber = serialNumberList
+        .firstWhere((element) => element.label == expectedValue);
+    debugPrint("serialNumber: $serialNumber");
+
+    if (serialNumber?.isInputDate == true) {
+      Future.delayed(const Duration(seconds: 2), () {
+        onShowErrorDialog(
+          context,
+          isInputDate: true,
+          body: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(height: 10.h),
+              Text(
+                'Scan Error',
+                style: BaseText.black2TextStyle.copyWith(
+                  fontSize: 16.sp,
+                  fontWeight: BaseText.semiBold,
+                ),
+              ),
+              Container(height: 4.h),
+              Text(
+                "Cannot scan.\nPlease input expiration date.",
+                textAlign: TextAlign.center,
+                style: BaseText.grey2Text14.copyWith(
+                  fontWeight: BaseText.light,
+                ),
+              )
+            ],
+          ),
+        );
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: Scaffold(
-        backgroundColor: bgColor,
-        body: Stack(
-          children: <Widget>[
-            Expanded(flex: 1, child: _buildQrView(context)),
-            Expanded(
-              child: Container(
-                padding: EdgeInsets.only(left: 16.w, right: 16.w, top: 18.5.h),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Row(
-                          children: [
-                            InkWell(
-                              onTap: () => Navigator.pop(context),
-                              child: SvgPicture.asset(
-                                LocalImages.backIcon,
-                                color: ColorName.whiteColor,
-                                height: 24.w,
-                                width: 24.w,
-                                fit: BoxFit.scaleDown,
-                              ),
-                            ),
-                            Text(
-                              appBarTitle,
-                              style: BaseText.whiteTextStyle.copyWith(
-                                  fontSize: 16.sp, fontWeight: BaseText.medium),
-                            )
-                          ],
-                        ),
-                        GestureDetector(
-                          onTap: () async {
-                            await controller!.toggleFlash();
-                            setState(() {});
-                          },
-                          child: FutureBuilder(
-                              future: controller?.getFlashStatus(),
-                              builder: (context, snapshot) {
-                                isFlashOn = snapshot.data ?? false;
-
-                                return Icon(
-                                    (isFlashOn)
-                                        ? Icons.flash_on
-                                        : Icons.flash_off,
-                                    size: 20.h,
-                                    color: ColorName.whiteColor);
-                              }),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 24.h),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        GestureDetector(
-                          onTap: () async {
-                            await controller!.flipCamera();
-                            setState(() {});
-
-                            // ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                            //     content: Text(isCameraFlip.toString())));
-                          },
-                          child: FutureBuilder(
-                              future: controller?.getCameraInfo(),
-                              builder: (context, snapshot) {
-                                debugPrint("snapshot.data: ${snapshot.data}");
-
-                                return Icon(
-                                  Icons.flip_camera_android,
-                                  size: 20.h,
+      child: BlocListener<ScanCubit, ScanState>(
+        listener: (context, state) {},
+        child: Scaffold(
+          backgroundColor: bgColor,
+          body: Stack(
+            children: <Widget>[
+              Expanded(
+                  flex: 1,
+                  child: (isItemInputDate)
+                      ? const SizedBox()
+                      : _buildQrView(context)),
+              Expanded(
+                child: Container(
+                  padding:
+                      EdgeInsets.only(left: 16.w, right: 16.w, top: 18.5.h),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            children: [
+                              InkWell(
+                                onTap: () {
+                                  if (serialNumber?.isInputDate == true) {
+                                    Navigator.of(context)
+                                        .pop("inputExpirationDate");
+                                  } else {
+                                    Navigator.of(context).pop();
+                                  }
+                                },
+                                child: SvgPicture.asset(
+                                  LocalImages.backIcon,
                                   color: ColorName.whiteColor,
-                                );
-                              }),
-                        )
-                      ],
-                    ),
-                    SizedBox(height: 62.h),
-                    GestureDetector(
-                      onTap: () async => await controller!.pauseCamera(),
-                      child: Text(
-                        labelOfScan,
-                        textAlign: TextAlign.center,
-                        style: BaseText.whiteTextStyle.copyWith(
-                          fontSize: 18.sp,
-                          fontWeight: BaseText.bold,
-                        ),
+                                  height: 24.w,
+                                  width: 24.w,
+                                  fit: BoxFit.scaleDown,
+                                ),
+                              ),
+                              Text(
+                                appBarTitle,
+                                style: BaseText.whiteTextStyle.copyWith(
+                                    fontSize: 16.sp,
+                                    fontWeight: BaseText.medium),
+                              )
+                            ],
+                          ),
+                          GestureDetector(
+                            onTap: () async {
+                              await controller!.toggleFlash();
+                              setState(() {});
+                            },
+                            child: FutureBuilder(
+                                future: controller?.getFlashStatus(),
+                                builder: (context, snapshot) {
+                                  isFlashOn = snapshot.data ?? false;
+
+                                  return Icon(
+                                      (isFlashOn)
+                                          ? Icons.flash_on
+                                          : Icons.flash_off,
+                                      size: 20.h,
+                                      color: ColorName.whiteColor);
+                                }),
+                          ),
+                        ],
                       ),
-                    )
-                  ],
+                      SizedBox(height: 24.h),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          GestureDetector(
+                            onTap: () async {
+                              await controller!.flipCamera();
+                              setState(() {});
+
+                              // ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              //     content: Text(isCameraFlip.toString())));
+                            },
+                            child: FutureBuilder(
+                                future: controller?.getCameraInfo(),
+                                builder: (context, snapshot) {
+                                  debugPrint("snapshot.data: ${snapshot.data}");
+
+                                  return Icon(
+                                    Icons.flip_camera_android,
+                                    size: 20.h,
+                                    color: ColorName.whiteColor,
+                                  );
+                                }),
+                          )
+                        ],
+                      ),
+                      SizedBox(height: 62.h),
+                      GestureDetector(
+                        onTap: () async => await controller!.pauseCamera(),
+                        child: Text(
+                          labelOfScan,
+                          textAlign: TextAlign.center,
+                          style: BaseText.whiteTextStyle.copyWith(
+                            fontSize: 18.sp,
+                            fontWeight: BaseText.bold,
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
                 ),
               ),
-            ),
 
-            // Expanded(
-            //   flex: 1,
-            //   child: FittedBox(
-            //     fit: BoxFit.contain,
-            //     child: Column(
-            //       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            //       children: <Widget>[
-            //         if (result != null)
-            //           Text(
-            //               'Barcode Type: ${result!.format}   Data: ${result!.code}')
-            //         else
-            //           const Text('Scan a code'),
-            //         Row(
-            //           mainAxisAlignment: MainAxisAlignment.center,
-            //           crossAxisAlignment: CrossAxisAlignment.center,
-            //           children: <Widget>[
-            //             Container(
-            //               margin: const EdgeInsets.all(8),
-            //               child: ElevatedButton(
-            //                   onPressed: () async {
-            //                     await controller?.toggleFlash();
-            //                     setState(() {});
-            //                   },
-            //                   child: FutureBuilder(
-            //                     future: controller?.getFlashStatus(),
-            //                     builder: (context, snapshot) {
-            //                       return Text('Flash: ${snapshot.data}');
-            //                     },
-            //                   )),
-            //             ),
-            //             Container(
-            //               margin: const EdgeInsets.all(8),
-            //               child: ElevatedButton(
-            //                   onPressed: () async {
-            //                     await controller?.flipCamera();
-            //                     setState(() {});
-            //                   },
-            //                   child: FutureBuilder(
-            //                     future: controller?.getCameraInfo(),
-            //                     builder: (context, snapshot) {
-            //                       if (snapshot.data != null) {
-            //                         return Text(
-            //                             'Camera facing ${snapshot.data!}');
-            //                       } else {
-            //                         return const Text('loading');
-            //                       }
-            //                     },
-            //                   )),
-            //             )
-            //           ],
-            //         ),
-            //         Row(
-            //           mainAxisAlignment: MainAxisAlignment.center,
-            //           crossAxisAlignment: CrossAxisAlignment.center,
-            //           children: <Widget>[
-            //             Container(
-            //               margin: const EdgeInsets.all(8),
-            //               child: ElevatedButton(
-            //                 onPressed: () async {
-            //                   await controller?.pauseCamera();
-            //                 },
-            //                 child: const Text('pause',
-            //                     style: TextStyle(fontSize: 20)),
-            //               ),
-            //             ),
-            //             Container(
-            //               margin: const EdgeInsets.all(8),
-            //               child: ElevatedButton(
-            //                 onPressed: () async {
-            //                   await controller?.resumeCamera();
-            //                 },
-            //                 child: const Text('resume',
-            //                     style: TextStyle(fontSize: 20)),
-            //               ),
-            //             )
-            //           ],
-            //         ),
-            //       ],
-            //     ),
-            //   ),
-            // )
-          ],
+              // Expanded(
+              //   flex: 1,
+              //   child: FittedBox(
+              //     fit: BoxFit.contain,
+              //     child: Column(
+              //       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              //       children: <Widget>[
+              //         if (result != null)
+              //           Text(
+              //               'Barcode Type: ${result!.format}   Data: ${result!.code}')
+              //         else
+              //           const Text('Scan a code'),
+              //         Row(
+              //           mainAxisAlignment: MainAxisAlignment.center,
+              //           crossAxisAlignment: CrossAxisAlignment.center,
+              //           children: <Widget>[
+              //             Container(
+              //               margin: const EdgeInsets.all(8),
+              //               child: ElevatedButton(
+              //                   onPressed: () async {
+              //                     await controller?.toggleFlash();
+              //                     setState(() {});
+              //                   },
+              //                   child: FutureBuilder(
+              //                     future: controller?.getFlashStatus(),
+              //                     builder: (context, snapshot) {
+              //                       return Text('Flash: ${snapshot.data}');
+              //                     },
+              //                   )),
+              //             ),
+              //             Container(
+              //               margin: const EdgeInsets.all(8),
+              //               child: ElevatedButton(
+              //                   onPressed: () async {
+              //                     await controller?.flipCamera();
+              //                     setState(() {});
+              //                   },
+              //                   child: FutureBuilder(
+              //                     future: controller?.getCameraInfo(),
+              //                     builder: (context, snapshot) {
+              //                       if (snapshot.data != null) {
+              //                         return Text(
+              //                             'Camera facing ${snapshot.data!}');
+              //                       } else {
+              //                         return const Text('loading');
+              //                       }
+              //                     },
+              //                   )),
+              //             )
+              //           ],
+              //         ),
+              //         Row(
+              //           mainAxisAlignment: MainAxisAlignment.center,
+              //           crossAxisAlignment: CrossAxisAlignment.center,
+              //           children: <Widget>[
+              //             Container(
+              //               margin: const EdgeInsets.all(8),
+              //               child: ElevatedButton(
+              //                 onPressed: () async {
+              //                   await controller?.pauseCamera();
+              //                 },
+              //                 child: const Text('pause',
+              //                     style: TextStyle(fontSize: 20)),
+              //               ),
+              //             ),
+              //             Container(
+              //               margin: const EdgeInsets.all(8),
+              //               child: ElevatedButton(
+              //                 onPressed: () async {
+              //                   await controller?.resumeCamera();
+              //                 },
+              //                 child: const Text('resume',
+              //                     style: TextStyle(fontSize: 20)),
+              //               ),
+              //             )
+              //           ],
+              //         ),
+              //       ],
+              //     ),
+              //   ),
+              // )
+            ],
+          ),
         ),
       ),
     );
@@ -295,6 +369,8 @@ class _ScanViewState extends State<ScanView> {
         result = scanData;
       });
 
+      //TODO Filter list
+
       // if (result?.format == BarcodeFormat.qrcode) {
       //   try {
       //     controller.stopCamera();
@@ -307,17 +383,57 @@ class _ScanViewState extends State<ScanView> {
       //   } on Exception {
       //     Future.delayed(const Duration(seconds: 2), () async {
       //       await controller.pauseCamera();
-      //       onShowErrorDialog();
+      // onShowErrorDialog(
+      //   context,
+      //   body: _buildBodyErrorExceptionDialog(),
+      // );
       //     });
       //   }
       // }
     });
+
     Future.delayed(const Duration(seconds: 3), () {
       controller.stopCamera();
-      Navigator.of(context).pop(expectedValue);
+      if (serialNumber?.isInputDate == true) {
+        debugPrint("stop camera input");
+        // Navigator.of(context).pop();
+        // Navigator.of(context).pop("inputExpirationDate");
+      } else {
+        Navigator.of(context).pop(expectedValue);
 
-      log("expectedValue: $expectedValue");
+        log("expectedValue: $expectedValue");
+      }
     });
+  }
+
+  SizedBox _buildBodyErrorExceptionDialog() {
+    return SizedBox(
+      // width: MediaQuery.sizeOf(context).width,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(height: 10.h),
+          Text(
+            'Scan Error',
+            style: BaseText.black2TextStyle.copyWith(
+              fontSize: 16.sp,
+              fontWeight: BaseText.semiBold,
+            ),
+          ),
+          Container(height: 4.h),
+          Text('Scan incorrect, please try again.',
+              style: BaseText.grey2Text14.copyWith(fontWeight: BaseText.light)),
+          Container(height: 1.h),
+          Text("Pallet B654",
+              textAlign: TextAlign.center,
+              style:
+                  BaseText.mainText14.copyWith(fontWeight: BaseText.semiBold)),
+          SizedBox(height: 24.h),
+        ],
+      ),
+    );
   }
 
   void _onPermissionSet(BuildContext context, QRViewController ctrl, bool p) {
@@ -329,7 +445,8 @@ class _ScanViewState extends State<ScanView> {
     }
   }
 
-  onShowErrorDialog() {
+  onShowErrorDialog(BuildContext context,
+      {required Widget body, required bool isInputDate}) {
     return AwesomeDialog(
       context: context,
       animType: AnimType.bottomSlide,
@@ -338,53 +455,34 @@ class _ScanViewState extends State<ScanView> {
       showCloseIcon: true,
       width: double.infinity,
       // padding: EdgeInsets.symmetric(horizontal: 16.w),
-      body: SizedBox(
-        // width: MediaQuery.sizeOf(context).width,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(height: 10.h),
-            Text(
-              'Scan Error',
-              style: BaseText.black2TextStyle.copyWith(
-                fontSize: 16.sp,
-                fontWeight: BaseText.semiBold,
-              ),
-            ),
-            Container(height: 4.h),
-            Text('Scan incorrect, please try again.',
-                style:
-                    BaseText.grey2Text14.copyWith(fontWeight: BaseText.light)),
-            Container(height: 1.h),
-            Text("Pallet B654",
-                textAlign: TextAlign.center,
-                style: BaseText.mainText14
-                    .copyWith(fontWeight: BaseText.semiBold)),
-            SizedBox(height: 24.h),
-          ],
-        ),
-      ),
+      body: body,
       btnOkOnPress: () {
         debugPrint('OnClcik');
       },
       // btnOkIcon: Icons.check_circle,
-      btnOk: PrimaryButton(
-        onPressed: () async {
-          debugPrint('OnClcik OK');
-          await controller?.resumeCamera();
-          Navigator.of(context).pop();
-        },
-        height: 40.h,
-        icon: SvgPicture.asset(
-          LocalImages.scanIcons,
-          width: 16.w,
-          height: 16.w,
-          color: ColorName.whiteColor,
-        ),
-        title: "Rescan",
-      ),
+      btnOk: (isInputDate)
+          ? PrimaryButton(
+              onPressed: () async {
+                Navigator.of(context).pop();
+              },
+              height: 40.h,
+              title: "OK",
+            )
+          : PrimaryButton(
+              onPressed: () async {
+                debugPrint('OnClcik OK');
+                await controller?.resumeCamera();
+                Navigator.of(context).pop();
+              },
+              height: 40.h,
+              icon: SvgPicture.asset(
+                LocalImages.scanIcons,
+                width: 16.w,
+                height: 16.w,
+                color: ColorName.whiteColor,
+              ),
+              title: "Rescan",
+            ),
       onDismissCallback: (type) {
         debugPrint('Dialog Dissmiss from callback $type');
       },

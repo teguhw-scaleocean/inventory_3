@@ -100,6 +100,7 @@ class BaseText {
   //Error
   static TextStyle red2Text12 = redTextStyle.copyWith(fontSize: 12.sp);
 
+  static TextStyle redText12 = redTextStyle.copyWith(fontSize: 12.sp);
   static TextStyle redText14 = redTextStyle.copyWith(fontSize: 14.sp);
 
   // Font Weight

@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -9,6 +10,7 @@ import 'package:inventory_v3/presentation/receipt/receipt_product/cubit/product_
 import 'package:inventory_v3/presentation/receipt/receipt_product/cubit/scan/scan_cubit.dart';
 import 'package:inventory_v3/presentation/receipt/receipt_product/cubit/scan/scan_state.dart';
 import 'package:smooth_highlight/smooth_highlight.dart';
+import 'package:time_picker_spinner/time_picker_spinner.dart';
 
 import '../../../../../common/components/custom_app_bar.dart';
 import '../../../../../common/components/custom_divider.dart';
@@ -59,6 +61,7 @@ class _ReceiptProductMenuOfProductDetailScreenState
     DateTimeButton(index: 0, label: "Date"),
     DateTimeButton(index: 1, label: "Time"),
   ];
+  List<String> timeHeaders = ["Hour", "Minute", "AM/PM"];
 
   String code = "";
   String quantity = "";
@@ -67,6 +70,10 @@ class _ReceiptProductMenuOfProductDetailScreenState
   late TabController tabController;
 
   bool isCardHighlighted = false;
+
+  // TimeOfDay time = TimeOfDay.now();
+  final DateTime _dateTime = DateTime.now();
+  var selectedTime;
 
   @override
   void initState() {
@@ -596,20 +603,6 @@ class _ReceiptProductMenuOfProductDetailScreenState
                                               ],
                                             ),
                                             SizedBox(height: 16.h),
-                                            // SizedBox(
-                                            //   height: 42.h,
-                                            //   width: double.infinity,
-                                            //   child: ListView.builder(
-                                            //     shrinkWrap: true,
-                                            //     scrollDirection: Axis.horizontal,
-                                            //     itemCount: dateTimeButtons.length,
-                                            //     itemBuilder: (context, index) {
-                                            //       var item =
-                                            //           dateTimeButtons[index];
-
-                                            //     },
-                                            //   ),
-                                            // )
                                             Wrap(
                                               direction: Axis.horizontal,
                                               children:
@@ -623,39 +616,31 @@ class _ReceiptProductMenuOfProductDetailScreenState
                                                           .toString());
                                                     });
                                                   },
-                                                  child: Container(
-                                                    height: 40.h,
-                                                    width: 148.w,
-                                                    decoration: BoxDecoration(
-                                                        border: Border(
-                                                            bottom: BorderSide(
-                                                      color: (selectedIndex ==
-                                                              e.index)
-                                                          ? ColorName.mainColor
-                                                          : Colors.transparent,
-                                                      width: 1.8.h,
-                                                    ))),
-                                                    child: Center(
-                                                      child: Text(
-                                                        e.label,
-                                                        textAlign:
-                                                            TextAlign.center,
-                                                        style: (selectedIndex ==
-                                                                e.index)
-                                                            ? BaseText
-                                                                .mainText14
-                                                            : BaseText
-                                                                .grey2Text14
-                                                                .copyWith(
-                                                                    fontWeight:
-                                                                        BaseText
-                                                                            .light),
-                                                      ),
-                                                    ),
-                                                  ),
+                                                  child: buildCustomTab(
+                                                      selectedIndex, e),
                                                 );
                                               }).toList(),
-                                            )
+                                            ),
+                                            SizedBox(height: 8.h),
+                                            (selectedIndex == 0)
+                                                ? Container(
+                                                    height: 300.h,
+                                                    decoration: BoxDecoration(
+                                                        shape:
+                                                            BoxShape.rectangle,
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(4.r),
+                                                        border: Border.all(
+                                                          color: ColorName
+                                                              .grey12Color,
+                                                        )),
+                                                    child: const Center(
+                                                      child: Text("Pick Date"),
+                                                    ),
+                                                  )
+                                                : buildTimeBodySection(
+                                                    dateTimeSetState)
                                           ],
                                         ),
                                       )
@@ -710,4 +695,135 @@ class _ReceiptProductMenuOfProductDetailScreenState
       ),
     );
   }
+
+  Container buildCustomTab(int selectedIndex, DateTimeButton e) {
+    return Container(
+      height: 40.h,
+      width: 148.w,
+      decoration: BoxDecoration(
+          border: Border(
+              bottom: BorderSide(
+        color: (selectedIndex == e.index)
+            ? ColorName.mainColor
+            : Colors.transparent,
+        width: 1.8.h,
+      ))),
+      child: Center(
+        child: Text(
+          e.label,
+          textAlign: TextAlign.center,
+          style: (selectedIndex == e.index)
+              ? BaseText.mainText14
+              : BaseText.grey2Text14.copyWith(fontWeight: BaseText.light),
+        ),
+      ),
+    );
+  }
+
+  Container buildTimeBodySection(StateSetter dateTimeSetState) {
+    return Container(
+        height: 300.h,
+        decoration: BoxDecoration(
+            shape: BoxShape.rectangle,
+            borderRadius: BorderRadius.circular(4.r),
+            border: Border.all(
+              color: ColorName.grey12Color,
+            )),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SizedBox(height: 12.h),
+            SizedBox(
+              height: 44.h,
+              width: double.infinity,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: timeHeaders.map<Widget>((e) {
+                  double left = 0;
+                  double right = 0;
+                  final isFirst = e == timeHeaders.first;
+                  final isLast = e == timeHeaders.last;
+                  left = isFirst ? 12.w : 0;
+                  right = isLast ? 28.w : 24.w;
+
+                  return _buildHeaderDateAndTime(
+                    e,
+                    margin: EdgeInsets.fromLTRB(
+                      left,
+                      8.h,
+                      right,
+                      8.h,
+                    ),
+                  );
+                }).toList(),
+              ),
+            ),
+            TimePickerSpinner(
+              spacing: 2,
+              locale: const Locale('en', ''),
+              time: _dateTime,
+              is24HourMode: false,
+              isShowSeconds: false,
+              itemHeight: 40.h,
+              itemWidth: 85.w,
+              normalTextStyle:
+                  BaseText.grey1Text12.copyWith(fontWeight: BaseText.light),
+              highlightedTextStyle: BaseText.grey10TextStyle.copyWith(
+                fontSize: 12.sp,
+                fontWeight: BaseText.medium,
+              ),
+              isForce2Digits: true,
+              alignment: Alignment.center,
+              onTimeChange: (time) {
+                dateTimeSetState(() {
+                  selectedTime = time;
+                });
+              },
+            ),
+          ],
+        ));
+  }
+
+  Container _buildHeaderDateAndTime(String title,
+      {required EdgeInsetsGeometry margin}) {
+    return Container(
+      height: 28.h,
+      width: 64.w,
+      // decoration: BoxDecoration(
+      //     border: Border.all(
+      //   color: Colors.black,
+      // )),
+      margin: margin,
+      padding: EdgeInsets.symmetric(vertical: 4.h),
+      alignment: Alignment.center,
+      child: Text(
+        title,
+        textAlign: TextAlign.center,
+        style: BaseText.grey2Text12,
+      ),
+    );
+  }
+
+  // child: CupertinoDatePicker(
+  //     mode: CupertinoDatePickerMode
+  //         .time,
+  //     initialDateTime: DateTime(
+  //         2024,
+  //         1,
+  //         1,
+  //         time.hour,
+  //         time.minute),
+  //     minuteInterval: 1,
+  //     use24hFormat: false,
+  //     onDateTimeChanged:
+  //         (DateTime newDateTime) {
+  //       dateTimeSetState(() {
+  //         selectedTime =
+  //             newDateTime;
+
+  //         debugPrint(
+  //             "selectedTime: $selectedTime");
+  //       });
+  //     }),
 }

@@ -133,7 +133,7 @@ class _ReceiptListScreenState extends State<ReceiptListScreen>
                       ),
                     ),
                     SizedBox(width: 8.w),
-                    buildScanButton(),
+                    buildScanButton(onTap: () {}),
                   ],
                 ),
               ),

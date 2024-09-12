@@ -549,23 +549,24 @@ class _ReceiptProductMenuOfProductDetailScreenState
                 (itemSerialNumber?.isInputDate == true)
                     ? InkWell(
                         onTap: () {
+                          int selectedIndex = 0;
                           Future.delayed(const Duration(milliseconds: 600), () {
                             showAdaptiveDialog(
                               context: context,
                               barrierDismissible: true,
                               builder: (context) {
-                                return SimpleDialog(
-                                  insetPadding: EdgeInsets.zero,
-                                  titlePadding: EdgeInsets.zero,
-                                  contentPadding: EdgeInsets.zero,
-                                  surfaceTintColor: ColorName.whiteColor,
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(6.r))),
-                                  children: [
-                                    StatefulBuilder(
-                                        builder: (context, dateTimeSetState) {
-                                      return Container(
+                                return StatefulBuilder(
+                                    builder: (context, dateTimeSetState) {
+                                  return SimpleDialog(
+                                    insetPadding: EdgeInsets.zero,
+                                    titlePadding: EdgeInsets.zero,
+                                    contentPadding: EdgeInsets.zero,
+                                    surfaceTintColor: ColorName.whiteColor,
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(6.r))),
+                                    children: [
+                                      Container(
                                         margin: EdgeInsets.zero,
                                         padding: const EdgeInsets.all(16.0),
                                         width: double.infinity,
@@ -613,8 +614,6 @@ class _ReceiptProductMenuOfProductDetailScreenState
                                               direction: Axis.horizontal,
                                               children:
                                                   dateTimeButtons.map((e) {
-                                                int selectedIndex = 0;
-
                                                 return GestureDetector(
                                                   onTap: () {
                                                     dateTimeSetState(() {
@@ -659,10 +658,10 @@ class _ReceiptProductMenuOfProductDetailScreenState
                                             )
                                           ],
                                         ),
-                                      );
-                                    })
-                                  ],
-                                );
+                                      )
+                                    ],
+                                  );
+                                });
                               },
                             );
                           });

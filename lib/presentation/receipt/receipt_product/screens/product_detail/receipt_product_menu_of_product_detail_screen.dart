@@ -375,6 +375,7 @@ class _ReceiptProductMenuOfProductDetailScreenState
                                         child: buildItemQuantity(
                                           code,
                                           isHighlighted: isHighlighted,
+                                          itemSerialNumber: item,
                                         ));
                                   }),
                             )

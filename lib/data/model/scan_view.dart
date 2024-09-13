@@ -1,1 +1,1 @@
-enum ScanViewType { pallet, product }
+enum ScanViewType { listProduct, pallet, product }

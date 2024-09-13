@@ -71,9 +71,9 @@ Column buildDisableField({
   );
 }
 
-GestureDetector buildScanButton() {
+GestureDetector buildScanButton({required Function()? onTap}) {
   return GestureDetector(
-    onTap: () {},
+    onTap: onTap,
     child: Container(
       height: 36.h,
       width: 82.w,

@@ -2,6 +2,8 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:inventory_v3/data/model/scan_view.dart';
+import 'package:inventory_v3/presentation/receipt/receipt_pallet/widget/scan_view_widget.dart';
 
 import '../../../../common/components/custom_app_bar.dart';
 import '../../../../common/components/receipt_product_item_card.dart';
@@ -158,7 +160,16 @@ class _ReceiptProductMenuListScreenState
                       ),
                     ),
                     SizedBox(width: 8.w),
-                    buildScanButton(),
+                    buildScanButton(
+                        onTap: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const ScanView(
+                                  expectedValue: "",
+                                  scanType: ScanViewType.listProduct,
+                                ),
+                              ),
+                            )),
                   ],
                 ),
               ),

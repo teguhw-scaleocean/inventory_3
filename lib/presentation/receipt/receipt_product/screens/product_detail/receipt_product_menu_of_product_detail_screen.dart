@@ -1,13 +1,18 @@
 import 'dart:math';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:intl/intl.dart';
+import 'package:inventory_v3/data/model/date_time_button.dart';
 import 'package:inventory_v3/data/model/scan_view.dart';
 import 'package:inventory_v3/presentation/receipt/receipt_product/cubit/product_detail/product_menu_product_detail_cubit.dart';
 import 'package:inventory_v3/presentation/receipt/receipt_product/cubit/scan/scan_cubit.dart';
 import 'package:inventory_v3/presentation/receipt/receipt_product/cubit/scan/scan_state.dart';
 import 'package:smooth_highlight/smooth_highlight.dart';
+import 'package:table_calendar/table_calendar.dart';
+import 'package:time_picker_spinner/time_picker_spinner.dart';
 
 import '../../../../../common/components/custom_app_bar.dart';
 import '../../../../../common/components/custom_divider.dart';
@@ -54,6 +59,12 @@ class _ReceiptProductMenuOfProductDetailScreenState
 
   var selectedSerialNumber;
 
+  List<DateTimeButton> dateTimeButtons = [
+    DateTimeButton(index: 0, label: "Date"),
+    DateTimeButton(index: 1, label: "Time"),
+  ];
+  List<String> timeHeaders = ["Hour", "Minute", "AM/PM"];
+
   String code = "";
   String quantity = "";
 
@@ -61,6 +72,10 @@ class _ReceiptProductMenuOfProductDetailScreenState
   late TabController tabController;
 
   bool isCardHighlighted = false;
+
+  // TimeOfDay time = TimeOfDay.now();
+  final DateTime _dateTime = DateTime.now();
+  var selectedTime;
 
   @override
   void initState() {
@@ -543,23 +558,26 @@ class _ReceiptProductMenuOfProductDetailScreenState
                 (itemSerialNumber?.isInputDate == true)
                     ? InkWell(
                         onTap: () {
+                          int selectedIndex = 0;
                           Future.delayed(const Duration(milliseconds: 600), () {
                             showAdaptiveDialog(
                               context: context,
                               barrierDismissible: true,
                               builder: (context) {
-                                return SimpleDialog(
-                                  // insetPadding: EdgeInsets.zero,
-                                  titlePadding: EdgeInsets.zero,
-                                  contentPadding: EdgeInsets.zero,
-                                  surfaceTintColor: ColorName.whiteColor,
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(6.r))),
-                                  children: [
-                                    Container(
+                                return StatefulBuilder(
+                                    builder: (context, dateTimeSetState) {
+                                  return Dialog(
+                                    insetPadding:
+                                        EdgeInsets.symmetric(horizontal: 16.w),
+                                    // titlePadding: EdgeInsets.zero,
+                                    // contentPadding: EdgeInsets.zero,
+                                    surfaceTintColor: ColorName.whiteColor,
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(6.r))),
+                                    child: Container(
                                       margin: EdgeInsets.zero,
-                                      padding: const EdgeInsets.all(16.0),
+                                      padding: EdgeInsets.all(16.w),
                                       width: double.infinity,
                                       child: Column(
                                         crossAxisAlignment:
@@ -577,14 +595,62 @@ class _ReceiptProductMenuOfProductDetailScreenState
                                                   fontWeight: BaseText.medium,
                                                 ),
                                               ),
-                                              const Icon(Icons.close)
+                                              GestureDetector(
+                                                  onTap: () =>
+                                                      Navigator.of(context)
+                                                          .pop(),
+                                                  child:
+                                                      const Icon(Icons.close))
                                             ],
                                           ),
+                                          SizedBox(height: 16.h),
+                                          Wrap(
+                                            direction: Axis.horizontal,
+                                            children: dateTimeButtons.map((e) {
+                                              return GestureDetector(
+                                                onTap: () {
+                                                  dateTimeSetState(() {
+                                                    selectedIndex = e.index;
+
+                                                    debugPrint(selectedIndex
+                                                        .toString());
+                                                  });
+                                                },
+                                                child: buildCustomTab(
+                                                    selectedIndex, e),
+                                              );
+                                            }).toList(),
+                                          ),
+                                          SizedBox(height: 8.h),
+                                          (selectedIndex == 0)
+                                              ? SingleChildScrollView(
+                                                  child: Container(
+                                                    clipBehavior:
+                                                        Clip.antiAlias,
+                                                    height: 400.h,
+                                                    // padding:
+                                                    //      EdgeInsets.all(4),
+                                                    decoration: BoxDecoration(
+                                                        shape:
+                                                            BoxShape.rectangle,
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(4.r),
+                                                        border: Border.all(
+                                                          color: ColorName
+                                                              .grey12Color,
+                                                        )),
+                                                    child:
+                                                        _buildTableCalendar(),
+                                                  ),
+                                                )
+                                              : buildTimeBodySection(
+                                                  dateTimeSetState)
                                         ],
                                       ),
-                                    )
-                                  ],
-                                );
+                                    ),
+                                  );
+                                });
                               },
                             );
                           });
@@ -633,4 +699,220 @@ class _ReceiptProductMenuOfProductDetailScreenState
       ),
     );
   }
+
+  TableCalendar<dynamic> _buildTableCalendar() {
+    return TableCalendar(
+      rowHeight: 53.h,
+      calendarBuilders: CalendarBuilders(
+        todayBuilder: (context, day, focusedDay) {
+          final text = DateFormat.d().format(day);
+
+          return Container(
+            // height: 43.w,
+            // width: 43.w,
+            // margin: EdgeInsets.all(4.w),
+            decoration: const BoxDecoration(
+              color: ColorName.dateTimeColor,
+              shape: BoxShape.circle,
+              // borderRadius: BorderRadius.circular(24),
+            ),
+            child: Center(
+              child: Text(
+                text.toString(),
+                style: BaseText.whiteText14,
+              ),
+            ),
+          );
+        },
+      ),
+      headerStyle: HeaderStyle(
+        titleCentered: true,
+        formatButtonVisible: false,
+        // headerPadding: EdgeInsets.symmetric(vertical: 16.h),
+        titleTextStyle:
+            BaseText.grey2Text14.copyWith(fontWeight: BaseText.medium),
+        leftChevronIcon:
+            const Icon(Icons.chevron_left, color: ColorName.grey10Color),
+        rightChevronIcon:
+            const Icon(Icons.chevron_right, color: ColorName.grey10Color),
+        leftChevronPadding: EdgeInsets.zero,
+        rightChevronPadding: EdgeInsets.zero,
+      ),
+      calendarFormat: CalendarFormat.month,
+      firstDay: DateTime.utc(2010, 10, 16),
+      lastDay: DateTime.utc(2030, 3, 14),
+      focusedDay: DateTime.now(),
+      startingDayOfWeek: StartingDayOfWeek.monday,
+      weekendDays: const [DateTime.sunday],
+      calendarStyle: CalendarStyle(
+        outsideTextStyle: BaseText.grey2Text14.copyWith(
+          fontWeight: BaseText.light,
+        ),
+        holidayTextStyle: _getRedText(),
+        weekendTextStyle: _getRedText(),
+        defaultTextStyle: BaseText.grey1Text14.copyWith(),
+      ),
+      daysOfWeekHeight: 32.h,
+      daysOfWeekStyle: DaysOfWeekStyle(
+        decoration: BoxDecoration(
+            border: Border(
+                bottom: BorderSide(
+          width: 1.h,
+          color: ColorName.grey8Color,
+        ))),
+        weekdayStyle: BaseText.grey1Text12.copyWith(
+          fontWeight: BaseText.regular,
+        ),
+        weekendStyle: _getweekendStyleText(),
+      ),
+      onPageChanged: (d) {
+        debugPrint(d.month.toString());
+      },
+    );
+  }
+
+  Container buildCustomTab(int selectedIndex, DateTimeButton e) {
+    return Container(
+      height: 40.h,
+      width: 148.w,
+      decoration: BoxDecoration(
+          border: Border(
+              bottom: BorderSide(
+        color: (selectedIndex == e.index)
+            ? ColorName.mainColor
+            : Colors.transparent,
+        width: 1.8.h,
+      ))),
+      child: Center(
+        child: Text(
+          e.label,
+          textAlign: TextAlign.center,
+          style: (selectedIndex == e.index)
+              ? BaseText.mainText14
+              : BaseText.grey2Text14.copyWith(fontWeight: BaseText.light),
+        ),
+      ),
+    );
+  }
+
+  TextStyle _getweekendStyleText() {
+    return BaseText.redText12.copyWith(
+      fontWeight: BaseText.regular,
+      color: ColorName.weekendLabelColor,
+    );
+  }
+
+  TextStyle _getRedText() {
+    return BaseText.redText14.copyWith(
+      fontWeight: BaseText.regular,
+      color: ColorName.badgeRedColor,
+    );
+  }
+
+  Container buildTimeBodySection(StateSetter dateTimeSetState) {
+    return Container(
+        height: 300.h,
+        decoration: BoxDecoration(
+            shape: BoxShape.rectangle,
+            borderRadius: BorderRadius.circular(4.r),
+            border: Border.all(
+              color: ColorName.grey12Color,
+            )),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SizedBox(height: 12.h),
+            SizedBox(
+              height: 44.h,
+              width: double.infinity,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: timeHeaders.map<Widget>((e) {
+                  double left = 0;
+                  double right = 0;
+                  final isFirst = e == timeHeaders.first;
+                  final isLast = e == timeHeaders.last;
+                  left = isFirst ? 12.w : 0;
+                  right = isLast ? 28.w : 24.w;
+
+                  return _buildHeaderDateAndTime(
+                    e,
+                    margin: EdgeInsets.fromLTRB(
+                      left,
+                      8.h,
+                      right,
+                      8.h,
+                    ),
+                  );
+                }).toList(),
+              ),
+            ),
+            TimePickerSpinner(
+              spacing: 2,
+              locale: const Locale('en', ''),
+              time: _dateTime,
+              is24HourMode: false,
+              isShowSeconds: false,
+              itemHeight: 40.h,
+              itemWidth: 85.w,
+              normalTextStyle:
+                  BaseText.grey1Text12.copyWith(fontWeight: BaseText.light),
+              highlightedTextStyle: BaseText.grey10TextStyle.copyWith(
+                fontSize: 12.sp,
+                fontWeight: BaseText.medium,
+              ),
+              isForce2Digits: true,
+              alignment: Alignment.center,
+              onTimeChange: (time) {
+                dateTimeSetState(() {
+                  selectedTime = time;
+                });
+              },
+            ),
+          ],
+        ));
+  }
+
+  Container _buildHeaderDateAndTime(String title,
+      {required EdgeInsetsGeometry margin}) {
+    return Container(
+      height: 28.h,
+      width: 64.w,
+      // decoration: BoxDecoration(
+      //     border: Border.all(
+      //   color: Colors.black,
+      // )),
+      margin: margin,
+      padding: EdgeInsets.symmetric(vertical: 4.h),
+      alignment: Alignment.center,
+      child: Text(
+        title,
+        textAlign: TextAlign.center,
+        style: BaseText.grey2Text12,
+      ),
+    );
+  }
+
+  // child: CupertinoDatePicker(
+  //     mode: CupertinoDatePickerMode
+  //         .time,
+  //     initialDateTime: DateTime(
+  //         2024,
+  //         1,
+  //         1,
+  //         time.hour,
+  //         time.minute),
+  //     minuteInterval: 1,
+  //     use24hFormat: false,
+  //     onDateTimeChanged:
+  //         (DateTime newDateTime) {
+  //       dateTimeSetState(() {
+  //         selectedTime =
+  //             newDateTime;
+
+  //         debugPrint(
+  //             "selectedTime: $selectedTime");
+  //       });
+  //     }),
 }

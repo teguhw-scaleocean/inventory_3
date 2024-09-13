@@ -371,24 +371,31 @@ class _ReceiptProductMenuDetailScreenState
                           ProductMenuProductDetailState>(
                       listener: (context, state) {
                     debugPrint("listener");
-                    Product? currentProduct;
-                    int? totalReceive;
 
-                    if (state.product != null) {
-                      currentProduct = state.product!;
-                    }
-                    if (state.totalToDone != null) {
-                      totalReceive = state.totalToDone!;
-                    }
+                    if (receipt.packageStatus
+                        .toString()
+                        .toLowerCase()
+                        .contains("serial number")) {
+                      Product? currentProduct;
+                      int? totalReceive;
 
-                    debugPrint(currentProduct?.serialNumber?.length.toString());
-                    debugPrint(
-                        currentProduct?.scannedSerialNumber?.length.toString());
+                      if (state.product != null) {
+                        currentProduct = state.product!;
+                      }
+                      if (state.totalToDone != null) {
+                        totalReceive = state.totalToDone!;
+                      }
 
-                    if (currentProduct?.scannedSerialNumber?.length ==
-                        totalReceive) {
-                      onShowSuccessReceiveCompleteDialog(
-                          productName: currentProduct!.productName);
+                      debugPrint(
+                          currentProduct?.serialNumber?.length.toString());
+                      debugPrint(currentProduct?.scannedSerialNumber?.length
+                          .toString());
+
+                      if (currentProduct?.scannedSerialNumber?.length ==
+                          totalReceive) {
+                        onShowSuccessReceiveCompleteDialog(
+                            productName: currentProduct!.productName);
+                      }
                     }
                   }, builder: (context, state) {
                     final list = state.products;
@@ -751,9 +758,13 @@ class _ReceiptProductMenuDetailScreenState
             //   assignToReceive(product0);
             //   assignToDone(product0);
             // });
-
-            BlocProvider.of<ProductMenuProductDetailCubit>(context)
-                .scannedSerialNumberToProduct(value);
+            if (receipt.packageStatus
+                .toString()
+                .toLowerCase()
+                .contains("serial number")) {
+              BlocProvider.of<ProductMenuProductDetailCubit>(context)
+                  .scannedSerialNumberToProduct(value);
+            }
           }
         });
       },

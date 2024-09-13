@@ -280,9 +280,9 @@ List<Product> products2 = [
   Product(
     id: 1,
     palletCode: "A494",
-    productName: "Nebulizer Machine",
-    code: "NEB_14578",
-    lotsCode: "LOTS-2024-001B",
+    productName: "Syringes",
+    code: "SY_12937",
+    lotsCode: "SYR-LOTS-2842",
     dateTime: "Sch. Date: 12/07/2024 - 15:30",
     productQty: 11,
   ),

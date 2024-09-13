@@ -83,7 +83,8 @@ class _ReceiptProductMenuDetailScreenState
         .toString()
         .toLowerCase()
         .contains("lots")) {
-      listProducts = products2;
+      BlocProvider.of<ProductMenuProductDetailCubit>(context)
+          .getInitLotsListProduct();
     } else if (receipt.packageStatus
         .toString()
         .toLowerCase()

@@ -692,6 +692,9 @@ class _ReceiptProductMenuDetailScreenState
     Product product0;
     product0 = product;
 
+    String actualDate = "";
+    String actualTime = "";
+
     // Code
     String code = "";
 
@@ -705,6 +708,10 @@ class _ReceiptProductMenuDetailScreenState
         assignToReceive(product0);
         assignToDone(product0);
         code = product0.code;
+        if (product0.hasActualDateTime == true) {
+          actualDate = product0.actualDateTime.toString().substring(0, 9);
+          actualTime = product0.actualDateTime.toString().substring(12, 17);
+        }
 
         break;
       case "No Tracking":
@@ -809,8 +816,8 @@ class _ReceiptProductMenuDetailScreenState
                           children: [
                             buildDateTime(
                               label: "Act. Date: ",
-                              date: date,
-                              time: time,
+                              date: actualDate,
+                              time: actualTime,
                               isEnable: true,
                             ),
                             SizedBox(height: 6.h),

@@ -113,6 +113,10 @@ class _ReceiptProductMenuOfProductDetailScreenState
 
       BlocProvider.of<ScanCubit>(context)
           .setListOfSerialNumber(serialNumberList);
+
+      // selectedDate =
+      //     "${DateTime.now().day}/${DateTime.now().month}/${DateTime.now().year}";
+      // selectedTime = "${TimeOfDay.now().hour}:${TimeOfDay.now().minute}";
     }
   }
 
@@ -549,7 +553,9 @@ class _ReceiptProductMenuOfProductDetailScreenState
                             ))
                       ]))
                     : Text(
-                        "Exp. Date: 12/07/2024 - 15:00",
+                        (tracking.toLowerCase().contains("serial"))
+                            ? "${itemSerialNumber?.expiredDateTime}"
+                            : "Exp. Date: 12/07/2024 - 15:00",
                         style: BaseText.baseTextStyle.copyWith(
                           color: ColorName.dateTimeColor,
                           fontSize: 12.sp,
@@ -564,7 +570,7 @@ class _ReceiptProductMenuOfProductDetailScreenState
 
                           int selectedIndex = 0;
                           Future.delayed(const Duration(milliseconds: 600), () {
-                            showAdaptiveDialog(
+                            showAdaptiveDialog<bool>(
                               context: context,
                               barrierDismissible: true,
                               builder: (context) {
@@ -616,24 +622,28 @@ class _ReceiptProductMenuOfProductDetailScreenState
                                           SizedBox(height: 16.h),
                                           PrimaryButton(
                                             onPressed: () {
+                                              if (selectedDate == null ||
+                                                  selectedTime == null) {
+                                                return;
+                                              }
+
                                               var itemInputDateSerialNumber =
                                                   serialNumberList.firstWhere(
                                                       (element) =>
                                                           element.id ==
                                                           idSerialNumber);
                                               dateTimeSetState(() {
-                                                inputDate =
-                                                    "Exp. Date $selectedDate - $selectedTime";
-                                                itemInputDateSerialNumber
-                                                    .isInputDate = false;
-                                                itemInputDateSerialNumber
-                                                        .expiredDateTime =
-                                                    inputDate;
-                                                int index = serialNumberList
-                                                    .indexOf(itemSerialNumber!);
-
+                                                final index = serialNumberList
+                                                    .indexWhere((element) =>
+                                                        element.id ==
+                                                        idSerialNumber);
                                                 serialNumberList[index] =
-                                                    itemInputDateSerialNumber;
+                                                    serialNumberList[index]
+                                                        .copyWith(
+                                                  isInputDate: false,
+                                                  expiredDateTime:
+                                                      "Exp. Date $selectedDate - $selectedTime",
+                                                );
                                               });
 
                                               debugPrint(
@@ -643,6 +653,8 @@ class _ReceiptProductMenuOfProductDetailScreenState
                                                   .map((e) => e.expiredDateTime)
                                                   .toList()
                                                   .toString());
+
+                                              Navigator.of(context).pop(true);
                                             },
                                             height: 40.h,
                                             title: "Save",
@@ -653,7 +665,13 @@ class _ReceiptProductMenuOfProductDetailScreenState
                                   );
                                 });
                               },
-                            );
+                            ).then((value) {
+                              if (value == true) {
+                                setState(() {
+                                  debugPrint("state page nih");
+                                });
+                              }
+                            });
                           });
                         },
                         child: buildExpDateButton(

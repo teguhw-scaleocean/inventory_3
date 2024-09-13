@@ -5,12 +5,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
+import 'package:inventory_v3/common/components/primary_button.dart';
 import 'package:inventory_v3/data/model/date_time_button.dart';
 import 'package:inventory_v3/data/model/scan_view.dart';
 import 'package:inventory_v3/presentation/receipt/receipt_product/cubit/product_detail/product_menu_product_detail_cubit.dart';
 import 'package:inventory_v3/presentation/receipt/receipt_product/cubit/scan/scan_cubit.dart';
 import 'package:inventory_v3/presentation/receipt/receipt_product/cubit/scan/scan_state.dart';
 import 'package:smooth_highlight/smooth_highlight.dart';
+import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:time_picker_spinner/time_picker_spinner.dart';
 
@@ -64,6 +66,8 @@ class _ReceiptProductMenuOfProductDetailScreenState
     DateTimeButton(index: 1, label: "Time"),
   ];
   List<String> timeHeaders = ["Hour", "Minute", "AM/PM"];
+  final DateRangePickerController _controller = DateRangePickerController();
+  final List<String> views = <String>['Month', 'Year', 'Decade', 'Century'];
 
   String code = "";
   String quantity = "";
@@ -584,25 +588,7 @@ class _ReceiptProductMenuOfProductDetailScreenState
                                             CrossAxisAlignment.start,
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
-                                          Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              Text(
-                                                "Date and Time",
-                                                style: BaseText.black2Text14
-                                                    .copyWith(
-                                                  fontWeight: BaseText.medium,
-                                                ),
-                                              ),
-                                              GestureDetector(
-                                                  onTap: () =>
-                                                      Navigator.of(context)
-                                                          .pop(),
-                                                  child:
-                                                      const Icon(Icons.close))
-                                            ],
-                                          ),
+                                          _buildHeaderMenu(context),
                                           SizedBox(height: 16.h),
                                           Wrap(
                                             direction: Axis.horizontal,
@@ -623,29 +609,16 @@ class _ReceiptProductMenuOfProductDetailScreenState
                                           ),
                                           SizedBox(height: 8.h),
                                           (selectedIndex == 0)
-                                              ? SingleChildScrollView(
-                                                  child: Container(
-                                                    clipBehavior:
-                                                        Clip.antiAlias,
-                                                    height: 400.h,
-                                                    // padding:
-                                                    //      EdgeInsets.all(4),
-                                                    decoration: BoxDecoration(
-                                                        shape:
-                                                            BoxShape.rectangle,
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(4.r),
-                                                        border: Border.all(
-                                                          color: ColorName
-                                                              .grey12Color,
-                                                        )),
-                                                    child:
-                                                        _buildTableCalendar(),
-                                                  ),
-                                                )
-                                              : buildTimeBodySection(
+                                              ? _buildDateBodySection(
                                                   dateTimeSetState)
+                                              : buildTimeBodySection(
+                                                  dateTimeSetState),
+                                          SizedBox(height: 16.h),
+                                          PrimaryButton(
+                                            onPressed: () {},
+                                            height: 40.h,
+                                            title: "Save",
+                                          )
                                         ],
                                       ),
                                     ),
@@ -694,6 +667,90 @@ class _ReceiptProductMenuOfProductDetailScreenState
                 ),
               ),
             )
+          ],
+        ),
+      ),
+    );
+  }
+
+  Row _buildHeaderMenu(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          "Date and Time",
+          style: BaseText.black2Text14.copyWith(
+            fontWeight: BaseText.medium,
+          ),
+        ),
+        GestureDetector(
+            onTap: () => Navigator.of(context).pop(),
+            child: const Icon(Icons.close))
+      ],
+    );
+  }
+
+  SingleChildScrollView _buildDateBodySection(StateSetter dateTimeSetState) {
+    return SingleChildScrollView(
+      child: Container(
+        clipBehavior: Clip.antiAlias,
+        height: 320.h,
+        padding: EdgeInsets.all(12.w),
+        decoration: BoxDecoration(
+            shape: BoxShape.rectangle,
+            borderRadius: BorderRadius.circular(4.r),
+            border: Border.all(
+              color: ColorName.grey12Color,
+            )),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SfDateRangePicker(
+              controller: _controller,
+              view: DateRangePickerView.month,
+              headerHeight: 40.h,
+              headerStyle: DateRangePickerHeaderStyle(
+                  textStyle: BaseText.grey10Text14
+                      .copyWith(fontWeight: BaseText.medium),
+                  textAlign: TextAlign.center),
+              monthViewSettings: DateRangePickerMonthViewSettings(
+                weekendDays: const [7],
+                viewHeaderHeight: 40.h,
+                enableSwipeSelection: false,
+                dayFormat: "EEE",
+                showTrailingAndLeadingDates: true,
+                firstDayOfWeek: 1,
+                viewHeaderStyle: DateRangePickerViewHeaderStyle(
+                  textStyle: BaseText.grey1Text12.copyWith(
+                    fontWeight: BaseText.regular,
+                  ),
+                ),
+              ),
+              monthCellStyle: DateRangePickerMonthCellStyle(
+                textStyle: BaseText.grey1Text14,
+                weekendTextStyle: _getRedText(),
+              ),
+              yearCellStyle: DateRangePickerYearCellStyle(
+                  todayCellDecoration: BoxDecoration(
+                    shape: BoxShape.rectangle,
+                    borderRadius: BorderRadius.circular(6.w),
+                    color: ColorName.grey6Color,
+                  ),
+                  todayTextStyle: BaseText.grey10Text14.copyWith(
+                    fontWeight: BaseText.light,
+                  ),
+                  textStyle: BaseText.grey10Text14.copyWith(
+                    fontWeight: BaseText.light,
+                  )),
+              selectionColor: ColorName.dateTimeColor,
+              allowViewNavigation: true,
+              onSelectionChanged: (dateRangePickerSelectionChangedArgs) {
+                dateTimeSetState(() {
+                  debugPrint(
+                      dateRangePickerSelectionChangedArgs.value.toString());
+                });
+              },
+            ),
           ],
         ),
       ),

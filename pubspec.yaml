@@ -26,6 +26,7 @@ dependencies:
   smooth_highlight: ^0.1.2
   table_calendar: ^3.0.9
   time_picker_spinner: ^1.0.0
+  syncfusion_flutter_datepicker: 24.2.6
 
 dev_dependencies:
   flutter_lints: ^2.0.0

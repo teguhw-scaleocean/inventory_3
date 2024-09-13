@@ -1,30 +1,28 @@
-import 'dart:math';
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
-import 'package:inventory_v3/data/model/date_time_button.dart';
-import 'package:inventory_v3/data/model/scan_view.dart';
-import 'package:inventory_v3/presentation/receipt/receipt_product/cubit/product_detail/product_menu_product_detail_cubit.dart';
-import 'package:inventory_v3/presentation/receipt/receipt_product/cubit/scan/scan_cubit.dart';
-import 'package:inventory_v3/presentation/receipt/receipt_product/cubit/scan/scan_state.dart';
 import 'package:smooth_highlight/smooth_highlight.dart';
-import 'package:table_calendar/table_calendar.dart';
+import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 import 'package:time_picker_spinner/time_picker_spinner.dart';
 
 import '../../../../../common/components/custom_app_bar.dart';
 import '../../../../../common/components/custom_divider.dart';
+import '../../../../../common/components/primary_button.dart';
 import '../../../../../common/components/reusable_floating_action_button.dart';
 import '../../../../../common/components/reusable_search_bar_border.dart';
 import '../../../../../common/components/reusable_tab_bar.dart';
 import '../../../../../common/components/reusable_widget.dart';
 import '../../../../../common/theme/color/color_name.dart';
 import '../../../../../common/theme/text/base_text.dart';
+import '../../../../../data/model/date_time_button.dart';
 import '../../../../../data/model/product.dart';
+import '../../../../../data/model/scan_view.dart';
 import '../../../receipt_pallet/screens/product_detail/add_product_screen.dart';
 import '../../../receipt_pallet/widget/scan_view_widget.dart';
+import '../../cubit/product_detail/product_menu_product_detail_cubit.dart';
+import '../../cubit/scan/scan_cubit.dart';
+import '../../cubit/scan/scan_state.dart';
 
 class ReceiptProductMenuOfProductDetailScreen extends StatefulWidget {
   final Product product;
@@ -64,6 +62,8 @@ class _ReceiptProductMenuOfProductDetailScreenState
     DateTimeButton(index: 1, label: "Time"),
   ];
   List<String> timeHeaders = ["Hour", "Minute", "AM/PM"];
+  final DateRangePickerController _controller = DateRangePickerController();
+  final List<String> views = <String>['Month', 'Year', 'Decade', 'Century'];
 
   String code = "";
   String quantity = "";
@@ -73,9 +73,11 @@ class _ReceiptProductMenuOfProductDetailScreenState
 
   bool isCardHighlighted = false;
 
+  var selectedDate;
   // TimeOfDay time = TimeOfDay.now();
   final DateTime _dateTime = DateTime.now();
   var selectedTime;
+  String inputDate = "";
 
   @override
   void initState() {
@@ -111,6 +113,10 @@ class _ReceiptProductMenuOfProductDetailScreenState
 
       BlocProvider.of<ScanCubit>(context)
           .setListOfSerialNumber(serialNumberList);
+
+      // selectedDate =
+      //     "${DateTime.now().day}/${DateTime.now().month}/${DateTime.now().year}";
+      // selectedTime = "${TimeOfDay.now().hour}:${TimeOfDay.now().minute}";
     }
   }
 
@@ -547,7 +553,9 @@ class _ReceiptProductMenuOfProductDetailScreenState
                             ))
                       ]))
                     : Text(
-                        "Exp. Date: 12/07/2024 - 15:00",
+                        (tracking.toLowerCase().contains("serial"))
+                            ? "${itemSerialNumber?.expiredDateTime}"
+                            : "Exp. Date: 12/07/2024 - 15:00",
                         style: BaseText.baseTextStyle.copyWith(
                           color: ColorName.dateTimeColor,
                           fontSize: 12.sp,
@@ -558,9 +566,11 @@ class _ReceiptProductMenuOfProductDetailScreenState
                 (itemSerialNumber?.isInputDate == true)
                     ? InkWell(
                         onTap: () {
+                          int idSerialNumber = itemSerialNumber?.id ?? 0;
+
                           int selectedIndex = 0;
                           Future.delayed(const Duration(milliseconds: 600), () {
-                            showAdaptiveDialog(
+                            showAdaptiveDialog<bool>(
                               context: context,
                               barrierDismissible: true,
                               builder: (context) {
@@ -584,25 +594,7 @@ class _ReceiptProductMenuOfProductDetailScreenState
                                             CrossAxisAlignment.start,
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
-                                          Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              Text(
-                                                "Date and Time",
-                                                style: BaseText.black2Text14
-                                                    .copyWith(
-                                                  fontWeight: BaseText.medium,
-                                                ),
-                                              ),
-                                              GestureDetector(
-                                                  onTap: () =>
-                                                      Navigator.of(context)
-                                                          .pop(),
-                                                  child:
-                                                      const Icon(Icons.close))
-                                            ],
-                                          ),
+                                          _buildHeaderMenu(context),
                                           SizedBox(height: 16.h),
                                           Wrap(
                                             direction: Axis.horizontal,
@@ -623,36 +615,63 @@ class _ReceiptProductMenuOfProductDetailScreenState
                                           ),
                                           SizedBox(height: 8.h),
                                           (selectedIndex == 0)
-                                              ? SingleChildScrollView(
-                                                  child: Container(
-                                                    clipBehavior:
-                                                        Clip.antiAlias,
-                                                    height: 400.h,
-                                                    // padding:
-                                                    //      EdgeInsets.all(4),
-                                                    decoration: BoxDecoration(
-                                                        shape:
-                                                            BoxShape.rectangle,
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(4.r),
-                                                        border: Border.all(
-                                                          color: ColorName
-                                                              .grey12Color,
-                                                        )),
-                                                    child:
-                                                        _buildTableCalendar(),
-                                                  ),
-                                                )
-                                              : buildTimeBodySection(
+                                              ? _buildDateBodySection(
                                                   dateTimeSetState)
+                                              : buildTimeBodySection(
+                                                  dateTimeSetState),
+                                          SizedBox(height: 16.h),
+                                          PrimaryButton(
+                                            onPressed: () {
+                                              if (selectedDate == null ||
+                                                  selectedTime == null) {
+                                                return;
+                                              }
+
+                                              var itemInputDateSerialNumber =
+                                                  serialNumberList.firstWhere(
+                                                      (element) =>
+                                                          element.id ==
+                                                          idSerialNumber);
+                                              dateTimeSetState(() {
+                                                final index = serialNumberList
+                                                    .indexWhere((element) =>
+                                                        element.id ==
+                                                        idSerialNumber);
+                                                serialNumberList[index] =
+                                                    serialNumberList[index]
+                                                        .copyWith(
+                                                  isInputDate: false,
+                                                  expiredDateTime:
+                                                      "Exp. Date $selectedDate - $selectedTime",
+                                                );
+                                              });
+
+                                              debugPrint(
+                                                  itemInputDateSerialNumber
+                                                      .toString());
+                                              debugPrint(serialNumberList
+                                                  .map((e) => e.expiredDateTime)
+                                                  .toList()
+                                                  .toString());
+
+                                              Navigator.of(context).pop(true);
+                                            },
+                                            height: 40.h,
+                                            title: "Save",
+                                          )
                                         ],
                                       ),
                                     ),
                                   );
                                 });
                               },
-                            );
+                            ).then((value) {
+                              if (value == true) {
+                                setState(() {
+                                  debugPrint("state page nih");
+                                });
+                              }
+                            });
                           });
                         },
                         child: buildExpDateButton(
@@ -700,74 +719,88 @@ class _ReceiptProductMenuOfProductDetailScreenState
     );
   }
 
-  TableCalendar<dynamic> _buildTableCalendar() {
-    return TableCalendar(
-      rowHeight: 53.h,
-      calendarBuilders: CalendarBuilders(
-        todayBuilder: (context, day, focusedDay) {
-          final text = DateFormat.d().format(day);
+  Row _buildHeaderMenu(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          "Date and Time",
+          style: BaseText.black2Text14.copyWith(
+            fontWeight: BaseText.medium,
+          ),
+        ),
+        GestureDetector(
+            onTap: () => Navigator.of(context).pop(),
+            child: const Icon(Icons.close))
+      ],
+    );
+  }
 
-          return Container(
-            // height: 43.w,
-            // width: 43.w,
-            // margin: EdgeInsets.all(4.w),
-            decoration: const BoxDecoration(
-              color: ColorName.dateTimeColor,
-              shape: BoxShape.circle,
-              // borderRadius: BorderRadius.circular(24),
-            ),
-            child: Center(
-              child: Text(
-                text.toString(),
-                style: BaseText.whiteText14,
-              ),
-            ),
-          );
-        },
-      ),
-      headerStyle: HeaderStyle(
-        titleCentered: true,
-        formatButtonVisible: false,
-        // headerPadding: EdgeInsets.symmetric(vertical: 16.h),
-        titleTextStyle:
-            BaseText.grey2Text14.copyWith(fontWeight: BaseText.medium),
-        leftChevronIcon:
-            const Icon(Icons.chevron_left, color: ColorName.grey10Color),
-        rightChevronIcon:
-            const Icon(Icons.chevron_right, color: ColorName.grey10Color),
-        leftChevronPadding: EdgeInsets.zero,
-        rightChevronPadding: EdgeInsets.zero,
-      ),
-      calendarFormat: CalendarFormat.month,
-      firstDay: DateTime.utc(2010, 10, 16),
-      lastDay: DateTime.utc(2030, 3, 14),
-      focusedDay: DateTime.now(),
-      startingDayOfWeek: StartingDayOfWeek.monday,
-      weekendDays: const [DateTime.sunday],
-      calendarStyle: CalendarStyle(
-        outsideTextStyle: BaseText.grey2Text14.copyWith(
-          fontWeight: BaseText.light,
-        ),
-        holidayTextStyle: _getRedText(),
-        weekendTextStyle: _getRedText(),
-        defaultTextStyle: BaseText.grey1Text14.copyWith(),
-      ),
-      daysOfWeekHeight: 32.h,
-      daysOfWeekStyle: DaysOfWeekStyle(
+  SingleChildScrollView _buildDateBodySection(StateSetter dateTimeSetState) {
+    return SingleChildScrollView(
+      child: Container(
+        clipBehavior: Clip.antiAlias,
+        height: 320.h,
+        padding: EdgeInsets.all(12.w),
         decoration: BoxDecoration(
-            border: Border(
-                bottom: BorderSide(
-          width: 1.h,
-          color: ColorName.grey8Color,
-        ))),
-        weekdayStyle: BaseText.grey1Text12.copyWith(
-          fontWeight: BaseText.regular,
+            shape: BoxShape.rectangle,
+            borderRadius: BorderRadius.circular(4.r),
+            border: Border.all(
+              color: ColorName.grey12Color,
+            )),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SfDateRangePicker(
+              controller: _controller,
+              view: DateRangePickerView.month,
+              headerHeight: 40.h,
+              headerStyle: DateRangePickerHeaderStyle(
+                  textStyle: BaseText.grey10Text14
+                      .copyWith(fontWeight: BaseText.medium),
+                  textAlign: TextAlign.center),
+              monthViewSettings: DateRangePickerMonthViewSettings(
+                weekendDays: const [7],
+                viewHeaderHeight: 40.h,
+                enableSwipeSelection: false,
+                dayFormat: "EEE",
+                showTrailingAndLeadingDates: true,
+                firstDayOfWeek: 1,
+                viewHeaderStyle: DateRangePickerViewHeaderStyle(
+                  textStyle: BaseText.grey1Text12.copyWith(
+                    fontWeight: BaseText.regular,
+                  ),
+                ),
+              ),
+              monthCellStyle: DateRangePickerMonthCellStyle(
+                textStyle: BaseText.grey1Text14,
+                weekendTextStyle: _getRedText(),
+              ),
+              yearCellStyle: DateRangePickerYearCellStyle(
+                  todayCellDecoration: BoxDecoration(
+                    shape: BoxShape.rectangle,
+                    borderRadius: BorderRadius.circular(6.w),
+                    color: ColorName.grey6Color,
+                  ),
+                  todayTextStyle: BaseText.grey10Text14.copyWith(
+                    fontWeight: BaseText.light,
+                  ),
+                  textStyle: BaseText.grey10Text14.copyWith(
+                    fontWeight: BaseText.light,
+                  )),
+              selectionColor: ColorName.dateTimeColor,
+              allowViewNavigation: true,
+              onSelectionChanged: (dateRangePickerSelectionChangedArgs) {
+                dateTimeSetState(() {
+                  var dateSelected = _controller.selectedDate;
+                  selectedDate = DateFormat('dd/MM/yyyy').format(dateSelected!);
+                  debugPrint(selectedDate.toString());
+                });
+              },
+            ),
+          ],
         ),
-        weekendStyle: _getweekendStyleText(),
       ),
-      onPageChanged: (d) {
-        debugPrint(d.month.toString());
-      },
     );
   }
 
@@ -792,13 +825,6 @@ class _ReceiptProductMenuOfProductDetailScreenState
               : BaseText.grey2Text14.copyWith(fontWeight: BaseText.light),
         ),
       ),
-    );
-  }
-
-  TextStyle _getweekendStyleText() {
-    return BaseText.redText12.copyWith(
-      fontWeight: BaseText.regular,
-      color: ColorName.weekendLabelColor,
     );
   }
 
@@ -866,8 +892,9 @@ class _ReceiptProductMenuOfProductDetailScreenState
               alignment: Alignment.center,
               onTimeChange: (time) {
                 dateTimeSetState(() {
-                  selectedTime = time;
+                  selectedTime = "${time.hour}:${time.minute}";
                 });
+                debugPrint(selectedTime.toString());
               },
             ),
           ],

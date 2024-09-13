@@ -1,32 +1,28 @@
-import 'dart:math';
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
-import 'package:inventory_v3/common/components/primary_button.dart';
-import 'package:inventory_v3/data/model/date_time_button.dart';
-import 'package:inventory_v3/data/model/scan_view.dart';
-import 'package:inventory_v3/presentation/receipt/receipt_product/cubit/product_detail/product_menu_product_detail_cubit.dart';
-import 'package:inventory_v3/presentation/receipt/receipt_product/cubit/scan/scan_cubit.dart';
-import 'package:inventory_v3/presentation/receipt/receipt_product/cubit/scan/scan_state.dart';
 import 'package:smooth_highlight/smooth_highlight.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
-import 'package:table_calendar/table_calendar.dart';
 import 'package:time_picker_spinner/time_picker_spinner.dart';
 
 import '../../../../../common/components/custom_app_bar.dart';
 import '../../../../../common/components/custom_divider.dart';
+import '../../../../../common/components/primary_button.dart';
 import '../../../../../common/components/reusable_floating_action_button.dart';
 import '../../../../../common/components/reusable_search_bar_border.dart';
 import '../../../../../common/components/reusable_tab_bar.dart';
 import '../../../../../common/components/reusable_widget.dart';
 import '../../../../../common/theme/color/color_name.dart';
 import '../../../../../common/theme/text/base_text.dart';
+import '../../../../../data/model/date_time_button.dart';
 import '../../../../../data/model/product.dart';
+import '../../../../../data/model/scan_view.dart';
 import '../../../receipt_pallet/screens/product_detail/add_product_screen.dart';
 import '../../../receipt_pallet/widget/scan_view_widget.dart';
+import '../../cubit/product_detail/product_menu_product_detail_cubit.dart';
+import '../../cubit/scan/scan_cubit.dart';
+import '../../cubit/scan/scan_state.dart';
 
 class ReceiptProductMenuOfProductDetailScreen extends StatefulWidget {
   final Product product;
@@ -77,9 +73,11 @@ class _ReceiptProductMenuOfProductDetailScreenState
 
   bool isCardHighlighted = false;
 
+  var selectedDate;
   // TimeOfDay time = TimeOfDay.now();
   final DateTime _dateTime = DateTime.now();
   var selectedTime;
+  String inputDate = "";
 
   @override
   void initState() {
@@ -562,6 +560,8 @@ class _ReceiptProductMenuOfProductDetailScreenState
                 (itemSerialNumber?.isInputDate == true)
                     ? InkWell(
                         onTap: () {
+                          int idSerialNumber = itemSerialNumber?.id ?? 0;
+
                           int selectedIndex = 0;
                           Future.delayed(const Duration(milliseconds: 600), () {
                             showAdaptiveDialog(
@@ -615,7 +615,35 @@ class _ReceiptProductMenuOfProductDetailScreenState
                                                   dateTimeSetState),
                                           SizedBox(height: 16.h),
                                           PrimaryButton(
-                                            onPressed: () {},
+                                            onPressed: () {
+                                              var itemInputDateSerialNumber =
+                                                  serialNumberList.firstWhere(
+                                                      (element) =>
+                                                          element.id ==
+                                                          idSerialNumber);
+                                              dateTimeSetState(() {
+                                                inputDate =
+                                                    "Exp. Date $selectedDate - $selectedTime";
+                                                itemInputDateSerialNumber
+                                                    .isInputDate = false;
+                                                itemInputDateSerialNumber
+                                                        .expiredDateTime =
+                                                    inputDate;
+                                                int index = serialNumberList
+                                                    .indexOf(itemSerialNumber!);
+
+                                                serialNumberList[index] =
+                                                    itemInputDateSerialNumber;
+                                              });
+
+                                              debugPrint(
+                                                  itemInputDateSerialNumber
+                                                      .toString());
+                                              debugPrint(serialNumberList
+                                                  .map((e) => e.expiredDateTime)
+                                                  .toList()
+                                                  .toString());
+                                            },
                                             height: 40.h,
                                             title: "Save",
                                           )
@@ -746,85 +774,15 @@ class _ReceiptProductMenuOfProductDetailScreenState
               allowViewNavigation: true,
               onSelectionChanged: (dateRangePickerSelectionChangedArgs) {
                 dateTimeSetState(() {
-                  debugPrint(
-                      dateRangePickerSelectionChangedArgs.value.toString());
+                  var dateSelected = _controller.selectedDate;
+                  selectedDate = DateFormat('dd/MM/yyyy').format(dateSelected!);
+                  debugPrint(selectedDate.toString());
                 });
               },
             ),
           ],
         ),
       ),
-    );
-  }
-
-  TableCalendar<dynamic> _buildTableCalendar() {
-    return TableCalendar(
-      rowHeight: 53.h,
-      calendarBuilders: CalendarBuilders(
-        todayBuilder: (context, day, focusedDay) {
-          final text = DateFormat.d().format(day);
-
-          return Container(
-            // height: 43.w,
-            // width: 43.w,
-            // margin: EdgeInsets.all(4.w),
-            decoration: const BoxDecoration(
-              color: ColorName.dateTimeColor,
-              shape: BoxShape.circle,
-              // borderRadius: BorderRadius.circular(24),
-            ),
-            child: Center(
-              child: Text(
-                text.toString(),
-                style: BaseText.whiteText14,
-              ),
-            ),
-          );
-        },
-      ),
-      headerStyle: HeaderStyle(
-        titleCentered: true,
-        formatButtonVisible: false,
-        // headerPadding: EdgeInsets.symmetric(vertical: 16.h),
-        titleTextStyle:
-            BaseText.grey2Text14.copyWith(fontWeight: BaseText.medium),
-        leftChevronIcon:
-            const Icon(Icons.chevron_left, color: ColorName.grey10Color),
-        rightChevronIcon:
-            const Icon(Icons.chevron_right, color: ColorName.grey10Color),
-        leftChevronPadding: EdgeInsets.zero,
-        rightChevronPadding: EdgeInsets.zero,
-      ),
-      calendarFormat: CalendarFormat.month,
-      firstDay: DateTime.utc(2010, 10, 16),
-      lastDay: DateTime.utc(2030, 3, 14),
-      focusedDay: DateTime.now(),
-      startingDayOfWeek: StartingDayOfWeek.monday,
-      weekendDays: const [DateTime.sunday],
-      calendarStyle: CalendarStyle(
-        outsideTextStyle: BaseText.grey2Text14.copyWith(
-          fontWeight: BaseText.light,
-        ),
-        holidayTextStyle: _getRedText(),
-        weekendTextStyle: _getRedText(),
-        defaultTextStyle: BaseText.grey1Text14.copyWith(),
-      ),
-      daysOfWeekHeight: 32.h,
-      daysOfWeekStyle: DaysOfWeekStyle(
-        decoration: BoxDecoration(
-            border: Border(
-                bottom: BorderSide(
-          width: 1.h,
-          color: ColorName.grey8Color,
-        ))),
-        weekdayStyle: BaseText.grey1Text12.copyWith(
-          fontWeight: BaseText.regular,
-        ),
-        weekendStyle: _getweekendStyleText(),
-      ),
-      onPageChanged: (d) {
-        debugPrint(d.month.toString());
-      },
     );
   }
 
@@ -849,13 +807,6 @@ class _ReceiptProductMenuOfProductDetailScreenState
               : BaseText.grey2Text14.copyWith(fontWeight: BaseText.light),
         ),
       ),
-    );
-  }
-
-  TextStyle _getweekendStyleText() {
-    return BaseText.redText12.copyWith(
-      fontWeight: BaseText.regular,
-      color: ColorName.weekendLabelColor,
     );
   }
 
@@ -923,8 +874,9 @@ class _ReceiptProductMenuOfProductDetailScreenState
               alignment: Alignment.center,
               onTimeChange: (time) {
                 dateTimeSetState(() {
-                  selectedTime = time;
+                  selectedTime = "${time.hour}:${time.minute}";
                 });
+                debugPrint(selectedTime.toString());
               },
             ),
           ],

@@ -189,7 +189,15 @@ class _ReceiptProductMenuOfProductDetailScreenState
                       buildScanAndUpdateSection(
                         status: status,
                         onScan: () async {
-                          var firstExpectedValue = serialNumberList.first.label;
+                          String firstExpectedValue = "";
+
+                          if (tracking
+                              .toLowerCase()
+                              .contains("serial number")) {
+                            firstExpectedValue = serialNumberList.first.label;
+                          } else {
+                            firstExpectedValue = code;
+                          }
 
                           final scanResult = await Navigator.push(
                             context,

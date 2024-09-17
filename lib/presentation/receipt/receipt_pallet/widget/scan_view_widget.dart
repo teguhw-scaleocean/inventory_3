@@ -87,6 +87,7 @@ class _ScanViewState extends State<ScanView> {
   void didChangeDependencies() {
     super.didChangeDependencies();
 
+    //TODO: Check if scan serial number or lots
     checkScanSerialNumber();
   }
 

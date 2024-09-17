@@ -189,7 +189,15 @@ class _ReceiptProductMenuOfProductDetailScreenState
                       buildScanAndUpdateSection(
                         status: status,
                         onScan: () async {
-                          var firstExpectedValue = serialNumberList.first.label;
+                          String firstExpectedValue = "";
+
+                          if (tracking
+                              .toLowerCase()
+                              .contains("serial number")) {
+                            firstExpectedValue = serialNumberList.first.label;
+                          } else {
+                            firstExpectedValue = code;
+                          }
 
                           final scanResult = await Navigator.push(
                             context,
@@ -219,7 +227,7 @@ class _ReceiptProductMenuOfProductDetailScreenState
                                   product.scannedSerialNumber =
                                       serialNumberResult;
                                   product.hasActualDateTime = true;
-                                  product.actualDateTime = product.dateTime;
+                                  product.actualDateTime = _getScanActualDate();
                                 });
 
                                 Future.delayed(const Duration(seconds: 2), () {
@@ -375,6 +383,7 @@ class _ReceiptProductMenuOfProductDetailScreenState
                                         child: buildItemQuantity(
                                           code,
                                           isHighlighted: isHighlighted,
+                                          itemSerialNumber: item,
                                         ));
                                   }),
                             )
@@ -452,6 +461,19 @@ class _ReceiptProductMenuOfProductDetailScreenState
         ),
       ),
     );
+  }
+
+  String _getScanActualDate() {
+    String actDateTime = "";
+    String actDate = "";
+    String actTime = "";
+    actDate =
+        "${DateTime.now().day}/${DateTime.now().month}/${DateTime.now().year}";
+    actTime = "${DateTime.now().hour}:${DateTime.now().minute}";
+    actDateTime = "$actDate - $actTime";
+    debugPrint(actDateTime);
+
+    return actDateTime;
   }
 
   Container buildTrackingLabel(String tracking) {

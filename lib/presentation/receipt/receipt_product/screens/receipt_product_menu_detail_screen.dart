@@ -83,7 +83,8 @@ class _ReceiptProductMenuDetailScreenState
         .toString()
         .toLowerCase()
         .contains("lots")) {
-      listProducts = products2;
+      BlocProvider.of<ProductMenuProductDetailCubit>(context)
+          .getInitLotsListProduct();
     } else if (receipt.packageStatus
         .toString()
         .toLowerCase()
@@ -370,24 +371,31 @@ class _ReceiptProductMenuDetailScreenState
                           ProductMenuProductDetailState>(
                       listener: (context, state) {
                     debugPrint("listener");
-                    Product? currentProduct;
-                    int? totalReceive;
 
-                    if (state.product != null) {
-                      currentProduct = state.product!;
-                    }
-                    if (state.totalToDone != null) {
-                      totalReceive = state.totalToDone!;
-                    }
+                    if (receipt.packageStatus
+                        .toString()
+                        .toLowerCase()
+                        .contains("serial number")) {
+                      Product? currentProduct;
+                      int? totalReceive;
 
-                    debugPrint(currentProduct?.serialNumber?.length.toString());
-                    debugPrint(
-                        currentProduct?.scannedSerialNumber?.length.toString());
+                      if (state.product != null) {
+                        currentProduct = state.product!;
+                      }
+                      if (state.totalToDone != null) {
+                        totalReceive = state.totalToDone!;
+                      }
 
-                    if (currentProduct?.scannedSerialNumber?.length ==
-                        totalReceive) {
-                      onShowSuccessReceiveCompleteDialog(
-                          productName: currentProduct!.productName);
+                      debugPrint(
+                          currentProduct?.serialNumber?.length.toString());
+                      debugPrint(currentProduct?.scannedSerialNumber?.length
+                          .toString());
+
+                      if (currentProduct?.scannedSerialNumber?.length ==
+                          totalReceive) {
+                        onShowSuccessReceiveCompleteDialog(
+                            productName: currentProduct!.productName);
+                      }
                     }
                   }, builder: (context, state) {
                     final list = state.products;
@@ -692,6 +700,9 @@ class _ReceiptProductMenuDetailScreenState
     Product product0;
     product0 = product;
 
+    String actualDate = "";
+    String actualTime = "";
+
     // Code
     String code = "";
 
@@ -705,6 +716,10 @@ class _ReceiptProductMenuDetailScreenState
         assignToReceive(product0);
         assignToDone(product0);
         code = product0.code;
+        if (product0.hasActualDateTime == true) {
+          actualDate = product0.actualDateTime.toString().substring(0, 9);
+          actualTime = product0.actualDateTime.toString().substring(12, 17);
+        }
 
         break;
       case "No Tracking":
@@ -743,9 +758,13 @@ class _ReceiptProductMenuDetailScreenState
             //   assignToReceive(product0);
             //   assignToDone(product0);
             // });
-
-            BlocProvider.of<ProductMenuProductDetailCubit>(context)
-                .scannedSerialNumberToProduct(value);
+            if (receipt.packageStatus
+                .toString()
+                .toLowerCase()
+                .contains("serial number")) {
+              BlocProvider.of<ProductMenuProductDetailCubit>(context)
+                  .scannedSerialNumberToProduct(value);
+            }
           }
         });
       },
@@ -809,8 +828,8 @@ class _ReceiptProductMenuDetailScreenState
                           children: [
                             buildDateTime(
                               label: "Act. Date: ",
-                              date: date,
-                              time: time,
+                              date: actualDate,
+                              time: actualTime,
                               isEnable: true,
                             ),
                             SizedBox(height: 6.h),

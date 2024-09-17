@@ -13,6 +13,7 @@ import '../../../../../common/components/reusable_floating_action_button.dart';
 import '../../../../../common/components/reusable_search_bar_border.dart';
 import '../../../../../common/components/reusable_tab_bar.dart';
 import '../../../../../common/components/reusable_widget.dart';
+import '../../../../../common/helper/tracking_helper.dart';
 import '../../../../../common/theme/color/color_name.dart';
 import '../../../../../common/theme/text/base_text.dart';
 import '../../../../../data/model/date_time_button.dart';
@@ -23,6 +24,7 @@ import '../../../receipt_pallet/widget/scan_view_widget.dart';
 import '../../cubit/product_detail/product_menu_product_detail_cubit.dart';
 import '../../cubit/scan/scan_cubit.dart';
 import '../../cubit/scan/scan_state.dart';
+import 'update_product_quantity_screen.dart';
 
 class ReceiptProductMenuOfProductDetailScreen extends StatefulWidget {
   final Product product;
@@ -104,18 +106,7 @@ class _ReceiptProductMenuOfProductDetailScreenState
     tracking = widget.tracking;
     status = widget.status;
 
-    switch (tracking) {
-      case "Serial Number":
-        idTracking = 0;
-        break;
-      case "Lots":
-        idTracking = 1;
-        break;
-      case "No Tracking":
-        idTracking = 2;
-        break;
-      default:
-    }
+    idTracking = TrackingHelper().getTrackingId(tracking);
 
     if (!(tracking.toLowerCase().contains("serial number"))) {
       code = product.lotsCode ?? product.code;
@@ -294,6 +285,17 @@ class _ReceiptProductMenuOfProductDetailScreenState
                             }
                           });
                         },
+                        onUpdate: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => UpdateProductQuantityScreen(
+                                tracking: tracking,
+                              ),
+                            ),
+                          );
+                        },
+                        updateLabel: "Update Qty",
                       ),
                       SizedBox(height: 16.h),
                     ],

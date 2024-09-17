@@ -109,7 +109,10 @@ GestureDetector buildScanButton({required Function()? onTap}) {
 }
 
 Row buildScanAndUpdateSection(
-    {required String status, Function()? onScan, Function()? onUpdate}) {
+    {required String status,
+    Function()? onScan,
+    Function()? onUpdate,
+    String? updateLabel}) {
   Color? scanButtonColor;
   Color? updateButtonColor;
 
@@ -159,7 +162,7 @@ Row buildScanAndUpdateSection(
               height: 16.w,
               width: 16.w,
             ),
-            title: "Update Pallet",
+            title: updateLabel ?? "Update Pallet",
             color: updateButtonColor,
           ),
         ),

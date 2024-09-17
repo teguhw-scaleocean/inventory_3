@@ -48,6 +48,7 @@ class _ReceiptProductMenuOfProductDetailScreenState
   String status = "";
   // Scan Result
   String _scanBarcode = "";
+  int idTracking = 0;
 
   final searchSerialNumberController = TextEditingController();
   final searchKey = GlobalKey<FormState>();
@@ -79,6 +80,18 @@ class _ReceiptProductMenuOfProductDetailScreenState
   var selectedTime;
   String inputDate = "";
 
+  // Total Not Done
+  int totalInt = 0;
+  String total = "";
+  // Total Done
+  int totalDoneInt = 0;
+  String totalDone = "";
+
+  // Serial Number
+  bool isHighlighted = false;
+  // Lots
+  bool isHighlightedLots = false;
+
   @override
   void initState() {
     super.initState();
@@ -90,6 +103,19 @@ class _ReceiptProductMenuOfProductDetailScreenState
     product = widget.product;
     tracking = widget.tracking;
     status = widget.status;
+
+    switch (tracking) {
+      case "Serial Number":
+        idTracking = 0;
+        break;
+      case "Lots":
+        idTracking = 1;
+        break;
+      case "No Tracking":
+        idTracking = 2;
+        break;
+      default:
+    }
 
     if (!(tracking.toLowerCase().contains("serial number"))) {
       code = product.lotsCode ?? product.code;
@@ -139,6 +165,7 @@ class _ReceiptProductMenuOfProductDetailScreenState
     // if (itemInputDate == true) {
     //   debugPrint("itemInputDate minta true: $itemInputDate");
     // }
+    debugPrint("tracking: $tracking");
     return SafeArea(
       child: DefaultTabController(
         length: _tabs.length,
@@ -189,6 +216,7 @@ class _ReceiptProductMenuOfProductDetailScreenState
                       buildScanAndUpdateSection(
                         status: status,
                         onScan: () async {
+                          int idTracking = 0;
                           String firstExpectedValue = "";
 
                           if (tracking
@@ -196,6 +224,7 @@ class _ReceiptProductMenuOfProductDetailScreenState
                               .contains("serial number")) {
                             firstExpectedValue = serialNumberList.first.label;
                           } else {
+                            idTracking = 1;
                             firstExpectedValue = code;
                           }
 
@@ -205,6 +234,7 @@ class _ReceiptProductMenuOfProductDetailScreenState
                               builder: (context) => ScanView(
                                 expectedValue: firstExpectedValue,
                                 scanType: ScanViewType.product,
+                                idTracking: idTracking,
                               ),
                             ),
                           ).then((value) {
@@ -214,7 +244,9 @@ class _ReceiptProductMenuOfProductDetailScreenState
                                   .contains("inputExpirationDate")) {
                                 BlocProvider.of<ScanCubit>(context)
                                     .setIsItemInputDate(true);
-                              } else {
+                              } else if (tracking
+                                  .toLowerCase()
+                                  .contains("serial number")) {
                                 setState(() {
                                   _scanBarcode = value;
 
@@ -239,6 +271,10 @@ class _ReceiptProductMenuOfProductDetailScreenState
                                     scannedItem: scannedItem,
                                   );
                                 });
+                              } else if (idTracking == 1) {
+                                BlocProvider.of<ProductMenuProductDetailCubit>(
+                                        context)
+                                    .getLotsScannedTotalDone(totalDoneInt);
                               }
 
                               // BlocProvider.of<ProductMenuProductDetailCubit>(
@@ -278,12 +314,6 @@ class _ReceiptProductMenuOfProductDetailScreenState
                     tabs: _tabs.map((e) {
                       bool isSelectedTab = false;
                       isSelectedTab = tabController.index == _tabs.indexOf(e);
-                      // Total Not Done
-                      int totalInt = 0;
-                      String total = "";
-                      // Total Done
-                      int totalDoneInt = 0;
-                      String totalDone = "";
 
                       if (tracking.toLowerCase().contains("serial number")) {
                         totalInt = serialNumberList.length;
@@ -297,6 +327,13 @@ class _ReceiptProductMenuOfProductDetailScreenState
                         totalInt =
                             _tabs[0] == e ? product.productQty.toInt() : 0;
                         total = totalInt.toString();
+
+                        totalDoneInt = context
+                                .watch<ProductMenuProductDetailCubit>()
+                                .state
+                                .lotsTotalDone ??
+                            totalDoneInt;
+                        totalDone = totalDoneInt.toString();
                       }
 
                       return buildTabLabel(
@@ -345,6 +382,7 @@ class _ReceiptProductMenuOfProductDetailScreenState
                                             code,
                                             isHighlighted: isHighlighted,
                                             itemSerialNumber: item,
+                                            tabIndex: 0,
                                           ));
                                     }),
                               )
@@ -354,11 +392,12 @@ class _ReceiptProductMenuOfProductDetailScreenState
                                   buildItemQuantity(
                                     code,
                                     itemProduct: product,
+                                    tabIndex: 0,
                                   ),
                                 ],
                               ),
                       ),
-                      (serialNumberResult.isNotEmpty)
+                      (idTracking == 0 && serialNumberResult.isNotEmpty)
                           ? Container(
                               padding: EdgeInsets.symmetric(
                                   horizontal: 16.w, vertical: 12.h),
@@ -373,7 +412,6 @@ class _ReceiptProductMenuOfProductDetailScreenState
                                     var item = serialNumberResult[index];
                                     code = item.label;
 
-                                    bool isHighlighted = false;
                                     isHighlighted = serialNumberResult
                                         .contains(selectedSerialNumber);
                                     debugPrint("isHighlighted: $isHighlighted");
@@ -384,25 +422,49 @@ class _ReceiptProductMenuOfProductDetailScreenState
                                           code,
                                           isHighlighted: isHighlighted,
                                           itemSerialNumber: item,
+                                          tabIndex: 1,
                                         ));
                                   }),
                             )
-                          : Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Text(
-                                  "No items scanned or updated yet",
-                                  style: BaseText.grey10Text14,
-                                ),
-                                Text(
-                                  "Completed items will be shown here.",
-                                  style: BaseText.grey1Text14.copyWith(
-                                    fontWeight: BaseText.light,
-                                  ),
+                          : (idTracking == 1)
+                              ? Builder(builder: (context) {
+                                  isHighlightedLots = totalDoneInt > 0;
+
+                                  debugPrint(
+                                      "isHighlightedLots: $isHighlightedLots");
+                                  return Container(
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: 16.w, vertical: 12.h),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        buildItemQuantity(
+                                          code,
+                                          itemProduct: product,
+                                          isHighlighted: isHighlightedLots,
+                                          tabIndex: 1,
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                })
+                              : Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      "No items scanned or updated yet",
+                                      style: BaseText.grey10Text14,
+                                    ),
+                                    Text(
+                                      "Completed items will be shown here.",
+                                      style: BaseText.grey1Text14.copyWith(
+                                        fontWeight: BaseText.light,
+                                      ),
+                                    )
+                                  ],
                                 )
-                              ],
-                            )
                     ],
                   ),
                 )
@@ -521,6 +583,7 @@ class _ReceiptProductMenuOfProductDetailScreenState
     Product? itemProduct,
     bool isHighlighted = false,
     SerialNumber? itemSerialNumber,
+    int tabIndex = 0,
   }) {
     if (itemProduct != null) {
       int? quantityInt = itemProduct.productQty.toInt();
@@ -717,25 +780,52 @@ class _ReceiptProductMenuOfProductDetailScreenState
             //   color: ColorName.grey9Color,
             //   // ),
             // ),
-            Container(
-              // height: double.infinity,
-              height: qtyHeight,
-              width: qtyWidth,
-              decoration: const BoxDecoration(
-                  border: Border(
-                left: BorderSide(color: ColorName.grey9Color),
-              )),
-              child: Center(
-                child: Text(
-                  (tracking.toLowerCase().contains("serial")) ? "1" : quantity,
-                  textAlign: TextAlign.center,
-                  style: BaseText.black2Text14.copyWith(
-                    fontWeight: BaseText.regular,
-                  ),
-                ),
-              ),
-            )
+            (tabIndex == 0)
+                ? buildTotalQtyNotDone(qtyHeight, qtyWidth)
+                : buildTotalQtyDone(qtyHeight, qtyWidth),
           ],
+        ),
+      ),
+    );
+  }
+
+  Container buildTotalQtyNotDone(double qtyHeight, double qtyWidth) {
+    return Container(
+      // height: double.infinity,
+      height: qtyHeight,
+      width: qtyWidth,
+      decoration: const BoxDecoration(
+          border: Border(
+        left: BorderSide(color: ColorName.grey9Color),
+      )),
+      child: Center(
+        child: Text(
+          (tracking.toLowerCase().contains("serial")) ? "1" : quantity,
+          textAlign: TextAlign.center,
+          style: BaseText.black2Text14.copyWith(
+            fontWeight: BaseText.regular,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Container buildTotalQtyDone(double qtyHeight, double qtyWidth) {
+    return Container(
+      // height: double.infinity,
+      height: qtyHeight,
+      width: qtyWidth,
+      decoration: const BoxDecoration(
+          border: Border(
+        left: BorderSide(color: ColorName.grey9Color),
+      )),
+      child: Center(
+        child: Text(
+          totalDone,
+          textAlign: TextAlign.center,
+          style: BaseText.black2Text14.copyWith(
+            fontWeight: BaseText.regular,
+          ),
         ),
       ),
     );

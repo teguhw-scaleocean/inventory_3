@@ -5,18 +5,26 @@ class ProductMenuProductDetailState {
   List<Product> products;
   Product? product;
   int? totalToDone;
+  // Lots
+  int? lotsTotalDone;
 
   ProductMenuProductDetailState({
     required this.products,
     this.product,
     this.totalToDone,
+    this.lotsTotalDone,
   });
 
-  copyWith({List<Product>? products, Product? product, int? totalToDone}) {
+  copyWith(
+      {List<Product>? products,
+      Product? product,
+      int? totalToDone,
+      int? lotsTotalDone}) {
     return ProductMenuProductDetailState(
       products: products ?? this.products,
       product: product ?? this.product,
       totalToDone: totalToDone ?? this.totalToDone,
+      lotsTotalDone: lotsTotalDone ?? this.lotsTotalDone,
     );
   }
 }

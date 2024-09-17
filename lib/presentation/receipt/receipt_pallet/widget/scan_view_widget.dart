@@ -21,10 +21,14 @@ import '../../../../common/theme/text/base_text.dart';
 class ScanView extends StatefulWidget {
   final String expectedValue;
   final ScanViewType scanType;
+  final int? idTracking;
 
-  const ScanView(
-      {Key? key, required this.expectedValue, required this.scanType})
-      : super(key: key);
+  const ScanView({
+    Key? key,
+    required this.expectedValue,
+    required this.scanType,
+    this.idTracking,
+  }) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _ScanViewState();
@@ -40,6 +44,7 @@ class _ScanViewState extends State<ScanView> {
   late ScanViewType scanViewType;
 
   String expectedValue = "";
+  int idTracking = 0;
 
   String appBarTitle = "";
   String labelOfScan = "";
@@ -63,8 +68,9 @@ class _ScanViewState extends State<ScanView> {
   void initState() {
     super.initState();
 
-    expectedValue = widget.expectedValue;
     scanViewType = widget.scanType;
+    idTracking = widget.idTracking ?? 0;
+    expectedValue = widget.expectedValue;
 
     switch (scanViewType) {
       case ScanViewType.pallet:
@@ -88,7 +94,9 @@ class _ScanViewState extends State<ScanView> {
     super.didChangeDependencies();
 
     //TODO: Check if scan serial number or lots
-    checkScanSerialNumber();
+    if (idTracking == 0) {
+      checkScanSerialNumber();
+    }
   }
 
   Future getFlashStatus() async {

@@ -275,6 +275,16 @@ class _ReceiptProductMenuOfProductDetailScreenState
                                 BlocProvider.of<ProductMenuProductDetailCubit>(
                                         context)
                                     .getLotsScannedTotalDone(totalDoneInt);
+
+                                Future.delayed(const Duration(seconds: 2), () {
+                                  _scanBarcode = value;
+                                  String scannedItem = "Lots: $_scanBarcode";
+
+                                  onShowSuccessDialog(
+                                    context: context,
+                                    scannedItem: scannedItem,
+                                  );
+                                });
                               }
 
                               // BlocProvider.of<ProductMenuProductDetailCubit>(

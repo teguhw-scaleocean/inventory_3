@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:inventory_v3/common/components/primary_button.dart';
 
 import '../../../../../common/helper/tracking_helper.dart';
 import '../../../../../common/theme/color/color_name.dart';
@@ -25,6 +26,7 @@ class _UpdateProductQuantityScreenState
   String tracking = "";
 
   List<ItemCard> updateListItems = [];
+  List<bool> updateListIsSelected = [];
 
   bool isAllSelected = false;
 
@@ -109,34 +111,57 @@ class _UpdateProductQuantityScreenState
             ],
           ),
         ),
-        bottomNavigationBar: Container(
-          height: 72,
-          padding: const EdgeInsets.all(16),
-          decoration: _buildBottomDecoration(),
-          child: Row(
-            children: [
-              SizedBox(
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Checkbox(
-                      side: const BorderSide(
-                        color: ColorName.grey4Color,
+        bottomNavigationBar: Builder(builder: (context) {
+          String title = "Update";
+          return Container(
+            height: 72,
+            padding: const EdgeInsets.all(16),
+            decoration: _buildBottomDecoration(),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                SizedBox(
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Checkbox(
+                        side: const BorderSide(
+                          color: ColorName.grey4Color,
+                        ),
+                        value: isAllSelected,
+                        onChanged: (val) {
+                          setState(() {
+                            isAllSelected = !isAllSelected;
+
+                            updateListItems.map((e) {
+                              e.isSelected = val!;
+
+                              if (e.isSelected) {
+                                updateListIsSelected.add(e.isSelected);
+                              }
+                            }).toList();
+
+                            title = "Update (${updateListIsSelected.length})";
+                          });
+                        },
                       ),
-                      value: isAllSelected,
-                      onChanged: (val) {
-                        // setState(() {
-                        isAllSelected = !isAllSelected;
-                        // });
-                      },
-                    ),
-                    Text("All", style: BaseText.grey1Text12),
-                  ],
+                      Text("All", style: BaseText.grey1Text12),
+                    ],
+                  ),
                 ),
-              )
-            ],
-          ),
-        ),
+                PrimaryButton(
+                  onPressed: () {},
+                  height: 40.h,
+                  width: 160.w,
+                  title: title,
+                  textStyle: BaseText.whiteText14.copyWith(
+                    fontWeight: BaseText.medium,
+                  ),
+                )
+              ],
+            ),
+          );
+        }),
       ),
     );
   }

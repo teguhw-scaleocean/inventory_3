@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:inventory_v3/common/components/primary_button.dart';
+import 'package:inventory_v3/presentation/receipt/receipt_product/cubit/product_detail/product_menu_product_detail_cubit.dart';
 
 import '../../../../../common/helper/tracking_helper.dart';
 import '../../../../../common/theme/color/color_name.dart';
@@ -29,6 +31,8 @@ class _UpdateProductQuantityScreenState
   List<bool> updateListIsSelected = [];
 
   bool isAllSelected = false;
+
+  String titleUpdateButton = "Update";
 
   @override
   void initState() {
@@ -103,7 +107,17 @@ class _UpdateProductQuantityScreenState
                             onChanged: (newSelectedValue) {
                               setState(() {
                                 item.isSelected = newSelectedValue!;
+
+                                if (item.isSelected) {
+                                  updateListIsSelected.add(item.isSelected);
+                                }
+
+                                titleUpdateButton =
+                                    "Update (${updateListIsSelected.length})";
                               });
+
+                              debugPrint(
+                                  "updateListIsSelected: ${updateListIsSelected.length}");
                             },
                           ),
                         );
@@ -112,7 +126,6 @@ class _UpdateProductQuantityScreenState
           ),
         ),
         bottomNavigationBar: Builder(builder: (context) {
-          String title = "Update";
           return Container(
             height: 72,
             padding: const EdgeInsets.all(16),
@@ -136,12 +149,14 @@ class _UpdateProductQuantityScreenState
                             updateListItems.map((e) {
                               e.isSelected = val!;
 
+                              // Add & Remove from list
                               if (e.isSelected) {
                                 updateListIsSelected.add(e.isSelected);
                               }
                             }).toList();
 
-                            title = "Update (${updateListIsSelected.length})";
+                            titleUpdateButton =
+                                "Update (${updateListIsSelected.length})";
                           });
                         },
                       ),
@@ -150,10 +165,13 @@ class _UpdateProductQuantityScreenState
                   ),
                 ),
                 PrimaryButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    BlocProvider.of<ProductMenuProductDetailCubit>(context)
+                        .getLotsUpdateTotalDone(updateListIsSelected.length);
+                  },
                   height: 40.h,
                   width: 160.w,
-                  title: title,
+                  title: titleUpdateButton,
                   textStyle: BaseText.whiteText14.copyWith(
                     fontWeight: BaseText.medium,
                   ),

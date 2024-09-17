@@ -79,4 +79,9 @@ class ProductMenuProductDetailCubit
     emit(state.copyWith(lotsTotalDone: resTotal));
     log("getLotsScannedTotalDone: ${state.lotsTotalDone.toString()}");
   }
+
+  getLotsUpdateTotalDone(int total) {
+    emit(state.copyWith(lotsTotalDone: total));
+    log("getLotsUpdateTotalDone: ${state.lotsTotalDone.toString()}");
+  }
 }

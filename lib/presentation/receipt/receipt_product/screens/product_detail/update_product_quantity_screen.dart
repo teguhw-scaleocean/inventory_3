@@ -35,6 +35,8 @@ class _UpdateProductQuantityScreenState
   List<ItemCard> updateListItems = [];
   // List<bool> updateListIsSelected = [];
 
+  List<SerialNumber> snList = [];
+
   bool isAllSelected = false;
 
   String titleUpdateButton = "Update";
@@ -63,7 +65,7 @@ class _UpdateProductQuantityScreenState
     if (idTracking == 0) {
       generateUpdateListSerialNumber();
       _product = context.read<ProductMenuProductDetailCubit>().state.product;
-      totalNotDone = _product!.productQty.toInt();
+      totalNotDone = snList.length.toInt();
     }
     if (idTracking == 1) {
       _product = context.read<ProductMenuProductDetailCubit>().state.product;
@@ -91,7 +93,7 @@ class _UpdateProductQuantityScreenState
   }
 
   void generateUpdateListSerialNumber() {
-    List<SerialNumber> snList =
+    snList =
         context.read<ProductMenuProductDetailCubit>().getListOfSerialNumber();
     snList.map((e) {
       var item = ItemCard(
@@ -219,7 +221,7 @@ class _UpdateProductQuantityScreenState
                         });
                       } else {
                         BlocProvider.of<ProductMenuProductDetailCubit>(context)
-                            .getLotsUpdateTotalDone(totalNotDone, qtyUpdate);
+                            .getSnUpdateTotalDone(totalNotDone, qtyUpdate);
 
                         Future.delayed(const Duration(seconds: 1), () {
                           Navigator.of(context).pop("serial-number");

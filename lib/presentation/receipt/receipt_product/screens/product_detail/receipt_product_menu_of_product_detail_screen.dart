@@ -180,7 +180,12 @@ class _ReceiptProductMenuOfProductDetailScreenState
                 listener: (context, state) {
                   debugPrint("listener ProductMenuProductDetailCubit");
 
-                  product.doneQty = state.lotsTotalDone?.toDouble() ?? 0.00;
+                  if (idTracking == 0) {
+                    product.doneQty = state.snTotalDone?.toDouble() ?? 0.00;
+                  }
+                  if (idTracking == 1) {
+                    product.doneQty = state.lotsTotalDone?.toDouble() ?? 0.00;
+                  }
                 },
               ),
             ],
@@ -336,7 +341,26 @@ class _ReceiptProductMenuOfProductDetailScreenState
                                       tracking: tracking,
                                     ),
                                   ),
-                                );
+                                ).then((value) {
+                                  if (value != null) {
+                                    setState(() {
+                                      serialNumberResult = [
+                                        ...serialNumberList
+                                      ];
+                                      serialNumberList.clear();
+                                    });
+
+                                    Future.delayed(const Duration(seconds: 2),
+                                        () {
+                                      String scannedItem = "Serial Number";
+                                      onShowSuccessDialog(
+                                        context: context,
+                                        scannedItem: scannedItem,
+                                        isOnUpdate: true,
+                                      );
+                                    });
+                                  }
+                                });
                               }
                               if (idTracking == 1) {
                                 Navigator.push<String>(
@@ -450,9 +474,7 @@ class _ReceiptProductMenuOfProductDetailScreenState
                           return Container(
                             padding: EdgeInsets.symmetric(
                                 horizontal: 16.w, vertical: 12.h),
-                            child: (tracking
-                                    .toLowerCase()
-                                    .contains("serial number"))
+                            child: (idTracking == 0 && !doneQtyStatus)
                                 ? SizedBox(
                                     height: 600.h,
                                     child: ListView.builder(
@@ -481,7 +503,7 @@ class _ReceiptProductMenuOfProductDetailScreenState
                                               ));
                                         }),
                                   )
-                                : (idTracking == 1 && doneQtyStatus)
+                                : (doneQtyStatus)
                                     ? Column(
                                         mainAxisAlignment:
                                             MainAxisAlignment.center,
@@ -664,8 +686,9 @@ class _ReceiptProductMenuOfProductDetailScreenState
     switch (tracking) {
       case "Serial Number":
         if (serialNumberList.isNotEmpty) {
-          int receiveDouble = serialNumberList.length.toInt() +
-              serialNumberResult.length.toInt();
+          // int receiveDouble = serialNumberList.length.toInt() +
+          //     serialNumberResult.length.toInt();
+          int receiveDouble = product.serialNumber?.length.toInt() ?? 0;
           receive = receiveDouble.toString();
         }
         break;

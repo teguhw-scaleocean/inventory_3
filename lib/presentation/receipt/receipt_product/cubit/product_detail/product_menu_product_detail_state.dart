@@ -8,6 +8,7 @@ class ProductMenuProductDetailState {
   int? totalToDone;
   // Lots
   int? lotsTotalDone;
+  int? snTotalDone;
   bool? isDoneQty;
 
   ProductMenuProductDetailState({
@@ -16,6 +17,7 @@ class ProductMenuProductDetailState {
     this.product,
     this.totalToDone,
     this.lotsTotalDone,
+    this.snTotalDone,
     this.isDoneQty,
   });
 
@@ -25,6 +27,7 @@ class ProductMenuProductDetailState {
     Product? product,
     int? totalToDone,
     int? lotsTotalDone,
+    int? snTotalDone,
     bool? isDoneQty,
   }) {
     return ProductMenuProductDetailState(
@@ -33,6 +36,7 @@ class ProductMenuProductDetailState {
       product: product ?? this.product,
       totalToDone: totalToDone ?? this.totalToDone,
       lotsTotalDone: lotsTotalDone ?? this.lotsTotalDone,
+      snTotalDone: snTotalDone ?? this.snTotalDone,
       isDoneQty: isDoneQty ?? this.isDoneQty,
     );
   }

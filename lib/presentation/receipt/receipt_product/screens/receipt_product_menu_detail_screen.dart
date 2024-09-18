@@ -917,7 +917,11 @@ class _ReceiptProductMenuDetailScreenState
 
   void assignToDone(Product product0) {
     double? doneDouble = 0.00;
-    doneDouble = product0.scannedSerialNumber?.length.toDouble();
+    if (product0.scannedSerialNumber != null) {
+      doneDouble = product0.scannedSerialNumber?.length.toDouble();
+    } else {
+      doneDouble = product0.doneQty;
+    }
     _scanBarcode = doneDouble.toString();
     // else {
     //   _scanBarcode = _scanBarcode;

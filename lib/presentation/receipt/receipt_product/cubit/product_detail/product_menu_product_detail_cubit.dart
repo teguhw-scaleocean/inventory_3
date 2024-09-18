@@ -92,6 +92,15 @@ class ProductMenuProductDetailCubit
     getIsDoneQty(isDone);
   }
 
+  getSnUpdateTotalDone(int total, int doneTotal) {
+    emit(state.copyWith(snTotalDone: doneTotal));
+    log("getSnUpdateTotalDone: ${state.snTotalDone.toString()}");
+
+    bool isDone = false;
+    isDone = (doneTotal == total) ? true : false;
+    getIsDoneQty(isDone);
+  }
+
   getIsDoneQty(bool isDone) {
     emit(state.copyWith(isDoneQty: isDone));
     log("getIsDoneQty: ${state.isDoneQty.toString()}");

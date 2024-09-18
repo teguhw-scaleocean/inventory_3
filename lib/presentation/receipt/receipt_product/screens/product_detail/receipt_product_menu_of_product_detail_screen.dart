@@ -284,7 +284,8 @@ class _ReceiptProductMenuOfProductDetailScreenState
 
                                     Future.delayed(const Duration(seconds: 2),
                                         () {
-                                      String scannedItem = "Serial Number: ";
+                                      String scannedItem =
+                                          "Serial Number: $_scanBarcode";
 
                                       onShowSuccessDialog(
                                         context: context,
@@ -300,7 +301,8 @@ class _ReceiptProductMenuOfProductDetailScreenState
                                     Future.delayed(const Duration(seconds: 2),
                                         () {
                                       _scanBarcode = value;
-                                      String scannedItem = "Lots: ";
+                                      String scannedItem =
+                                          "Lots: $_scanBarcode";
 
                                       onShowSuccessDialog(
                                         context: context,

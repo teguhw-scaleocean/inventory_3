@@ -54,6 +54,12 @@ class ProductMenuProductDetailCubit
     log("getInitLotsListProduct: ${state.products.length}");
   }
 
+  getInitNoTrackingListProduct() {
+    listProducts = products;
+    emit(state.copyWith(products: listProducts));
+    log("getInitNoTrackingListProduct: ${state.products.length}");
+  }
+
   scannedSerialNumberToProduct(Product newProduct) {
     // emit(state.copyWith(product: newProduct));
     getCurrentProduct(newProduct);

@@ -53,7 +53,7 @@ class _UpdateProductQuantityScreenState
     super.initState();
 
     _getTrackingId();
-    if (idTracking == 1) {
+    if (idTracking != 0) {
       generateUpdateList();
     }
   }
@@ -67,7 +67,7 @@ class _UpdateProductQuantityScreenState
       _product = context.read<ProductMenuProductDetailCubit>().state.product;
       totalNotDone = snList.length.toInt();
     }
-    if (idTracking == 1) {
+    if (idTracking != 0) {
       _product = context.read<ProductMenuProductDetailCubit>().state.product;
       totalNotDone = _product!.productQty.toInt();
     }
@@ -228,7 +228,7 @@ class _UpdateProductQuantityScreenState
                         });
                       }
                     }
-                    if (idTracking == 1) {
+                    if (idTracking != 0) {
                       BlocProvider.of<ProductMenuProductDetailCubit>(context)
                           .getLotsUpdateTotalDone(totalNotDone, qtyUpdate);
 

@@ -183,7 +183,7 @@ class _ReceiptProductMenuOfProductDetailScreenState
                   if (idTracking == 0) {
                     product.doneQty = state.snTotalDone?.toDouble() ?? 0.00;
                   }
-                  if (idTracking == 1) {
+                  if (idTracking != 0) {
                     product.doneQty = state.lotsTotalDone?.toDouble() ?? 0.00;
                   }
                 },
@@ -385,6 +385,29 @@ class _ReceiptProductMenuOfProductDetailScreenState
                                   }
                                 });
                               }
+                              if (idTracking == 2) {
+                                Navigator.push<String>(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        UpdateProductQuantityScreen(
+                                      tracking: tracking,
+                                    ),
+                                  ),
+                                ).then((value) {
+                                  if (value != null) {
+                                    Future.delayed(const Duration(seconds: 2),
+                                        () {
+                                      String scannedItem = "SKU: $value";
+                                      onShowSuccessDialog(
+                                        context: context,
+                                        scannedItem: scannedItem,
+                                        isOnUpdate: true,
+                                      );
+                                    });
+                                  }
+                                });
+                              }
                             },
                             updateLabel: "Update Qty",
                           );
@@ -569,7 +592,7 @@ class _ReceiptProductMenuOfProductDetailScreenState
                                         ));
                                   }),
                             )
-                          : (idTracking == 1)
+                          : (idTracking != 0)
                               ? Builder(builder: (context) {
                                   isHighlightedLots = totalDoneInt > 0;
 

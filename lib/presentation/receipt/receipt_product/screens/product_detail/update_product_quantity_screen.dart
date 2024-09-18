@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:inventory_v3/common/components/primary_button.dart';
 import 'package:inventory_v3/presentation/receipt/receipt_product/cubit/product_detail/product_menu_product_detail_cubit.dart';
 
+import '../../../../../common/components/custom_app_bar.dart';
 import '../../../../../common/helper/tracking_helper.dart';
 import '../../../../../common/theme/color/color_name.dart';
 import '../../../../../common/theme/text/base_text.dart';
@@ -80,7 +81,8 @@ class _UpdateProductQuantityScreenState
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        appBar: AppBar(),
+        appBar: CustomAppBar(
+            title: "Update Qty", onTap: () => Navigator.pop(context)),
         body: Container(
           padding: EdgeInsets.all(16.w),
           child: Column(

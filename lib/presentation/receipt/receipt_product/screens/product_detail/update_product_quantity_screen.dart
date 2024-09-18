@@ -8,6 +8,7 @@ import '../../../../../common/helper/tracking_helper.dart';
 import '../../../../../common/theme/color/color_name.dart';
 import '../../../../../common/theme/text/base_text.dart';
 import '../../../../../data/model/item_card.dart';
+import '../../../../../data/model/product.dart';
 
 class UpdateProductQuantityScreen extends StatefulWidget {
   final String tracking;
@@ -28,11 +29,15 @@ class _UpdateProductQuantityScreenState
   String tracking = "";
 
   List<ItemCard> updateListItems = [];
-  List<bool> updateListIsSelected = [];
+  // List<bool> updateListIsSelected = [];
 
   bool isAllSelected = false;
 
   String titleUpdateButton = "Update";
+  int qtyUpdate = 0;
+
+  late Product? _product;
+  int totalNotDone = 0;
 
   @override
   void initState() {
@@ -40,6 +45,16 @@ class _UpdateProductQuantityScreenState
 
     _getTrackingId();
     generateUpdateList();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    if (idTracking == 1) {
+      _product = context.read<ProductMenuProductDetailCubit>().state.product;
+      totalNotDone = _product!.productQty.toInt();
+    }
   }
 
   void _getTrackingId() {
@@ -50,7 +65,7 @@ class _UpdateProductQuantityScreenState
 
   void generateUpdateList() {
     updateListItems = List.generate(
-      8,
+      11,
       (index) => ItemCard(
         id: index + 1,
         code: "SYR-LOTS-2842",
@@ -104,21 +119,7 @@ class _UpdateProductQuantityScreenState
                             side: const BorderSide(
                               color: ColorName.grey4Color,
                             ),
-                            onChanged: (newSelectedValue) {
-                              setState(() {
-                                item.isSelected = newSelectedValue!;
-
-                                if (item.isSelected) {
-                                  updateListIsSelected.add(item.isSelected);
-                                }
-
-                                titleUpdateButton =
-                                    "Update (${updateListIsSelected.length})";
-                              });
-
-                              debugPrint(
-                                  "updateListIsSelected: ${updateListIsSelected.length}");
-                            },
+                            onChanged: (newSelectedValue) {},
                           ),
                         );
                       }))
@@ -150,13 +151,16 @@ class _UpdateProductQuantityScreenState
                               e.isSelected = val!;
 
                               // Add & Remove from list
-                              if (e.isSelected) {
-                                updateListIsSelected.add(e.isSelected);
+                              if (isAllSelected) {
+                                e.isSelected = true;
+                              } else {
+                                e.isSelected = false;
                               }
                             }).toList();
 
-                            titleUpdateButton =
-                                "Update (${updateListIsSelected.length})";
+                            qtyUpdate =
+                                (isAllSelected) ? updateListItems.length : 0;
+                            titleUpdateButton = "Update ($qtyUpdate)";
                           });
                         },
                       ),
@@ -167,7 +171,11 @@ class _UpdateProductQuantityScreenState
                 PrimaryButton(
                   onPressed: () {
                     BlocProvider.of<ProductMenuProductDetailCubit>(context)
-                        .getLotsUpdateTotalDone(updateListIsSelected.length);
+                        .getLotsUpdateTotalDone(totalNotDone, qtyUpdate);
+
+                    Future.delayed(const Duration(seconds: 1), () {
+                      Navigator.of(context).pop(updateListItems.first.code);
+                    });
                   },
                   height: 40.h,
                   width: 160.w,

@@ -22,6 +22,7 @@ import '../../../../../data/model/scan_view.dart';
 import '../../../receipt_pallet/screens/product_detail/add_product_screen.dart';
 import '../../../receipt_pallet/widget/scan_view_widget.dart';
 import '../../cubit/product_detail/product_menu_product_detail_cubit.dart';
+import '../../cubit/product_detail/product_menu_product_detail_state.dart';
 import '../../cubit/scan/scan_cubit.dart';
 import '../../cubit/scan/scan_state.dart';
 import 'update_product_quantity_screen.dart';
@@ -165,12 +166,24 @@ class _ReceiptProductMenuOfProductDetailScreenState
             onTap: () => Navigator.of(context).pop(product),
             title: "Product Detail",
           ),
-          body: BlocListener<ScanCubit, ScanState>(
-            listener: (context, state) {
-              final itemInputDate = state.isItemInputDate;
-              debugPrint("itemInputDate: $itemInputDate");
-              if (itemInputDate == true) {}
-            },
+          body: MultiBlocListener(
+            listeners: [
+              BlocListener<ScanCubit, ScanState>(
+                listener: (context, state) {
+                  final itemInputDate = state.isItemInputDate;
+                  debugPrint("itemInputDate: //");
+                  if (itemInputDate == true) {}
+                },
+              ),
+              BlocListener<ProductMenuProductDetailCubit,
+                  ProductMenuProductDetailState>(
+                listener: (context, state) {
+                  debugPrint("listener ProductMenuProductDetailCubit");
+
+                  product.doneQty = state.lotsTotalDone?.toDouble() ?? 0.00;
+                },
+              ),
+            ],
             child: Column(
               // crossAxisAlignment: CrossAxisAlignment.start,
               // shrinkWrap: true,
@@ -254,8 +267,7 @@ class _ReceiptProductMenuOfProductDetailScreenState
                                 });
 
                                 Future.delayed(const Duration(seconds: 2), () {
-                                  String scannedItem =
-                                      "Serial Number: $_scanBarcode";
+                                  String scannedItem = "Serial Number: ";
 
                                   onShowSuccessDialog(
                                     context: context,
@@ -269,7 +281,7 @@ class _ReceiptProductMenuOfProductDetailScreenState
 
                                 Future.delayed(const Duration(seconds: 2), () {
                                   _scanBarcode = value;
-                                  String scannedItem = "Lots: $_scanBarcode";
+                                  String scannedItem = "Lots: ";
 
                                   onShowSuccessDialog(
                                     context: context,
@@ -281,7 +293,7 @@ class _ReceiptProductMenuOfProductDetailScreenState
                               // BlocProvider.of<ProductMenuProductDetailCubit>(
                               //         context)
                               //     .scannedSerialNumberToProduct(product);
-                              // debugPrint("scanResultValue: $value");
+                              // debugPrint("scanResultValue: ");
                             }
                           });
                         },
@@ -393,8 +405,7 @@ class _ReceiptProductMenuOfProductDetailScreenState
                                       bool isHighlighted = false;
                                       isHighlighted =
                                           serialNumberResult.contains(item);
-                                      debugPrint(
-                                          "isHighlighted: $isHighlighted");
+                                      debugPrint("isHighlighted: ");
 
                                       return Padding(
                                           padding: EdgeInsets.only(bottom: 8.h),
@@ -434,7 +445,7 @@ class _ReceiptProductMenuOfProductDetailScreenState
 
                                     isHighlighted = serialNumberResult
                                         .contains(selectedSerialNumber);
-                                    debugPrint("isHighlighted: $isHighlighted");
+                                    debugPrint("isHighlighted: ");
 
                                     return Padding(
                                         padding: EdgeInsets.only(bottom: 8.h),
@@ -450,8 +461,7 @@ class _ReceiptProductMenuOfProductDetailScreenState
                               ? Builder(builder: (context) {
                                   isHighlightedLots = totalDoneInt > 0;
 
-                                  debugPrint(
-                                      "isHighlightedLots: $isHighlightedLots");
+                                  debugPrint("isHighlightedLots: ");
                                   return Container(
                                     padding: EdgeInsets.symmetric(
                                         horizontal: 16.w, vertical: 12.h),

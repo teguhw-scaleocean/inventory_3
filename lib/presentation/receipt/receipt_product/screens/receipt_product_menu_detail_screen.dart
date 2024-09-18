@@ -729,6 +729,8 @@ class _ReceiptProductMenuDetailScreenState
         break;
       case "Lots":
         _receive = product0.productQty.toString();
+        double doneLotsQty = product0.doneQty ?? 0.00;
+        _scanBarcode = doneLotsQty.toString();
         code = product0.lotsCode.toString();
         break;
       default:

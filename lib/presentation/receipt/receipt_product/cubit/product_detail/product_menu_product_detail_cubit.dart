@@ -80,8 +80,17 @@ class ProductMenuProductDetailCubit
     log("getLotsScannedTotalDone: ${state.lotsTotalDone.toString()}");
   }
 
-  getLotsUpdateTotalDone(int total) {
-    emit(state.copyWith(lotsTotalDone: total));
+  getLotsUpdateTotalDone(int total, int doneTotal) {
+    emit(state.copyWith(lotsTotalDone: doneTotal));
     log("getLotsUpdateTotalDone: ${state.lotsTotalDone.toString()}");
+
+    bool isDone = false;
+    isDone = (doneTotal == total) ? true : false;
+    getIsDoneQty(isDone);
+  }
+
+  getIsDoneQty(bool isDone) {
+    emit(state.copyWith(isDoneQty: isDone));
+    log("getIsDoneQty: ${state.isDoneQty.toString()}");
   }
 }

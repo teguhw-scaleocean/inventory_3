@@ -8,6 +8,7 @@ import '../../../../../common/helper/tracking_helper.dart';
 import '../../../../../common/theme/color/color_name.dart';
 import '../../../../../common/theme/text/base_text.dart';
 import '../../../../../data/model/item_card.dart';
+import '../../../../../data/model/product.dart';
 
 class UpdateProductQuantityScreen extends StatefulWidget {
   final String tracking;
@@ -35,12 +36,25 @@ class _UpdateProductQuantityScreenState
   String titleUpdateButton = "Update";
   int qtyUpdate = 0;
 
+  late Product? _product;
+  int totalNotDone = 0;
+
   @override
   void initState() {
     super.initState();
 
     _getTrackingId();
     generateUpdateList();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    if (idTracking == 1) {
+      _product = context.read<ProductMenuProductDetailCubit>().state.product;
+      totalNotDone = _product!.productQty.toInt();
+    }
   }
 
   void _getTrackingId() {
@@ -157,7 +171,7 @@ class _UpdateProductQuantityScreenState
                 PrimaryButton(
                   onPressed: () {
                     BlocProvider.of<ProductMenuProductDetailCubit>(context)
-                        .getLotsUpdateTotalDone(qtyUpdate);
+                        .getLotsUpdateTotalDone(totalNotDone, qtyUpdate);
 
                     Future.delayed(const Duration(seconds: 1), () {
                       Navigator.of(context).pop(updateListItems.first.code);

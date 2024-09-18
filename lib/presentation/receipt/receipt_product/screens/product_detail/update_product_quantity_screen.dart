@@ -1,9 +1,12 @@
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../../../common/components/custom_app_bar.dart';
 import '../../../../../common/components/primary_button.dart';
+import '../../../../../common/constants/local_images.dart';
 import '../../../../../common/helper/tracking_helper.dart';
 import '../../../../../common/theme/color/color_name.dart';
 import '../../../../../common/theme/text/base_text.dart';
@@ -40,6 +43,9 @@ class _UpdateProductQuantityScreenState
   late Product? _product;
   int totalNotDone = 0;
 
+  // SN
+  bool isItemInputDate = false;
+
   @override
   void initState() {
     super.initState();
@@ -56,6 +62,8 @@ class _UpdateProductQuantityScreenState
 
     if (idTracking == 0) {
       generateUpdateListSerialNumber();
+      _product = context.read<ProductMenuProductDetailCubit>().state.product;
+      totalNotDone = _product!.productQty.toInt();
     }
     if (idTracking == 1) {
       _product = context.read<ProductMenuProductDetailCubit>().state.product;
@@ -94,7 +102,11 @@ class _UpdateProductQuantityScreenState
       );
 
       updateListItems.add(item);
-    }).toList();
+
+      if (e.isInputDate == true) {
+        isItemInputDate = true;
+      }
+    }).toList(growable: false);
   }
 
   @override
@@ -196,12 +208,32 @@ class _UpdateProductQuantityScreenState
                 ),
                 PrimaryButton(
                   onPressed: () {
-                    BlocProvider.of<ProductMenuProductDetailCubit>(context)
-                        .getLotsUpdateTotalDone(totalNotDone, qtyUpdate);
+                    if (qtyUpdate == 0) {
+                      return;
+                    }
 
-                    Future.delayed(const Duration(seconds: 1), () {
-                      Navigator.of(context).pop(updateListItems.first.code);
-                    });
+                    if (idTracking == 0) {
+                      if (isItemInputDate) {
+                        Future.delayed(const Duration(seconds: 2), () {
+                          _onShowUpdateFailed(context);
+                        });
+                      } else {
+                        BlocProvider.of<ProductMenuProductDetailCubit>(context)
+                            .getLotsUpdateTotalDone(totalNotDone, qtyUpdate);
+
+                        Future.delayed(const Duration(seconds: 1), () {
+                          Navigator.of(context).pop("serial-number");
+                        });
+                      }
+                    }
+                    if (idTracking == 1) {
+                      BlocProvider.of<ProductMenuProductDetailCubit>(context)
+                          .getLotsUpdateTotalDone(totalNotDone, qtyUpdate);
+
+                      Future.delayed(const Duration(seconds: 1), () {
+                        Navigator.of(context).pop(updateListItems.first.code);
+                      });
+                    }
                   },
                   height: 40.h,
                   width: 160.w,
@@ -214,6 +246,36 @@ class _UpdateProductQuantityScreenState
             ),
           );
         }),
+      ),
+    );
+  }
+
+  _onShowUpdateFailed(BuildContext context) {
+    onShowErrorDialog(
+      context,
+      isInputDate: false,
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(height: 10.h),
+          Text(
+            'Update Failed!',
+            style: BaseText.black2TextStyle.copyWith(
+              fontSize: 16.sp,
+              fontWeight: BaseText.semiBold,
+            ),
+          ),
+          Container(height: 4.h),
+          Text(
+            "Cannot update quantity.\nPlease input expiration date.",
+            textAlign: TextAlign.center,
+            style: BaseText.grey2Text14.copyWith(
+              fontWeight: BaseText.light,
+            ),
+          )
+        ],
       ),
     );
   }
@@ -236,5 +298,33 @@ class _UpdateProductQuantityScreenState
         )
       ],
     );
+  }
+
+  onShowErrorDialog(BuildContext context,
+      {required Widget body, required bool isInputDate}) {
+    return AwesomeDialog(
+      context: context,
+      animType: AnimType.bottomSlide,
+      headerAnimationLoop: false,
+      dialogType: DialogType.error,
+      showCloseIcon: true,
+      width: double.infinity,
+      // padding: EdgeInsets.symmetric(horizontal: 16.w),
+      body: body,
+      btnOkOnPress: () {
+        debugPrint('OnClcik');
+      },
+      // btnOkIcon: Icons.check_circle,
+      btnOk: PrimaryButton(
+        onPressed: () async {
+          Navigator.of(context).pop();
+        },
+        height: 40.h,
+        title: "OK",
+      ),
+      onDismissCallback: (type) {
+        debugPrint('Dialog Dissmiss from callback $type');
+      },
+    ).show();
   }
 }

@@ -286,14 +286,22 @@ class _ReceiptProductMenuOfProductDetailScreenState
                           });
                         },
                         onUpdate: () {
-                          Navigator.push(
+                          Navigator.push<String>(
                             context,
                             MaterialPageRoute(
                               builder: (context) => UpdateProductQuantityScreen(
                                 tracking: tracking,
                               ),
                             ),
-                          );
+                          ).then((value) {
+                            if (value != null) {
+                              Future.delayed(const Duration(seconds: 2), () {
+                                String scannedItem = "Lots: $value";
+                                onShowSuccessDialog(
+                                    context: context, scannedItem: scannedItem);
+                              });
+                            }
+                          });
                         },
                         updateLabel: "Update Qty",
                       ),

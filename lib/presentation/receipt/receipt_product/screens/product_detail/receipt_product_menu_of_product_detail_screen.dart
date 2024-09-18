@@ -338,8 +338,10 @@ class _ReceiptProductMenuOfProductDetailScreenState
                                         () {
                                       String scannedItem = "Lots: $value";
                                       onShowSuccessDialog(
-                                          context: context,
-                                          scannedItem: scannedItem);
+                                        context: context,
+                                        scannedItem: scannedItem,
+                                        isOnUpdate: true,
+                                      );
                                     });
                                   }
                                 });
@@ -398,6 +400,12 @@ class _ReceiptProductMenuOfProductDetailScreenState
                                 .lotsTotalDone ??
                             totalDoneInt;
                         totalDone = totalDoneInt.toString();
+
+                        if (totalDoneInt == totalInt) {
+                          total = "0";
+
+                          debugPrint("total0: $total");
+                        }
                       }
 
                       return buildTabLabel(

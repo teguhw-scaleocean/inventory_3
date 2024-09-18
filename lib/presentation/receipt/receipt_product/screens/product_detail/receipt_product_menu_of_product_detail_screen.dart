@@ -414,49 +414,84 @@ class _ReceiptProductMenuOfProductDetailScreenState
                   child: TabBarView(
                     controller: tabController,
                     children: [
-                      Container(
-                        padding: EdgeInsets.symmetric(
-                            horizontal: 16.w, vertical: 12.h),
-                        child: (tracking
-                                .toLowerCase()
-                                .contains("serial number"))
-                            ? SizedBox(
-                                height: 600.h,
-                                child: ListView.builder(
-                                    shrinkWrap: true,
-                                    physics:
-                                        const AlwaysScrollableScrollPhysics(),
-                                    scrollDirection: Axis.vertical,
-                                    itemCount: serialNumberList.length,
-                                    itemBuilder: (context, index) {
-                                      var item = serialNumberList[index];
-                                      code = item.label;
+                      BlocBuilder<ProductMenuProductDetailCubit,
+                          ProductMenuProductDetailState>(
+                        builder: (context, state) {
+                          final doneQtyStatus = state.isDoneQty == true;
 
-                                      bool isHighlighted = false;
-                                      isHighlighted =
-                                          serialNumberResult.contains(item);
-                                      debugPrint("isHighlighted: ");
+                          debugPrint(
+                              "doneQtyStatus In Item Card: $doneQtyStatus");
 
-                                      return Padding(
-                                          padding: EdgeInsets.only(bottom: 8.h),
-                                          child: buildItemQuantity(
+                          return Container(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 16.w, vertical: 12.h),
+                            child: (tracking
+                                    .toLowerCase()
+                                    .contains("serial number"))
+                                ? SizedBox(
+                                    height: 600.h,
+                                    child: ListView.builder(
+                                        shrinkWrap: true,
+                                        physics:
+                                            const AlwaysScrollableScrollPhysics(),
+                                        scrollDirection: Axis.vertical,
+                                        itemCount: serialNumberList.length,
+                                        itemBuilder: (context, index) {
+                                          var item = serialNumberList[index];
+                                          code = item.label;
+
+                                          bool isHighlighted = false;
+                                          isHighlighted =
+                                              serialNumberResult.contains(item);
+                                          debugPrint("isHighlighted: QTL");
+
+                                          return Padding(
+                                              padding:
+                                                  EdgeInsets.only(bottom: 8.h),
+                                              child: buildItemQuantity(
+                                                code,
+                                                isHighlighted: isHighlighted,
+                                                itemSerialNumber: item,
+                                                tabIndex: 0,
+                                              ));
+                                        }),
+                                  )
+                                : (idTracking == 1 && doneQtyStatus)
+                                    ? Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                            "All Done",
+                                            style: BaseText.grey10Text14
+                                                .copyWith(
+                                                    fontWeight:
+                                                        BaseText.semiBold),
+                                          ),
+                                          Text(
+                                            "All Lots have been completed.",
+                                            style:
+                                                BaseText.grey1Text14.copyWith(
+                                              fontWeight: BaseText.light,
+                                            ),
+                                          )
+                                        ],
+                                      )
+                                    : Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          buildItemQuantity(
                                             code,
-                                            isHighlighted: isHighlighted,
-                                            itemSerialNumber: item,
+                                            itemProduct: product,
                                             tabIndex: 0,
-                                          ));
-                                    }),
-                              )
-                            : Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  buildItemQuantity(
-                                    code,
-                                    itemProduct: product,
-                                    tabIndex: 0,
-                                  ),
-                                ],
-                              ),
+                                          ),
+                                        ],
+                                      ),
+                          );
+                        },
                       ),
                       (idTracking == 0 && serialNumberResult.isNotEmpty)
                           ? Container(
@@ -475,7 +510,7 @@ class _ReceiptProductMenuOfProductDetailScreenState
 
                                     isHighlighted = serialNumberResult
                                         .contains(selectedSerialNumber);
-                                    debugPrint("isHighlighted: ");
+                                    debugPrint("isHighlighted: qtl");
 
                                     return Padding(
                                         padding: EdgeInsets.only(bottom: 8.h),
@@ -491,7 +526,7 @@ class _ReceiptProductMenuOfProductDetailScreenState
                               ? Builder(builder: (context) {
                                   isHighlightedLots = totalDoneInt > 0;
 
-                                  debugPrint("isHighlightedLots: ");
+                                  debugPrint("isHighlightedLots: qtl");
                                   return Container(
                                     padding: EdgeInsets.symmetric(
                                         horizontal: 16.w, vertical: 12.h),

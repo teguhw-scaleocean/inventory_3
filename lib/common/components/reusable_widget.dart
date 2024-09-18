@@ -171,7 +171,8 @@ Row buildScanAndUpdateSection(
   );
 }
 
-onShowSuccessDialog({required BuildContext context, String? scannedItem}) {
+onShowSuccessDialog(
+    {required BuildContext context, String? scannedItem, bool? isOnUpdate}) {
   return AwesomeDialog(
     context: context,
     animType: AnimType.bottomSlide,
@@ -189,14 +190,15 @@ onShowSuccessDialog({required BuildContext context, String? scannedItem}) {
         children: [
           Container(height: 10.h),
           Text(
-            'Scan Successful!',
+            (isOnUpdate == true) ? 'Update Successful!' : 'Scan Successful!',
             style: BaseText.black2TextStyle.copyWith(
               fontSize: 16.sp,
               fontWeight: BaseText.semiBold,
             ),
           ),
           Container(height: 4.h),
-          Text('Great job! You successfully scanned',
+          Text(
+              'Great job! You successfully ${(isOnUpdate == true) ? 'updated' : 'scanned'}',
               style: BaseText.grey2Text14.copyWith(fontWeight: BaseText.light)),
           Container(height: 1.h),
           Text(scannedItem ?? "",

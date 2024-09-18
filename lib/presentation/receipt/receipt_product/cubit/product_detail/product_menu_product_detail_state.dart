@@ -3,6 +3,7 @@ import 'package:inventory_v3/data/model/product.dart';
 
 class ProductMenuProductDetailState {
   List<Product> products;
+  List<SerialNumber> serialNumbers;
   Product? product;
   int? totalToDone;
   // Lots
@@ -11,6 +12,7 @@ class ProductMenuProductDetailState {
 
   ProductMenuProductDetailState({
     required this.products,
+    required this.serialNumbers,
     this.product,
     this.totalToDone,
     this.lotsTotalDone,
@@ -19,6 +21,7 @@ class ProductMenuProductDetailState {
 
   copyWith({
     List<Product>? products,
+    List<SerialNumber>? serialNumbers,
     Product? product,
     int? totalToDone,
     int? lotsTotalDone,
@@ -26,6 +29,7 @@ class ProductMenuProductDetailState {
   }) {
     return ProductMenuProductDetailState(
       products: products ?? this.products,
+      serialNumbers: serialNumbers ?? this.serialNumbers,
       product: product ?? this.product,
       totalToDone: totalToDone ?? this.totalToDone,
       lotsTotalDone: lotsTotalDone ?? this.lotsTotalDone,

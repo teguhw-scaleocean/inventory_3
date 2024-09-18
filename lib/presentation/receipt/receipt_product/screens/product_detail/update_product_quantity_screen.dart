@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:inventory_v3/common/components/primary_button.dart';
-import 'package:inventory_v3/presentation/receipt/receipt_product/cubit/product_detail/product_menu_product_detail_cubit.dart';
 
 import '../../../../../common/components/custom_app_bar.dart';
+import '../../../../../common/components/primary_button.dart';
 import '../../../../../common/helper/tracking_helper.dart';
 import '../../../../../common/theme/color/color_name.dart';
 import '../../../../../common/theme/text/base_text.dart';
 import '../../../../../data/model/item_card.dart';
 import '../../../../../data/model/product.dart';
+import '../../cubit/product_detail/product_menu_product_detail_cubit.dart';
 
 class UpdateProductQuantityScreen extends StatefulWidget {
   final String tracking;
@@ -45,13 +45,18 @@ class _UpdateProductQuantityScreenState
     super.initState();
 
     _getTrackingId();
-    generateUpdateList();
+    if (idTracking == 1) {
+      generateUpdateList();
+    }
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
 
+    if (idTracking == 0) {
+      generateUpdateListSerialNumber();
+    }
     if (idTracking == 1) {
       _product = context.read<ProductMenuProductDetailCubit>().state.product;
       totalNotDone = _product!.productQty.toInt();
@@ -75,6 +80,21 @@ class _UpdateProductQuantityScreenState
         isSelected: false,
       ),
     ).toList(growable: false);
+  }
+
+  void generateUpdateListSerialNumber() {
+    List<SerialNumber> snList =
+        context.read<ProductMenuProductDetailCubit>().getListOfSerialNumber();
+    snList.map((e) {
+      var item = ItemCard(
+        id: e.id,
+        code: e.label,
+        dateTime: (e.isInputDate == true) ? "Exp. Date: -" : e.expiredDateTime,
+        quantity: 1,
+      );
+
+      updateListItems.add(item);
+    }).toList();
   }
 
   @override
@@ -121,6 +141,10 @@ class _UpdateProductQuantityScreenState
                             side: const BorderSide(
                               color: ColorName.grey4Color,
                             ),
+                            shape: const Border(
+                                bottom: BorderSide(
+                              color: ColorName.grey8Color,
+                            )),
                             onChanged: (newSelectedValue) {},
                           ),
                         );

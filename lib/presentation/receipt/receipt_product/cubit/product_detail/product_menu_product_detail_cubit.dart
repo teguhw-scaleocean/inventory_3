@@ -8,7 +8,10 @@ import '../../../../../data/model/product.dart';
 class ProductMenuProductDetailCubit
     extends Cubit<ProductMenuProductDetailState> {
   ProductMenuProductDetailCubit()
-      : super(ProductMenuProductDetailState(products: []));
+      : super(ProductMenuProductDetailState(
+          products: [],
+          serialNumbers: [],
+        ));
 
   getInitListProduct() {
     listProducts = products3;
@@ -93,4 +96,10 @@ class ProductMenuProductDetailCubit
     emit(state.copyWith(isDoneQty: isDone));
     log("getIsDoneQty: ${state.isDoneQty.toString()}");
   }
+
+  setListOfSerialNumber(List<SerialNumber> serialNumbers) {
+    emit(state.copyWith(serialNumbers: serialNumbers));
+  }
+
+  getListOfSerialNumber() => state.serialNumbers;
 }

@@ -319,11 +319,26 @@ class _ReceiptProductMenuOfProductDetailScreenState
                               });
                             },
                             onUpdate: () {
-                              if (idTracking == 1) {
+                              BlocProvider.of<ProductMenuProductDetailCubit>(
+                                      context)
+                                  .getCurrentProduct(product);
+
+                              if (idTracking == 0) {
                                 BlocProvider.of<ProductMenuProductDetailCubit>(
                                         context)
-                                    .getCurrentProduct(product);
+                                    .setListOfSerialNumber(serialNumberList);
 
+                                Navigator.push<String>(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        UpdateProductQuantityScreen(
+                                      tracking: tracking,
+                                    ),
+                                  ),
+                                );
+                              }
+                              if (idTracking == 1) {
                                 Navigator.push<String>(
                                   context,
                                   MaterialPageRoute(

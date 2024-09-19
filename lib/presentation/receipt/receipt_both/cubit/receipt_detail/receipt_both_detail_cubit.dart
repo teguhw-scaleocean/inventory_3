@@ -13,4 +13,10 @@ class ReceiptBothDetailCubit extends Cubit<ReceiptBothDetailState> {
     emit(state.copyWith(products: listProducts));
     log("getInitNoTrackingListProduct: ${state.products.length}");
   }
+
+  getInitLotsListProduct() {
+    listProducts = products2;
+    emit(state.copyWith(products: listProducts));
+    log("getInitLotsListProduct: ${state.products.length}");
+  }
 }

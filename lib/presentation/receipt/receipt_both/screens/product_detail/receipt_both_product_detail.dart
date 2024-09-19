@@ -212,7 +212,7 @@ class _ReceiptBothProductDetailScreenState
                         builder: (context) {
                           // debugPrint("doneQtyStatus: $doneQtyStatus");
                           return buildScanAndUpdateSection(
-                            status: "",
+                            status: status,
                             onScan: () {},
                             onUpdate: () {},
                           );

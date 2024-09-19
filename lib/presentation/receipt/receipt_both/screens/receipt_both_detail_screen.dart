@@ -68,6 +68,7 @@ class _ReceiptBothDetailScreenState extends State<ReceiptBothDetailScreen> {
         .toString()
         .toLowerCase()
         .contains("lots")) {
+      BlocProvider.of<ReceiptBothDetailCubit>(context).getInitLotsListProduct();
     } else if (receipt.packageStatus
         .toString()
         .toLowerCase()
@@ -388,6 +389,23 @@ class _ReceiptBothDetailScreenState extends State<ReceiptBothDetailScreen> {
           children: [
             Container(
               width: double.infinity,
+              padding: EdgeInsets.fromLTRB(16.w, 12.h, 0, 10.h),
+              decoration: const BoxDecoration(
+                border: Border(
+                  bottom: BorderSide(
+                    color: ColorName.borderColor,
+                    width: 0.5,
+                  ),
+                ),
+              ),
+              child: Text(
+                "Pallet ${product0.palletCode}",
+                style:
+                    BaseText.black2Text15.copyWith(fontWeight: BaseText.medium),
+              ),
+            ),
+            Container(
+              width: double.infinity,
               padding: EdgeInsets.symmetric(vertical: 10.h, horizontal: 16.w),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -395,14 +413,13 @@ class _ReceiptBothDetailScreenState extends State<ReceiptBothDetailScreen> {
                 children: [
                   Text(
                     product0.productName,
-                    style: BaseText.black2Text15
-                        .copyWith(fontWeight: BaseText.medium),
+                    style: BaseText.grey1Text15,
                   ),
                   Text(
                     code,
                     style: BaseText.baseTextStyle.copyWith(
                       color: ColorName.grey14Color,
-                      fontSize: 12.sp,
+                      fontSize: 13.sp,
                       fontWeight: BaseText.light,
                     ),
                   ),

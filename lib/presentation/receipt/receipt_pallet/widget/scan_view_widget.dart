@@ -22,12 +22,14 @@ class ScanView extends StatefulWidget {
   final String expectedValue;
   final ScanViewType scanType;
   final int? idTracking;
+  final bool? isShowErrorPalletLots;
 
   const ScanView({
     Key? key,
     required this.expectedValue,
     required this.scanType,
     this.idTracking,
+    this.isShowErrorPalletLots,
   }) : super(key: key);
 
   @override
@@ -52,6 +54,7 @@ class _ScanViewState extends State<ScanView> {
   List<SerialNumber> serialNumberList = [];
   SerialNumber? serialNumber;
   bool isItemInputDate = false;
+  bool isError = false;
 
   // In order to get hot reload to work we need to pause the camera if the platform
   // is android, or resume the camera if the platform is iOS.
@@ -87,6 +90,8 @@ class _ScanViewState extends State<ScanView> {
         break;
       default:
     }
+
+    isError = widget.isShowErrorPalletLots ?? false;
   }
 
   @override
@@ -96,6 +101,24 @@ class _ScanViewState extends State<ScanView> {
     //TODO: Check if scan serial number or lots
     if (idTracking == 0) {
       checkScanSerialNumber();
+    } else if (idTracking == 1) {
+      checkScanErrorLots();
+    }
+  }
+
+  checkScanErrorLots() {
+    if (isError) {
+      debugPrint("isError $isError");
+
+      Future.delayed(const Duration(seconds: 1), () {
+        controller?.pauseCamera();
+
+        onShowErrorDialog(
+          context,
+          isInputDate: false,
+          body: _buildBodyErrorExceptionDialog(isShowPallet: false),
+        );
+      });
     }
   }
 
@@ -117,7 +140,7 @@ class _ScanViewState extends State<ScanView> {
     debugPrint("serialNumber: $serialNumber");
 
     if (serialNumber?.isInputDate == true) {
-      Future.delayed(const Duration(seconds: 2), () {
+      Future.delayed(const Duration(seconds: 1), () {
         onShowErrorDialog(
           context,
           isInputDate: true,
@@ -405,21 +428,29 @@ class _ScanViewState extends State<ScanView> {
       // }
     });
 
-    Future.delayed(const Duration(seconds: 3), () {
-      controller.stopCamera();
-      if (serialNumber?.isInputDate == true) {
-        debugPrint("stop camera input");
-        // Navigator.of(context).pop();
-        // Navigator.of(context).pop("inputExpirationDate");
-      } else {
+    if (isError) {
+      Future.delayed(const Duration(seconds: 10), () {
         Navigator.of(context).pop(expectedValue);
 
-        log("expectedValue: $expectedValue");
-      }
-    });
+        log("expectedValue after error: $expectedValue");
+      });
+    } else {
+      Future.delayed(const Duration(seconds: 6), () {
+        controller.stopCamera();
+        if (serialNumber?.isInputDate == true) {
+          debugPrint("stop camera input");
+          // Navigator.of(context).pop();
+          // Navigator.of(context).pop("inputExpirationDate");
+        } else {
+          Navigator.of(context).pop(expectedValue);
+
+          log("expectedValue: $expectedValue");
+        }
+      });
+    }
   }
 
-  SizedBox _buildBodyErrorExceptionDialog() {
+  SizedBox _buildBodyErrorExceptionDialog({required bool isShowPallet}) {
     return SizedBox(
       // width: MediaQuery.sizeOf(context).width,
       child: Column(
@@ -439,10 +470,12 @@ class _ScanViewState extends State<ScanView> {
           Text('Scan incorrect, please try again.',
               style: BaseText.grey2Text14.copyWith(fontWeight: BaseText.light)),
           Container(height: 1.h),
-          Text("Pallet B654",
-              textAlign: TextAlign.center,
-              style:
-                  BaseText.mainText14.copyWith(fontWeight: BaseText.semiBold)),
+          (isShowPallet == true)
+              ? Text("Pallet B654",
+                  textAlign: TextAlign.center,
+                  style: BaseText.mainText14
+                      .copyWith(fontWeight: BaseText.semiBold))
+              : const SizedBox(),
           SizedBox(height: 24.h),
         ],
       ),

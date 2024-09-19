@@ -17,6 +17,8 @@ import '../../../../common/theme/color/color_name.dart';
 import '../../../../common/theme/text/base_text.dart';
 import '../../../../data/model/product.dart';
 import '../../../../data/model/receipt.dart';
+import '../../../../data/model/scan_view.dart';
+import '../../receipt_pallet/widget/scan_view_widget.dart';
 import '../cubit/receipt_detail/receipt_both_detail_cubit.dart';
 import 'product_detail/receipt_both_product_detail.dart';
 
@@ -43,6 +45,8 @@ class _ReceiptBothDetailScreenState extends State<ReceiptBothDetailScreen> {
   List<dynamic> palletUpdates = [];
 
   var selectedUpdatePallet;
+
+  int _scanAttempt = 0;
 
   @override
   void initState() {
@@ -123,7 +127,44 @@ class _ReceiptBothDetailScreenState extends State<ReceiptBothDetailScreen> {
                     ],
                   ),
                   SizedBox(height: 16.h),
-                  buildScanAndUpdateSection(status: receipt.status),
+                  buildScanAndUpdateSection(
+                    status: receipt.status,
+                    onScan: () async {
+                      var expectedValue = "18.00";
+                      // if (_scanAttempt == 0) {
+                      //   expectedValue = "error";
+                      // }
+
+                      await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ScanView(
+                            expectedValue: expectedValue,
+                            scanType: ScanViewType.pallet,
+                            idTracking: 1,
+                            isShowErrorPalletLots: true,
+                          ),
+                        ),
+                      ).then((value) {
+                        if (value != null) {
+                          setState(() {
+                            _scanBarcode = value;
+                            _scanAttempt = 1;
+                          });
+                          debugPrint("scanResultValue: $value");
+
+                          Future.delayed(const Duration(seconds: 2), () {
+                            onShowSuccessDialog(
+                              context: context,
+                              scannedItem:
+                                  "Pallet ${listProducts.first.palletCode}",
+                              isBoth: true,
+                            );
+                          });
+                        }
+                      });
+                    },
+                  ),
                 ],
               ),
             ),

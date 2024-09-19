@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dash/flutter_dash.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:inventory_v3/common/components/reusable_widget.dart';
 import 'package:inventory_v3/presentation/receipt/receipt_both/cubit/receipt_detail/receipt_both_detail_state.dart';
 
 import '../../../../common/components/custom_app_bar.dart';
@@ -75,7 +76,7 @@ class _ReceiptBothDetailScreenState extends State<ReceiptBothDetailScreen> {
     time = receipt.dateTime.substring(13, 18);
 
     // palletUpdates.sublist(0, 1);
-    log("palletUpdates: ${palletUpdates.length}");
+    log("ReceiptBothDetailScreen");
   }
 
   @override
@@ -105,7 +106,13 @@ class _ReceiptBothDetailScreenState extends State<ReceiptBothDetailScreen> {
                   ),
                   SizedBox(height: 8.h),
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
+                      Text(
+                        receipt.packageName,
+                        style: BaseText.grey1Text13
+                            .copyWith(fontWeight: BaseText.light),
+                      ),
                       Text(
                         receipt.packageStatus,
                         style: BaseText.grey1Text13
@@ -113,6 +120,8 @@ class _ReceiptBothDetailScreenState extends State<ReceiptBothDetailScreen> {
                       )
                     ],
                   ),
+                  SizedBox(height: 16.h),
+                  buildScanAndUpdateSection(status: receipt.status),
                 ],
               ),
             ),

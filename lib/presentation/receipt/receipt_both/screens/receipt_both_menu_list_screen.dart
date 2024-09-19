@@ -4,8 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../common/components/custom_app_bar.dart';
-import '../../../../common/components/receipt_item_card.dart';
-import '../../../../common/components/receipt_product_item_card.dart';
+import '../../../../common/components/receipt_both_item_card.dart';
 import '../../../../common/components/reusable_search_bar_border.dart';
 import '../../../../common/components/reusable_tab_bar.dart';
 import '../../../../common/components/reusable_widget.dart';
@@ -225,7 +224,7 @@ class _ReceiptBothMenuListScreenState extends State<ReceiptBothMenuListScreen>
           itemBuilder: (context, index) {
             var item = listReceipt[index];
 
-            return ReceiptItemCard(
+            return ReceiptBothItemCard(
               receipt: item,
             );
           }),

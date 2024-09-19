@@ -7,6 +7,7 @@ import '../../common/constants/text_constants.dart';
 import '../../common/extensions/empty_space_extension.dart';
 import '../../common/theme/color/color_name.dart';
 import '../../common/theme/text/base_text.dart';
+import 'receipt_both/screens/receipt_both_menu_list_screen.dart';
 import 'receipt_pallet/screens/receipt_list_screen.dart';
 import 'receipt_product/screens/receipt_product_menu_list_screen.dart';
 
@@ -102,6 +103,15 @@ class ReceiptScreen extends StatelessWidget {
               ),
             );
             break;
+          case 2:
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const ReceiptBothMenuListScreen(
+                  title: "Receipt: Pallet and Product",
+                ),
+              ),
+            );
           default:
         }
       },

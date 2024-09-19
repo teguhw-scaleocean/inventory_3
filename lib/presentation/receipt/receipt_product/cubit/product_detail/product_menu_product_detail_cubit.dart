@@ -8,7 +8,10 @@ import '../../../../../data/model/product.dart';
 class ProductMenuProductDetailCubit
     extends Cubit<ProductMenuProductDetailState> {
   ProductMenuProductDetailCubit()
-      : super(ProductMenuProductDetailState(products: []));
+      : super(ProductMenuProductDetailState(
+          products: [],
+          serialNumbers: [],
+        ));
 
   getInitListProduct() {
     listProducts = products3;
@@ -51,6 +54,12 @@ class ProductMenuProductDetailCubit
     log("getInitLotsListProduct: ${state.products.length}");
   }
 
+  getInitNoTrackingListProduct() {
+    listProducts = products;
+    emit(state.copyWith(products: listProducts));
+    log("getInitNoTrackingListProduct: ${state.products.length}");
+  }
+
   scannedSerialNumberToProduct(Product newProduct) {
     // emit(state.copyWith(product: newProduct));
     getCurrentProduct(newProduct);
@@ -89,8 +98,23 @@ class ProductMenuProductDetailCubit
     getIsDoneQty(isDone);
   }
 
+  getSnUpdateTotalDone(int total, int doneTotal) {
+    emit(state.copyWith(snTotalDone: doneTotal));
+    log("getSnUpdateTotalDone: ${state.snTotalDone.toString()}");
+
+    bool isDone = false;
+    isDone = (doneTotal == total) ? true : false;
+    getIsDoneQty(isDone);
+  }
+
   getIsDoneQty(bool isDone) {
     emit(state.copyWith(isDoneQty: isDone));
     log("getIsDoneQty: ${state.isDoneQty.toString()}");
   }
+
+  setListOfSerialNumber(List<SerialNumber> serialNumbers) {
+    emit(state.copyWith(serialNumbers: serialNumbers));
+  }
+
+  getListOfSerialNumber() => state.serialNumbers;
 }

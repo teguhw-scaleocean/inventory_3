@@ -3,32 +3,40 @@ import 'package:inventory_v3/data/model/product.dart';
 
 class ProductMenuProductDetailState {
   List<Product> products;
+  List<SerialNumber> serialNumbers;
   Product? product;
   int? totalToDone;
   // Lots
   int? lotsTotalDone;
+  int? snTotalDone;
   bool? isDoneQty;
 
   ProductMenuProductDetailState({
     required this.products,
+    required this.serialNumbers,
     this.product,
     this.totalToDone,
     this.lotsTotalDone,
+    this.snTotalDone,
     this.isDoneQty,
   });
 
   copyWith({
     List<Product>? products,
+    List<SerialNumber>? serialNumbers,
     Product? product,
     int? totalToDone,
     int? lotsTotalDone,
+    int? snTotalDone,
     bool? isDoneQty,
   }) {
     return ProductMenuProductDetailState(
       products: products ?? this.products,
+      serialNumbers: serialNumbers ?? this.serialNumbers,
       product: product ?? this.product,
       totalToDone: totalToDone ?? this.totalToDone,
       lotsTotalDone: lotsTotalDone ?? this.lotsTotalDone,
+      snTotalDone: snTotalDone ?? this.snTotalDone,
       isDoneQty: isDoneQty ?? this.isDoneQty,
     );
   }

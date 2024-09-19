@@ -180,7 +180,12 @@ class _ReceiptProductMenuOfProductDetailScreenState
                 listener: (context, state) {
                   debugPrint("listener ProductMenuProductDetailCubit");
 
-                  product.doneQty = state.lotsTotalDone?.toDouble() ?? 0.00;
+                  if (idTracking == 0) {
+                    product.doneQty = state.snTotalDone?.toDouble() ?? 0.00;
+                  }
+                  if (idTracking != 0) {
+                    product.doneQty = state.lotsTotalDone?.toDouble() ?? 0.00;
+                  }
                 },
               ),
             ],
@@ -319,11 +324,45 @@ class _ReceiptProductMenuOfProductDetailScreenState
                               });
                             },
                             onUpdate: () {
-                              if (idTracking == 1) {
+                              BlocProvider.of<ProductMenuProductDetailCubit>(
+                                      context)
+                                  .getCurrentProduct(product);
+
+                              if (idTracking == 0) {
                                 BlocProvider.of<ProductMenuProductDetailCubit>(
                                         context)
-                                    .getCurrentProduct(product);
+                                    .setListOfSerialNumber(serialNumberList);
 
+                                Navigator.push<String>(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        UpdateProductQuantityScreen(
+                                      tracking: tracking,
+                                    ),
+                                  ),
+                                ).then((value) {
+                                  if (value != null) {
+                                    setState(() {
+                                      serialNumberResult = [
+                                        ...serialNumberList
+                                      ];
+                                      serialNumberList.clear();
+                                    });
+
+                                    Future.delayed(const Duration(seconds: 2),
+                                        () {
+                                      String scannedItem = "Serial Number";
+                                      onShowSuccessDialog(
+                                        context: context,
+                                        scannedItem: scannedItem,
+                                        isOnUpdate: true,
+                                      );
+                                    });
+                                  }
+                                });
+                              }
+                              if (idTracking == 1) {
                                 Navigator.push<String>(
                                   context,
                                   MaterialPageRoute(
@@ -337,6 +376,29 @@ class _ReceiptProductMenuOfProductDetailScreenState
                                     Future.delayed(const Duration(seconds: 2),
                                         () {
                                       String scannedItem = "Lots: $value";
+                                      onShowSuccessDialog(
+                                        context: context,
+                                        scannedItem: scannedItem,
+                                        isOnUpdate: true,
+                                      );
+                                    });
+                                  }
+                                });
+                              }
+                              if (idTracking == 2) {
+                                Navigator.push<String>(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        UpdateProductQuantityScreen(
+                                      tracking: tracking,
+                                    ),
+                                  ),
+                                ).then((value) {
+                                  if (value != null) {
+                                    Future.delayed(const Duration(seconds: 2),
+                                        () {
+                                      String scannedItem = "SKU: $value";
                                       onShowSuccessDialog(
                                         context: context,
                                         scannedItem: scannedItem,
@@ -435,9 +497,7 @@ class _ReceiptProductMenuOfProductDetailScreenState
                           return Container(
                             padding: EdgeInsets.symmetric(
                                 horizontal: 16.w, vertical: 12.h),
-                            child: (tracking
-                                    .toLowerCase()
-                                    .contains("serial number"))
+                            child: (idTracking == 0 && !doneQtyStatus)
                                 ? SizedBox(
                                     height: 600.h,
                                     child: ListView.builder(
@@ -466,7 +526,7 @@ class _ReceiptProductMenuOfProductDetailScreenState
                                               ));
                                         }),
                                   )
-                                : (idTracking == 1 && doneQtyStatus)
+                                : (doneQtyStatus)
                                     ? Column(
                                         mainAxisAlignment:
                                             MainAxisAlignment.center,
@@ -532,7 +592,7 @@ class _ReceiptProductMenuOfProductDetailScreenState
                                         ));
                                   }),
                             )
-                          : (idTracking == 1)
+                          : (idTracking != 0)
                               ? Builder(builder: (context) {
                                   isHighlightedLots = totalDoneInt > 0;
 
@@ -649,8 +709,9 @@ class _ReceiptProductMenuOfProductDetailScreenState
     switch (tracking) {
       case "Serial Number":
         if (serialNumberList.isNotEmpty) {
-          int receiveDouble = serialNumberList.length.toInt() +
-              serialNumberResult.length.toInt();
+          // int receiveDouble = serialNumberList.length.toInt() +
+          //     serialNumberResult.length.toInt();
+          int receiveDouble = product.serialNumber?.length.toInt() ?? 0;
           receive = receiveDouble.toString();
         }
         break;

@@ -1,14 +1,18 @@
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:inventory_v3/common/components/primary_button.dart';
-import 'package:inventory_v3/presentation/receipt/receipt_product/cubit/product_detail/product_menu_product_detail_cubit.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
+import '../../../../../common/components/custom_app_bar.dart';
+import '../../../../../common/components/primary_button.dart';
+import '../../../../../common/constants/local_images.dart';
 import '../../../../../common/helper/tracking_helper.dart';
 import '../../../../../common/theme/color/color_name.dart';
 import '../../../../../common/theme/text/base_text.dart';
 import '../../../../../data/model/item_card.dart';
 import '../../../../../data/model/product.dart';
+import '../../cubit/product_detail/product_menu_product_detail_cubit.dart';
 
 class UpdateProductQuantityScreen extends StatefulWidget {
   final String tracking;
@@ -31,6 +35,8 @@ class _UpdateProductQuantityScreenState
   List<ItemCard> updateListItems = [];
   // List<bool> updateListIsSelected = [];
 
+  List<SerialNumber> snList = [];
+
   bool isAllSelected = false;
 
   String titleUpdateButton = "Update";
@@ -39,19 +45,29 @@ class _UpdateProductQuantityScreenState
   late Product? _product;
   int totalNotDone = 0;
 
+  // SN
+  bool isItemInputDate = false;
+
   @override
   void initState() {
     super.initState();
 
     _getTrackingId();
-    generateUpdateList();
+    if (idTracking != 0) {
+      generateUpdateList();
+    }
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    if (idTracking == 1) {
+    if (idTracking == 0) {
+      generateUpdateListSerialNumber();
+      _product = context.read<ProductMenuProductDetailCubit>().state.product;
+      totalNotDone = snList.length.toInt();
+    }
+    if (idTracking != 0) {
       _product = context.read<ProductMenuProductDetailCubit>().state.product;
       totalNotDone = _product!.productQty.toInt();
     }
@@ -76,11 +92,31 @@ class _UpdateProductQuantityScreenState
     ).toList(growable: false);
   }
 
+  void generateUpdateListSerialNumber() {
+    snList =
+        context.read<ProductMenuProductDetailCubit>().getListOfSerialNumber();
+    snList.map((e) {
+      var item = ItemCard(
+        id: e.id,
+        code: e.label,
+        dateTime: (e.isInputDate == true) ? "Exp. Date: -" : e.expiredDateTime,
+        quantity: 1,
+      );
+
+      updateListItems.add(item);
+
+      if (e.isInputDate == true) {
+        isItemInputDate = true;
+      }
+    }).toList(growable: false);
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        appBar: AppBar(),
+        appBar: CustomAppBar(
+            title: "Update Qty", onTap: () => Navigator.pop(context)),
         body: Container(
           padding: EdgeInsets.all(16.w),
           child: Column(
@@ -119,6 +155,10 @@ class _UpdateProductQuantityScreenState
                             side: const BorderSide(
                               color: ColorName.grey4Color,
                             ),
+                            shape: const Border(
+                                bottom: BorderSide(
+                              color: ColorName.grey8Color,
+                            )),
                             onChanged: (newSelectedValue) {},
                           ),
                         );
@@ -170,12 +210,32 @@ class _UpdateProductQuantityScreenState
                 ),
                 PrimaryButton(
                   onPressed: () {
-                    BlocProvider.of<ProductMenuProductDetailCubit>(context)
-                        .getLotsUpdateTotalDone(totalNotDone, qtyUpdate);
+                    if (qtyUpdate == 0) {
+                      return;
+                    }
 
-                    Future.delayed(const Duration(seconds: 1), () {
-                      Navigator.of(context).pop(updateListItems.first.code);
-                    });
+                    if (idTracking == 0) {
+                      if (isItemInputDate) {
+                        Future.delayed(const Duration(seconds: 2), () {
+                          _onShowUpdateFailed(context);
+                        });
+                      } else {
+                        BlocProvider.of<ProductMenuProductDetailCubit>(context)
+                            .getSnUpdateTotalDone(totalNotDone, qtyUpdate);
+
+                        Future.delayed(const Duration(seconds: 1), () {
+                          Navigator.of(context).pop("serial-number");
+                        });
+                      }
+                    }
+                    if (idTracking != 0) {
+                      BlocProvider.of<ProductMenuProductDetailCubit>(context)
+                          .getLotsUpdateTotalDone(totalNotDone, qtyUpdate);
+
+                      Future.delayed(const Duration(seconds: 1), () {
+                        Navigator.of(context).pop(updateListItems.first.code);
+                      });
+                    }
                   },
                   height: 40.h,
                   width: 160.w,
@@ -188,6 +248,36 @@ class _UpdateProductQuantityScreenState
             ),
           );
         }),
+      ),
+    );
+  }
+
+  _onShowUpdateFailed(BuildContext context) {
+    onShowErrorDialog(
+      context,
+      isInputDate: false,
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(height: 10.h),
+          Text(
+            'Update Failed!',
+            style: BaseText.black2TextStyle.copyWith(
+              fontSize: 16.sp,
+              fontWeight: BaseText.semiBold,
+            ),
+          ),
+          Container(height: 4.h),
+          Text(
+            "Cannot update quantity.\nPlease input expiration date.",
+            textAlign: TextAlign.center,
+            style: BaseText.grey2Text14.copyWith(
+              fontWeight: BaseText.light,
+            ),
+          )
+        ],
       ),
     );
   }
@@ -210,5 +300,33 @@ class _UpdateProductQuantityScreenState
         )
       ],
     );
+  }
+
+  onShowErrorDialog(BuildContext context,
+      {required Widget body, required bool isInputDate}) {
+    return AwesomeDialog(
+      context: context,
+      animType: AnimType.bottomSlide,
+      headerAnimationLoop: false,
+      dialogType: DialogType.error,
+      showCloseIcon: true,
+      width: double.infinity,
+      // padding: EdgeInsets.symmetric(horizontal: 16.w),
+      body: body,
+      btnOkOnPress: () {
+        debugPrint('OnClcik');
+      },
+      // btnOkIcon: Icons.check_circle,
+      btnOk: PrimaryButton(
+        onPressed: () async {
+          Navigator.of(context).pop();
+        },
+        height: 40.h,
+        title: "OK",
+      ),
+      onDismissCallback: (type) {
+        debugPrint('Dialog Dissmiss from callback $type');
+      },
+    ).show();
   }
 }

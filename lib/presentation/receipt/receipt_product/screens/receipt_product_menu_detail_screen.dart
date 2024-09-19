@@ -78,7 +78,8 @@ class _ReceiptProductMenuDetailScreenState
         .toString()
         .toLowerCase()
         .contains("no tracking")) {
-      listProducts = products;
+      BlocProvider.of<ProductMenuProductDetailCubit>(context)
+          .getInitNoTrackingListProduct();
     } else if (receipt.packageStatus
         .toString()
         .toLowerCase()
@@ -724,8 +725,9 @@ class _ReceiptProductMenuDetailScreenState
         break;
       case "No Tracking":
         _receive = product0.productQty.toString();
+        double doneLotsQty = product0.doneQty ?? 0.00;
+        _scanBarcode = doneLotsQty.toString();
         code = product0.code;
-
         break;
       case "Lots":
         _receive = product0.productQty.toString();
@@ -917,7 +919,11 @@ class _ReceiptProductMenuDetailScreenState
 
   void assignToDone(Product product0) {
     double? doneDouble = 0.00;
-    doneDouble = product0.scannedSerialNumber?.length.toDouble();
+    if (product0.scannedSerialNumber != null) {
+      doneDouble = product0.scannedSerialNumber?.length.toDouble();
+    } else {
+      doneDouble = product0.doneQty;
+    }
     _scanBarcode = doneDouble.toString();
     // else {
     //   _scanBarcode = _scanBarcode;

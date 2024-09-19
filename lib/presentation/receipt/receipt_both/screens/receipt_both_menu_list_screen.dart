@@ -57,7 +57,7 @@ class _ReceiptBothMenuListScreenState extends State<ReceiptBothMenuListScreen>
         name: "WH/IN/00012",
         status: "Waiting",
         packageName: "Package: Pallet",
-        packageStatus: "Tracking: Lots",
+        packageStatus: "Tracking: No Tracking",
         dateTime: "14/06/2024 - 15:00",
         destination: "To: Medical Storage",
         statusColor: ColorName.waitingColor,

@@ -397,11 +397,10 @@ class _ReceiptBothProductDetailScreenState
                                         ));
                                   }),
                             )
-                          : (idTracking != 0)
+                          : (idTracking == 2 && totalDoneInt > 0)
                               ? Builder(builder: (context) {
                                   isHighlightedLots = totalDoneInt > 0;
 
-                                  debugPrint("isHighlightedLots: qtl");
                                   return Container(
                                     padding: EdgeInsets.symmetric(
                                         horizontal: 16.w, vertical: 12.h),
@@ -419,22 +418,27 @@ class _ReceiptBothProductDetailScreenState
                                     ),
                                   );
                                 })
-                              : Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                      "No items scanned or updated yet",
-                                      style: BaseText.grey10Text14,
-                                    ),
-                                    Text(
-                                      "Completed items will be shown here.",
-                                      style: BaseText.grey1Text14.copyWith(
-                                        fontWeight: BaseText.light,
-                                      ),
+                              : (idTracking == 2 && totalDoneInt == 0)
+                                  ? Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          "No product scanned yet.",
+                                          style: BaseText.grey10Text14.copyWith(
+                                              fontWeight: BaseText.semiBold),
+                                        ),
+                                        Text(
+                                          "Completed items will be shown here.",
+                                          style: BaseText.grey1Text14.copyWith(
+                                            fontWeight: BaseText.light,
+                                          ),
+                                        )
+                                      ],
                                     )
-                                  ],
-                                )
+                                  : const SizedBox()
                     ],
                   ),
                 )

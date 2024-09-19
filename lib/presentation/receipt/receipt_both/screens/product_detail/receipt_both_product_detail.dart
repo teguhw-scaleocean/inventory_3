@@ -6,6 +6,7 @@ import 'package:smooth_highlight/smooth_highlight.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 import 'package:time_picker_spinner/time_picker_spinner.dart';
 
+import '../../../../../common/components/custom_app_bar.dart';
 import '../../../../../common/components/custom_divider.dart';
 import '../../../../../common/components/primary_button.dart';
 import '../../../../../common/components/reusable_floating_action_button.dart';
@@ -17,11 +18,9 @@ import '../../../../../common/theme/color/color_name.dart';
 import '../../../../../common/theme/text/base_text.dart';
 import '../../../../../data/model/date_time_button.dart';
 import '../../../../../data/model/product.dart';
-import '../../../../../data/model/scan_view.dart';
-import '../../../receipt_pallet/widget/scan_view_widget.dart';
 import '../../../receipt_product/cubit/product_detail/product_menu_product_detail_cubit.dart';
 import '../../../receipt_product/cubit/scan/scan_cubit.dart';
-import '../../../receipt_product/screens/product_detail/update_product_quantity_screen.dart';
+import '../../../receipt_product/cubit/scan/scan_state.dart';
 
 class ReceiptBothProductDetailScreen extends StatefulWidget {
   final Product product;
@@ -47,7 +46,7 @@ class _ReceiptBothProductDetailScreenState
   String tracking = "";
   String status = "";
   // Scan Result
-  String _scanBarcode = "";
+  final String _scanBarcode = "";
   int idTracking = 0;
 
   final searchSerialNumberController = TextEditingController();
@@ -95,6 +94,8 @@ class _ReceiptBothProductDetailScreenState
   @override
   void initState() {
     super.initState();
+
+    debugPrint("ReceiptBothProductDetailScreen");
 
     tabController = TabController(length: _tabs.length, vsync: this);
 
@@ -148,12 +149,6 @@ class _ReceiptBothProductDetailScreenState
 
   @override
   Widget build(BuildContext context) {
-    // final itemInputDate = context.watch<ScanCubit>().state.isItemInputDate;
-
-    // debugPrint("itemInputDate: $itemInputDate");
-    // if (itemInputDate == true) {
-    //   debugPrint("itemInputDate minta true: $itemInputDate");
-    // }
     debugPrint("tracking: $tracking");
     return SafeArea(
       child: DefaultTabController(
@@ -170,19 +165,6 @@ class _ReceiptBothProductDetailScreenState
                   final itemInputDate = state.isItemInputDate;
                   debugPrint("itemInputDate: //");
                   if (itemInputDate == true) {}
-                },
-              ),
-              BlocListener<ProductMenuProductDetailCubit,
-                  ProductMenuProductDetailState>(
-                listener: (context, state) {
-                  debugPrint("listener ProductMenuProductDetailCubit");
-
-                  if (idTracking == 0) {
-                    product.doneQty = state.snTotalDone?.toDouble() ?? 0.00;
-                  }
-                  if (idTracking != 0) {
-                    product.doneQty = state.lotsTotalDone?.toDouble() ?? 0.00;
-                  }
                 },
               ),
             ],
@@ -203,13 +185,17 @@ class _ReceiptBothProductDetailScreenState
                       ),
                       SizedBox(height: 8.h),
                       Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(product.code,
                               style: BaseText.grey1Text13
                                   .copyWith(fontWeight: BaseText.light)),
+                          Text("Pallet ${product.palletCode}",
+                              style: BaseText.grey1Text13
+                                  .copyWith(fontWeight: BaseText.light)),
                         ],
                       ),
-                      SizedBox(height: 18.h),
+                      SizedBox(height: 16.h),
                       Text(
                         product.dateTime,
                         style: BaseText.baseTextStyle.copyWith(
@@ -218,195 +204,14 @@ class _ReceiptBothProductDetailScreenState
                           color: ColorName.dateTimeColor,
                         ),
                       ),
-                      SizedBox(height: 18.h),
-                      BlocBuilder<ProductMenuProductDetailCubit,
-                          ProductMenuProductDetailState>(
-                        builder: (context, state) {
-                          final doneQtyStatus = state.isDoneQty == true;
-
-                          debugPrint("doneQtyStatus: $doneQtyStatus");
-                          if (doneQtyStatus) {
-                            return buildScanAndUpdateSection(
-                              status: "",
-                              onScan: () {},
-                              onUpdate: () {},
-                            );
-                          }
+                      SizedBox(height: 16.h),
+                      Builder(
+                        builder: (context) {
+                          // debugPrint("doneQtyStatus: $doneQtyStatus");
                           return buildScanAndUpdateSection(
-                            status: status,
-                            onScan: () async {
-                              int idTracking = 0;
-                              String firstExpectedValue = "";
-
-                              if (tracking
-                                  .toLowerCase()
-                                  .contains("serial number")) {
-                                firstExpectedValue =
-                                    serialNumberList.first.label;
-                              } else {
-                                idTracking = 1;
-                                firstExpectedValue = code;
-                              }
-
-                              final scanResult = await Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => ScanView(
-                                    expectedValue: firstExpectedValue,
-                                    scanType: ScanViewType.product,
-                                    idTracking: idTracking,
-                                  ),
-                                ),
-                              ).then((value) {
-                                if (value != null) {
-                                  if (value
-                                      .toString()
-                                      .contains("inputExpirationDate")) {
-                                    BlocProvider.of<ScanCubit>(context)
-                                        .setIsItemInputDate(true);
-                                  } else if (tracking
-                                      .toLowerCase()
-                                      .contains("serial number")) {
-                                    setState(() {
-                                      _scanBarcode = value;
-
-                                      selectedSerialNumber = serialNumberList
-                                          .firstWhere((element) =>
-                                              element.label == _scanBarcode);
-                                      serialNumberList.removeWhere((element) =>
-                                          element == selectedSerialNumber);
-                                      serialNumberResult
-                                          .add(selectedSerialNumber);
-                                      product.scannedSerialNumber =
-                                          serialNumberResult;
-                                      product.hasActualDateTime = true;
-                                      product.actualDateTime =
-                                          _getScanActualDate();
-                                    });
-
-                                    Future.delayed(const Duration(seconds: 2),
-                                        () {
-                                      String scannedItem =
-                                          "Serial Number: $_scanBarcode";
-
-                                      onShowSuccessDialog(
-                                        context: context,
-                                        scannedItem: scannedItem,
-                                      );
-                                    });
-                                  } else if (idTracking == 1) {
-                                    BlocProvider.of<
-                                                ProductMenuProductDetailCubit>(
-                                            context)
-                                        .getLotsScannedTotalDone(totalDoneInt);
-
-                                    Future.delayed(const Duration(seconds: 2),
-                                        () {
-                                      _scanBarcode = value;
-                                      String scannedItem =
-                                          "Lots: $_scanBarcode";
-
-                                      onShowSuccessDialog(
-                                        context: context,
-                                        scannedItem: scannedItem,
-                                      );
-                                    });
-                                  }
-
-                                  // BlocProvider.of<ProductMenuProductDetailCubit>(
-                                  //         context)
-                                  //     .scannedSerialNumberToProduct(product);
-                                  // debugPrint("scanResultValue: ");
-                                }
-                              });
-                            },
-                            onUpdate: () {
-                              BlocProvider.of<ProductMenuProductDetailCubit>(
-                                      context)
-                                  .getCurrentProduct(product);
-
-                              if (idTracking == 0) {
-                                BlocProvider.of<ProductMenuProductDetailCubit>(
-                                        context)
-                                    .setListOfSerialNumber(serialNumberList);
-
-                                Navigator.push<String>(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        UpdateProductQuantityScreen(
-                                      tracking: tracking,
-                                    ),
-                                  ),
-                                ).then((value) {
-                                  if (value != null) {
-                                    setState(() {
-                                      serialNumberResult = [
-                                        ...serialNumberList
-                                      ];
-                                      serialNumberList.clear();
-                                    });
-
-                                    Future.delayed(const Duration(seconds: 2),
-                                        () {
-                                      String scannedItem = "Serial Number";
-                                      onShowSuccessDialog(
-                                        context: context,
-                                        scannedItem: scannedItem,
-                                        isOnUpdate: true,
-                                      );
-                                    });
-                                  }
-                                });
-                              }
-                              if (idTracking == 1) {
-                                Navigator.push<String>(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        UpdateProductQuantityScreen(
-                                      tracking: tracking,
-                                    ),
-                                  ),
-                                ).then((value) {
-                                  if (value != null) {
-                                    Future.delayed(const Duration(seconds: 2),
-                                        () {
-                                      String scannedItem = "Lots: $value";
-                                      onShowSuccessDialog(
-                                        context: context,
-                                        scannedItem: scannedItem,
-                                        isOnUpdate: true,
-                                      );
-                                    });
-                                  }
-                                });
-                              }
-                              if (idTracking == 2) {
-                                Navigator.push<String>(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        UpdateProductQuantityScreen(
-                                      tracking: tracking,
-                                    ),
-                                  ),
-                                ).then((value) {
-                                  if (value != null) {
-                                    Future.delayed(const Duration(seconds: 2),
-                                        () {
-                                      String scannedItem = "SKU: $value";
-                                      onShowSuccessDialog(
-                                        context: context,
-                                        scannedItem: scannedItem,
-                                        isOnUpdate: true,
-                                      );
-                                    });
-                                  }
-                                });
-                              }
-                            },
-                            updateLabel: "Update Qty",
+                            status: "",
+                            onScan: () {},
+                            onUpdate: () {},
                           );
                         },
                       ),
@@ -440,7 +245,7 @@ class _ReceiptBothProductDetailScreenState
                       bool isSelectedTab = false;
                       isSelectedTab = tabController.index == _tabs.indexOf(e);
 
-                      if (tracking.toLowerCase().contains("serial number")) {
+                      if (idTracking == 0) {
                         totalInt = serialNumberList.length;
                         total = totalInt.toString();
 

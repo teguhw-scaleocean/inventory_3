@@ -18,6 +18,7 @@ import '../../../../common/theme/text/base_text.dart';
 import '../../../../data/model/product.dart';
 import '../../../../data/model/receipt.dart';
 import '../cubit/receipt_detail/receipt_both_detail_cubit.dart';
+import 'product_detail/receipt_both_product_detail.dart';
 
 class ReceiptBothDetailScreen extends StatefulWidget {
   final Receipt? receipt;
@@ -337,16 +338,16 @@ class _ReceiptBothDetailScreenState extends State<ReceiptBothDetailScreen> {
 
     return InkWell(
       onTap: () {
-        // final resultOfProduct = Navigator.push(
-        //   context,
-        //   MaterialPageRoute(
-        //     builder: (context) => ReceiptProductMenuOfProductDetailScreen(
-        //       product: product0,
-        //       tracking: tracking,
-        //       status: receipt.status,
-        //     ),
-        //   ),
-        // );
+        final resultOfProduct = Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ReceiptBothProductDetailScreen(
+              product: product0,
+              tracking: tracking,
+              status: receipt.status,
+            ),
+          ),
+        );
 
         // resultOfProduct.then((value) {
         //   if (value != null) {

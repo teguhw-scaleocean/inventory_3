@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -18,6 +20,7 @@ import '../../../../../common/theme/color/color_name.dart';
 import '../../../../../common/theme/text/base_text.dart';
 import '../../../../../data/model/date_time_button.dart';
 import '../../../../../data/model/product.dart';
+import '../../../receipt_pallet/screens/product_detail/add_product_screen.dart';
 import '../../../receipt_product/cubit/product_detail/product_menu_product_detail_cubit.dart';
 import '../../../receipt_product/cubit/scan/scan_cubit.dart';
 import '../../../receipt_product/cubit/scan/scan_state.dart';
@@ -362,6 +365,7 @@ class _ReceiptBothProductDetailScreenState
                                             code,
                                             itemProduct: product,
                                             tabIndex: 0,
+                                            isHighlighted: isHighlighted,
                                           ),
                                         ],
                                       ),
@@ -399,7 +403,7 @@ class _ReceiptBothProductDetailScreenState
                             )
                           : (idTracking == 2 && totalDoneInt > 0)
                               ? Builder(builder: (context) {
-                                  isHighlightedLots = totalDoneInt > 0;
+                                  // isHighlightedLots = totalDoneInt > 0;
 
                                   return Container(
                                     padding: EdgeInsets.symmetric(
@@ -411,7 +415,7 @@ class _ReceiptBothProductDetailScreenState
                                         buildItemQuantity(
                                           code,
                                           itemProduct: product,
-                                          isHighlighted: isHighlightedLots,
+                                          isHighlighted: isCardHighlighted,
                                           tabIndex: 1,
                                         ),
                                       ],
@@ -447,50 +451,50 @@ class _ReceiptBothProductDetailScreenState
           ),
           floatingActionButton: reusableFloatingActionButton(
             onTap: () {
-              // int indexToAddProduct = 0;
+              int indexToAddProduct = 0;
 
-              // switch (tracking) {
-              //   case "Serial Number":
-              //     break;
-              //   case "No Tracking":
-              //     indexToAddProduct = 1;
-              //     break;
-              //   case "Lots":
-              //     indexToAddProduct = 2;
-              //     break;
-              //   default:
-              // }
+              switch (tracking) {
+                case "Serial Number":
+                  break;
+                case "No Tracking":
+                  indexToAddProduct = 1;
+                  break;
+                case "Lots":
+                  indexToAddProduct = 2;
+                  break;
+                default:
+              }
 
-              // final resultOfAddProduct = Navigator.push(
-              //   context,
-              //   MaterialPageRoute(
-              //     builder: (context) => AddProductScreen(
-              //       addType: indexToAddProduct,
-              //       code: code,
-              //     ),
-              //   ),
-              // );
-              // resultOfAddProduct.then((value) {
-              //   if (value != null && value is double) {
-              //     debugPrint("resultOfAddProduct: $value");
-              //     setState(() {
-              //       var quantityDouble = value;
-              //       product.productQty = product.productQty + quantityDouble;
-              //       isCardHighlighted = true;
-              //       debugPrint(
-              //           "quantityDouble: ${product.productQty}, isCardHighlighted: $isCardHighlighted");
-              //     });
-              //   } else if (value != null) {
-              //     setState(() {
-              //       serialNumberResult = value as List<SerialNumber>;
-              //       serialNumberList.insertAll(0, serialNumberResult);
-              //       product.serialNumber = serialNumberList;
-              //     });
+              final resultOfAddProduct = Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => AddProductScreen(
+                    addType: indexToAddProduct,
+                    code: code,
+                  ),
+                ),
+              );
+              resultOfAddProduct.then((value) {
+                if (value != null && value is double) {
+                  debugPrint("resultOfAddProduct: $value");
+                  setState(() {
+                    var quantityDouble = value;
+                    product.productQty = product.productQty + quantityDouble;
+                    isHighlighted = true;
+                    debugPrint(
+                        "quantityDouble: ${product.productQty}, isCardHighlighted: $isCardHighlighted");
+                  });
+                } else if (value != null) {
+                  setState(() {
+                    serialNumberResult = value as List<SerialNumber>;
+                    serialNumberList.insertAll(0, serialNumberResult);
+                    product.serialNumber = serialNumberList;
+                  });
 
-              //     debugPrint(
-              //         "serialNumberResult: $serialNumberResult.map((e) => e.toJson())");
-              //   }
-              // });
+                  debugPrint(
+                      "serialNumberResult: $serialNumberResult.map((e) => e.toJson())");
+                }
+              });
             },
             icon: Icons.add,
           ),

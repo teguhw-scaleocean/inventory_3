@@ -349,23 +349,16 @@ class _ReceiptBothDetailScreenState extends State<ReceiptBothDetailScreen> {
           ),
         );
 
-        // resultOfProduct.then((value) {
-        //   if (value != null) {
-        //     // debugPrint("value: $value");
-        //     // setState(() {
-        //     //   product0 = value as Product;
-        //     //   assignToReceive(product0);
-        //     //   assignToDone(product0);
-        //     // });
-        //     if (receipt.packageStatus
-        //         .toString()
-        //         .toLowerCase()
-        //         .contains("serial number")) {
-        //       // BlocProvider.of<ReceiptBothDetailCubit>(context)
-        //       //     .scannedSerialNumberToProduct(value);
-        //     }
-        //   }
-        // });
+        resultOfProduct.then((value) {
+          if (value != null) {
+            debugPrint("value: $value");
+            setState(() {
+              product0 = value as Product;
+              assignToReceive(product0);
+              assignToDone(product0);
+            });
+          }
+        });
       },
       child: Container(
         margin: EdgeInsets.only(bottom: 12.h),

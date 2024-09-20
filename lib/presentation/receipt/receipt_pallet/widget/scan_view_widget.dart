@@ -108,11 +108,10 @@ class _ScanViewState extends State<ScanView> {
 
   checkScanErrorLots() {
     if (isError) {
+      controller?.pauseCamera();
       debugPrint("isError $isError");
 
       Future.delayed(const Duration(seconds: 1), () {
-        controller?.pauseCamera();
-
         onShowErrorDialog(
           context,
           isInputDate: false,
@@ -434,19 +433,16 @@ class _ScanViewState extends State<ScanView> {
 
         log("expectedValue after error: $expectedValue");
       });
-    } else {
-      Future.delayed(const Duration(seconds: 6), () {
-        controller.stopCamera();
-        if (serialNumber?.isInputDate == true) {
-          debugPrint("stop camera input");
-          // Navigator.of(context).pop();
-          // Navigator.of(context).pop("inputExpirationDate");
-        } else {
-          Navigator.of(context).pop(expectedValue);
+    } else if (serialNumber?.isInputDate == true) {
+      Future.delayed(const Duration(seconds: 10), () {
+        Navigator.of(context).pop(expectedValue);
 
-          log("expectedValue: $expectedValue");
-        }
+        log("expectedValue: $expectedValue");
       });
+    } else {
+      Navigator.of(context).pop(expectedValue);
+
+      log("expectedValue: $expectedValue");
     }
   }
 

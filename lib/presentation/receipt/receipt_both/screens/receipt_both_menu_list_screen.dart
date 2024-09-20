@@ -48,7 +48,7 @@ class _ReceiptBothMenuListScreenState extends State<ReceiptBothMenuListScreen>
         statusColor: ColorName.readyColor,
         packageName: "Package: Pallet",
         packageStatus: "Tracking: Lots",
-        dateTime: "14/06/2024 - 15:00",
+        dateTime: "13/06/2024 - 15:00",
         destination: "To: Main Storage Area",
       ),
       Receipt(

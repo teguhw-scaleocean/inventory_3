@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:inventory_v3/presentation/receipt/receipt_both/cubit/receipt_detail/receipt_both_detail_cubit.dart';
 import 'package:inventory_v3/presentation/receipt/receipt_pallet/cubit/count_cubit.dart';
 import 'package:inventory_v3/presentation/receipt/receipt_product/cubit/product_detail/product_menu_product_detail_cubit.dart';
 import 'package:inventory_v3/presentation/receipt/receipt_product/cubit/scan/scan_cubit.dart';
@@ -38,6 +39,9 @@ class MainApp extends StatelessWidget {
             ),
             BlocProvider<ScanCubit>(
               create: (context) => ScanCubit(),
+            ),
+            BlocProvider<ReceiptBothDetailCubit>(
+              create: (context) => ReceiptBothDetailCubit(),
             )
           ],
           child: MaterialApp(

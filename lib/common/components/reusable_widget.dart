@@ -172,7 +172,10 @@ Row buildScanAndUpdateSection(
 }
 
 onShowSuccessDialog(
-    {required BuildContext context, String? scannedItem, bool? isOnUpdate}) {
+    {required BuildContext context,
+    String? scannedItem,
+    bool? isOnUpdate,
+    bool? isBoth}) {
   return AwesomeDialog(
     context: context,
     animType: AnimType.bottomSlide,
@@ -205,6 +208,12 @@ onShowSuccessDialog(
               textAlign: TextAlign.center,
               style:
                   BaseText.mainText14.copyWith(fontWeight: BaseText.semiBold)),
+          Container(height: 1.h),
+          if (isBoth == true)
+            Text(
+              "Next, scan or update product.",
+              style: BaseText.grey2Text14.copyWith(fontWeight: BaseText.light),
+            ),
           SizedBox(height: 24.h),
         ],
       ),

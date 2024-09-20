@@ -23,6 +23,7 @@ import '../../../../data/model/pallet.dart';
 import '../../../../data/model/product.dart';
 import '../../../../data/model/receipt.dart';
 import '../../../../data/model/scan_view.dart';
+import '../../receipt_pallet/screens/pallet/add_pallet_screen.dart';
 import '../../receipt_pallet/widget/scan_view_widget.dart';
 import '../cubit/receipt_detail/receipt_both_detail_cubit.dart';
 import 'product_detail/receipt_both_product_detail.dart';
@@ -377,7 +378,39 @@ class _ReceiptBothDetailScreenState extends State<ReceiptBothDetailScreen> {
           ],
         ),
         floatingActionButton: reusableFloatingActionButton(
-          onTap: () {},
+          onTap: () {
+            int indexToAddPallet = 0;
+
+            switch (tracking) {
+              case "Serial Number":
+                break;
+              case "No Tracking":
+                indexToAddPallet = 1;
+                break;
+              case "Lots":
+                indexToAddPallet = 2;
+                break;
+
+              default:
+            }
+
+            final addPalletResult = Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => AddPalletScreen(index: indexToAddPallet),
+              ),
+            );
+
+            addPalletResult.then((value) {
+              debugPrint("addPalletResult: ${value.toString()}");
+
+              if (value != null) {
+                setState(() {
+                  listProducts = value as List<Product>;
+                });
+              }
+            });
+          },
           icon: Icons.add,
         ),
       ),

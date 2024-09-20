@@ -440,9 +440,11 @@ class _ScanViewState extends State<ScanView> {
         log("expectedValue: $expectedValue");
       });
     } else {
-      Navigator.of(context).pop(expectedValue);
+      Future.delayed(const Duration(seconds: 3), () {
+        Navigator.of(context).pop(expectedValue);
 
-      log("expectedValue: $expectedValue");
+        log("expectedValue: $expectedValue");
+      });
     }
   }
 

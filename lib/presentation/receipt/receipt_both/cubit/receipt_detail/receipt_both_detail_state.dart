@@ -2,11 +2,11 @@ import '../../../../../data/model/product.dart';
 
 class ReceiptBothDetailState {
   final List<Product> products;
-  int? lotsTotalDone = 0;
+  int lotsTotalDone;
 
   ReceiptBothDetailState({
     required this.products,
-    this.lotsTotalDone,
+    this.lotsTotalDone = 0,
   });
 
   copyWith({

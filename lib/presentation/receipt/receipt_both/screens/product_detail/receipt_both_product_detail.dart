@@ -224,7 +224,7 @@ class _ReceiptBothProductDetailScreenState
                                 firstExpectedValue =
                                     serialNumberList.first.label;
                               } else {
-                                idTracking = 1;
+                                // idTracking = 1;
                                 firstExpectedValue = code;
                               }
 
@@ -444,10 +444,8 @@ class _ReceiptBothProductDetailScreenState
                                         ));
                                   }),
                             )
-                          : (idTracking == 2 && totalDoneInt > 0)
+                          : (idTracking == 1 && totalDoneInt > 0)
                               ? Builder(builder: (context) {
-                                  // isHighlightedLots = totalDoneInt > 0;
-
                                   return Container(
                                     padding: EdgeInsets.symmetric(
                                         horizontal: 16.w, vertical: 12.h),
@@ -465,27 +463,51 @@ class _ReceiptBothProductDetailScreenState
                                     ),
                                   );
                                 })
-                              : (idTracking == 2 && totalDoneInt == 0)
-                                  ? Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: [
-                                        Text(
-                                          "No product scanned yet.",
-                                          style: BaseText.grey10Text14.copyWith(
-                                              fontWeight: BaseText.semiBold),
+                              : (idTracking == 2 && totalDoneInt > 0)
+                                  ? Builder(builder: (context) {
+                                      // isHighlightedLots = totalDoneInt > 0;
+
+                                      return Container(
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 16.w, vertical: 12.h),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            buildItemQuantity(
+                                              code,
+                                              itemProduct: product,
+                                              isHighlighted: true,
+                                              tabIndex: 1,
+                                            ),
+                                          ],
                                         ),
-                                        Text(
-                                          "Completed items will be shown here.",
-                                          style: BaseText.grey1Text14.copyWith(
-                                            fontWeight: BaseText.light,
-                                          ),
+                                      );
+                                    })
+                                  : (idTracking == 2 && totalDoneInt == 0)
+                                      ? Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                          children: [
+                                            Text(
+                                              "No product scanned yet.",
+                                              style: BaseText.grey10Text14
+                                                  .copyWith(
+                                                      fontWeight:
+                                                          BaseText.semiBold),
+                                            ),
+                                            Text(
+                                              "Completed items will be shown here.",
+                                              style:
+                                                  BaseText.grey1Text14.copyWith(
+                                                fontWeight: BaseText.light,
+                                              ),
+                                            )
+                                          ],
                                         )
-                                      ],
-                                    )
-                                  : const SizedBox()
+                                      : const SizedBox()
                     ],
                   ),
                 )

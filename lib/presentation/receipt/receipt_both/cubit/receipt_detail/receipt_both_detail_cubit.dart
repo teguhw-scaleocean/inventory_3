@@ -21,7 +21,7 @@ class ReceiptBothDetailCubit extends Cubit<ReceiptBothDetailState> {
   }
 
   getLotsScannedTotalDone(int total) {
-    int totalDone = total += 1;
+    int totalDone = total + state.lotsTotalDone;
 
     emit(state.copyWith(lotsTotalDone: totalDone));
     log("getLotsScannedTotalDone : ${state.lotsTotalDone}");

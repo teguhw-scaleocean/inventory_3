@@ -397,7 +397,10 @@ class _ReceiptBothDetailScreenState extends State<ReceiptBothDetailScreen> {
             final addPalletResult = Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => AddPalletScreen(index: indexToAddPallet),
+                builder: (context) => AddPalletScreen(
+                  index: indexToAddPallet,
+                  isFromBoth: true,
+                ),
               ),
             );
 

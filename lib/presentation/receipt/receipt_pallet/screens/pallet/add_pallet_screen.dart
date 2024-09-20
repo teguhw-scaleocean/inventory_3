@@ -22,7 +22,8 @@ import '../../../../../common/theme/text/base_text.dart';
 
 class AddPalletScreen extends StatefulWidget {
   final int index;
-  const AddPalletScreen({super.key, required this.index});
+  final bool? isFromBoth;
+  const AddPalletScreen({super.key, required this.index, this.isFromBoth});
 
   @override
   State<AddPalletScreen> createState() => _AddPalletScreenState();
@@ -46,6 +47,8 @@ class _AddPalletScreenState extends State<AddPalletScreen> {
   bool hasProductFocus = false;
   bool hasLotShow = true;
 
+  bool isFromBoth = false;
+
   int index = 0;
 
   @override
@@ -59,6 +62,8 @@ class _AddPalletScreenState extends State<AddPalletScreen> {
       qtyController.text = totalQty.toString();
       debugPrint("qtyController.text: ${qtyController.text}");
     }
+
+    isFromBoth = widget.isFromBoth ?? false;
   }
 
   List<Product> listProduct = [
@@ -309,6 +314,9 @@ class _AddPalletScreenState extends State<AddPalletScreen> {
                               textColor: qtyTextColor,
                               onChanged: (v) {
                                 // double? inputValue = 0.00;
+                                setState(() {
+                                  totalQty = double.tryParse(v) ?? 0.00;
+                                });
                               },
                               onSubmitted: (v) {
                                 setState(() {
@@ -349,7 +357,7 @@ class _AddPalletScreenState extends State<AddPalletScreen> {
                             ),
                           ],
                         ),
-                      if (index == 2 && selectedProduct != null)
+                      if (index == 2 && selectedProduct != null && !isFromBoth)
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -403,6 +411,10 @@ class _AddPalletScreenState extends State<AddPalletScreen> {
                             ),
                           ],
                         ),
+                      if (isFromBoth &&
+                          index == 2 &&
+                          qtyController.value.text != "0.0")
+                        _buildLotsField(),
                       // ColorName.grey10Color,
                       SizedBox(height: 6.h),
                     ],
@@ -505,5 +517,50 @@ class _AddPalletScreenState extends State<AddPalletScreen> {
 
     selectedObjectProduct.palletCode = palletIdController.text;
     listProducts.insert(0, selectedObjectProduct);
+  }
+
+  Widget _buildLotsField() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(height: 14.h),
+        buildRequiredLabel("Lots Number"),
+        SizedBox(height: 4.h),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Flexible(
+              child: LimitedBox(
+                maxWidth: 280.w,
+                child: CustomFormField(
+                  title: "",
+                  hintText: "Input Lots Number",
+                  fillTextStyle: BaseText.grey10Text14,
+                  contentPadding: EdgeInsets.symmetric(horizontal: 16.w),
+                  isShowTitle: false,
+                  isRequired: true,
+                  controller: lotsController,
+                  validator: (v) {
+                    if (v == null || v.isEmpty) {
+                      // var icon = CupertinoIcons
+                      //     .info_circle_fill.codePoint
+                      //     .toRadixString(16);
+
+                      // debugPrint(icon);
+                      return "This field is required. Please fill it in.";
+                    }
+                    return null;
+                  },
+                  onChanged: (v) {
+                    setState(() {});
+                    //   snController.text = v;
+                  },
+                ),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
   }
 }

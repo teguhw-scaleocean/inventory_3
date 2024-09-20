@@ -19,4 +19,11 @@ class ReceiptBothDetailCubit extends Cubit<ReceiptBothDetailState> {
     emit(state.copyWith(products: listProducts));
     log("getInitLotsListProduct: ${state.products.length}");
   }
+
+  getLotsScannedTotalDone(int total) {
+    int totalDone = total + state.lotsTotalDone;
+
+    emit(state.copyWith(lotsTotalDone: totalDone));
+    log("getLotsScannedTotalDone : ${state.lotsTotalDone}");
+  }
 }

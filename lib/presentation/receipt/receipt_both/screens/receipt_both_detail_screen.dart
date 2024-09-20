@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dash/flutter_dash.dart';
@@ -10,14 +11,19 @@ import 'package:inventory_v3/presentation/receipt/receipt_both/cubit/receipt_det
 
 import '../../../../common/components/custom_app_bar.dart';
 import '../../../../common/components/custom_divider.dart';
+import '../../../../common/components/primary_button.dart';
+import '../../../../common/components/reusable_bottom_sheet.dart';
+import '../../../../common/components/reusable_dropdown_menu.dart';
 import '../../../../common/components/reusable_floating_action_button.dart';
 import '../../../../common/components/status_badge.dart';
 import '../../../../common/constants/local_images.dart';
 import '../../../../common/theme/color/color_name.dart';
 import '../../../../common/theme/text/base_text.dart';
+import '../../../../data/model/pallet.dart';
 import '../../../../data/model/product.dart';
 import '../../../../data/model/receipt.dart';
 import '../../../../data/model/scan_view.dart';
+import '../../receipt_pallet/screens/pallet/add_pallet_screen.dart';
 import '../../receipt_pallet/widget/scan_view_widget.dart';
 import '../cubit/receipt_detail/receipt_both_detail_cubit.dart';
 import 'product_detail/receipt_both_product_detail.dart';
@@ -45,8 +51,12 @@ class _ReceiptBothDetailScreenState extends State<ReceiptBothDetailScreen> {
   List<dynamic> palletUpdates = [];
 
   var selectedUpdatePallet;
+  bool isSelectPalletShowError = false;
 
   int _scanAttempt = 0;
+  // int updateAttempt = 0;
+
+  final TextEditingController _searchController = TextEditingController();
 
   @override
   void initState() {
@@ -83,6 +93,16 @@ class _ReceiptBothDetailScreenState extends State<ReceiptBothDetailScreen> {
 
     // palletUpdates.sublist(0, 1);
     log("ReceiptBothDetailScreen");
+
+    if (receipt.id == 1) {
+      pallets.map((e) {
+        if (e.id < 5) {
+          palletUpdates.add(e.code);
+        }
+      }).toList(growable: false);
+    } else {
+      pallets.map((e) => palletUpdates.add(e.code)).toList(growable: false);
+    }
   }
 
   @override
@@ -163,6 +183,37 @@ class _ReceiptBothDetailScreenState extends State<ReceiptBothDetailScreen> {
                           });
                         }
                       });
+                    },
+                    onUpdate: () {
+                      bool hasUpdateFocus = false;
+
+                      final updateBottomSheet = reusableBottomSheet(
+                          context,
+                          isShowDragHandle: false,
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 16.w),
+                            child: SingleChildScrollView(
+                              child: (palletUpdates.length < 5)
+                                  ? buildDropdownMinHeight(hasUpdateFocus)
+                                  : buildDropdownMaxHeight(hasUpdateFocus),
+                            ),
+                          ));
+
+                      updateBottomSheet.then((value) => {
+                            if (value == true)
+                              {
+                                Future.delayed(const Duration(seconds: 1), () {
+                                  var scannedItem =
+                                      "Pallet $selectedUpdatePallet";
+                                  onShowSuccessDialog(
+                                    context: context,
+                                    scannedItem: scannedItem,
+                                    isOnUpdate: true,
+                                    isBoth: true,
+                                  );
+                                })
+                              }
+                          });
                     },
                   ),
                 ],
@@ -327,7 +378,42 @@ class _ReceiptBothDetailScreenState extends State<ReceiptBothDetailScreen> {
           ],
         ),
         floatingActionButton: reusableFloatingActionButton(
-          onTap: () {},
+          onTap: () {
+            int indexToAddPallet = 0;
+
+            switch (tracking) {
+              case "Serial Number":
+                break;
+              case "No Tracking":
+                indexToAddPallet = 1;
+                break;
+              case "Lots":
+                indexToAddPallet = 2;
+                break;
+
+              default:
+            }
+
+            final addPalletResult = Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => AddPalletScreen(
+                  index: indexToAddPallet,
+                  isFromBoth: true,
+                ),
+              ),
+            );
+
+            addPalletResult.then((value) {
+              debugPrint("addPalletResult: ${value.toString()}");
+
+              if (value != null) {
+                setState(() {
+                  listProducts = value as List<Product>;
+                });
+              }
+            });
+          },
           icon: Icons.add,
         ),
       ),
@@ -708,6 +794,194 @@ class _ReceiptBothDetailScreenState extends State<ReceiptBothDetailScreen> {
           )
         ],
       ),
+    );
+  }
+
+  buildDropdownMinHeight(bool hasUpdateFocus) {
+    return StatefulBuilder(builder: (context, updateSetState) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Center(child: reusableDragHandle()),
+          SizedBox(height: 16.h),
+          reusableTitleBottomSheet(context,
+              title: "Update Pallet", isMainColor: false),
+          SizedBox(height: 24.h),
+          // buildDropdownMinHeight(
+          //     updateSetState, hasUpdateFocus)
+          buildLabelUpdatePallet(),
+          SizedBox(height: 6.h),
+          ReusableDropdownMenu(
+            label: "",
+            hasSearch: false,
+            maxHeight: 120.h,
+            offset: const Offset(0, 121),
+            controller: _searchController,
+            borderColor: ColorName.grey9Color,
+            hintText: "  Select Pallet",
+            listOfItemsValue: palletUpdates,
+            selectedValue: selectedUpdatePallet,
+            isExpand: hasUpdateFocus,
+            onChange: (v) {
+              updateSetState(() {
+                selectedUpdatePallet = v;
+                isSelectPalletShowError = false;
+              });
+
+              log("selectedUpdatePallet: $selectedUpdatePallet");
+            },
+            onTap: (onTapValue) {
+              updateSetState(() {
+                // selectedUpdatePallet = onTapValue;
+                // dropdownGap = 142.h;
+                // submitButtonGap = 48.h;
+                hasUpdateFocus = !hasUpdateFocus;
+                log("hasUPdateFocus: $hasUpdateFocus");
+              });
+            },
+          ),
+          (isSelectPalletShowError)
+              ? _buildUpdatePalletShowError()
+              : const SizedBox(),
+          (hasUpdateFocus)
+              ? Container(
+                  height: 110.h,
+                )
+              : Container(height: 0),
+          Padding(
+            padding: EdgeInsets.only(
+                top: (hasUpdateFocus) ? 36.h : 24.h, bottom: 24.h),
+            child: PrimaryButton(
+              onPressed: () {
+                if (selectedUpdatePallet == null) {
+                  updateSetState(() {
+                    isSelectPalletShowError = true;
+                  });
+                } else {
+                  Navigator.pop(context, true);
+                }
+              },
+              height: 40.h,
+              title: "Submit",
+            ),
+          )
+        ],
+      );
+    });
+  }
+
+  buildDropdownMaxHeight(bool hasUpdateFocus) {
+    return StatefulBuilder(builder: (context, updateSetState) {
+      log("hasUpdateFocus: $hasUpdateFocus ");
+
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Center(child: reusableDragHandle()),
+          SizedBox(height: 16.h),
+          reusableTitleBottomSheet(context,
+              title: "Update Pallet", isMainColor: false),
+          SizedBox(height: 24.h),
+          // buildDropdownMinHeight(
+          //     updateSetState, hasUpdateFocus)
+          buildLabelUpdatePallet(),
+          SizedBox(height: 6.h),
+          ReusableDropdownMenu(
+            label: "",
+            maxHeight: 500.h,
+            offset: const Offset(0, 560),
+            hasSearch: true,
+            controller: _searchController,
+            borderColor: ColorName.grey9Color,
+            hintText: "  Select Pallet",
+            listOfItemsValue: palletUpdates,
+            selectedValue: selectedUpdatePallet,
+            isExpand: hasUpdateFocus,
+            onChange: (v) {
+              updateSetState(() {
+                selectedUpdatePallet = v;
+                isSelectPalletShowError = false;
+              });
+            },
+            onTap: (onTapValue) {
+              updateSetState(() {
+                // selectedUpdatePallet = onTapValue;
+                // dropdownGap = 142.h;
+                // submitButtonGap = 48.h;
+                hasUpdateFocus = !hasUpdateFocus;
+                log("hasUPdateFocus: $hasUpdateFocus");
+              });
+            },
+          ),
+          (isSelectPalletShowError)
+              ? _buildUpdatePalletShowError()
+              : const SizedBox(),
+          (hasUpdateFocus)
+              ? Container(
+                  height: 505.h,
+                )
+              : Container(height: 0),
+          Padding(
+            padding: EdgeInsets.only(
+                top: (hasUpdateFocus) ? 36.h : 24.h, bottom: 24.h),
+            child: PrimaryButton(
+              onPressed: () {
+                if (selectedUpdatePallet == null) {
+                  updateSetState(() {
+                    isSelectPalletShowError = true;
+                  });
+                } else {
+                  Navigator.pop(context, true);
+                }
+              },
+              height: 40.h,
+              title: "Submit",
+            ),
+          )
+        ],
+      );
+    });
+  }
+
+  Column _buildUpdatePalletShowError() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(height: 4.h),
+        Row(
+          children: [
+            Icon(
+              CupertinoIcons.info_circle_fill,
+              color: ColorName.badgeRedColor,
+              size: 13.w,
+            ),
+            SizedBox(width: 4.w),
+            Text(
+              "This field is required. Please fill it in.",
+              style: BaseText.red2Text12.copyWith(
+                fontWeight: BaseText.light,
+              ),
+            )
+          ],
+        )
+      ],
+    );
+  }
+
+  RichText buildLabelUpdatePallet() {
+    return RichText(
+      text: TextSpan(
+          text: "Pallet",
+          style: BaseText.grey2Text12.copyWith(fontWeight: BaseText.regular),
+          children: [
+            TextSpan(
+              text: " *",
+              style: BaseText.redText14.copyWith(
+                fontWeight: BaseText.medium,
+                color: ColorName.badgeRedColor,
+              ),
+            ),
+          ]),
     );
   }
 }

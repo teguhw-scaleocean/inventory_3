@@ -92,6 +92,7 @@ class _ReceiptBothProductDetailScreenState
   // Serial Number
   bool isHighlighted = false;
   // Lots
+  bool isHighlightedLotsNotDone = false;
   bool isHighlightedLots = false;
 
   @override
@@ -365,7 +366,8 @@ class _ReceiptBothProductDetailScreenState
                                             code,
                                             itemProduct: product,
                                             tabIndex: 0,
-                                            isHighlighted: isHighlighted,
+                                            isHighlighted:
+                                                isHighlightedLotsNotDone,
                                           ),
                                         ],
                                       ),
@@ -481,8 +483,11 @@ class _ReceiptBothProductDetailScreenState
                     var quantityDouble = value;
                     product.productQty = product.productQty + quantityDouble;
                     isHighlighted = true;
+                    isHighlightedLotsNotDone = true;
+                    // debugPrint(
+                    //     "quantityDouble: ${product.productQty}, isCardHighlighted: $isCardHighlighted");
                     debugPrint(
-                        "quantityDouble: ${product.productQty}, isCardHighlighted: $isCardHighlighted");
+                        "quantityDouble: ${product.productQty}, isHighlightedLotsNotDone: $isHighlightedLotsNotDone");
                   });
                 } else if (value != null) {
                   setState(() {

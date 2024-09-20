@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dash/flutter_dash.dart';
@@ -10,11 +11,15 @@ import 'package:inventory_v3/presentation/receipt/receipt_both/cubit/receipt_det
 
 import '../../../../common/components/custom_app_bar.dart';
 import '../../../../common/components/custom_divider.dart';
+import '../../../../common/components/primary_button.dart';
+import '../../../../common/components/reusable_bottom_sheet.dart';
+import '../../../../common/components/reusable_dropdown_menu.dart';
 import '../../../../common/components/reusable_floating_action_button.dart';
 import '../../../../common/components/status_badge.dart';
 import '../../../../common/constants/local_images.dart';
 import '../../../../common/theme/color/color_name.dart';
 import '../../../../common/theme/text/base_text.dart';
+import '../../../../data/model/pallet.dart';
 import '../../../../data/model/product.dart';
 import '../../../../data/model/receipt.dart';
 import '../../../../data/model/scan_view.dart';
@@ -45,8 +50,11 @@ class _ReceiptBothDetailScreenState extends State<ReceiptBothDetailScreen> {
   List<dynamic> palletUpdates = [];
 
   var selectedUpdatePallet;
+  bool isSelectPalletShowError = false;
 
   int _scanAttempt = 0;
+
+  final TextEditingController _searchController = TextEditingController();
 
   @override
   void initState() {
@@ -81,8 +89,15 @@ class _ReceiptBothDetailScreenState extends State<ReceiptBothDetailScreen> {
     date = receipt.dateTime.substring(0, 10);
     time = receipt.dateTime.substring(13, 18);
 
+    pallets.map((e) {
+      if (e.id < 5) {
+        palletUpdates.add(e.code);
+      }
+    }).toList();
+
     // palletUpdates.sublist(0, 1);
     log("ReceiptBothDetailScreen");
+    log("palletUpdates: ${palletUpdates.length}");
   }
 
   @override
@@ -163,6 +178,18 @@ class _ReceiptBothDetailScreenState extends State<ReceiptBothDetailScreen> {
                           });
                         }
                       });
+                    },
+                    onUpdate: () {
+                      bool hasUpdateFocus = false;
+                      reusableBottomSheet(
+                          context,
+                          isShowDragHandle: false,
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 16.w),
+                            child: SingleChildScrollView(
+                              child: buildDropdownMinHeight(hasUpdateFocus),
+                            ),
+                          ));
                     },
                   ),
                 ],
@@ -708,6 +735,124 @@ class _ReceiptBothDetailScreenState extends State<ReceiptBothDetailScreen> {
           )
         ],
       ),
+    );
+  }
+
+  buildDropdownMinHeight(bool hasUpdateFocus) {
+    return StatefulBuilder(builder: (context, updateSetState) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Center(child: reusableDragHandle()),
+          SizedBox(height: 16.h),
+          reusableTitleBottomSheet(context,
+              title: "Update Pallet", isMainColor: false),
+          SizedBox(height: 24.h),
+          // buildDropdownMinHeight(
+          //     updateSetState, hasUpdateFocus)
+          buildLabelUpdatePallet(),
+          SizedBox(height: 6.h),
+          ReusableDropdownMenu(
+            label: "",
+            hasSearch: false,
+            maxHeight: 120.h,
+            offset: const Offset(0, 121),
+            controller: _searchController,
+            borderColor: ColorName.grey9Color,
+            hintText: "  Select Pallet",
+            listOfItemsValue: palletUpdates,
+            selectedValue: selectedUpdatePallet,
+            isExpand: hasUpdateFocus,
+            onChange: (v) {
+              updateSetState(() {
+                isSelectPalletShowError = false;
+              });
+            },
+            onTap: (onTapValue) {
+              updateSetState(() {
+                // selectedUpdatePallet = onTapValue;
+                // dropdownGap = 142.h;
+                // submitButtonGap = 48.h;
+                hasUpdateFocus = !hasUpdateFocus;
+                log("hasUPdateFocus: $hasUpdateFocus");
+              });
+            },
+          ),
+          (isSelectPalletShowError)
+              ? Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(height: 4.h),
+                    Row(
+                      children: [
+                        Icon(
+                          CupertinoIcons.info_circle_fill,
+                          color: ColorName.badgeRedColor,
+                          size: 13.w,
+                        ),
+                        SizedBox(width: 4.w),
+                        Text(
+                          "This field is required. Please fill it in.",
+                          style: BaseText.red2Text12.copyWith(
+                            fontWeight: BaseText.light,
+                          ),
+                        )
+                      ],
+                    )
+                  ],
+                )
+              : const SizedBox(),
+          (hasUpdateFocus)
+              ? Container(
+                  height: 110.h,
+                )
+              : Container(height: 0),
+          Padding(
+            padding: EdgeInsets.only(
+                top: (hasUpdateFocus) ? 36.h : 24.h, bottom: 24.h),
+            child: PrimaryButton(
+              onPressed: () {
+                if (selectedUpdatePallet == null) {
+                  updateSetState(() {
+                    isSelectPalletShowError = true;
+                  });
+                } else {
+                  Navigator.pop(context);
+
+                  updateSetState(() {
+                    _scanBarcode = "18.00";
+                    log("scanbarcode: $_scanBarcode");
+
+                    onShowSuccessDialog(
+                      context: context,
+                      scannedItem: listProducts.first.palletCode,
+                    );
+                  });
+                }
+              },
+              height: 40.h,
+              title: "Submit",
+            ),
+          )
+        ],
+      );
+    });
+  }
+
+  RichText buildLabelUpdatePallet() {
+    return RichText(
+      text: TextSpan(
+          text: "Pallet",
+          style: BaseText.grey2Text12.copyWith(fontWeight: BaseText.regular),
+          children: [
+            TextSpan(
+              text: " *",
+              style: BaseText.redText14.copyWith(
+                fontWeight: BaseText.medium,
+                color: ColorName.badgeRedColor,
+              ),
+            ),
+          ]),
     );
   }
 }

@@ -145,6 +145,7 @@ class _ReceiptBothProductDetailScreenState
     }
 
     bothCubit = BlocProvider.of<ProductMenuProductDetailCubit>(context);
+    bothCubit.getCurrentProduct(product);
   }
 
   @override
@@ -244,7 +245,9 @@ class _ReceiptBothProductDetailScreenState
 
                               scanResult.then((value) {
                                 if (idTracking == 1) {
-                                  bothCubit.getBothLotsScannedTotalDone(1);
+                                  bothCubit.getCurrentProduct(product);
+                                  bothCubit.getBothLotsTotalDone(
+                                      product.productQty.toInt(), 1);
                                   _assignToDone();
 
                                   debugPrint(
@@ -338,16 +341,21 @@ class _ReceiptBothProductDetailScreenState
                             : 0;
                         totalDone = totalDoneInt.toString();
                       } else {
-                        totalInt =
-                            _tabs[0] == e ? product.productQty.toInt() : 0;
-                        total = totalInt.toString();
-
+                        // Tab 1
                         totalDoneInt = context
                                 .watch<ProductMenuProductDetailCubit>()
                                 .state
-                                .lotsTotalDone ??
+                                .product
+                                ?.doneQty
+                                ?.toInt() ??
                             totalDoneInt;
                         totalDone = totalDoneInt.toString();
+
+                        // Tab 0
+                        totalInt =
+                            _tabs[0] == e ? product.productQty.toInt() : 0;
+                        var totalResult = totalInt - totalDoneInt;
+                        total = totalResult.toString();
 
                         if (totalDoneInt == totalInt) {
                           total = "0";
@@ -502,7 +510,7 @@ class _ReceiptBothProductDetailScreenState
                                     ),
                                   );
                                 })
-                              : (idTracking == 2 && totalDoneInt > 0)
+                              : (idTracking == 1 && totalDoneInt > 0)
                                   ? Builder(builder: (context) {
                                       // isHighlightedLots = totalDoneInt > 0;
 
@@ -523,7 +531,7 @@ class _ReceiptBothProductDetailScreenState
                                         ),
                                       );
                                     })
-                                  : (idTracking == 2 && totalDoneInt == 0)
+                                  : (idTracking == 1 && totalDoneInt == 0)
                                       ? Column(
                                           mainAxisAlignment:
                                               MainAxisAlignment.center,
@@ -611,8 +619,7 @@ class _ReceiptBothProductDetailScreenState
   }
 
   void _assignToDone() {
-    var doneQty = bothCubit.state.lotsTotalDone ?? 0;
-    product.doneQty = doneQty.toDouble();
+    product.doneQty = bothCubit.state.product?.doneQty ?? product.doneQty;
   }
 
   String _getScanActualDate() {

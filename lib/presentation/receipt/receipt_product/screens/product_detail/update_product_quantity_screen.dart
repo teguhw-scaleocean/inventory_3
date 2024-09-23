@@ -260,7 +260,7 @@ class _UpdateProductQuantityScreenState
                       }
                     }
                     if (idTracking != 0) {
-                      cubit.getLotsUpdateTotalDone(totalNotDone, qtyUpdate);
+                      cubit.getBothLotsTotalDone(totalNotDone, qtyUpdate);
                       cubit.getResultUpdateTotalDone(qtyUpdate);
 
                       Future.delayed(const Duration(seconds: 1), () {

@@ -8,6 +8,7 @@ class ProductMenuProductDetailState {
   int? totalToDone;
   // Lots
   int? lotsTotalDone;
+  int? updateTotal;
   int? snTotalDone;
   bool? isDoneQty;
 
@@ -17,6 +18,7 @@ class ProductMenuProductDetailState {
     this.product,
     this.totalToDone,
     this.lotsTotalDone,
+    this.updateTotal,
     this.snTotalDone,
     this.isDoneQty,
   });
@@ -27,6 +29,7 @@ class ProductMenuProductDetailState {
     Product? product,
     int? totalToDone,
     int? lotsTotalDone,
+    int? updateTotal,
     int? snTotalDone,
     bool? isDoneQty,
   }) {
@@ -36,6 +39,7 @@ class ProductMenuProductDetailState {
       product: product ?? this.product,
       totalToDone: totalToDone ?? this.totalToDone,
       lotsTotalDone: lotsTotalDone ?? this.lotsTotalDone,
+      updateTotal: updateTotal ?? this.updateTotal,
       snTotalDone: snTotalDone ?? this.snTotalDone,
       isDoneQty: isDoneQty ?? this.isDoneQty,
     );

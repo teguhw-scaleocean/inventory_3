@@ -42,6 +42,8 @@ class _UpdateProductQuantityScreenState
   String titleUpdateButton = "Update (0)";
   int qtyUpdate = 0;
 
+  late ProductMenuProductDetailCubit cubit;
+
   late Product? _product;
   int totalNotDone = 0;
 
@@ -56,6 +58,8 @@ class _UpdateProductQuantityScreenState
     if (idTracking != 0) {
       generateUpdateList();
     }
+
+    cubit = BlocProvider.of<ProductMenuProductDetailCubit>(context);
   }
 
   @override
@@ -170,13 +174,19 @@ class _UpdateProductQuantityScreenState
                                   debugPrint(
                                       "updateListItems: ${e.isSelected}");
                                 }).toList();
+                                qtyUpdate = updateListItems
+                                    .where(
+                                        (element) => element.isSelected == true)
+                                    .toList()
+                                    .length;
+
+                                if (qtyUpdate == updateListItems.length) {
+                                  isAllSelected = true;
+                                } else {
+                                  isAllSelected = false;
+                                }
                               });
 
-                              qtyUpdate = updateListItems
-                                  .where(
-                                      (element) => element.isSelected == true)
-                                  .toList()
-                                  .length;
                               titleUpdateButton = "Update ($qtyUpdate)";
                             },
                           ),
@@ -250,8 +260,8 @@ class _UpdateProductQuantityScreenState
                       }
                     }
                     if (idTracking != 0) {
-                      BlocProvider.of<ProductMenuProductDetailCubit>(context)
-                          .getLotsUpdateTotalDone(totalNotDone, qtyUpdate);
+                      cubit.getLotsUpdateTotalDone(totalNotDone, qtyUpdate);
+                      cubit.getResultUpdateTotalDone(qtyUpdate);
 
                       Future.delayed(const Duration(seconds: 1), () {
                         Navigator.of(context).pop(updateListItems.first.code);

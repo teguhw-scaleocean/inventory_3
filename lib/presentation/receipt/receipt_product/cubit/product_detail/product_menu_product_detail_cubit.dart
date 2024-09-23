@@ -98,12 +98,18 @@ class ProductMenuProductDetailCubit
   }
 
   getLotsUpdateTotalDone(int total, int doneTotal) {
-    emit(state.copyWith(lotsTotalDone: doneTotal));
+    int statePrevTotal = state.lotsTotalDone ?? 0;
+    int resTotal = statePrevTotal + doneTotal;
+    emit(state.copyWith(lotsTotalDone: resTotal));
     log("getLotsUpdateTotalDone: ${state.lotsTotalDone.toString()}");
 
     bool isDone = false;
     isDone = (doneTotal == total) ? true : false;
     getIsDoneQty(isDone);
+  }
+
+  getResultUpdateTotalDone(int updateQty) {
+    emit(state.copyWith(updateTotal: updateQty));
   }
 
   getSnUpdateTotalDone(int total, int doneTotal) {

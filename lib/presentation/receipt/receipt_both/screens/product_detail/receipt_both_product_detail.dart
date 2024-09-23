@@ -278,10 +278,14 @@ class _ReceiptBothProductDetailScreenState
                                     ),
                                   ),
                                 ).then((value) {
+                                  var doneFromUpdateTemp =
+                                      bothCubit.state.updateTotal ?? 0;
+
                                   if (value != null) {
                                     Future.delayed(const Duration(seconds: 2),
                                         () {
-                                      String scannedItem = "Lots: $value";
+                                      String scannedItem =
+                                          "$doneFromUpdateTemp Lots: $value";
                                       onShowSuccessDialog(
                                         context: context,
                                         scannedItem: scannedItem,

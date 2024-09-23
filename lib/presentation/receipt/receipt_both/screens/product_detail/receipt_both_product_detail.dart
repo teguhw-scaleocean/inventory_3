@@ -532,29 +532,10 @@ class _ReceiptBothProductDetailScreenState
                                       );
                                     })
                                   : (idTracking == 1 && totalDoneInt == 0)
-                                      ? Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.center,
-                                          children: [
-                                            Text(
-                                              "No product scanned yet.",
-                                              style: BaseText.grey10Text14
-                                                  .copyWith(
-                                                      fontWeight:
-                                                          BaseText.semiBold),
-                                            ),
-                                            Text(
-                                              "Completed items will be shown here.",
-                                              style:
-                                                  BaseText.grey1Text14.copyWith(
-                                                fontWeight: BaseText.light,
-                                              ),
-                                            )
-                                          ],
-                                        )
-                                      : const SizedBox()
+                                      ? _buildDoneEmptyState()
+                                      : (idTracking == 0 && totalDoneInt == 0)
+                                          ? _buildDoneEmptyState()
+                                          : const SizedBox()
                     ],
                   ),
                 )
@@ -615,6 +596,25 @@ class _ReceiptBothProductDetailScreenState
           ),
         ),
       ),
+    );
+  }
+
+  Column _buildDoneEmptyState() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Text(
+          "No product scanned yet.",
+          style: BaseText.grey10Text14.copyWith(fontWeight: BaseText.semiBold),
+        ),
+        Text(
+          "Completed items will be shown here.",
+          style: BaseText.grey1Text14.copyWith(
+            fontWeight: BaseText.light,
+          ),
+        )
+      ],
     );
   }
 

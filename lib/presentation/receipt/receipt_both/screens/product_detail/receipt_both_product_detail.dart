@@ -26,6 +26,7 @@ import '../../../receipt_pallet/screens/product_detail/add_product_screen.dart';
 import '../../../receipt_product/cubit/product_detail/product_menu_product_detail_cubit.dart';
 import '../../../receipt_product/cubit/scan/scan_cubit.dart';
 import '../../../receipt_product/cubit/scan/scan_state.dart';
+import '../../../receipt_product/screens/product_detail/update_product_quantity_screen.dart';
 import '../../cubit/receipt_detail/receipt_both_detail_cubit.dart';
 
 class ReceiptBothProductDetailScreen extends StatefulWidget {
@@ -48,7 +49,7 @@ class ReceiptBothProductDetailScreen extends StatefulWidget {
 class _ReceiptBothProductDetailScreenState
     extends State<ReceiptBothProductDetailScreen>
     with SingleTickerProviderStateMixin {
-  var bothCubit;
+  late ProductMenuProductDetailCubit bothCubit;
   late Product product;
   String tracking = "";
   String status = "";
@@ -264,7 +265,33 @@ class _ReceiptBothProductDetailScreenState
                                 }
                               });
                             },
-                            onUpdate: () {},
+                            onUpdate: () {
+                              if (idTracking == 1) {
+                                bothCubit.getCurrentProduct(product);
+
+                                Navigator.push<String>(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        UpdateProductQuantityScreen(
+                                      tracking: tracking,
+                                    ),
+                                  ),
+                                ).then((value) {
+                                  if (value != null) {
+                                    Future.delayed(const Duration(seconds: 2),
+                                        () {
+                                      String scannedItem = "Lots: $value";
+                                      onShowSuccessDialog(
+                                        context: context,
+                                        scannedItem: scannedItem,
+                                        isOnUpdate: true,
+                                      );
+                                    });
+                                  }
+                                });
+                              }
+                            },
                           );
                         },
                       ),

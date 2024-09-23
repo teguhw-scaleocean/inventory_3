@@ -39,7 +39,7 @@ class _UpdateProductQuantityScreenState
 
   bool isAllSelected = false;
 
-  String titleUpdateButton = "Update";
+  String titleUpdateButton = "Update (0)";
   int qtyUpdate = 0;
 
   late Product? _product;
@@ -159,7 +159,26 @@ class _UpdateProductQuantityScreenState
                                 bottom: BorderSide(
                               color: ColorName.grey8Color,
                             )),
-                            onChanged: (newSelectedValue) {},
+                            onChanged: (newSelectedValue) {
+                              setState(() {
+                                item.isSelected = newSelectedValue!;
+
+                                updateListItems.map((e) {
+                                  if (e.id == item.id) {
+                                    e.isSelected = newSelectedValue;
+                                  }
+                                  debugPrint(
+                                      "updateListItems: ${e.isSelected}");
+                                }).toList();
+                              });
+
+                              qtyUpdate = updateListItems
+                                  .where(
+                                      (element) => element.isSelected == true)
+                                  .toList()
+                                  .length;
+                              titleUpdateButton = "Update ($qtyUpdate)";
+                            },
                           ),
                         );
                       }))
@@ -198,8 +217,10 @@ class _UpdateProductQuantityScreenState
                               }
                             }).toList();
 
-                            qtyUpdate =
-                                (isAllSelected) ? updateListItems.length : 0;
+                            qtyUpdate = updateListItems
+                                .where((element) => element.isSelected == true)
+                                .toList()
+                                .length;
                             titleUpdateButton = "Update ($qtyUpdate)";
                           });
                         },

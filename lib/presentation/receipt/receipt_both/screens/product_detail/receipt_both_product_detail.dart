@@ -221,6 +221,7 @@ class _ReceiptBothProductDetailScreenState
                           // debugPrint("doneQtyStatus: $doneQtyStatus");
                           return buildScanAndUpdateSection(
                             status: status,
+                            updateLabel: "Update Qty",
                             onScan: () async {
                               String firstExpectedValue = "";
 
@@ -244,9 +245,7 @@ class _ReceiptBothProductDetailScreenState
                               scanResult.then((value) {
                                 if (idTracking == 1) {
                                   bothCubit.getBothLotsScannedTotalDone(1);
-                                  var doneQty =
-                                      bothCubit.state.lotsTotalDone ?? 0;
-                                  product.doneQty = doneQty.toDouble();
+                                  _assignToDone();
 
                                   debugPrint(
                                       "doneQty=====> ${product.doneQty}");
@@ -278,6 +277,7 @@ class _ReceiptBothProductDetailScreenState
                                     ),
                                   ),
                                 ).then((value) {
+                                  _assignToDone();
                                   var doneFromUpdateTemp =
                                       bothCubit.state.updateTotal ?? 0;
 
@@ -608,6 +608,11 @@ class _ReceiptBothProductDetailScreenState
         ),
       ),
     );
+  }
+
+  void _assignToDone() {
+    var doneQty = bothCubit.state.lotsTotalDone ?? 0;
+    product.doneQty = doneQty.toDouble();
   }
 
   String _getScanActualDate() {

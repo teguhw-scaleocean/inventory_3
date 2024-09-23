@@ -7,7 +7,9 @@ import 'package:flutter_dash/flutter_dash.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:inventory_v3/common/components/reusable_widget.dart';
+import 'package:inventory_v3/common/helper/tracking_helper.dart';
 import 'package:inventory_v3/presentation/receipt/receipt_both/cubit/receipt_detail/receipt_both_detail_state.dart';
+import 'package:inventory_v3/presentation/receipt/receipt_product/cubit/product_detail/product_menu_product_detail_state.dart';
 
 import '../../../../common/components/custom_app_bar.dart';
 import '../../../../common/components/custom_divider.dart';
@@ -25,6 +27,7 @@ import '../../../../data/model/receipt.dart';
 import '../../../../data/model/scan_view.dart';
 import '../../receipt_pallet/screens/pallet/add_pallet_screen.dart';
 import '../../receipt_pallet/widget/scan_view_widget.dart';
+import '../../receipt_product/cubit/product_detail/product_menu_product_detail_cubit.dart';
 import '../cubit/receipt_detail/receipt_both_detail_cubit.dart';
 import 'product_detail/receipt_both_product_detail.dart';
 
@@ -53,6 +56,7 @@ class _ReceiptBothDetailScreenState extends State<ReceiptBothDetailScreen> {
   var selectedUpdatePallet;
   bool isSelectPalletShowError = false;
 
+  int idTracking = 0;
   int _scanAttempt = 0;
   // int updateAttempt = 0;
 
@@ -71,18 +75,20 @@ class _ReceiptBothDetailScreenState extends State<ReceiptBothDetailScreen> {
     //   _scanBarcode = widget.scanBarcode!;
     //   debugPrint("_scanBarcode: $_scanBarcode");
     // }
+    idTracking = TrackingHelper().getTrackingId(tracking);
 
     if (receipt.packageStatus
         .toString()
         .toLowerCase()
         .contains("no tracking")) {
-      BlocProvider.of<ReceiptBothDetailCubit>(context)
+      BlocProvider.of<ProductMenuProductDetailCubit>(context)
           .getInitNoTrackingListProduct();
     } else if (receipt.packageStatus
         .toString()
         .toLowerCase()
         .contains("lots")) {
-      BlocProvider.of<ReceiptBothDetailCubit>(context).getInitLotsListProduct();
+      BlocProvider.of<ProductMenuProductDetailCubit>(context)
+          .getInitLotsListProduct();
     } else if (receipt.packageStatus
         .toString()
         .toLowerCase()
@@ -326,14 +332,12 @@ class _ReceiptBothDetailScreenState extends State<ReceiptBothDetailScreen> {
                     status: receipt.status,
                   ),
                   SizedBox(height: 14.h),
-                  BlocConsumer<ReceiptBothDetailCubit, ReceiptBothDetailState>(
+                  BlocConsumer<ProductMenuProductDetailCubit,
+                          ProductMenuProductDetailState>(
                       listener: (context, state) {
                     debugPrint("listener");
 
-                    if (receipt.packageStatus
-                        .toString()
-                        .toLowerCase()
-                        .contains("serial number")) {
+                    if (idTracking == 0) {
                       // Product? currentProduct;
                       // int? totalReceive;
 
@@ -354,7 +358,7 @@ class _ReceiptBothDetailScreenState extends State<ReceiptBothDetailScreen> {
                       //   onShowSuccessReceiveCompleteDialog(
                       //       productName: currentProduct!.productName);
                       // }
-                    }
+                    } else if (idTracking != 0) {}
                   }, builder: (context, state) {
                     final list = state.products;
 

@@ -48,6 +48,7 @@ class ReceiptBothProductDetailScreen extends StatefulWidget {
 class _ReceiptBothProductDetailScreenState
     extends State<ReceiptBothProductDetailScreen>
     with SingleTickerProviderStateMixin {
+  var bothCubit;
   late Product product;
   String tracking = "";
   String status = "";
@@ -141,6 +142,8 @@ class _ReceiptBothProductDetailScreenState
       //     "${DateTime.now().day}/${DateTime.now().month}/${DateTime.now().year}";
       // selectedTime = "${TimeOfDay.now().hour}:${TimeOfDay.now().minute}";
     }
+
+    bothCubit = BlocProvider.of<ProductMenuProductDetailCubit>(context);
   }
 
   @override
@@ -239,14 +242,19 @@ class _ReceiptBothProductDetailScreenState
 
                               scanResult.then((value) {
                                 if (idTracking == 1) {
-                                  BlocProvider.of<ReceiptBothDetailCubit>(
-                                          context)
-                                      .getLotsScannedTotalDone(1);
+                                  bothCubit.getBothLotsScannedTotalDone(1);
+                                  var doneQty =
+                                      bothCubit.state.lotsTotalDone ?? 0;
+                                  product.doneQty = doneQty.toDouble();
+
+                                  debugPrint(
+                                      "doneQty=====> ${product.doneQty}");
 
                                   Future.delayed(const Duration(seconds: 2),
                                       () {
                                     _scanBarcode = value;
-                                    String scannedItem = "Lots: $_scanBarcode";
+                                    String scannedItem =
+                                        "1 Lots: $_scanBarcode";
 
                                     onShowSuccessDialog(
                                       context: context,
@@ -304,7 +312,7 @@ class _ReceiptBothProductDetailScreenState
                         total = totalInt.toString();
 
                         totalDoneInt = context
-                                .watch<ReceiptBothDetailCubit>()
+                                .watch<ProductMenuProductDetailCubit>()
                                 .state
                                 .lotsTotalDone ??
                             totalDoneInt;

@@ -82,6 +82,14 @@ class ProductMenuProductDetailCubit
     log("setTotalToDone: ${state.totalToDone.toString()}");
   }
 
+  getBothLotsScannedTotalDone(int total) {
+    int statePrevTotal = state.lotsTotalDone ?? 0;
+    int resTotal = statePrevTotal + total;
+
+    emit(state.copyWith(lotsTotalDone: resTotal));
+    log("getLotsScannedTotalDone: ${state.lotsTotalDone.toString()}");
+  }
+
   getLotsScannedTotalDone(int total) {
     int resTotal = total += 1;
 

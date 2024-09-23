@@ -564,6 +564,7 @@ class _ReceiptBothProductDetailScreenState
                   builder: (context) => AddProductScreen(
                     addType: indexToAddProduct,
                     code: code,
+                    isFromBoth: true,
                   ),
                 ),
               );
@@ -582,13 +583,14 @@ class _ReceiptBothProductDetailScreenState
                   });
                 } else if (value != null) {
                   setState(() {
-                    serialNumberResult = value as List<SerialNumber>;
-                    serialNumberList.insertAll(0, serialNumberResult);
+                    List<SerialNumber> listFromAddSerialNumber =
+                        value as List<SerialNumber>;
+                    serialNumberList.insertAll(0, listFromAddSerialNumber);
                     product.serialNumber = serialNumberList;
                   });
 
                   debugPrint(
-                      "serialNumberResult: $serialNumberResult.map((e) => e.toJson())");
+                      "product.serialNumber: ${product.serialNumber?.map((e) => e.label).toList()}");
                 }
               });
             },

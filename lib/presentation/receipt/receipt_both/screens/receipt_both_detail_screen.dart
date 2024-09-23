@@ -44,6 +44,7 @@ class ReceiptBothDetailScreen extends StatefulWidget {
 
 class _ReceiptBothDetailScreenState extends State<ReceiptBothDetailScreen> {
   late Receipt receipt;
+  late ProductMenuProductDetailCubit cubit;
 
   String date = "";
   String time = "";
@@ -66,6 +67,8 @@ class _ReceiptBothDetailScreenState extends State<ReceiptBothDetailScreen> {
   void initState() {
     super.initState();
 
+    cubit = BlocProvider.of<ProductMenuProductDetailCubit>(context);
+
     if (widget.receipt != null) {
       receipt = widget.receipt!;
       debugPrint(receipt.toJson());
@@ -77,22 +80,13 @@ class _ReceiptBothDetailScreenState extends State<ReceiptBothDetailScreen> {
     // }
     idTracking = TrackingHelper().getTrackingId(tracking);
 
-    if (receipt.packageStatus
-        .toString()
-        .toLowerCase()
-        .contains("no tracking")) {
-      BlocProvider.of<ProductMenuProductDetailCubit>(context)
-          .getInitNoTrackingListProduct();
-    } else if (receipt.packageStatus
-        .toString()
-        .toLowerCase()
-        .contains("lots")) {
-      BlocProvider.of<ProductMenuProductDetailCubit>(context)
-          .getInitLotsListProduct();
-    } else if (receipt.packageStatus
-        .toString()
-        .toLowerCase()
-        .contains("serial number")) {}
+    if (idTracking == 2) {
+      cubit.getInitNoTrackingListProduct();
+    } else if (idTracking == 1) {
+      cubit.getInitLotsListProduct();
+    } else if (idTracking == 0) {
+      cubit.getInitListProduct();
+    }
 
     date = receipt.dateTime.substring(0, 10);
     time = receipt.dateTime.substring(13, 18);

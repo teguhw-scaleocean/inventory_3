@@ -460,7 +460,7 @@ class _ReceiptBothDetailScreenState extends State<ReceiptBothDetailScreen> {
     }
 
     // No Tracking
-    _receive = product0.productQty.toString();
+    // _receive = product0.productQty.toString();
 
     return InkWell(
       onTap: () {

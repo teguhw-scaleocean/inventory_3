@@ -39,8 +39,10 @@ class _UpdateProductQuantityScreenState
 
   bool isAllSelected = false;
 
-  String titleUpdateButton = "Update";
+  String titleUpdateButton = "Update (0)";
   int qtyUpdate = 0;
+
+  late ProductMenuProductDetailCubit cubit;
 
   late Product? _product;
   int totalNotDone = 0;
@@ -56,6 +58,8 @@ class _UpdateProductQuantityScreenState
     if (idTracking != 0) {
       generateUpdateList();
     }
+
+    cubit = BlocProvider.of<ProductMenuProductDetailCubit>(context);
   }
 
   @override
@@ -159,7 +163,32 @@ class _UpdateProductQuantityScreenState
                                 bottom: BorderSide(
                               color: ColorName.grey8Color,
                             )),
-                            onChanged: (newSelectedValue) {},
+                            onChanged: (newSelectedValue) {
+                              setState(() {
+                                item.isSelected = newSelectedValue!;
+
+                                updateListItems.map((e) {
+                                  if (e.id == item.id) {
+                                    e.isSelected = newSelectedValue;
+                                  }
+                                  debugPrint(
+                                      "updateListItems: ${e.isSelected}");
+                                }).toList();
+                                qtyUpdate = updateListItems
+                                    .where(
+                                        (element) => element.isSelected == true)
+                                    .toList()
+                                    .length;
+
+                                if (qtyUpdate == updateListItems.length) {
+                                  isAllSelected = true;
+                                } else {
+                                  isAllSelected = false;
+                                }
+                              });
+
+                              titleUpdateButton = "Update ($qtyUpdate)";
+                            },
                           ),
                         );
                       }))
@@ -198,8 +227,10 @@ class _UpdateProductQuantityScreenState
                               }
                             }).toList();
 
-                            qtyUpdate =
-                                (isAllSelected) ? updateListItems.length : 0;
+                            qtyUpdate = updateListItems
+                                .where((element) => element.isSelected == true)
+                                .toList()
+                                .length;
                             titleUpdateButton = "Update ($qtyUpdate)";
                           });
                         },
@@ -229,8 +260,8 @@ class _UpdateProductQuantityScreenState
                       }
                     }
                     if (idTracking != 0) {
-                      BlocProvider.of<ProductMenuProductDetailCubit>(context)
-                          .getLotsUpdateTotalDone(totalNotDone, qtyUpdate);
+                      cubit.getBothLotsTotalDone(totalNotDone, qtyUpdate);
+                      cubit.getResultUpdateTotalDone(qtyUpdate);
 
                       Future.delayed(const Duration(seconds: 1), () {
                         Navigator.of(context).pop(updateListItems.first.code);

@@ -1,9 +1,11 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import 'package:inventory_v3/common/components/custom_app_bar.dart';
 import 'package:inventory_v3/presentation/receipt/receipt_pallet/cubit/count_cubit.dart';
 import 'package:inventory_v3/presentation/receipt/receipt_pallet/cubit/count_state.dart';
@@ -21,12 +23,14 @@ import '../../../../../data/model/product.dart';
 class AddProductScreen extends StatefulWidget {
   final int addType;
   final String code;
+  final bool? isFromBoth;
 
   const AddProductScreen({
-    super.key,
+    Key? key,
     required this.addType,
     this.code = "",
-  });
+    this.isFromBoth,
+  }) : super(key: key);
 
   @override
   State<AddProductScreen> createState() => _AddProductScreenState();
@@ -71,6 +75,9 @@ class _AddProductScreenState extends State<AddProductScreen> {
       code = widget.code;
       qtyController.text = totalQty.toString();
     }
+
+    debugPrint("addType: $addType");
+    debugPrint("${widget.isFromBoth}");
   }
 
   @override
@@ -80,9 +87,11 @@ class _AddProductScreenState extends State<AddProductScreen> {
         appBar: CustomAppBar(title: "Add $tracking"),
         body: Container(
           padding: EdgeInsets.all(16.w),
-          child: (addType == 0)
-              ? _buildSerialNumberSection()
-              : _buildOtherSection(label, code),
+          child: (addType == 0 && widget.isFromBoth == true)
+              ? _buildBothSerialNumberSection()
+              : (addType == 0 && widget.isFromBoth == false)
+                  ? _buildSerialNumberSection()
+                  : _buildOtherSection(label, code),
         ),
         bottomNavigationBar: Container(
           width: double.infinity,
@@ -93,25 +102,30 @@ class _AddProductScreenState extends State<AddProductScreen> {
           ),
           child: PrimaryButton(
             onPressed: () {
-              if (addType == 0) {
+              SerialNumber serialNumber = SerialNumber(
+                id: Random().nextInt(100),
+                label: serialNumberConhtroller.text,
+                expiredDateTime: "Exp. Date: 02/07/2024 - 14:00",
+                quantity: 1,
+              );
+              if (addType == 0 && widget.isFromBoth == true) {
                 if (formSnKey.currentState!.validate()) {
                   if (listSnController.isNotEmpty) {
-                    listSnController.map((e) {
-                      SerialNumber serialNumber = SerialNumber(
-                        id: Random().nextInt(100),
-                        label: e.text,
-                        expiredDateTime: "Exp. Date: 02/07/2024 - 14:00",
-                        quantity: 1,
-                      );
-                      listSerialNumber.add(serialNumber);
-                    }).toList();
+                    listSerialNumber.insert(0, serialNumber);
+
+                    _mapListSerialNumberController();
                   } else {
-                    SerialNumber serialNumber = SerialNumber(
-                      id: Random().nextInt(100),
-                      label: serialNumberConhtroller.text,
-                      expiredDateTime: "Exp. Date: 02/07/2024 - 14:00",
-                      quantity: 1,
-                    );
+                    listSerialNumber.add(serialNumber);
+                  }
+                }
+                debugPrint(
+                    "listSerialNumber: ${listSerialNumber.map((e) => e.label)}");
+                Navigator.pop(context, listSerialNumber);
+              } else if (addType == 0 && widget.isFromBoth == false) {
+                if (formSnKey.currentState!.validate()) {
+                  if (listSnController.isNotEmpty) {
+                    _mapListSerialNumberController();
+                  } else {
                     listSerialNumber.add(serialNumber);
                   }
                 }
@@ -136,6 +150,18 @@ class _AddProductScreenState extends State<AddProductScreen> {
         ),
       ),
     );
+  }
+
+  void _mapListSerialNumberController() {
+    listSnController.map((e) {
+      SerialNumber serialNumber = SerialNumber(
+        id: Random().nextInt(100),
+        label: e.text,
+        expiredDateTime: "Exp. Date: 02/07/2024 - 14:00",
+        quantity: 1,
+      );
+      listSerialNumber.add(serialNumber);
+    }).toList();
   }
 
   Widget _buildLotsSection() {
@@ -388,6 +414,117 @@ class _AddProductScreenState extends State<AddProductScreen> {
           )
         ],
       ),
+    );
+  }
+
+  Form _buildBothSerialNumberSection() {
+    return Form(
+      key: formSnKey,
+      child: StatefulBuilder(builder: (context, bothSnSetState) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            buildRequiredLabel("Serial Number"),
+            SizedBox(height: 4.h),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Flexible(
+                  child: LimitedBox(
+                    maxWidth: 280.w,
+                    child: CustomFormField(
+                      title: "",
+                      hintText: "Input Serial Number",
+                      contentPadding: EdgeInsets.symmetric(horizontal: 16.w),
+                      isShowTitle: false,
+                      isRequired: true,
+                      controller: serialNumberConhtroller,
+                      validator: (v) {
+                        if (v == null || v.isEmpty) {
+                          return "This field is required. Please fill it in.";
+                        }
+                        return null;
+                      },
+                      onChanged: (String val) {
+                        if (val.isNotEmpty) {
+                          bothSnSetState(() {
+                            hasScanButton = false;
+                          });
+
+                          debugPrint("onChanged: $val, $hasScanButton");
+                        }
+                      },
+                    ),
+                  ),
+                ),
+                (hasScanButton) ? reusableScanButton() : const SizedBox(),
+              ],
+            ),
+            ListView.builder(
+                shrinkWrap: true,
+                itemCount: listSnController.length,
+                itemBuilder: (context, index) {
+                  return Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (index == 0) SizedBox(height: 6.h),
+                      Row(
+                        children: [
+                          LimitedBox(
+                            maxWidth: 280.w,
+                            child: CustomFormField(
+                              title: "",
+                              hintText: "Input Serial Number",
+                              contentPadding:
+                                  EdgeInsets.symmetric(horizontal: 16.w),
+                              controller: listSnController[index],
+                              isShowTitle: false,
+                              onChanged: (v) {
+                                setState(() {
+                                  debugPrint("onChanged: $v");
+                                });
+                              },
+                            ),
+                          ),
+                          SizedBox(width: 8.w),
+                          reusableDeleteButton(() {
+                            setState(() {
+                              listSnController[index].clear();
+                              listSnController[index].dispose();
+                              listSnController.removeAt(index);
+                            });
+
+                            debugPrint(
+                                "listSnController: ${listSnController.length}");
+
+                            if (listSnController.isEmpty) {
+                              setState(() => hasScanButton = true);
+                            }
+                          })
+                        ],
+                      ),
+                      SizedBox(height: 6.h),
+                    ],
+                  );
+                }),
+            SizedBox(height: 6.h),
+            reusableAddSerialNumberButton(
+              onTap: () {
+                setState(() {
+                  listSnController.add(TextEditingController());
+
+                  // hasScanButton = false;
+                });
+
+                debugPrint("listSnController: ${listSnController.length}");
+              },
+              maxwidth: MediaQuery.sizeOf(context).width - 32.w,
+              isCenterTitle: true,
+            )
+          ],
+        );
+      }),
     );
   }
 }

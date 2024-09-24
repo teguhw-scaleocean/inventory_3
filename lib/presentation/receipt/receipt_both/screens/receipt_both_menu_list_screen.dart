@@ -42,6 +42,16 @@ class _ReceiptBothMenuListScreenState extends State<ReceiptBothMenuListScreen>
     tabs = ["All", "Waiting", "Ready", "Late"];
     listReceipt = [
       Receipt(
+        id: 9,
+        name: "WH/IN/00008",
+        status: "Ready",
+        statusColor: ColorName.readyColor,
+        packageName: "Package: Pallet",
+        packageStatus: "Tracking: Serial Number",
+        dateTime: "14/06/2024 - 15:30",
+        destination: "To: Medical Storage",
+      ),
+      Receipt(
         id: 1,
         name: "WH/IN/00013",
         status: "Ready",
@@ -215,7 +225,7 @@ class _ReceiptBothMenuListScreenState extends State<ReceiptBothMenuListScreen>
 
   Container _buildListSection() {
     return Container(
-      padding: EdgeInsets.fromLTRB(16.w, 0, 16.w, 8.h),
+      padding: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 8.h),
       color: ColorName.backgroundColor,
       child: ListView.builder(
           padding: EdgeInsets.zero,

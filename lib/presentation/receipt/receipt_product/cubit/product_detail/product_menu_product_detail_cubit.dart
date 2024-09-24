@@ -82,6 +82,21 @@ class ProductMenuProductDetailCubit
     log("setTotalToDone: ${state.totalToDone.toString()}");
   }
 
+  getBothLotsTotalDone(int total, int doneTotal) {
+    int statePrevTotal = state.lotsTotalDone ?? 0;
+    int resTotal = statePrevTotal + doneTotal;
+
+    emit(state.copyWith(
+      lotsTotalDone: resTotal,
+      product: state.product?.copyWith(doneQty: resTotal.toDouble()),
+    ));
+    log("product done: ${state.product.toString()}");
+
+    bool isDone = false;
+    isDone = (doneTotal == total) ? true : false;
+    getIsDoneQty(isDone);
+  }
+
   getLotsScannedTotalDone(int total) {
     int resTotal = total += 1;
 
@@ -89,13 +104,22 @@ class ProductMenuProductDetailCubit
     log("getLotsScannedTotalDone: ${state.lotsTotalDone.toString()}");
   }
 
-  getLotsUpdateTotalDone(int total, int doneTotal) {
-    emit(state.copyWith(lotsTotalDone: doneTotal));
-    log("getLotsUpdateTotalDone: ${state.lotsTotalDone.toString()}");
+  // getLotsUpdateTotalDone(int total, int doneTotal) {
+  //   int statePrevTotal = state.lotsTotalDone ?? 0;
+  //   int resTotal = statePrevTotal + doneTotal;
+  //   emit(state.copyWith(
+  //     lotsTotalDone: resTotal,
+  //     product: state.product?.copyWith(doneQty: resTotal.toDouble()),
+  //   ));
+  //   log("getLotsUpdateTotalDone: ${state.lotsTotalDone.toString()}");
 
-    bool isDone = false;
-    isDone = (doneTotal == total) ? true : false;
-    getIsDoneQty(isDone);
+  //   bool isDone = false;
+  //   isDone = (doneTotal == total) ? true : false;
+  //   getIsDoneQty(isDone);
+  // }
+
+  getResultUpdateTotalDone(int updateQty) {
+    emit(state.copyWith(updateTotal: updateQty));
   }
 
   getSnUpdateTotalDone(int total, int doneTotal) {

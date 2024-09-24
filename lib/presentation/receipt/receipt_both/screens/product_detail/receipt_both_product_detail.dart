@@ -62,6 +62,7 @@ class _ReceiptBothProductDetailScreenState
 
   List<SerialNumber> serialNumberList = [];
   List<SerialNumber> serialNumberResult = [];
+  List<SerialNumber> listFromAddSerialNumber = [];
 
   var selectedSerialNumber;
 
@@ -96,6 +97,7 @@ class _ReceiptBothProductDetailScreenState
 
   // Serial Number
   bool isHighlighted = false;
+  bool isHighlightedSnNotDone = false;
   // Lots
   bool isHighlightedLotsNotDone = false;
   bool isHighlightedLots = false;
@@ -249,6 +251,7 @@ class _ReceiptBothProductDetailScreenState
                                   bothCubit.getBothLotsTotalDone(
                                       product.productQty.toInt(), 1);
                                   _assignToDone();
+                                  isHighlightedLots = true;
 
                                   debugPrint(
                                       "doneQty=====> ${product.doneQty}");
@@ -406,10 +409,9 @@ class _ReceiptBothProductDetailScreenState
                                                   serialNumberList[index];
                                               code = item.label;
 
-                                              bool isHighlighted = false;
-                                              isHighlighted = serialNumberResult
-                                                  .contains(item);
-                                              debugPrint("isHighlighted: QTL");
+                                              isHighlightedSnNotDone =
+                                                  listFromAddSerialNumber
+                                                      .contains(item);
 
                                               return Padding(
                                                   padding: EdgeInsets.only(
@@ -417,7 +419,7 @@ class _ReceiptBothProductDetailScreenState
                                                   child: buildItemQuantity(
                                                     code,
                                                     isHighlighted:
-                                                        isHighlighted,
+                                                        isHighlightedSnNotDone,
                                                     itemSerialNumber: item,
                                                     tabIndex: 0,
                                                   ));
@@ -503,14 +505,14 @@ class _ReceiptBothProductDetailScreenState
                                         buildItemQuantity(
                                           code,
                                           itemProduct: product,
-                                          isHighlighted: true,
+                                          isHighlighted: isHighlightedLots,
                                           tabIndex: 1,
                                         ),
                                       ],
                                     ),
                                   );
                                 })
-                              : (idTracking == 1 && totalDoneInt > 0)
+                              : (idTracking == 2 && totalDoneInt > 0)
                                   ? Builder(builder: (context) {
                                       // isHighlightedLots = totalDoneInt > 0;
 
@@ -583,8 +585,7 @@ class _ReceiptBothProductDetailScreenState
                   });
                 } else if (value != null) {
                   setState(() {
-                    List<SerialNumber> listFromAddSerialNumber =
-                        value as List<SerialNumber>;
+                    listFromAddSerialNumber = value as List<SerialNumber>;
                     serialNumberList.insertAll(0, listFromAddSerialNumber);
                     product.serialNumber = serialNumberList;
                   });

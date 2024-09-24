@@ -141,4 +141,14 @@ class ProductMenuProductDetailCubit
   }
 
   getListOfSerialNumber() => state.serialNumbers;
+
+  scanPallet(Product product) {
+    List<Product> lastProducts = state.products;
+
+    int index = lastProducts.indexWhere((element) => element.id == product.id);
+    var scannedPallet = product.copyWith(hasBeenScanned: true);
+    lastProducts[index] = scannedPallet;
+    emit(state.copyWith(products: lastProducts));
+    log("scannedPallet: ${lastProducts.map((e) => e.hasBeenScanned.toString()).toList()}");
+  }
 }

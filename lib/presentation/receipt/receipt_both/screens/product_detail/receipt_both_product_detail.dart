@@ -102,6 +102,8 @@ class _ReceiptBothProductDetailScreenState
   bool isHighlightedLotsNotDone = false;
   bool isHighlightedLots = false;
 
+  bool isPalletScanned = false;
+
   @override
   void initState() {
     super.initState();
@@ -113,6 +115,7 @@ class _ReceiptBothProductDetailScreenState
     debugPrint(widget.product.toJson());
 
     product = widget.product;
+    isPalletScanned = product.hasBeenScanned ?? false;
     tracking = widget.tracking;
     status = widget.status;
 
@@ -207,6 +210,15 @@ class _ReceiptBothProductDetailScreenState
                       Builder(
                         builder: (context) {
                           // debugPrint("doneQtyStatus: $doneQtyStatus");
+
+                          if (!isPalletScanned) {
+                            return buildScanAndUpdateSection(
+                              status: "",
+                              updateLabel: "Update Qty",
+                              onScan: () {},
+                              onUpdate: () {},
+                            );
+                          }
                           return buildScanAndUpdateSection(
                             status: status,
                             updateLabel: "Update Qty",

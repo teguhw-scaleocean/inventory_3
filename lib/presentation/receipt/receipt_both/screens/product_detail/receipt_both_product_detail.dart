@@ -533,7 +533,8 @@ class _ReceiptBothProductDetailScreenState
                                         ),
                                       );
                                     })
-                                  : (idTracking == 1 && totalDoneInt == 0)
+                                  : (idTracking == 1 && totalDoneInt == 0 ||
+                                          idTracking == 2 && totalDoneInt == 0)
                                       ? _buildDoneEmptyState()
                                       : (idTracking == 0 && totalDoneInt == 0)
                                           ? _buildDoneEmptyState()

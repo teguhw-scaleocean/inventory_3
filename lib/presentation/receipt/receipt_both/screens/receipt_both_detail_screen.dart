@@ -16,6 +16,7 @@ import '../../../../common/components/custom_divider.dart';
 import '../../../../common/components/primary_button.dart';
 import '../../../../common/components/reusable_bottom_sheet.dart';
 import '../../../../common/components/reusable_dropdown_menu.dart';
+import '../../../../common/components/reusable_field_required.dart';
 import '../../../../common/components/reusable_floating_action_button.dart';
 import '../../../../common/components/status_badge.dart';
 import '../../../../common/constants/local_images.dart';
@@ -839,7 +840,7 @@ class _ReceiptBothDetailScreenState extends State<ReceiptBothDetailScreen> {
             },
           ),
           (isSelectPalletShowError)
-              ? _buildUpdatePalletShowError()
+              ? reusableFieldRequired()
               : const SizedBox(),
           (hasUpdateFocus)
               ? Container(
@@ -912,7 +913,7 @@ class _ReceiptBothDetailScreenState extends State<ReceiptBothDetailScreen> {
             },
           ),
           (isSelectPalletShowError)
-              ? _buildUpdatePalletShowError()
+              ? reusableFieldRequired()
               : const SizedBox(),
           (hasUpdateFocus)
               ? Container(
@@ -939,31 +940,6 @@ class _ReceiptBothDetailScreenState extends State<ReceiptBothDetailScreen> {
         ],
       );
     });
-  }
-
-  Column _buildUpdatePalletShowError() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        SizedBox(height: 4.h),
-        Row(
-          children: [
-            Icon(
-              CupertinoIcons.info_circle_fill,
-              color: ColorName.badgeRedColor,
-              size: 13.w,
-            ),
-            SizedBox(width: 4.w),
-            Text(
-              "This field is required. Please fill it in.",
-              style: BaseText.red2Text12.copyWith(
-                fontWeight: BaseText.light,
-              ),
-            )
-          ],
-        )
-      ],
-    );
   }
 
   RichText buildLabelUpdatePallet() {

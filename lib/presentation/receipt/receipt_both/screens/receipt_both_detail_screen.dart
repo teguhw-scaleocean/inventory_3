@@ -79,14 +79,25 @@ class _ReceiptBothDetailScreenState extends State<ReceiptBothDetailScreen> {
     //   _scanBarcode = widget.scanBarcode!;
     //   debugPrint("_scanBarcode: $_scanBarcode");
     // }
-    idTracking = TrackingHelper().getTrackingId(tracking);
 
-    if (idTracking == 2) {
+    if (receipt.packageStatus
+        .toString()
+        .toLowerCase()
+        .contains("no tracking")) {
       cubit.getInitNoTrackingListProduct();
-    } else if (idTracking == 1) {
+      idTracking = 2;
+    } else if (receipt.packageStatus
+        .toString()
+        .toLowerCase()
+        .contains("lots")) {
       cubit.getInitLotsListProduct();
-    } else if (idTracking == 0) {
+      idTracking = 1;
+    } else if (receipt.packageStatus
+        .toString()
+        .toLowerCase()
+        .contains("serial number")) {
       cubit.getInitListProduct();
+      idTracking = 0;
     }
 
     date = receipt.dateTime.substring(0, 10);
@@ -94,6 +105,7 @@ class _ReceiptBothDetailScreenState extends State<ReceiptBothDetailScreen> {
 
     // palletUpdates.sublist(0, 1);
     log("ReceiptBothDetailScreen");
+    log("idTracking $idTracking");
 
     if (receipt.id == 1) {
       pallets.map((e) {
@@ -151,39 +163,41 @@ class _ReceiptBothDetailScreenState extends State<ReceiptBothDetailScreen> {
                   buildScanAndUpdateSection(
                     status: receipt.status,
                     onScan: () async {
-                      var expectedValue = "18.00";
-                      // if (_scanAttempt == 0) {
-                      //   expectedValue = "error";
-                      // }
+                      if (idTracking == 1) {
+                        var expectedValue = "18.00";
+                        // if (_scanAttempt == 0) {
+                        //   expectedValue = "error";
+                        // }
 
-                      await Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => ScanView(
-                            expectedValue: expectedValue,
-                            scanType: ScanViewType.pallet,
-                            idTracking: 1,
-                            isShowErrorPalletLots: true,
+                        await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ScanView(
+                              expectedValue: expectedValue,
+                              scanType: ScanViewType.pallet,
+                              idTracking: 1,
+                              isShowErrorPalletLots: true,
+                            ),
                           ),
-                        ),
-                      ).then((value) {
-                        if (value != null) {
-                          setState(() {
-                            _scanBarcode = value;
-                            _scanAttempt = 1;
-                          });
-                          debugPrint("scanResultValue: $value");
+                        ).then((value) {
+                          if (value != null) {
+                            setState(() {
+                              _scanBarcode = value;
+                              _scanAttempt = 1;
+                            });
+                            debugPrint("scanResultValue: $value");
 
-                          Future.delayed(const Duration(seconds: 2), () {
-                            onShowSuccessDialog(
-                              context: context,
-                              scannedItem:
-                                  "Pallet ${listProducts.first.palletCode}",
-                              isBoth: true,
-                            );
-                          });
-                        }
-                      });
+                            Future.delayed(const Duration(seconds: 2), () {
+                              onShowSuccessDialog(
+                                context: context,
+                                scannedItem:
+                                    "Pallet ${listProducts.first.palletCode}",
+                                isBoth: true,
+                              );
+                            });
+                          }
+                        });
+                      }
                     },
                     onUpdate: () {
                       bool hasUpdateFocus = false;

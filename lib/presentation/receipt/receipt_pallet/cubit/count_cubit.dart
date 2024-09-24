@@ -21,4 +21,9 @@ class CountCubit extends Cubit<CountState> {
   }
 
   void update(data) => emit(data);
+
+  void submit(double qty) {
+    emit(state.copyWith(quantity: qty));
+    log("state.quantity: ${state.quantity}");
+  }
 }

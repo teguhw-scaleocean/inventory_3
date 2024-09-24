@@ -1,8 +1,10 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:developer';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import 'package:inventory_v3/common/extensions/empty_space_extension.dart';
 
 import '../theme/color/color_name.dart';
@@ -20,22 +22,24 @@ class CustomFormField extends StatefulWidget {
   void Function(String)? onChanged;
   String? Function(String?)? validator;
   final EdgeInsets? contentPadding;
+  final Color? borderColor;
   // final Function(String)? onFieldSubmitted;
 
   CustomFormField({
     Key? key,
+    // this.onFieldSubmitted,
     required this.title,
     this.textStyle,
     this.fillTextStyle,
     required this.hintText,
     this.controller,
     this.isShowTitle = true,
-    this.isTextArea = false,
     this.isRequired = false,
+    this.isTextArea = false,
     this.onChanged,
     this.validator,
     this.contentPadding,
-    // this.onFieldSubmitted,
+    this.borderColor,
   }) : super(key: key);
 
   @override
@@ -104,7 +108,8 @@ class _CustomFormFieldState extends State<CustomFormField> {
                   borderSide: const BorderSide(color: ColorName.borderColor)),
               enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(6),
-                  borderSide: const BorderSide(color: ColorName.borderColor)),
+                  borderSide: BorderSide(
+                      color: (widget.borderColor) ?? ColorName.borderColor)),
               focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(6),
                   borderSide: const BorderSide(color: ColorName.mainColor)),

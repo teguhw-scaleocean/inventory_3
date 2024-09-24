@@ -10,6 +10,7 @@ import 'package:inventory_v3/common/components/custom_form.dart';
 import 'package:inventory_v3/common/components/custom_quantity_button.dart';
 import 'package:inventory_v3/common/components/primary_button.dart';
 import 'package:inventory_v3/common/components/reusable_dropdown_menu.dart';
+import 'package:inventory_v3/common/components/reusable_field_required.dart';
 import 'package:inventory_v3/data/model/product.dart';
 import 'package:inventory_v3/presentation/receipt/receipt_pallet/cubit/add_pallet_cubit/add_pallet_cubit.dart';
 
@@ -19,6 +20,8 @@ import '../../../../../common/components/reusable_widget.dart';
 import '../../../../../common/constants/local_images.dart';
 import '../../../../../common/theme/color/color_name.dart';
 import '../../../../../common/theme/text/base_text.dart';
+import '../../cubit/count_cubit.dart';
+import '../../cubit/count_state.dart';
 
 class AddPalletScreen extends StatefulWidget {
   final int index;
@@ -37,6 +40,8 @@ class _AddPalletScreenState extends State<AddPalletScreen> {
   TextEditingController lotsController = TextEditingController();
   Color qtyIconColor = ColorName.grey18Color;
   Color qtyTextColor = ColorName.grey12Color;
+  Color borderColor = ColorName.borderColor;
+  Color palletIdBorderColor = ColorName.borderColor;
 
   double totalQty = 0.00;
 
@@ -48,6 +53,8 @@ class _AddPalletScreenState extends State<AddPalletScreen> {
   bool hasLotShow = true;
 
   bool isFromBoth = false;
+  bool isShowRequiredMessage = true;
+  bool isQtyButtonEnabled = false;
 
   int index = 0;
 
@@ -156,21 +163,34 @@ class _AddPalletScreenState extends State<AddPalletScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      CustomFormField(
-                        title: "Pallet ID",
-                        isShowTitle: true,
-                        isRequired: true,
-                        contentPadding: EdgeInsets.symmetric(horizontal: 16.w),
-                        fillTextStyle: BaseText.grey10Text14,
-                        controller: palletIdController,
-                        hintText: "Input Pallet ID",
-                        validator: (v) {
-                          if (v == null || v.isEmpty) {
-                            return "This field is required. Please fill it in.";
-                          }
-                          return null;
-                        },
-                      ),
+                      StatefulBuilder(builder: (context, palletIdSetState) {
+                        return CustomFormField(
+                          title: "Pallet ID",
+                          isShowTitle: true,
+                          isRequired: true,
+                          contentPadding:
+                              EdgeInsets.symmetric(horizontal: 16.w),
+                          borderColor: (isShowRequiredMessage)
+                              ? ColorName.badgeRedColor
+                              : palletIdBorderColor,
+                          fillTextStyle: BaseText.grey10Text14,
+                          controller: palletIdController,
+                          hintText: "Input Pallet ID",
+                          validator: (v) {
+                            if (v == null || v.isEmpty) {
+                              // return "This field is required. Please fill it in.";
+                            }
+                            return null;
+                          },
+                          onChanged: (v) {
+                            isShowRequiredMessage = v.isEmpty;
+                            setState(() {});
+                          },
+                        );
+                      }),
+                      (isShowRequiredMessage)
+                          ? reusableFieldRequired()
+                          : const SizedBox(),
                       SizedBox(height: 14.h),
                       buildRequiredLabel("Product"),
                       SizedBox(height: 4.h),
@@ -302,61 +322,85 @@ class _AddPalletScreenState extends State<AddPalletScreen> {
                           });
                         }),
                       if (index == 1 || index == 2)
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            // SizedBox(height: 14.h),
-                            buildRequiredLabel("Quantity"),
-                            SizedBox(height: 4.h),
-                            CustomQuantityButton(
-                              controller: qtyController,
-                              iconColor: qtyIconColor,
-                              textColor: qtyTextColor,
-                              onChanged: (v) {
-                                // double? inputValue = 0.00;
-                                setState(() {
-                                  totalQty = double.tryParse(v) ?? 0.00;
-                                });
-                              },
-                              onSubmitted: (v) {
-                                setState(() {
-                                  totalQty = double.tryParse(v) ?? 0.00;
+                        StatefulBuilder(builder: (context, otherSetState) {
+                          double value = 0.0;
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              // SizedBox(height: 14.h),
+                              buildRequiredLabel("Quantity"),
+                              SizedBox(height: 4.h),
+                              BlocConsumer<CountCubit, CountState>(
+                                  listener: (context, state) {
+                                qtyController.value = TextEditingValue(
+                                  text: state.quantity.toString(),
+                                );
+                                debugPrint(
+                                    "qtyController listen: ${qtyController.text}");
 
-                                  setState(() {
-                                    qtyController.value = TextEditingValue(
-                                      text: totalQty.toString(),
-                                    );
+                                isQtyButtonEnabled = state.quantity > 0;
+                              }, builder: (context, state) {
+                                var countCubit = context.read<CountCubit>();
 
-                                    if (totalQty >= 1) {
-                                      qtyIconColor = ColorName.grey10Color;
-                                      qtyTextColor = ColorName.grey10Color;
+                                borderColor = (isQtyButtonEnabled)
+                                    ? ColorName.borderColor
+                                    : ColorName.badgeRedColor;
+
+                                qtyIconColor = (isQtyButtonEnabled)
+                                    ? ColorName.grey10Color
+                                    : ColorName.grey18Color;
+                                qtyTextColor = (isQtyButtonEnabled)
+                                    ? ColorName.grey10Color
+                                    : ColorName.grey12Color;
+
+                                return CustomQuantityButton(
+                                  controller: qtyController,
+                                  borderColor: borderColor,
+                                  iconColor: qtyIconColor,
+                                  textColor: qtyTextColor,
+                                  onChanged: (v) {
+                                    if (v.isEmpty || v == "0.0") {
+                                      otherSetState(() {
+                                        isQtyButtonEnabled = false;
+                                      });
+                                    } else {
+                                      otherSetState(() {
+                                        isQtyButtonEnabled = true;
+                                      });
                                     }
-                                  });
-                                });
-                              },
-                              onDecreased: () {
-                                if (totalQty >= 1) {
-                                  setState(() {
-                                    totalQty--;
-                                    qtyController.text = totalQty.toString();
-                                    qtyIconColor = ColorName.grey10Color;
-                                    qtyTextColor = ColorName.grey10Color;
-                                  });
+                                  },
+                                  onSubmitted: (v) {
+                                    otherSetState(() {
+                                      value = double.parse(v);
+                                      qtyController.value = TextEditingValue(
+                                        text: value.toString(),
+                                      );
+                                    });
+
+                                    countCubit.submit(value);
+                                  },
+                                  onDecreased: () {
+                                    if (state.quantity >= 1) {
+                                      countCubit.decrement(value);
+                                    }
+                                  },
+                                  onIncreased: () {
+                                    value = double.parse(qtyController.text);
+
+                                    countCubit.increment(value);
+                                  },
+                                );
+                              }),
+                              BlocBuilder<CountCubit, CountState>(
+                                  builder: (context, state) {
+                                if (isQtyButtonEnabled) {
+                                  return const SizedBox();
                                 }
-                              },
-                              onIncreased: () {
-                                // if (totalQty >= 1) {
-                                setState(() {
-                                  totalQty++;
-                                  qtyController.text = totalQty.toString();
-                                  qtyIconColor = ColorName.grey10Color;
-                                  qtyTextColor = ColorName.grey10Color;
-                                });
-                                // }
-                              },
-                            ),
-                          ],
-                        ),
+                                return reusableFieldRequired();
+                              }),
+                            ],
+                          );
+                        }),
                       if (index == 2 && selectedProduct != null && !isFromBoth)
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -443,16 +487,18 @@ class _AddPalletScreenState extends State<AddPalletScreen> {
             onPressed: () {
               if (formKey.currentState!.validate()) {
                 debugPrint("valid");
+                final quantityTotal =
+                    BlocProvider.of<CountCubit>(context).state.quantity;
 
                 switch (index) {
                   case 0:
                     onSubmitSerialNumber();
                     break;
                   case 1:
-                    onSubmitNoTracking();
+                    onSubmitNoTracking(quantityTotal);
                     break;
                   case 2:
-                    onSubmitLots();
+                    onSubmitLots(quantityTotal);
                     break;
                   default:
                 }
@@ -474,16 +520,16 @@ class _AddPalletScreenState extends State<AddPalletScreen> {
     );
   }
 
-  void onSubmitLots() {
+  void onSubmitLots(total) {
     selectedObjectProduct.palletCode = palletIdController.text;
-    selectedObjectProduct.productQty = totalQty;
+    selectedObjectProduct.productQty = total;
     selectedObjectProduct.lotsCode = lotsController.text;
     listProducts.insert(0, selectedObjectProduct);
   }
 
-  void onSubmitNoTracking() {
+  void onSubmitNoTracking(total) {
     selectedObjectProduct.palletCode = palletIdController.text;
-    selectedObjectProduct.productQty = totalQty;
+    selectedObjectProduct.productQty = total;
     listProducts.insert(0, selectedObjectProduct);
   }
 

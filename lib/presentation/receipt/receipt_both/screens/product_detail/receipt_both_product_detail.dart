@@ -118,35 +118,20 @@ class _ReceiptBothProductDetailScreenState
 
     idTracking = TrackingHelper().getTrackingId(tracking);
 
+    bothCubit = BlocProvider.of<ProductMenuProductDetailCubit>(context);
+
     if (!(tracking.toLowerCase().contains("serial number"))) {
       code = product.lotsCode ?? product.code;
     } else {
       // Serial Number
       serialNumberList = widget.product.serialNumber ?? <SerialNumber>[];
-      // if (product.id == 2) {
-      //   serialNumberList = List.generate(
-      //     product.productQty.toInt(),
-      //     (index) => SerialNumber(
-      //       id: Random().nextInt(100),
-      //       label: "BP1234567845$index",
-      //       expiredDateTime: "Exp. Date: 12/07/2024 - 16:00",
-      //       quantity: 1,
-      //     ),
-      //   );
-      // }
       debugPrint("serialNumberList: $serialNumberList.map((e) => e.toJson())");
-      // BlocProvider.of<ProductMenuProductDetailCubit>(context)
-      //     .setTotalToDone(serialNumberList.length);
+      bothCubit.setTotalToDone(serialNumberList.length);
 
-      // BlocProvider.of<ScanCubit>(context)
-      //     .setListOfSerialNumber(serialNumberList);
-
-      // selectedDate =
-      //     "${DateTime.now().day}/${DateTime.now().month}/${DateTime.now().year}";
-      // selectedTime = "${TimeOfDay.now().hour}:${TimeOfDay.now().minute}";
+      BlocProvider.of<ScanCubit>(context)
+          .setListOfSerialNumber(serialNumberList);
     }
 
-    bothCubit = BlocProvider.of<ProductMenuProductDetailCubit>(context);
     bothCubit.getCurrentProduct(product);
   }
 
@@ -231,22 +216,59 @@ class _ReceiptBothProductDetailScreenState
                               if (idTracking == 0) {
                                 firstExpectedValue =
                                     serialNumberList.first.label;
-                              } else {
+
+                                final scanResult = Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => ScanView(
+                                              expectedValue: firstExpectedValue,
+                                              scanType: ScanViewType.product,
+                                              idTracking: idTracking,
+                                            )));
+
+                                scanResult.then((value) {
+                                  Future.delayed(const Duration(seconds: 2),
+                                      () {
+                                    setState(() {
+                                      _scanBarcode = value;
+
+                                      selectedSerialNumber = serialNumberList
+                                          .firstWhere((element) =>
+                                              element.label == _scanBarcode);
+                                      serialNumberList.removeWhere((element) =>
+                                          element == selectedSerialNumber);
+                                      serialNumberResult
+                                          .add(selectedSerialNumber);
+                                      product.scannedSerialNumber =
+                                          serialNumberResult;
+                                      // product.hasActualDateTime = true;
+                                      // product.actualDateTime =
+                                      //     _getScanActualDate();
+                                    });
+
+                                    String scannedItem =
+                                        "Serial Number: $_scanBarcode";
+
+                                    onShowSuccessDialog(
+                                      context: context,
+                                      scannedItem: scannedItem,
+                                    );
+                                  });
+                                });
+                              } else if (idTracking == 1) {
                                 // idTracking = 1;
                                 firstExpectedValue = code;
-                              }
 
-                              final scanResult = Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => ScanView(
-                                            expectedValue: firstExpectedValue,
-                                            scanType: ScanViewType.product,
-                                            idTracking: idTracking,
-                                          )));
+                                final scanResult = Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => ScanView(
+                                              expectedValue: firstExpectedValue,
+                                              scanType: ScanViewType.product,
+                                              idTracking: idTracking,
+                                            )));
 
-                              scanResult.then((value) {
-                                if (idTracking == 1) {
+                                scanResult.then((value) {
                                   bothCubit.getCurrentProduct(product);
                                   bothCubit.getBothLotsTotalDone(
                                       product.productQty.toInt(), 1);
@@ -267,8 +289,8 @@ class _ReceiptBothProductDetailScreenState
                                       scannedItem: scannedItem,
                                     );
                                   });
-                                }
-                              });
+                                });
+                              }
                             },
                             onUpdate: () {
                               if (idTracking == 1) {
@@ -292,6 +314,37 @@ class _ReceiptBothProductDetailScreenState
                                         () {
                                       String scannedItem =
                                           "$doneFromUpdateTemp Lots: $value";
+                                      onShowSuccessDialog(
+                                        context: context,
+                                        scannedItem: scannedItem,
+                                        isOnUpdate: true,
+                                      );
+                                    });
+                                  }
+                                });
+                              } else if (idTracking == 0) {
+                                bothCubit.getCurrentProduct(product);
+                                bothCubit
+                                    .setListOfSerialNumber(serialNumberList);
+
+                                Navigator.push<String>(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        UpdateProductQuantityScreen(
+                                      tracking: tracking,
+                                    ),
+                                  ),
+                                ).then((value) {
+                                  _assignToDone();
+                                  var doneFromUpdateTemp =
+                                      bothCubit.state.updateTotal ?? 0;
+
+                                  if (value != null) {
+                                    Future.delayed(const Duration(seconds: 2),
+                                        () {
+                                      String scannedItem =
+                                          "$doneFromUpdateTemp Serial Number";
                                       onShowSuccessDialog(
                                         context: context,
                                         scannedItem: scannedItem,

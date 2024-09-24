@@ -340,6 +340,8 @@ class _AddPalletScreenState extends State<AddPalletScreen> {
 
                                 isQtyButtonEnabled = state.quantity > 0;
                               }, builder: (context, state) {
+                                var countCubit = context.read<CountCubit>();
+
                                 borderColor = (isQtyButtonEnabled)
                                     ? ColorName.borderColor
                                     : ColorName.badgeRedColor;
@@ -374,18 +376,18 @@ class _AddPalletScreenState extends State<AddPalletScreen> {
                                         text: value.toString(),
                                       );
                                     });
+
+                                    countCubit.submit(value);
                                   },
                                   onDecreased: () {
                                     if (state.quantity >= 1) {
-                                      context
-                                          .read<CountCubit>()
-                                          .decrement(value);
+                                      countCubit.decrement(value);
                                     }
                                   },
                                   onIncreased: () {
                                     value = double.parse(qtyController.text);
 
-                                    context.read<CountCubit>().increment(value);
+                                    countCubit.increment(value);
                                   },
                                 );
                               }),

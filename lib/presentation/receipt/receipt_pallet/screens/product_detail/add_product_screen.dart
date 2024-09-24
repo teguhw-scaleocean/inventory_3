@@ -7,6 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:inventory_v3/common/components/custom_app_bar.dart';
+import 'package:inventory_v3/common/components/reusable_field_required.dart';
 import 'package:inventory_v3/presentation/receipt/receipt_pallet/cubit/count_cubit.dart';
 import 'package:inventory_v3/presentation/receipt/receipt_pallet/cubit/count_state.dart';
 
@@ -63,7 +64,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
     addType = widget.addType;
 
     if (addType == 0) {
-      tracking = "Serial Number";
+      tracking = "Qty Serial Number";
     } else if (addType == 1) {
       tracking = "Qty No Tracking";
       label = "SKU";
@@ -193,6 +194,8 @@ class _AddProductScreenState extends State<AddProductScreen> {
 
             isQtyButtonEnabled = state.quantity > 0;
           }, builder: (context, state) {
+            var countCubit = context.read<CountCubit>();
+
             borderColor = (isQtyButtonEnabled)
                 ? ColorName.borderColor
                 : ColorName.badgeRedColor;
@@ -226,59 +229,18 @@ class _AddProductScreenState extends State<AddProductScreen> {
                   qtyController.value = TextEditingValue(
                     text: value.toString(),
                   );
+
+                  countCubit.submit(value);
                 });
-                // otherSetState(() {
-                // totalQty = double.tryParse(v) ?? 0.00;
-
-                // // setState(() {
-                // qtyController.value = TextEditingValue(
-                //   text: totalQty.toString(),
-                // );
-
-                // if (totalQty >= 1) {
-                //   qtyIconColor = ColorName.grey10Color;
-                //   qtyTextColor = ColorName.grey10Color;
-                // }
-                // });
-                // });
               },
               onDecreased: () {
-                // if (totalQty != 0.0) {
-                //   otherSetState(() {
-                //     totalQty--;
-                //     qtyController =
-                //         TextEditingController(text: totalQty.toString());
-                //     qtyIconColor = ColorName.grey10Color;
-                //     qtyTextColor = ColorName.grey10Color;
-                //     debugPrint("totalQty Increased: $totalQty");
-                //   });
-                // } else {
-                //   otherSetState(() {
-                //     borderColor = ColorName.badgeRedColor;
-                //     qtyIconColor = ColorName.grey18Color;
-                //   });
-                // }
                 if (state.quantity >= 1) {
-                  context.read<CountCubit>().decrement(value);
-                  // qtyController =
-                  //     TextEditingController(text: state.quantity.toString());
+                  countCubit.decrement(value);
                 }
               },
               onIncreased: () {
                 value = double.parse(qtyController.text);
-                // if (totalQty >= 1) {
-                // otherSetState(() {
-                //   qtyIconColor = ColorName.grey10Color;
-                //   qtyTextColor = ColorName.grey10Color;
-                //   borderColor = ColorName.borderColor;
-                //   totalQty++;
-                //   qtyController =
-                //       TextEditingController(text: totalQty.toString());
-                // });
-                // }
-                context.read<CountCubit>().increment(value);
-                // qtyController =
-                //     TextEditingController(text: state.quantity.toString());
+                countCubit.increment(value);
               },
             );
           }),
@@ -286,28 +248,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
             if (isQtyButtonEnabled) {
               return const SizedBox();
             }
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(height: 4.h),
-                Row(
-                  children: [
-                    Icon(
-                      CupertinoIcons.info_circle_fill,
-                      color: ColorName.badgeRedColor,
-                      size: 13.w,
-                    ),
-                    SizedBox(width: 4.w),
-                    Text(
-                      "This field is required. Please fill it in.",
-                      style: BaseText.red2Text12.copyWith(
-                        fontWeight: BaseText.light,
-                      ),
-                    )
-                  ],
-                )
-              ],
-            );
+            return reusableFieldRequired();
           }),
         ],
       );

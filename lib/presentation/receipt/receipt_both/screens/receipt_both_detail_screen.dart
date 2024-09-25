@@ -59,7 +59,7 @@ class _ReceiptBothDetailScreenState extends State<ReceiptBothDetailScreen> {
   bool isSelectPalletShowError = false;
 
   int idTracking = 0;
-  int _scanAttempt = 0;
+  final int _scanAttempt = 0;
   // int updateAttempt = 0;
 
   final TextEditingController _searchController = TextEditingController();
@@ -164,7 +164,7 @@ class _ReceiptBothDetailScreenState extends State<ReceiptBothDetailScreen> {
                     status: receipt.status,
                     onScan: () async {
                       if (idTracking == 1) {
-                        var expectedValue = "18.00";
+                        var expectedValue = listProducts.first.palletCode;
                         // if (_scanAttempt == 0) {
                         //   expectedValue = "error";
                         // }
@@ -181,17 +181,19 @@ class _ReceiptBothDetailScreenState extends State<ReceiptBothDetailScreen> {
                           ),
                         ).then((value) {
                           if (value != null) {
-                            setState(() {
-                              _scanBarcode = value;
-                              _scanAttempt = 1;
-                            });
-                            debugPrint("scanResultValue: $value");
+                            var scannedProduct = listProducts.firstWhere(
+                              (element) => element.palletCode == value,
+                            );
+                            cubit.scanPallet(scannedProduct);
+                            // setState(() {
+                            // _scanBarcode = value;
+                            // _scanAttempt = 1;
+                            // });
 
                             Future.delayed(const Duration(seconds: 2), () {
                               onShowSuccessDialog(
                                 context: context,
-                                scannedItem:
-                                    "Pallet ${listProducts.first.palletCode}",
+                                scannedItem: "Pallet $value",
                                 isBoth: true,
                               );
                             });

@@ -22,7 +22,7 @@ import '../../../../common/components/status_badge.dart';
 import '../../../../common/constants/local_images.dart';
 import '../../../../common/theme/color/color_name.dart';
 import '../../../../common/theme/text/base_text.dart';
-import '../../../../data/model/pallet.dart';
+import '../../../../data/model/pallet_value.dart';
 import '../../../../data/model/product.dart';
 import '../../../../data/model/receipt.dart';
 import '../../../../data/model/scan_view.dart';

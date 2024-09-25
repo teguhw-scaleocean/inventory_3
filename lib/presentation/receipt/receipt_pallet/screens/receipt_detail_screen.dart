@@ -16,7 +16,7 @@ import 'package:inventory_v3/common/components/reusable_dropdown_menu.dart';
 import 'package:inventory_v3/common/components/reusable_dropdown_search.dart';
 import 'package:inventory_v3/common/components/reusable_floating_action_button.dart';
 import 'package:inventory_v3/common/constants/local_images.dart';
-import 'package:inventory_v3/data/model/pallet.dart';
+import 'package:inventory_v3/data/model/pallet_value.dart';
 import 'package:inventory_v3/data/model/product.dart';
 import 'package:inventory_v3/data/model/receipt.dart';
 import 'package:inventory_v3/data/model/scan_view.dart';

@@ -4,7 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:inventory_v3/common/components/custom_app_bar.dart';
 import 'package:inventory_v3/common/components/reusable_floating_action_button.dart';
 import 'package:inventory_v3/common/extensions/empty_space_extension.dart';
-import 'package:inventory_v3/data/model/product.dart';
+import 'package:inventory_v3/data/model/pallet.dart';
 import 'package:inventory_v3/presentation/receipt/receipt_pallet/cubit/add_pallet_cubit/add_pallet_cubit.dart';
 import 'package:inventory_v3/presentation/receipt/receipt_pallet/screens/product_detail/add_product_screen.dart';
 import 'package:smooth_highlight/smooth_highlight.dart';
@@ -15,7 +15,7 @@ import '../../../../common/theme/color/color_name.dart';
 import '../../../../common/theme/text/base_text.dart';
 
 class ReceiptProductDetailScreen extends StatefulWidget {
-  final Product product;
+  final Pallet product;
   final String tracking;
 
   const ReceiptProductDetailScreen(
@@ -28,7 +28,7 @@ class ReceiptProductDetailScreen extends StatefulWidget {
 
 class _ReceiptProductDetailScreenState
     extends State<ReceiptProductDetailScreen> {
-  late Product product;
+  late Pallet product;
   String tracking = "";
 
   final searchSerialNumberController = TextEditingController();
@@ -257,7 +257,7 @@ class _ReceiptProductDetailScreenState
   }
 
   Widget buildItemQuantity(String code,
-      {Product? itemProduct, bool isHighlighted = false}) {
+      {Pallet? itemProduct, bool isHighlighted = false}) {
     if (itemProduct != null) {
       int? quantityInt = itemProduct.productQty.toInt();
       quantity = quantityInt.toString();

@@ -7,7 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:inventory_v3/common/constants/text_constants.dart';
-import 'package:inventory_v3/data/model/product.dart';
+import 'package:inventory_v3/data/model/pallet.dart';
 import 'package:inventory_v3/data/model/scan_view.dart';
 import 'package:inventory_v3/presentation/receipt/receipt_product/cubit/scan/scan_cubit.dart';
 import 'package:inventory_v3/presentation/receipt/receipt_product/cubit/scan/scan_state.dart';

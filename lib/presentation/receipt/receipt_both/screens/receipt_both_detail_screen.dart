@@ -23,7 +23,7 @@ import '../../../../common/constants/local_images.dart';
 import '../../../../common/theme/color/color_name.dart';
 import '../../../../common/theme/text/base_text.dart';
 import '../../../../data/model/pallet_value.dart';
-import '../../../../data/model/product.dart';
+import '../../../../data/model/pallet.dart';
 import '../../../../data/model/receipt.dart';
 import '../../../../data/model/scan_view.dart';
 import '../../receipt_pallet/screens/pallet/add_pallet_screen.dart';
@@ -164,7 +164,7 @@ class _ReceiptBothDetailScreenState extends State<ReceiptBothDetailScreen> {
                     status: receipt.status,
                     onScan: () async {
                       if (idTracking == 1) {
-                        var expectedValue = listProducts.first.palletCode;
+                        var expectedValue = listPallets.first.palletCode;
                         // if (_scanAttempt == 0) {
                         //   expectedValue = "error";
                         // }
@@ -181,7 +181,7 @@ class _ReceiptBothDetailScreenState extends State<ReceiptBothDetailScreen> {
                           ),
                         ).then((value) {
                           if (value != null) {
-                            var scannedProduct = listProducts.firstWhere(
+                            var scannedProduct = listPallets.firstWhere(
                               (element) => element.palletCode == value,
                             );
                             cubit.scanPallet(scannedProduct);
@@ -371,7 +371,7 @@ class _ReceiptBothDetailScreenState extends State<ReceiptBothDetailScreen> {
                       // }
                     } else if (idTracking != 0) {}
                   }, builder: (context, state) {
-                    final list = state.products;
+                    final list = state.pallets;
 
                     return ListView.builder(
                         shrinkWrap: true,
@@ -379,7 +379,7 @@ class _ReceiptBothDetailScreenState extends State<ReceiptBothDetailScreen> {
                         physics: const NeverScrollableScrollPhysics(),
                         primary: false,
                         itemBuilder: (context, index) {
-                          Product item = list[index];
+                          Pallet item = list[index];
 
                           tracking = receipt.packageStatus.substring(10);
                           debugPrint("tracking: $tracking");
@@ -424,7 +424,7 @@ class _ReceiptBothDetailScreenState extends State<ReceiptBothDetailScreen> {
 
               if (value != null) {
                 setState(() {
-                  listProducts = value as List<Product>;
+                  listPallets = value as List<Pallet>;
                 });
               }
             });
@@ -435,8 +435,8 @@ class _ReceiptBothDetailScreenState extends State<ReceiptBothDetailScreen> {
     );
   }
 
-  InkWell buildPalleteItemCard(Product product, String tracking) {
-    Product product0;
+  InkWell buildPalleteItemCard(Pallet product, String tracking) {
+    Pallet product0;
     product0 = product;
 
     String actualDate = "";
@@ -496,7 +496,7 @@ class _ReceiptBothDetailScreenState extends State<ReceiptBothDetailScreen> {
           if (value != null) {
             debugPrint("value: $value");
             setState(() {
-              product0 = value as Product;
+              product0 = value as Pallet;
               assignToReceive(product0);
               assignToDone(product0);
             });
@@ -611,14 +611,14 @@ class _ReceiptBothDetailScreenState extends State<ReceiptBothDetailScreen> {
     );
   }
 
-  void assignToReceive(Product product0) {
+  void assignToReceive(Pallet product0) {
     // if (product0.serialNumber != null) {
     double? receiveDouble = product0.serialNumber?.length.toDouble();
     _receive = receiveDouble.toString();
     // }
   }
 
-  void assignToDone(Product product0) {
+  void assignToDone(Pallet product0) {
     double? doneDouble = 0.00;
     if (product0.scannedSerialNumber != null) {
       doneDouble = product0.scannedSerialNumber?.length.toDouble();

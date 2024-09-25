@@ -3,16 +3,16 @@ import 'dart:developer';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:inventory_v3/presentation/receipt/receipt_pallet/cubit/add_pallet_cubit/add_pallet_state.dart';
 
-import '../../../../../data/model/product.dart';
+import '../../../../../data/model/pallet.dart';
 
 class AddPalletCubit extends Cubit<AddPalletState> {
-  AddPalletCubit() : super(AddPalletState(products: listProducts));
+  AddPalletCubit() : super(AddPalletState(products: listPallets));
 
-  onSubmit({required Product product}) {
+  onSubmit({required Pallet product}) {
     emit(state.copyWith(
-      products: [product, ...listProducts],
+      products: [product, ...listPallets],
     ));
 
-    log(listProducts.map((e) => e.toString()).toList().toString());
+    log(listPallets.map((e) => e.toString()).toList().toString());
   }
 }

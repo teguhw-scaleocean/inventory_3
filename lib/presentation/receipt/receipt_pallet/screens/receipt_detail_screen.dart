@@ -17,7 +17,7 @@ import 'package:inventory_v3/common/components/reusable_dropdown_search.dart';
 import 'package:inventory_v3/common/components/reusable_floating_action_button.dart';
 import 'package:inventory_v3/common/constants/local_images.dart';
 import 'package:inventory_v3/data/model/pallet_value.dart';
-import 'package:inventory_v3/data/model/product.dart';
+import 'package:inventory_v3/data/model/pallet.dart';
 import 'package:inventory_v3/data/model/receipt.dart';
 import 'package:inventory_v3/data/model/scan_view.dart';
 import 'package:inventory_v3/presentation/receipt/receipt_pallet/cubit/add_pallet_cubit/add_pallet_state.dart';
@@ -74,17 +74,17 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
         .toString()
         .toLowerCase()
         .contains("no tracking")) {
-      listProducts = products;
+      listPallets = products;
     } else if (receipt.packageStatus
         .toString()
         .toLowerCase()
         .contains("lots")) {
-      listProducts = products2;
+      listPallets = products2;
     } else if (receipt.packageStatus
         .toString()
         .toLowerCase()
         .contains("serial number")) {
-      listProducts = products3;
+      listPallets = products3;
     }
 
     date = receipt.dateTime.substring(0, 10);
@@ -191,7 +191,7 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
                           Future.delayed(const Duration(seconds: 2), () {
                             onShowSuccessDialog(
                               context: context,
-                              scannedItem: listProducts.first.palletCode,
+                              scannedItem: listPallets.first.palletCode,
                             );
                           });
                         }
@@ -325,11 +325,11 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
 
                       return ListView.builder(
                           shrinkWrap: true,
-                          itemCount: listProducts.length,
+                          itemCount: listPallets.length,
                           physics: const NeverScrollableScrollPhysics(),
                           primary: false,
                           itemBuilder: (context, index) {
-                            Product item = listProducts[index];
+                            Pallet item = listPallets[index];
 
                             tracking = receipt.packageStatus.substring(10);
                             debugPrint("tracking: $tracking");
@@ -370,7 +370,7 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
 
                 if (value != null) {
                   setState(() {
-                    listProducts = value as List<Product>;
+                    listPallets = value as List<Pallet>;
                   });
                 }
               });
@@ -437,7 +437,7 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
 
                   onShowSuccessDialog(
                     context: context,
-                    scannedItem: listProducts.first.palletCode,
+                    scannedItem: listPallets.first.palletCode,
                   );
                 });
               },
@@ -503,7 +503,7 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
 
                   onShowSuccessDialog(
                     context: context,
-                    scannedItem: listProducts.first.palletCode,
+                    scannedItem: listPallets.first.palletCode,
                   );
                 });
               },
@@ -567,8 +567,8 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
         ));
   }
 
-  InkWell buildPalleteItemCard(Product product, String tracking) {
-    Product product0;
+  InkWell buildPalleteItemCard(Pallet product, String tracking) {
+    Pallet product0;
     product0 = product;
 
     // Code
@@ -611,7 +611,7 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
           if (value != null) {
             debugPrint("value: $value");
             setState(() {
-              product0 = value as Product;
+              product0 = value as Pallet;
               assignToReceive(product0);
             });
           }
@@ -741,7 +741,7 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
     );
   }
 
-  void assignToReceive(Product product0) {
+  void assignToReceive(Pallet product0) {
     if (product0.serialNumber != null) {
       double? receiveDouble = product0.serialNumber?.length.toDouble();
       _receive = receiveDouble.toString();

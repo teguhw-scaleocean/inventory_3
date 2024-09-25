@@ -3,7 +3,7 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 
-class Product {
+class Pallet {
   int id;
   String palletCode;
   String productName;
@@ -20,7 +20,7 @@ class Product {
   List<SerialNumber>? serialNumber;
   List<SerialNumber>? scannedSerialNumber;
 
-  Product({
+  Pallet({
     required this.id,
     required this.palletCode,
     required this.productName,
@@ -38,7 +38,7 @@ class Product {
     this.scannedSerialNumber,
   });
 
-  Product copyWith({
+  Pallet copyWith({
     int? id,
     String? palletCode,
     String? productName,
@@ -55,7 +55,7 @@ class Product {
     List<SerialNumber>? serialNumber,
     List<SerialNumber>? scannedSerialNumber,
   }) {
-    return Product(
+    return Pallet(
       id: id ?? this.id,
       palletCode: palletCode ?? this.palletCode,
       productName: productName ?? this.productName,
@@ -95,8 +95,8 @@ class Product {
     };
   }
 
-  factory Product.fromMap(Map<String, dynamic> map) {
-    return Product(
+  factory Pallet.fromMap(Map<String, dynamic> map) {
+    return Pallet(
       id: map['id'] as int,
       palletCode: map['palletCode'] as String,
       productName: map['productName'] as String,
@@ -134,16 +134,16 @@ class Product {
 
   String toJson() => json.encode(toMap());
 
-  factory Product.fromJson(String source) =>
-      Product.fromMap(json.decode(source) as Map<String, dynamic>);
+  factory Pallet.fromJson(String source) =>
+      Pallet.fromMap(json.decode(source) as Map<String, dynamic>);
 
   @override
   String toString() {
-    return 'Product(id: $id, palletCode: $palletCode, productName: $productName, code: $code, dateTime: $dateTime, hasActualDateTime: $hasActualDateTime, actualDateTime: $actualDateTime, sku: $sku, lotsCode: $lotsCode, productQty: $productQty, doneQty: $doneQty, isDoneQty: $isDoneQty, hasBeenScanned: $hasBeenScanned, serialNumber: $serialNumber, scannedSerialNumber: $scannedSerialNumber)';
+    return 'Pallet(id: $id, palletCode: $palletCode, productName: $productName, code: $code, dateTime: $dateTime, hasActualDateTime: $hasActualDateTime, actualDateTime: $actualDateTime, sku: $sku, lotsCode: $lotsCode, productQty: $productQty, doneQty: $doneQty, isDoneQty: $isDoneQty, hasBeenScanned: $hasBeenScanned, serialNumber: $serialNumber, scannedSerialNumber: $scannedSerialNumber)';
   }
 
   @override
-  bool operator ==(covariant Product other) {
+  bool operator ==(covariant Pallet other) {
     if (identical(this, other)) return true;
 
     return other.id == id &&
@@ -274,8 +274,8 @@ class SerialNumber {
   }
 }
 
-List<Product> products = [
-  Product(
+List<Pallet> products = [
+  Pallet(
     id: 1,
     palletCode: "A490",
     productName: "Surgical Instruments",
@@ -283,7 +283,7 @@ List<Product> products = [
     dateTime: "Sch. Date: 12/07/2024 - 15:30",
     productQty: 11,
   ),
-  Product(
+  Pallet(
     id: 2,
     palletCode: "A491",
     productName: "Surgical Masks",
@@ -291,7 +291,7 @@ List<Product> products = [
     dateTime: "Sch. Date: 28/07/2024 - 14:00",
     productQty: 12,
   ),
-  Product(
+  Pallet(
     id: 3,
     palletCode: "A492",
     productName: "Essence Mascara",
@@ -301,8 +301,8 @@ List<Product> products = [
   ),
 ];
 
-List<Product> products2 = [
-  Product(
+List<Pallet> products2 = [
+  Pallet(
     id: 1,
     palletCode: "A494",
     productName: "Syringes",
@@ -311,7 +311,7 @@ List<Product> products2 = [
     dateTime: "Sch. Date: 12/07/2024 - 15:30",
     productQty: 11,
   ),
-  Product(
+  Pallet(
     id: 2,
     palletCode: "A495",
     productName: "Surgical Masks",
@@ -320,7 +320,7 @@ List<Product> products2 = [
     dateTime: "Sch. Date: 28/07/2024 - 14:00",
     productQty: 12,
   ),
-  Product(
+  Pallet(
     id: 3,
     palletCode: "A496",
     productName: "Essence Mascara",
@@ -332,8 +332,8 @@ List<Product> products2 = [
 ];
 
 // SN
-List<Product> products3 = [
-  Product(
+List<Pallet> products3 = [
+  Pallet(
     id: 1,
     palletCode: "A4910",
     productName: "Nebulizer Machine",
@@ -343,7 +343,7 @@ List<Product> products3 = [
     dateTime: "Sch. Date: 12/07/2024 - 15:30",
     productQty: 12,
   ),
-  Product(
+  Pallet(
     id: 2,
     palletCode: "A4912",
     productName: "Surgical Masks",
@@ -353,7 +353,7 @@ List<Product> products3 = [
     dateTime: "Sch. Date: 28/07/2024 - 14:00",
     productQty: 11,
   ),
-  Product(
+  Pallet(
     id: 3,
     palletCode: "A4920",
     productName: "Essence Mascara",
@@ -365,4 +365,4 @@ List<Product> products3 = [
   ),
 ];
 
-List<Product> listProducts = <Product>[];
+List<Pallet> listPallets = <Pallet>[];

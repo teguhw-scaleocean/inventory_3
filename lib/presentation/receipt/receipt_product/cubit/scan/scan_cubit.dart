@@ -2,7 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../../../data/model/product.dart';
+import '../../../../../data/model/pallet.dart';
 import 'scan_state.dart';
 
 class ScanCubit extends Cubit<ScanState> {

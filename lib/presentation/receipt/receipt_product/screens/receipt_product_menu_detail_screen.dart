@@ -18,7 +18,7 @@ import 'package:inventory_v3/common/components/reusable_dropdown_search.dart';
 import 'package:inventory_v3/common/components/reusable_floating_action_button.dart';
 import 'package:inventory_v3/common/constants/local_images.dart';
 import 'package:inventory_v3/data/model/pallet_value.dart';
-import 'package:inventory_v3/data/model/product.dart';
+import 'package:inventory_v3/data/model/pallet.dart';
 import 'package:inventory_v3/data/model/receipt.dart';
 import 'package:inventory_v3/presentation/receipt/receipt_pallet/cubit/add_pallet_cubit/add_pallet_state.dart';
 import 'package:inventory_v3/presentation/receipt/receipt_pallet/screens/pallet/add_pallet_screen.dart';
@@ -377,7 +377,7 @@ class _ReceiptProductMenuDetailScreenState
                         .toString()
                         .toLowerCase()
                         .contains("serial number")) {
-                      Product? currentProduct;
+                      Pallet? currentProduct;
                       int? totalReceive;
 
                       if (state.product != null) {
@@ -399,7 +399,7 @@ class _ReceiptProductMenuDetailScreenState
                       }
                     }
                   }, builder: (context, state) {
-                    final list = state.products;
+                    final list = state.pallets;
 
                     return ListView.builder(
                         shrinkWrap: true,
@@ -407,7 +407,7 @@ class _ReceiptProductMenuDetailScreenState
                         physics: const NeverScrollableScrollPhysics(),
                         primary: false,
                         itemBuilder: (context, index) {
-                          Product item = list[index];
+                          Pallet item = list[index];
 
                           tracking = receipt.packageStatus.substring(10);
                           debugPrint("tracking: $tracking");
@@ -697,8 +697,8 @@ class _ReceiptProductMenuDetailScreenState
         ));
   }
 
-  InkWell buildPalleteItemCard(Product product, String tracking) {
-    Product product0;
+  InkWell buildPalleteItemCard(Pallet product, String tracking) {
+    Pallet product0;
     product0 = product;
 
     String actualDate = "";
@@ -910,14 +910,14 @@ class _ReceiptProductMenuDetailScreenState
     );
   }
 
-  void assignToReceive(Product product0) {
+  void assignToReceive(Pallet product0) {
     // if (product0.serialNumber != null) {
     double? receiveDouble = product0.serialNumber?.length.toDouble();
     _receive = receiveDouble.toString();
     // }
   }
 
-  void assignToDone(Product product0) {
+  void assignToDone(Pallet product0) {
     double? doneDouble = 0.00;
     if (product0.scannedSerialNumber != null) {
       doneDouble = product0.scannedSerialNumber?.length.toDouble();

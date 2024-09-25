@@ -17,6 +17,7 @@ class Pallet {
   double? doneQty;
   bool? isDoneQty;
   bool? hasBeenScanned;
+  bool? isReturn;
   List<SerialNumber>? serialNumber;
   List<SerialNumber>? scannedSerialNumber;
 
@@ -34,6 +35,7 @@ class Pallet {
     this.doneQty,
     this.isDoneQty,
     this.hasBeenScanned,
+    this.isReturn,
     this.serialNumber,
     this.scannedSerialNumber,
   });
@@ -52,6 +54,7 @@ class Pallet {
     double? doneQty,
     bool? isDoneQty,
     bool? hasBeenScanned,
+    bool? isReturn,
     List<SerialNumber>? serialNumber,
     List<SerialNumber>? scannedSerialNumber,
   }) {
@@ -69,6 +72,7 @@ class Pallet {
       doneQty: doneQty ?? this.doneQty,
       isDoneQty: isDoneQty ?? this.isDoneQty,
       hasBeenScanned: hasBeenScanned ?? this.hasBeenScanned,
+      isReturn: isReturn ?? this.isReturn,
       serialNumber: serialNumber ?? this.serialNumber,
       scannedSerialNumber: scannedSerialNumber ?? this.scannedSerialNumber,
     );
@@ -89,6 +93,7 @@ class Pallet {
       'doneQty': doneQty,
       'isDoneQty': isDoneQty,
       'hasBeenScanned': hasBeenScanned,
+      'isReturn': isReturn,
       'serialNumber': serialNumber?.map((x) => x.toMap()).toList(),
       'scannedSerialNumber':
           scannedSerialNumber?.map((x) => x.toMap()).toList(),
@@ -115,6 +120,7 @@ class Pallet {
       isDoneQty: map['isDoneQty'] != null ? map['isDoneQty'] as bool : null,
       hasBeenScanned:
           map['hasBeenScanned'] != null ? map['hasBeenScanned'] as bool : null,
+      isReturn: map['isReturn'] != null ? map['isReturn'] as bool : null,
       serialNumber: map['serialNumber'] != null
           ? List<SerialNumber>.from(
               (map['serialNumber'] as List<int>).map<SerialNumber?>(
@@ -139,7 +145,7 @@ class Pallet {
 
   @override
   String toString() {
-    return 'Pallet(id: $id, palletCode: $palletCode, productName: $productName, code: $code, dateTime: $dateTime, hasActualDateTime: $hasActualDateTime, actualDateTime: $actualDateTime, sku: $sku, lotsCode: $lotsCode, productQty: $productQty, doneQty: $doneQty, isDoneQty: $isDoneQty, hasBeenScanned: $hasBeenScanned, serialNumber: $serialNumber, scannedSerialNumber: $scannedSerialNumber)';
+    return 'Pallet(id: $id, palletCode: $palletCode, productName: $productName, code: $code, dateTime: $dateTime, hasActualDateTime: $hasActualDateTime, actualDateTime: $actualDateTime, sku: $sku, lotsCode: $lotsCode, productQty: $productQty, doneQty: $doneQty, isDoneQty: $isDoneQty, hasBeenScanned: $hasBeenScanned, isReturn: $isReturn, serialNumber: $serialNumber, scannedSerialNumber: $scannedSerialNumber)';
   }
 
   @override
@@ -159,6 +165,7 @@ class Pallet {
         other.doneQty == doneQty &&
         other.isDoneQty == isDoneQty &&
         other.hasBeenScanned == hasBeenScanned &&
+        other.isReturn == isReturn &&
         listEquals(other.serialNumber, serialNumber) &&
         listEquals(other.scannedSerialNumber, scannedSerialNumber);
   }
@@ -178,6 +185,7 @@ class Pallet {
         doneQty.hashCode ^
         isDoneQty.hashCode ^
         hasBeenScanned.hashCode ^
+        isReturn.hashCode ^
         serialNumber.hashCode ^
         scannedSerialNumber.hashCode;
   }

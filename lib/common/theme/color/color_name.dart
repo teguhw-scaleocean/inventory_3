@@ -46,6 +46,7 @@ class ColorName {
   static const Color blue1Color = Color(0xFF106AA7);
   static const Color blue2Color = Color(0xFFEDF7FD);
   static const Color blue3Color = Color(0xFF4BACED);
+  static const Color blue4Color = Color(0xFF1C8DD9);
   static const Color highlightColor = Color(0xFFF0F6FF);
   static const Color yellow2Color = Color(0xFFEDA24B);
   static const Color yellowReturnColor = Color(0xFFFFBF00);

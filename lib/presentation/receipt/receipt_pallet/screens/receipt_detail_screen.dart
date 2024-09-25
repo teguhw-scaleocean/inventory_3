@@ -22,6 +22,7 @@ import 'package:inventory_v3/data/model/receipt.dart';
 import 'package:inventory_v3/data/model/scan_view.dart';
 import 'package:inventory_v3/presentation/receipt/receipt_pallet/cubit/add_pallet_cubit/add_pallet_state.dart';
 import 'package:inventory_v3/presentation/receipt/receipt_pallet/screens/pallet/add_pallet_screen.dart';
+import 'package:inventory_v3/presentation/receipt/receipt_pallet/screens/pallet/return_pallet_and_product_screen.dart';
 import 'package:inventory_v3/presentation/receipt/receipt_pallet/screens/receipt_product_detail.dart';
 import 'package:inventory_v3/presentation/receipt/receipt_pallet/widget/scan_view_widget.dart';
 import 'package:inventory_v3/presentation/receipt/receipt_product/cubit/product_detail/product_menu_product_detail_cubit.dart';
@@ -322,8 +323,15 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
                   ),
                   SizedBox(height: 12.h),
                   buildPalletButtonSection(
-                      status: receipt.status,
-                      onTapReturn: () {
+                    status: receipt.status,
+                    onTapReturn: () {
+                      if (receipt.id == 6) {
+                        final returnResult = Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    const ReturnPalletAndProductScreen()));
+                      } else {
                         final returnResult = Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -345,7 +353,9 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
                             });
                           }
                         });
-                      }),
+                      }
+                    },
+                  ),
                   SizedBox(height: 14.h),
                   BlocBuilder<ProductMenuProductDetailCubit,
                       ProductMenuProductDetailState>(builder: (context, state) {

@@ -160,21 +160,7 @@ class _ReturnPalletScreenState extends State<ReturnPalletScreen> {
             ],
           ),
         ),
-        bottomNavigationBar: Container(
-          width: double.infinity,
-          height: 72.h,
-          padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 16.h),
-          decoration: const BoxDecoration(
-            color: ColorName.whiteColor,
-            boxShadow: [
-              BoxShadow(
-                color: Color(0x33333A51),
-                blurRadius: 16,
-                offset: Offset(0, 4),
-                spreadRadius: 0,
-              )
-            ],
-          ),
+        bottomNavigationBar: buildBottomNavbar(
           child: PrimaryButton(
             onPressed: () {
               if (selectedPallet == null ||

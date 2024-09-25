@@ -48,6 +48,16 @@ class _ReceiptListScreenState extends State<ReceiptListScreen>
     tabs = ["All", "Waiting", "Ready", "Late"];
     listReceipt = [
       Receipt(
+        id: 6,
+        name: "WH/IN/00006",
+        status: "Ready",
+        statusColor: ColorName.readyColor,
+        packageName: "Package: Pallet",
+        packageStatus: "Tracking: Serial Number",
+        dateTime: "16/06/2024 - 15:36",
+        destination: "To: Medical Storage",
+      ),
+      Receipt(
         id: 9,
         name: "WH/IN/00008",
         status: "Ready",

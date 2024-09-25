@@ -7,6 +7,7 @@ import 'package:inventory_v3/common/components/custom_divider.dart';
 import 'package:inventory_v3/common/components/primary_button.dart';
 import 'package:inventory_v3/common/components/reusable_confirm_dialog.dart';
 import 'package:inventory_v3/data/model/pallet.dart';
+import 'package:inventory_v3/presentation/receipt/receipt_pallet/screens/pallet/return_pallet_product/return_add_product_screen.dart';
 
 import '../../../../../common/components/reusable_dropdown_menu.dart';
 import '../../../../../common/components/reusable_widget.dart';
@@ -24,6 +25,9 @@ class ReturnPalletAndProductScreen extends StatefulWidget {
 
 class _ReturnPalletAndProductScreenState
     extends State<ReturnPalletAndProductScreen> {
+  int idTracking = 0;
+  bool isShowResult = false;
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -43,16 +47,49 @@ class _ReturnPalletAndProductScreenState
                     ),
                   ),
               itemBuilder: (context, index) {
+                if (isShowResult && index == 0) {
+                  return ExpansionTile(
+                    collapsedShape: const RoundedRectangleBorder(
+                      side: BorderSide.none,
+                    ),
+                    shape: const RoundedRectangleBorder(
+                      side: BorderSide.none,
+                    ),
+                    title: Text(
+                      "Pallet A14$index",
+                      style: BaseText.grey10Text14,
+                    ),
+                    children: [buildProductItemCard()],
+                  );
+                }
+
                 return SizedBox(
                   height: 30.h,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        "Pallet A141",
+                        "Pallet A14$index",
                         style: BaseText.grey10Text14,
                       ),
-                      _buildAddProductButton()
+                      _buildAddProductButton(onTap: () {
+                        if (idTracking == 0) {
+                          final addProductBySerialNumber = Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ReturnAddProductScreen(
+                                idTracking: idTracking,
+                              ),
+                            ),
+                          );
+
+                          addProductBySerialNumber.then((value) {
+                            setState(() {
+                              isShowResult = true;
+                            });
+                          });
+                        }
+                      })
                     ],
                   ),
                 );
@@ -81,9 +118,9 @@ class _ReturnPalletAndProductScreenState
     );
   }
 
-  InkWell _buildAddProductButton() {
+  InkWell _buildAddProductButton({required void Function()? onTap}) {
     return InkWell(
-      onTap: () {},
+      onTap: onTap,
       child: Container(
         padding: EdgeInsets.symmetric(
           horizontal: 13.w,
@@ -107,5 +144,34 @@ class _ReturnPalletAndProductScreenState
         ),
       ),
     );
+  }
+
+  Widget buildProductItemCard() {
+    return Container(
+        width: 328,
+        height: 126,
+        padding: const EdgeInsets.all(12),
+        decoration: ShapeDecoration(
+          color: Colors.white,
+          shape: RoundedRectangleBorder(
+            side: const BorderSide(width: 1, color: Color(0xFFEFEFEF)),
+            borderRadius: BorderRadius.circular(6),
+          ),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "Nebulizer Machine",
+                  style: BaseText.grey10Text14,
+                ),
+                Text("Edit", style: BaseText.blue4Text11)
+              ],
+            )
+          ],
+        ));
   }
 }

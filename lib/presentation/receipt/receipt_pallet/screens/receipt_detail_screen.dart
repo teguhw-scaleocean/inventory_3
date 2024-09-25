@@ -340,6 +340,7 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
                               onShowSuccessDialog(
                                 context: context,
                                 scannedItem: result.palletCode,
+                                isOnReturn: true,
                               );
                             });
                           }
@@ -670,7 +671,7 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
           children: [
             Container(
               width: double.infinity,
-              padding: EdgeInsets.fromLTRB(16.w, 12.h, 0, 10.h),
+              padding: EdgeInsets.fromLTRB(16.w, 12.h, 16.w, 10.h),
               decoration: const BoxDecoration(
                 border: Border(
                   bottom: BorderSide(
@@ -679,10 +680,18 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
                   ),
                 ),
               ),
-              child: Text(
-                "Pallet ${product0.palletCode}",
-                style:
-                    BaseText.black2Text15.copyWith(fontWeight: BaseText.medium),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "Pallet ${product0.palletCode}",
+                    style: BaseText.black2Text15
+                        .copyWith(fontWeight: BaseText.medium),
+                  ),
+                  (product0.isReturn == true)
+                      ? buildBadgeReturn()
+                      : const SizedBox()
+                ],
               ),
             ),
             Container(

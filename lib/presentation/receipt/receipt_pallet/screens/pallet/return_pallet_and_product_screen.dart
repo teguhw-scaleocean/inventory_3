@@ -127,6 +127,13 @@ class _ReturnPalletAndProductScreenState
         bottomNavigationBar: buildBottomNavbar(
           child: PrimaryButton(
             onPressed: () {
+              ReturnPallet returnPallet = ReturnPallet(
+                id: 1,
+                palletCode: "A4910",
+                reason: "Overstock",
+                location: "Warehouse A-342-3-4",
+              );
+
               Future.delayed(const Duration(milliseconds: 500), () {
                 reusableConfirmDialog(
                   context,
@@ -136,7 +143,7 @@ class _ReturnPalletAndProductScreenState
                   maxLines: 2,
                   onPressed: () {
                     Navigator.pop(context);
-                    Navigator.pop(context, true);
+                    Navigator.pop(context, returnPallet);
                     // Navigator.pop(context);
                   },
                 );

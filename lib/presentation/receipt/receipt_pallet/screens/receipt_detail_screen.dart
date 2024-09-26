@@ -326,7 +326,7 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
                     status: receipt.status,
                     onTapReturn: () {
                       if (receipt.id == 6) {
-                        final returnResult = Navigator.push<bool>(
+                        final returnResult = Navigator.push(
                             context,
                             MaterialPageRoute(
                                 builder: (context) =>
@@ -334,6 +334,8 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
 
                         returnResult.then((value) {
                           if (value != null) {
+                            var result = value as ReturnPallet;
+                            cubit.getReturnPallet(result);
                             Future.delayed(const Duration(milliseconds: 600),
                                 () {
                               onShowSuccessNewDialog(

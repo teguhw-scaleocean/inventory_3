@@ -48,18 +48,47 @@ class _ReturnPalletAndProductScreenState
                   ),
               itemBuilder: (context, index) {
                 if (isShowResult && index == 0) {
-                  return ExpansionTile(
-                    collapsedShape: const RoundedRectangleBorder(
-                      side: BorderSide.none,
+                  return Theme(
+                    data: Theme.of(context).copyWith(
+                      listTileTheme: ListTileTheme.of(context).copyWith(
+                        dense: true,
+                        contentPadding: EdgeInsets.zero,
+                        visualDensity: VisualDensity.compact,
+                      ),
                     ),
-                    shape: const RoundedRectangleBorder(
-                      side: BorderSide.none,
+                    child: ExpansionTile(
+                      collapsedShape: const RoundedRectangleBorder(
+                        side: BorderSide.none,
+                      ),
+                      shape: const RoundedRectangleBorder(
+                        side: BorderSide.none,
+                      ),
+                      tilePadding: EdgeInsets.zero,
+                      title: Text(
+                        "Pallet A14$index",
+                        style: BaseText.grey10Text14,
+                      ),
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            buildProductItemCard(),
+                            SizedBox(height: 8.h),
+                            SizedBox(
+                              height: 30.h,
+                              child: Row(
+                                children: [
+                                  _buildAddProductButton(
+                                    onTap: () {},
+                                  ),
+                                ],
+                              ),
+                            ),
+                            SizedBox(height: 8.h),
+                          ],
+                        )
+                      ],
                     ),
-                    title: Text(
-                      "Pallet A14$index",
-                      style: BaseText.grey10Text14,
-                    ),
-                    children: [buildProductItemCard()],
                   );
                 }
 
@@ -148,9 +177,9 @@ class _ReturnPalletAndProductScreenState
 
   Widget buildProductItemCard() {
     return Container(
-        width: 328,
-        height: 126,
-        padding: const EdgeInsets.all(12),
+        // width: 328,
+        // height: 126,
+        padding: EdgeInsets.all(12.w),
         decoration: ShapeDecoration(
           color: Colors.white,
           shape: RoundedRectangleBorder(
@@ -170,8 +199,48 @@ class _ReturnPalletAndProductScreenState
                 ),
                 Text("Edit", style: BaseText.blue4Text11)
               ],
-            )
+            ),
+            SizedBox(height: 2.h),
+            Text(
+              "NM928321",
+              style: BaseText.grey2Text12.copyWith(
+                fontWeight: BaseText.light,
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.symmetric(vertical: 8.h),
+              child: CustomDivider(thickness: 0.5.h),
+            ),
+            _buildProductDescPerRow(
+              label: "Items: ",
+              value: "1",
+            ),
+            SizedBox(height: 2.h),
+            _buildProductDescPerRow(
+              label: "Reason: ",
+              value: "Overstock",
+            ),
+            SizedBox(height: 2.h),
+            _buildProductDescPerRow(
+              label: "Location: ",
+              value: "Warehouse A-342-3-4",
+            ),
           ],
         ));
+  }
+
+  Row _buildProductDescPerRow({
+    required String label,
+    required String value,
+  }) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label, style: BaseText.grey2Text12),
+        Text(value,
+            style:
+                BaseText.grey2Text12.copyWith(color: const Color(0xFF797979))),
+      ],
+    );
   }
 }

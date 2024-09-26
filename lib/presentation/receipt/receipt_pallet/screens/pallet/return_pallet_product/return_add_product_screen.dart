@@ -234,15 +234,17 @@ class _ReturnAddProductScreenState extends State<ReturnAddProductScreen> {
               if (idTracking == 0) SizedBox(height: 6.h),
               if (idTracking == 0)
                 reusableAddSerialNumberButton(
-                    onTap: () {
-                      setState(() {
-                        listSnController.add(TextEditingController());
+                  onTap: () {
+                    // setState(() {
+                    //   listSnController.add(TextEditingController());
 
-                        debugPrint(
-                            "listSnController.length: ${listSnController.length}");
-                      });
-                    },
-                    maxwidth: 360.w),
+                    //   debugPrint(
+                    //       "listSnController.length: ${listSnController.length}");
+                    // });
+                  },
+                  maxwidth: ScreenUtil().screenWidth - 32.w,
+                  isCenterTitle: true,
+                ),
               SizedBox(height: 14.h),
               buildRequiredLabel("Reason"),
               SizedBox(height: 4.h),

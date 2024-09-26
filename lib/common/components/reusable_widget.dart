@@ -241,6 +241,39 @@ onShowSuccessDialog(
   ).show();
 }
 
+onShowSuccessNewDialog({
+  required BuildContext context,
+  required Widget body,
+  void Function()? onPressed,
+  // String? scannedItem,
+  // bool? isOnUpdate,
+  // bool? isOnReturn,
+  // bool? isBoth,
+}) {
+  return AwesomeDialog(
+    context: context,
+    animType: AnimType.bottomSlide,
+    headerAnimationLoop: false,
+    dialogType: DialogType.success,
+    showCloseIcon: true,
+    width: double.infinity,
+    // padding: EdgeInsets.symmetric(horizontal: 16.w),
+    body: body,
+    btnOkOnPress: () {
+      debugPrint('OnClcik');
+    },
+    // btnOkIcon: Icons.check_circle,
+    btnOk: PrimaryButton(
+      onPressed: onPressed,
+      height: 40.h,
+      title: "OK",
+    ),
+    onDismissCallback: (type) {
+      debugPrint('Dialog Dissmiss from callback $type');
+    },
+  ).show();
+}
+
 Container buildExpDateButton({required String label, required Color eColor}) {
   return Container(
     width: 226.w,

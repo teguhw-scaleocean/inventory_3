@@ -51,12 +51,19 @@ Future<dynamic> reusableConfirmDialog(
                     ),
                     SizedBox(height: 24.h),
                     Flexible(
-                      child: Text(
-                        message ?? "",
-                        maxLines: maxLines ?? 1,
-                        style: BaseText.grey10Text14.copyWith(
-                          fontWeight: BaseText.light,
-                        ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text(
+                            message ?? "",
+                            maxLines: maxLines ?? 1,
+                            textAlign: TextAlign.center,
+                            style: BaseText.grey10Text14.copyWith(
+                              fontWeight: BaseText.light,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                     SizedBox(height: 24.h),

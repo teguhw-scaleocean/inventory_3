@@ -131,9 +131,12 @@ class _ReturnPalletAndProductScreenState
                 reusableConfirmDialog(
                   context,
                   title: "Confirm Return",
-                  message: "Are you sure you want to return this pallet?",
+                  message:
+                      "Are you sure you want to return this\nPallet & Product?",
+                  maxLines: 2,
                   onPressed: () {
                     Navigator.pop(context);
+                    Navigator.pop(context, true);
                     // Navigator.pop(context);
                   },
                 );

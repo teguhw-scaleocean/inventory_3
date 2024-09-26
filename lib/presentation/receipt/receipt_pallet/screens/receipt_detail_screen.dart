@@ -326,11 +326,50 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
                     status: receipt.status,
                     onTapReturn: () {
                       if (receipt.id == 6) {
-                        final returnResult = Navigator.push(
+                        final returnResult = Navigator.push<bool>(
                             context,
                             MaterialPageRoute(
                                 builder: (context) =>
                                     const ReturnPalletAndProductScreen()));
+
+                        returnResult.then((value) {
+                          if (value != null) {
+                            Future.delayed(const Duration(milliseconds: 600),
+                                () {
+                              onShowSuccessNewDialog(
+                                context: context,
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                body: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Container(height: 10.h),
+                                    Text(
+                                      "Return Successful!",
+                                      style: BaseText.black2TextStyle.copyWith(
+                                        fontSize: 16.sp,
+                                        fontWeight: BaseText.semiBold,
+                                      ),
+                                    ),
+                                    Container(height: 4.h),
+                                    Text(
+                                      'Great job! You successfully returned the\npallet and product.',
+                                      textAlign: TextAlign.center,
+                                      maxLines: 2,
+                                      style: BaseText.grey2Text14.copyWith(
+                                        fontWeight: BaseText.light,
+                                      ),
+                                    ),
+                                    SizedBox(height: 24.h),
+                                  ],
+                                ),
+                              );
+                            });
+                          }
+                        });
                       } else {
                         final returnResult = Navigator.push(
                             context,

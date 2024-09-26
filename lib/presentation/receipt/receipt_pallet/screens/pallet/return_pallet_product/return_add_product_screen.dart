@@ -50,6 +50,27 @@ class _ReturnAddProductScreenState extends State<ReturnAddProductScreen> {
   var selectedLocation;
   bool hasLocationFocus = false;
 
+  var selectedSerialNumber;
+  bool hasSerialNumberFocus = false;
+
+  List<String> listSerialNumber = [
+    "SN-NM1234567845",
+    "SN-NM1234567846",
+    "SN-NM1234567847",
+    // "SN-NM1234567848",
+    // "SN-NM1234567849",
+    // "SN-NM1234567850",
+    // "SN-NM1234567851",
+    // "SN-NM1234567852",
+    // "SN-NM1234567853",
+    // "SN-NM1234567854",
+    // "SN-NM1234567855",
+    // "SN-NM1234567856",
+    // "SN-NM1234567857",
+    // "SN-NM1234567858",
+    // "SN-NM1234567859",
+    // "SN-NM1234567860",
+  ];
   List<String> listReason = [
     "Does not meet standards",
     "Wrong product",
@@ -72,7 +93,8 @@ class _ReturnAddProductScreenState extends State<ReturnAddProductScreen> {
           onTap: () => Navigator.pop(context),
           title: "Add Product",
         ),
-        body: Padding(
+        body: Container(
+          width: double.infinity,
           padding: EdgeInsets.all(16.w),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -128,27 +150,37 @@ class _ReturnAddProductScreenState extends State<ReturnAddProductScreen> {
                     Flexible(
                       child: LimitedBox(
                         maxWidth: 280.w,
-                        child: CustomFormField(
-                          title: "",
-                          hintText: "Input Serial Number",
-                          isShowTitle: false,
-                          isRequired: true,
-
-                          controller: snController,
-                          validator: (v) {
-                            if (v == null || v.isEmpty) {
-                              // var icon = CupertinoIcons
-                              //     .info_circle_fill.codePoint
-                              //     .toRadixString(16);
-
-                              // debugPrint(icon);
-                              return "This field is required. Please fill it in.";
-                            }
-                            return null;
+                        child: ReusableDropdownMenu(
+                          maxHeight: 500.h,
+                          offset: const Offset(0, -15),
+                          hasSearch: false,
+                          label: "",
+                          listOfItemsValue:
+                              listSerialNumber.map((e) => e).toList(),
+                          selectedValue: selectedSerialNumber,
+                          isExpand: hasSerialNumberFocus,
+                          borderColor: (hasSerialNumberFocus)
+                              ? ColorName.mainColor
+                              : ColorName.borderColor,
+                          hintText: "   Select Product",
+                          hintTextStyle: BaseText.grey1Text14.copyWith(
+                            fontWeight: BaseText.regular,
+                            color: ColorName.grey12Color,
+                          ),
+                          onTap: (focus) {
+                            setState(() {
+                              hasSerialNumberFocus = !hasSerialNumberFocus;
+                            });
+                            debugPrint(
+                                "hasProductFocus: $hasSerialNumberFocus");
                           },
-                          // onChanged: (v) {
-                          //   snController.text = v;
-                          // },
+                          onChange: (value) {
+                            setState(() {
+                              selectedSerialNumber = value;
+                            });
+                            debugPrint(
+                                "selectedSerialNumber: ${selectedSerialNumber.toString()}");
+                          },
                         ),
                       ),
                     ),
@@ -201,14 +233,16 @@ class _ReturnAddProductScreenState extends State<ReturnAddProductScreen> {
                     }),
               if (idTracking == 0) SizedBox(height: 6.h),
               if (idTracking == 0)
-                reusableAddSerialNumberButton(onTap: () {
-                  setState(() {
-                    listSnController.add(TextEditingController());
+                reusableAddSerialNumberButton(
+                    onTap: () {
+                      setState(() {
+                        listSnController.add(TextEditingController());
 
-                    debugPrint(
-                        "listSnController.length: ${listSnController.length}");
-                  });
-                }),
+                        debugPrint(
+                            "listSnController.length: ${listSnController.length}");
+                      });
+                    },
+                    maxwidth: 360.w),
               SizedBox(height: 14.h),
               buildRequiredLabel("Reason"),
               SizedBox(height: 4.h),

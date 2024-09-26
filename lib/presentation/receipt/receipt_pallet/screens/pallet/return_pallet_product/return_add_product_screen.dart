@@ -27,7 +27,6 @@ class ReturnAddProductScreen extends StatefulWidget {
 
 class _ReturnAddProductScreenState extends State<ReturnAddProductScreen> {
   final TextEditingController palletIdController = TextEditingController();
-  List<TextEditingController> listSnController = [];
   TextEditingController snController = TextEditingController();
   TextEditingController qtyController = TextEditingController();
   TextEditingController lotsController = TextEditingController();
@@ -53,6 +52,9 @@ class _ReturnAddProductScreenState extends State<ReturnAddProductScreen> {
   var selectedSerialNumber;
   bool hasSerialNumberFocus = false;
 
+  var selectedSerialNumber1;
+  bool hasSerialNumber1Focus = false;
+
   List<String> listSerialNumber = [
     "SN-NM1234567845",
     "SN-NM1234567846",
@@ -71,6 +73,10 @@ class _ReturnAddProductScreenState extends State<ReturnAddProductScreen> {
     // "SN-NM1234567859",
     // "SN-NM1234567860",
   ];
+
+  List<dynamic> listSnController = [];
+  List<dynamic> listSnSelected = [];
+
   List<String> listReason = [
     "Does not meet standards",
     "Wrong product",
@@ -150,38 +156,36 @@ class _ReturnAddProductScreenState extends State<ReturnAddProductScreen> {
                     Flexible(
                       child: LimitedBox(
                         maxWidth: 280.w,
-                        child: ReusableDropdownMenu(
-                          maxHeight: 500.h,
-                          offset: const Offset(0, -15),
-                          hasSearch: false,
-                          label: "",
-                          listOfItemsValue:
-                              listSerialNumber.map((e) => e).toList(),
-                          selectedValue: selectedSerialNumber,
-                          isExpand: hasSerialNumberFocus,
-                          borderColor: (hasSerialNumberFocus)
-                              ? ColorName.mainColor
-                              : ColorName.borderColor,
-                          hintText: "   Select Product",
-                          hintTextStyle: BaseText.grey1Text14.copyWith(
-                            fontWeight: BaseText.regular,
-                            color: ColorName.grey12Color,
-                          ),
-                          onTap: (focus) {
-                            setState(() {
-                              hasSerialNumberFocus = !hasSerialNumberFocus;
-                            });
-                            debugPrint(
-                                "hasProductFocus: $hasSerialNumberFocus");
-                          },
-                          onChange: (value) {
-                            setState(() {
-                              selectedSerialNumber = value;
-                            });
-                            debugPrint(
-                                "selectedSerialNumber: ${selectedSerialNumber.toString()}");
-                          },
-                        ),
+                        child: Builder(builder: (context) {
+                          return ReusableDropdownMenu(
+                            maxHeight: 500.h,
+                            offset: const Offset(0, -15),
+                            hasSearch: false,
+                            label: "",
+                            listOfItemsValue:
+                                listSerialNumber.map((e) => e).toList(),
+                            selectedValue: selectedSerialNumber,
+                            hintText: "   Select Product",
+                            hintTextStyle: BaseText.grey1Text14.copyWith(
+                              fontWeight: BaseText.regular,
+                              color: ColorName.grey12Color,
+                            ),
+                            onTap: (focus) {},
+                            onChange: (value) {
+                              setState(() {
+                                // selectedSerialNumber = value;
+                                listSnSelected.add(value);
+                                // listSerialNumber = [...listSerialNumber]
+                                //   ..removeWhere((element) => element == value);
+                              });
+
+                              debugPrint(
+                                  "selectedSerialNumber field 1: ${listSnSelected.toString()}");
+                              // debugPrint(
+                              //     "listSerialNumber: ${listSerialNumber.map((e) => e).toList()}");
+                            },
+                          );
+                        }),
                       ),
                     ),
                     SizedBox(width: 8.w),
@@ -193,37 +197,61 @@ class _ReturnAddProductScreenState extends State<ReturnAddProductScreen> {
                 ListView.builder(
                     shrinkWrap: true,
                     itemCount: listSnController.length,
-                    itemBuilder: (context, idTracking) {
+                    itemBuilder: (context, index) {
                       return Column(
                         children: [
                           Row(
                             children: [
                               LimitedBox(
                                 maxWidth: 280.w,
-                                child: CustomFormField(
-                                  title: "",
-                                  hintText: "",
-                                  contentPadding:
-                                      EdgeInsets.symmetric(horizontal: 16.w),
-                                  controller: listSnController[idTracking],
-                                  isShowTitle: false,
-                                  onChanged: (v) {
+                                child: ReusableDropdownMenu(
+                                  maxHeight: 500.h,
+                                  offset: const Offset(0, -15),
+                                  hasSearch: false,
+                                  label: "",
+                                  listOfItemsValue:
+                                      listSerialNumber.map((e) => e).toList(),
+                                  selectedValue: selectedSerialNumber1,
+                                  isExpand: hasSerialNumber1Focus,
+                                  borderColor: (hasSerialNumber1Focus)
+                                      ? ColorName.mainColor
+                                      : ColorName.borderColor,
+                                  hintText: "   Select Product",
+                                  hintTextStyle: BaseText.grey1Text14.copyWith(
+                                    fontWeight: BaseText.regular,
+                                    color: ColorName.grey12Color,
+                                  ),
+                                  onTap: (focus) {
                                     setState(() {
-                                      debugPrint("onChanged: $v");
+                                      hasSerialNumber1Focus =
+                                          !hasSerialNumber1Focus;
                                     });
+                                    debugPrint(
+                                        "hasProductFocus: $hasSerialNumber1Focus");
+                                  },
+                                  onChange: (value) {
+                                    setState(() {
+                                      listSnSelected.add(value);
+                                    });
+                                    debugPrint(
+                                        "selectedSerialNumber: ${listSnSelected.map((e) => e).toList()}");
                                   },
                                 ),
                               ),
                               SizedBox(width: 8.w),
                               reusableDeleteButton(() {
                                 setState(() {
-                                  listSnController[idTracking].clear();
-                                  listSnController[idTracking].dispose();
-                                  listSnController.removeAt(idTracking);
+                                  // listSnController[idTracking].clear();
+                                  // listSnController[idTracking].dispose();
+                                  var removeItemByIndex = index + 1;
+                                  listSnController.removeAt(index);
+                                  listSnSelected.removeAt(removeItemByIndex);
                                 });
 
                                 debugPrint(
                                     "listSnController: ${listSnController.length}");
+                                debugPrint(
+                                    "selectedSerialNumber: ${listSnSelected.map((e) => e).toList()}");
                               })
                             ],
                           ),
@@ -235,12 +263,12 @@ class _ReturnAddProductScreenState extends State<ReturnAddProductScreen> {
               if (idTracking == 0)
                 reusableAddSerialNumberButton(
                   onTap: () {
-                    // setState(() {
-                    //   listSnController.add(TextEditingController());
+                    setState(() {
+                      listSnController.add("empty-${listSnController.length}");
 
-                    //   debugPrint(
-                    //       "listSnController.length: ${listSnController.length}");
-                    // });
+                      debugPrint(
+                          "listSnController.length: ${listSnController.length}");
+                    });
                   },
                   maxwidth: ScreenUtil().screenWidth - 32.w,
                   isCenterTitle: true,

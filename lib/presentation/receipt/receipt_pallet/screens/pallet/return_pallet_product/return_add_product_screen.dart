@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:inventory_v3/common/components/button_dialog.dart';
 import 'package:inventory_v3/common/components/custom_app_bar.dart';
 import 'package:inventory_v3/data/model/pallet.dart';
 
@@ -100,9 +101,14 @@ class _ReturnAddProductScreenState extends State<ReturnAddProductScreen> {
     titleAppBar = isEdit == true ? "Edit Product: Pallet A493" : "Add Product";
 
     if (isEdit == true) {
-      selectedProduct = listProduct.first;
-      selectedObjectProduct = listProduct
-          .firstWhere((element) => element.productName == selectedProduct);
+      selectedProduct = listProduct.first.productName;
+      selectedObjectProduct = listProduct.firstWhere(
+        (element) => element.productName == selectedProduct,
+        orElse: () => listProduct.first,
+      );
+      selectedSerialNumber = listSerialNumber.first;
+      selectedReason = listReason.first;
+      selectedLocation = listLocation.first;
     }
   }
 
@@ -357,7 +363,7 @@ class _ReturnAddProductScreenState extends State<ReturnAddProductScreen> {
               ? Row(
                   children: [
                     Flexible(
-                      child: SecondaryButton(
+                      child: SecondaryButtonDialog(
                         onPressed: () {},
                         height: 40.h,
                         width: 160.w,
@@ -365,8 +371,9 @@ class _ReturnAddProductScreenState extends State<ReturnAddProductScreen> {
                         hasBorder: true,
                       ),
                     ),
+                    SizedBox(width: 8.w),
                     Flexible(
-                      child: PrimaryButton(
+                      child: PrimaryButtonDialog(
                         onPressed: () {},
                         height: 40.h,
                         width: 160.w,

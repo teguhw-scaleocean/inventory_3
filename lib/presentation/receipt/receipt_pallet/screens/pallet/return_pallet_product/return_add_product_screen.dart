@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:inventory_v3/common/components/button_dialog.dart';
 import 'package:inventory_v3/common/components/custom_app_bar.dart';
 import 'package:inventory_v3/data/model/pallet.dart';
 
 import '../../../../../../common/components/custom_form.dart';
+import '../../../../../../common/components/custom_quantity_button.dart';
 import '../../../../../../common/components/primary_button.dart';
 import '../../../../../../common/components/reusable_add_serial_number_button.dart';
 import '../../../../../../common/components/reusable_confirm_dialog.dart';
@@ -13,6 +15,8 @@ import '../../../../../../common/components/reusable_scan_button.dart';
 import '../../../../../../common/components/reusable_widget.dart';
 import '../../../../../../common/theme/color/color_name.dart';
 import '../../../../../../common/theme/text/base_text.dart';
+import '../../../cubit/count_cubit.dart';
+import '../../../cubit/count_state.dart';
 
 class ReturnAddProductScreen extends StatefulWidget {
   final int idTracking;
@@ -63,6 +67,8 @@ class _ReturnAddProductScreenState extends State<ReturnAddProductScreen> {
 
   String titleAppBar = "";
   bool isEdit = false;
+
+  bool isQtyButtonEnabled = false;
 
   List<String> listSerialNumber = [
     "SN-NM1234567845",
@@ -167,8 +173,8 @@ class _ReturnAddProductScreenState extends State<ReturnAddProductScreen> {
                 onChange: (value) {
                   setState(() {
                     selectedProduct = value;
-                    selectedObjectProduct = listProduct
-                        .firstWhere((element) => element.productName == value);
+                    selectedObjectProduct = listProduct.firstWhere(
+                        (element) => element.productName == selectedProduct);
                   });
                   debugPrint(
                       "selectedObjectProduct: ${selectedObjectProduct.toString()}");
@@ -180,7 +186,9 @@ class _ReturnAddProductScreenState extends State<ReturnAddProductScreen> {
               (selectedProduct != null)
                   ? buildDisableField(
                       label: "SKU",
-                      value: selectedObjectProduct.sku!,
+                      value: (idTracking == 0)
+                          ? selectedObjectProduct.sku!
+                          : selectedObjectProduct.code,
                     )
                   : const SizedBox(),
               if (idTracking == 0) buildRequiredLabel("Serial Number"),
@@ -310,54 +318,117 @@ class _ReturnAddProductScreenState extends State<ReturnAddProductScreen> {
                   isCenterTitle: true,
                 ),
               (idTracking == 1)
-                  ? Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        SizedBox(height: 16.h),
-                        buildRequiredLabel("Lots Number"),
-                        SizedBox(height: 4.h),
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Flexible(
-                              child: LimitedBox(
-                                maxWidth: 280.w,
-                                child: Builder(builder: (context) {
-                                  return ReusableDropdownMenu(
-                                    maxHeight: 500.h,
-                                    offset: const Offset(0, -15),
-                                    hasSearch: false,
-                                    label: "",
-                                    listOfItemsValue:
-                                        listLots.map((e) => e).toList(),
-                                    selectedValue: selectedLots,
-                                    hintText: "   Select Lots Number",
-                                    hintTextStyle:
-                                        BaseText.grey1Text14.copyWith(
-                                      fontWeight: BaseText.regular,
-                                      color: ColorName.grey12Color,
-                                    ),
-                                    onTap: (focus) {},
-                                    onChange: (value) {
-                                      setState(() {
-                                        selectedLots = value;
-                                      });
+                  ? StatefulBuilder(builder: (context, otherSetState) {
+                      double value = 0.0;
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(height: 14.h),
+                          buildRequiredLabel("Lots Number"),
+                          SizedBox(height: 4.h),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Flexible(
+                                child: LimitedBox(
+                                  maxWidth: 280.w,
+                                  child: Builder(builder: (context) {
+                                    return ReusableDropdownMenu(
+                                      maxHeight: 500.h,
+                                      offset: const Offset(0, -15),
+                                      hasSearch: false,
+                                      label: "",
+                                      listOfItemsValue:
+                                          listLots.map((e) => e).toList(),
+                                      selectedValue: selectedLots,
+                                      hintText: "   Select Lots Number",
+                                      hintTextStyle:
+                                          BaseText.grey1Text14.copyWith(
+                                        fontWeight: BaseText.regular,
+                                        color: ColorName.grey12Color,
+                                      ),
+                                      onTap: (focus) {},
+                                      onChange: (value) {
+                                        setState(() {
+                                          selectedLots = value;
+                                        });
 
-                                      debugPrint(
-                                          "selectedLots: ${selectedLots.toString()}");
-                                      // debugPrint(
-                                      //     "listSerialNumber: ${listSerialNumber.map((e) => e).toList()}");
-                                    },
-                                  );
-                                }),
+                                        debugPrint(
+                                            "selectedLots: ${selectedLots.toString()}");
+                                        // debugPrint(
+                                        //     "listSerialNumber: ${listSerialNumber.map((e) => e).toList()}");
+                                      },
+                                    );
+                                  }),
+                                ),
                               ),
-                            ),
-                            SizedBox(width: 8.w),
-                            reusableScanButton()
-                          ],
-                        ),
-                      ],
-                    )
+                              SizedBox(width: 8.w),
+                              reusableScanButton()
+                            ],
+                          ),
+                          SizedBox(height: 14.h),
+                          buildRequiredLabel("Quantity"),
+                          SizedBox(height: 4.h),
+                          BlocConsumer<CountCubit, CountState>(
+                              listener: (context, state) {
+                            qtyController.value = TextEditingValue(
+                              text: state.quantity.toString(),
+                            );
+                            debugPrint(
+                                "qtyController listen: ${qtyController.text}");
+
+                            isQtyButtonEnabled = state.quantity > 0;
+                          }, builder: (context, state) {
+                            var countCubit = context.read<CountCubit>();
+
+                            borderColor = ColorName.borderColor;
+
+                            qtyIconColor = (isQtyButtonEnabled)
+                                ? ColorName.grey10Color
+                                : ColorName.grey18Color;
+                            qtyTextColor = (isQtyButtonEnabled)
+                                ? ColorName.grey10Color
+                                : ColorName.grey12Color;
+
+                            return CustomQuantityButton(
+                              controller: qtyController,
+                              borderColor: borderColor,
+                              iconColor: qtyIconColor,
+                              textColor: qtyTextColor,
+                              onChanged: (v) {
+                                if (v.isEmpty || v == "0.0") {
+                                  otherSetState(() {
+                                    isQtyButtonEnabled = false;
+                                  });
+                                } else {
+                                  otherSetState(() {
+                                    isQtyButtonEnabled = true;
+                                  });
+                                }
+                              },
+                              onSubmitted: (v) {
+                                otherSetState(() {
+                                  value = double.parse(v);
+                                  qtyController.value = TextEditingValue(
+                                    text: value.toString(),
+                                  );
+
+                                  countCubit.submit(value);
+                                });
+                              },
+                              onDecreased: () {
+                                if (state.quantity >= 1) {
+                                  countCubit.decrement(value);
+                                }
+                              },
+                              onIncreased: () {
+                                countCubit.increment(value);
+                              },
+                            );
+                          }),
+                        ],
+                      );
+                    })
                   : const SizedBox(),
               SizedBox(height: 14.h),
               buildRequiredLabel("Reason"),

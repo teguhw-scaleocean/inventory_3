@@ -28,7 +28,8 @@ class ReturnPalletAndProductScreen extends StatefulWidget {
 class _ReturnPalletAndProductScreenState
     extends State<ReturnPalletAndProductScreen> {
   int idTracking = 0;
-  bool isShowResult = false;
+  bool isShowResult = false; // Serial Number Result
+  bool isShowLotsResult = false; // Lots Result
 
   @override
   void initState() {
@@ -57,7 +58,8 @@ class _ReturnPalletAndProductScreenState
                     ),
                   ),
               itemBuilder: (context, index) {
-                if (isShowResult && index == 0) {
+                if (isShowResult && index == 0 ||
+                    isShowLotsResult && index == 0) {
                   return Theme(
                     data: Theme.of(context).copyWith(
                       listTileTheme: ListTileTheme.of(context).copyWith(
@@ -82,7 +84,12 @@ class _ReturnPalletAndProductScreenState
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            buildProductItemCard(),
+                            buildProductItemCard(
+                              name: (isShowResult)
+                                  ? "Nebulizer Machine"
+                                  : "Syringes",
+                              code: (isShowResult) ? "NM928321" : "SY_12937",
+                            ),
                             SizedBox(height: 8.h),
                             SizedBox(
                               height: 30.h,
@@ -127,8 +134,9 @@ class _ReturnPalletAndProductScreenState
                               isShowResult = true;
                             });
                           } else if (idTracking == 1) {
-                            debugPrint("value: $value");
-                            debugPrint("velum handle lots");
+                            setState(() {
+                              isShowLotsResult = true;
+                            });
                           }
                         });
                       })
@@ -140,12 +148,22 @@ class _ReturnPalletAndProductScreenState
         bottomNavigationBar: buildBottomNavbar(
           child: PrimaryButton(
             onPressed: () {
-              ReturnPallet returnPallet = ReturnPallet(
-                id: 1,
-                palletCode: "A4910",
-                reason: "Overstock",
-                location: "Warehouse A-342-3-4",
-              );
+              ReturnPallet returnPallet;
+              if (isShowLotsResult) {
+                returnPallet = ReturnPallet(
+                  id: 1,
+                  palletCode: "A494",
+                  reason: "Overstock",
+                  location: "Warehouse A-342-3-4",
+                );
+              } else {
+                returnPallet = ReturnPallet(
+                  id: 1,
+                  palletCode: "A4910",
+                  reason: "Overstock",
+                  location: "Warehouse A-342-3-4",
+                );
+              }
 
               Future.delayed(const Duration(milliseconds: 500), () {
                 reusableConfirmDialog(
@@ -198,7 +216,12 @@ class _ReturnPalletAndProductScreenState
     );
   }
 
-  Widget buildProductItemCard() {
+  Widget buildProductItemCard(
+      // ReturnPallet? item,
+      {
+    required String name,
+    required String code,
+  }) {
     return Container(
         // width: 328,
         // height: 126,
@@ -217,7 +240,7 @@ class _ReturnPalletAndProductScreenState
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  "Nebulizer Machine",
+                  name,
                   style: BaseText.grey10Text14,
                 ),
                 InkWell(
@@ -242,7 +265,7 @@ class _ReturnPalletAndProductScreenState
             ),
             SizedBox(height: 2.h),
             Text(
-              "NM928321",
+              code,
               style: BaseText.grey2Text12.copyWith(
                 fontWeight: BaseText.light,
               ),

@@ -1,7 +1,7 @@
-import '../../../../../data/model/product.dart';
+import '../../../../../data/model/pallet.dart';
 
 class ReceiptBothDetailState {
-  final List<Product> products;
+  final List<Pallet> products;
   int lotsTotalDone;
 
   ReceiptBothDetailState({
@@ -10,7 +10,7 @@ class ReceiptBothDetailState {
   });
 
   copyWith({
-    List<Product>? products,
+    List<Pallet>? products,
     int? lotsTotalDone,
   }) {
     return ReceiptBothDetailState(

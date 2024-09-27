@@ -56,6 +56,9 @@ class BaseText {
     color: ColorName.grey10Color,
   );
 
+  static TextStyle blue4TextStyle =
+      const TextStyle(fontFamily: "Lexend", color: ColorName.blue4Color);
+
   static TextStyle baseTextStyle = const TextStyle(
     fontFamily: "Lexend",
   );
@@ -102,6 +105,8 @@ class BaseText {
 
   static TextStyle redText12 = redTextStyle.copyWith(fontSize: 12.sp);
   static TextStyle redText14 = redTextStyle.copyWith(fontSize: 14.sp);
+
+  static TextStyle blue4Text11 = blue4TextStyle.copyWith(fontSize: 11.sp);
 
   // Font Weight
   static FontWeight light = FontWeight.w300;

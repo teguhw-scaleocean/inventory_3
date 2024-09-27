@@ -11,7 +11,7 @@ import 'package:inventory_v3/common/components/custom_quantity_button.dart';
 import 'package:inventory_v3/common/components/primary_button.dart';
 import 'package:inventory_v3/common/components/reusable_dropdown_menu.dart';
 import 'package:inventory_v3/common/components/reusable_field_required.dart';
-import 'package:inventory_v3/data/model/product.dart';
+import 'package:inventory_v3/data/model/pallet.dart';
 import 'package:inventory_v3/presentation/receipt/receipt_pallet/cubit/add_pallet_cubit/add_pallet_cubit.dart';
 
 import '../../../../../common/components/reusable_add_serial_number_button.dart';
@@ -48,7 +48,7 @@ class _AddPalletScreenState extends State<AddPalletScreen> {
   final formKey = GlobalKey<FormState>();
 
   var selectedProduct;
-  late Product selectedObjectProduct;
+  late Pallet selectedObjectProduct;
   bool hasProductFocus = false;
   bool hasLotShow = true;
 
@@ -73,8 +73,8 @@ class _AddPalletScreenState extends State<AddPalletScreen> {
     isFromBoth = widget.isFromBoth ?? false;
   }
 
-  List<Product> listProduct = [
-    Product(
+  List<Pallet> listProduct = [
+    Pallet(
       id: 2,
       palletCode: "B490",
       productName: "Stethoscope",
@@ -83,7 +83,7 @@ class _AddPalletScreenState extends State<AddPalletScreen> {
       dateTime: "Sch. Date: 12/07/2024 - 15:30",
       productQty: 1,
     ),
-    Product(
+    Pallet(
       id: 3,
       palletCode: "B491",
       productName: "Blood Pressure Monitor",
@@ -92,7 +92,7 @@ class _AddPalletScreenState extends State<AddPalletScreen> {
       dateTime: "Sch. Date: 12/07/2024 - 15:30",
       productQty: 1,
     ),
-    Product(
+    Pallet(
       id: 4,
       palletCode: "B492",
       productName: "Thermometer",
@@ -101,7 +101,7 @@ class _AddPalletScreenState extends State<AddPalletScreen> {
       dateTime: "Sch. Date: 12/07/2024 - 15:30",
       productQty: 1,
     ),
-    Product(
+    Pallet(
       id: 5,
       palletCode: "B493",
       productName: "Pulse Oximeter",
@@ -110,7 +110,7 @@ class _AddPalletScreenState extends State<AddPalletScreen> {
       dateTime: "Sch. Date: 12/07/2024 - 15:30",
       productQty: 1,
     ),
-    Product(
+    Pallet(
       id: 6,
       palletCode: "B494",
       productName: "Surgical Gloves",
@@ -119,7 +119,7 @@ class _AddPalletScreenState extends State<AddPalletScreen> {
       dateTime: "Sch. Date: 12/07/2024 - 15:30",
       productQty: 1,
     ),
-    Product(
+    Pallet(
       id: 7,
       palletCode: "B495",
       productName: "Digital Thermometer",
@@ -128,7 +128,7 @@ class _AddPalletScreenState extends State<AddPalletScreen> {
       dateTime: "Sch. Date: 12/07/2024 - 15:30",
       productQty: 1,
     ),
-    Product(
+    Pallet(
       id: 8,
       palletCode: "B496",
       productName: "Nebulizer Machine",
@@ -137,7 +137,7 @@ class _AddPalletScreenState extends State<AddPalletScreen> {
       dateTime: "Sch. Date: 12/07/2024 - 15:30",
       productQty: 1,
     ),
-    Product(
+    Pallet(
       id: 1,
       palletCode: "B497",
       productName: "Monitor",
@@ -508,8 +508,8 @@ class _AddPalletScreenState extends State<AddPalletScreen> {
                 //     .onSubmit(product: selectedObjectProduct);
 
                 debugPrint(
-                    "listProducts: ${listProducts.map((e) => e.toString()).toList()}");
-                Navigator.pop(context, listProducts);
+                    "listProducts: ${listPallets.map((e) => e.toString()).toList()}");
+                Navigator.pop(context, listPallets);
               }
             },
             height: 40,
@@ -524,13 +524,13 @@ class _AddPalletScreenState extends State<AddPalletScreen> {
     selectedObjectProduct.palletCode = palletIdController.text;
     selectedObjectProduct.productQty = total;
     selectedObjectProduct.lotsCode = lotsController.text;
-    listProducts.insert(0, selectedObjectProduct);
+    listPallets.insert(0, selectedObjectProduct);
   }
 
   void onSubmitNoTracking(total) {
     selectedObjectProduct.palletCode = palletIdController.text;
     selectedObjectProduct.productQty = total;
-    listProducts.insert(0, selectedObjectProduct);
+    listPallets.insert(0, selectedObjectProduct);
   }
 
   void onSubmitSerialNumber() {
@@ -562,7 +562,7 @@ class _AddPalletScreenState extends State<AddPalletScreen> {
         "serialNumber: ${selectedObjectProduct.serialNumber?.map((e) => e.toString()).toList()}");
 
     selectedObjectProduct.palletCode = palletIdController.text;
-    listProducts.insert(0, selectedObjectProduct);
+    listPallets.insert(0, selectedObjectProduct);
   }
 
   Widget _buildLotsField() {

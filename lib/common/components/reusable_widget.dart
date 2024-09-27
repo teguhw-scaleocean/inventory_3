@@ -175,6 +175,7 @@ onShowSuccessDialog(
     {required BuildContext context,
     String? scannedItem,
     bool? isOnUpdate,
+    bool? isOnReturn,
     bool? isBoth}) {
   return AwesomeDialog(
     context: context,
@@ -193,7 +194,11 @@ onShowSuccessDialog(
         children: [
           Container(height: 10.h),
           Text(
-            (isOnUpdate == true) ? 'Update Successful!' : 'Scan Successful!',
+            (isOnReturn == true)
+                ? "Return Successful!"
+                : (isOnUpdate == true)
+                    ? 'Update Successful!'
+                    : 'Scan Successful!',
             style: BaseText.black2TextStyle.copyWith(
               fontSize: 16.sp,
               fontWeight: BaseText.semiBold,
@@ -201,7 +206,7 @@ onShowSuccessDialog(
           ),
           Container(height: 4.h),
           Text(
-              'Great job! You successfully ${(isOnUpdate == true) ? 'updated' : 'scanned'}',
+              'Great job! You successfully ${(isOnReturn == true) ? 'returned' : (isOnUpdate == true) ? 'updated' : 'scanned'}',
               style: BaseText.grey2Text14.copyWith(fontWeight: BaseText.light)),
           Container(height: 1.h),
           Text(scannedItem ?? "",
@@ -236,6 +241,39 @@ onShowSuccessDialog(
   ).show();
 }
 
+onShowSuccessNewDialog({
+  required BuildContext context,
+  required Widget body,
+  void Function()? onPressed,
+  // String? scannedItem,
+  // bool? isOnUpdate,
+  // bool? isOnReturn,
+  // bool? isBoth,
+}) {
+  return AwesomeDialog(
+    context: context,
+    animType: AnimType.bottomSlide,
+    headerAnimationLoop: false,
+    dialogType: DialogType.success,
+    showCloseIcon: true,
+    width: double.infinity,
+    // padding: EdgeInsets.symmetric(horizontal: 16.w),
+    body: body,
+    btnOkOnPress: () {
+      debugPrint('OnClcik');
+    },
+    // btnOkIcon: Icons.check_circle,
+    btnOk: PrimaryButton(
+      onPressed: onPressed,
+      height: 40.h,
+      title: "OK",
+    ),
+    onDismissCallback: (type) {
+      debugPrint('Dialog Dissmiss from callback $type');
+    },
+  ).show();
+}
+
 Container buildExpDateButton({required String label, required Color eColor}) {
   return Container(
     width: 226.w,
@@ -253,4 +291,54 @@ Container buildExpDateButton({required String label, required Color eColor}) {
       ),
     ),
   );
+}
+
+Container buildBadgeReturn() {
+  return Container(
+      // width: 60.w,
+      // height: 21.h,
+      padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 7.h),
+      decoration: ShapeDecoration(
+        color: ColorName.yellowReturnColor,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(24.r),
+        ),
+      ),
+      clipBehavior: Clip.antiAliasWithSaveLayer,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.fiber_manual_record,
+              color: ColorName.whiteColor, size: 8.w),
+          SizedBox(width: 4.w),
+          Text(
+            "Return",
+            style: BaseText.whiteTextStyle.copyWith(
+              fontSize: 10.sp,
+              fontWeight: BaseText.medium,
+            ),
+          ),
+        ],
+      ));
+}
+
+Container buildBottomNavbar({required Widget child}) {
+  return Container(
+      width: double.infinity,
+      height: 72.h,
+      padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 16.h),
+      decoration: const BoxDecoration(
+        color: ColorName.whiteColor,
+        boxShadow: [
+          BoxShadow(
+            color: Color(0x33333A51),
+            blurRadius: 16,
+            offset: Offset(0, 4),
+            spreadRadius: 0,
+          )
+        ],
+      ),
+      child: child);
 }

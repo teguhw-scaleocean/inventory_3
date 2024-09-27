@@ -1,10 +1,10 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
-import 'package:inventory_v3/data/model/product.dart';
+import 'package:inventory_v3/data/model/pallet.dart';
 
 class ProductMenuProductDetailState {
-  List<Product> products;
+  List<Pallet> pallets;
   List<SerialNumber> serialNumbers;
-  Product? product;
+  Pallet? product;
   int? totalToDone;
   // Lots
   int? lotsTotalDone;
@@ -13,7 +13,7 @@ class ProductMenuProductDetailState {
   bool? isDoneQty;
 
   ProductMenuProductDetailState({
-    required this.products,
+    required this.pallets,
     required this.serialNumbers,
     this.product,
     this.totalToDone,
@@ -24,9 +24,9 @@ class ProductMenuProductDetailState {
   });
 
   copyWith({
-    List<Product>? products,
+    List<Pallet>? pallets,
     List<SerialNumber>? serialNumbers,
-    Product? product,
+    Pallet? product,
     int? totalToDone,
     int? lotsTotalDone,
     int? updateTotal,
@@ -34,7 +34,7 @@ class ProductMenuProductDetailState {
     bool? isDoneQty,
   }) {
     return ProductMenuProductDetailState(
-      products: products ?? this.products,
+      pallets: pallets ?? this.pallets,
       serialNumbers: serialNumbers ?? this.serialNumbers,
       product: product ?? this.product,
       totalToDone: totalToDone ?? this.totalToDone,

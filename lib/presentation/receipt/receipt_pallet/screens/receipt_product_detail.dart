@@ -4,7 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:inventory_v3/common/components/custom_app_bar.dart';
 import 'package:inventory_v3/common/components/reusable_floating_action_button.dart';
 import 'package:inventory_v3/common/extensions/empty_space_extension.dart';
-import 'package:inventory_v3/data/model/product.dart';
+import 'package:inventory_v3/data/model/pallet.dart';
 import 'package:inventory_v3/presentation/receipt/receipt_pallet/cubit/add_pallet_cubit/add_pallet_cubit.dart';
 import 'package:inventory_v3/presentation/receipt/receipt_pallet/screens/product_detail/add_product_screen.dart';
 import 'package:smooth_highlight/smooth_highlight.dart';
@@ -15,7 +15,7 @@ import '../../../../common/theme/color/color_name.dart';
 import '../../../../common/theme/text/base_text.dart';
 
 class ReceiptProductDetailScreen extends StatefulWidget {
-  final Product product;
+  final Pallet product;
   final String tracking;
 
   const ReceiptProductDetailScreen(
@@ -28,7 +28,7 @@ class ReceiptProductDetailScreen extends StatefulWidget {
 
 class _ReceiptProductDetailScreenState
     extends State<ReceiptProductDetailScreen> {
-  late Product product;
+  late Pallet product;
   String tracking = "";
 
   final searchSerialNumberController = TextEditingController();
@@ -40,6 +40,8 @@ class _ReceiptProductDetailScreenState
   String code = "";
   String quantity = "";
 
+  bool isReturn = false;
+
   @override
   void initState() {
     super.initState();
@@ -48,6 +50,8 @@ class _ReceiptProductDetailScreenState
 
     product = widget.product;
     tracking = widget.tracking;
+
+    isReturn = product.isReturn ?? false;
 
     // Serial Number
     serialNumberList = widget.product.serialNumber ?? <SerialNumber>[];
@@ -151,10 +155,15 @@ class _ReceiptProductDetailScreenState
 
                               return Padding(
                                   padding: EdgeInsets.only(bottom: 8.h),
-                                  child: buildItemQuantity(
-                                    code,
-                                    isHighlighted: isHighlighted,
-                                  ));
+                                  child: (isReturn)
+                                      ? buildItemQuantityReturn(
+                                          code,
+                                          isHighlighted: isHighlighted,
+                                        )
+                                      : buildItemQuantity(
+                                          code,
+                                          isHighlighted: isHighlighted,
+                                        ));
                             }),
                       )
                     : buildItemQuantity(
@@ -241,7 +250,7 @@ class _ReceiptProductDetailScreenState
           child: RichText(
               text: TextSpan(children: [
             TextSpan(
-              text: "$tracking ",
+              text: (isReturn) ? "Return: $tracking " : "$tracking ",
               style: BaseText.blackText15.copyWith(
                 fontWeight: BaseText.medium,
               ),
@@ -257,7 +266,7 @@ class _ReceiptProductDetailScreenState
   }
 
   Widget buildItemQuantity(String code,
-      {Product? itemProduct, bool isHighlighted = false}) {
+      {Pallet? itemProduct, bool isHighlighted = false}) {
     if (itemProduct != null) {
       int? quantityInt = itemProduct.productQty.toInt();
       quantity = quantityInt.toString();
@@ -308,6 +317,94 @@ class _ReceiptProductDetailScreenState
                   ),
                   SizedBox(
                     height: 36.h,
+                    width: 60.w,
+                    child: Center(
+                      child: Text(
+                        (tracking.toLowerCase().contains("serial"))
+                            ? "1"
+                            : quantity,
+                        textAlign: TextAlign.center,
+                        style: BaseText.black2Text14.copyWith(
+                          fontWeight: BaseText.regular,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget buildItemQuantityReturn(String code,
+      {Pallet? itemProduct, bool isHighlighted = false}) {
+    if (itemProduct != null) {
+      int? quantityInt = itemProduct.productQty.toInt();
+      quantity = quantityInt.toString();
+    }
+
+    return SmoothHighlight(
+      color: ColorName.highlightColor,
+      duration: const Duration(seconds: 3),
+      enabled: isHighlighted,
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 12.h, vertical: 10.h),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(6.r),
+          border: Border.all(
+            color: ColorName.grey9Color,
+          ),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  code,
+                  style: BaseText.black2Text14
+                      .copyWith(fontWeight: BaseText.regular),
+                ),
+                SizedBox(height: 9.h),
+                Text(
+                  "Reason: Does not meet standarts",
+                  style:
+                      BaseText.grey1Text12.copyWith(fontWeight: BaseText.light),
+                ),
+                SizedBox(height: 8.h),
+                Text(
+                  "Location: Storage Area B, IN01",
+                  style:
+                      BaseText.grey1Text12.copyWith(fontWeight: BaseText.light),
+                ),
+                SizedBox(height: 9.h),
+                Text(
+                  "Exp. Date: 12/07/2024 - 15:00",
+                  style: BaseText.baseTextStyle.copyWith(
+                    color: ColorName.dateTimeColor,
+                    fontSize: 12.sp,
+                    fontWeight: BaseText.light,
+                  ),
+                )
+              ],
+            ),
+            IntrinsicHeight(
+              child: Row(
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 0),
+                    child: VerticalDivider(
+                      color: ColorName.grey9Color,
+                      thickness: 1.0,
+                    ),
+                  ),
+                  SizedBox(
+                    height: 86.h,
                     width: 60.w,
                     child: Center(
                       child: Text(

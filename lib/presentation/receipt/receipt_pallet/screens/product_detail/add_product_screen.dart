@@ -19,7 +19,7 @@ import '../../../../../common/components/reusable_scan_button.dart';
 import '../../../../../common/components/reusable_widget.dart';
 import '../../../../../common/theme/color/color_name.dart';
 import '../../../../../common/theme/text/base_text.dart';
-import '../../../../../data/model/product.dart';
+import '../../../../../data/model/pallet.dart';
 
 class AddProductScreen extends StatefulWidget {
   final int addType;

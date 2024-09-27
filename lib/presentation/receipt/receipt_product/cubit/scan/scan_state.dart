@@ -1,4 +1,4 @@
-import '../../../../../data/model/product.dart';
+import '../../../../../data/model/pallet.dart';
 
 class ScanState {
   List<SerialNumber> serialNumbers;

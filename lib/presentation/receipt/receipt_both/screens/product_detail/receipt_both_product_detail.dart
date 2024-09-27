@@ -21,7 +21,7 @@ import '../../../../../common/helper/tracking_helper.dart';
 import '../../../../../common/theme/color/color_name.dart';
 import '../../../../../common/theme/text/base_text.dart';
 import '../../../../../data/model/date_time_button.dart';
-import '../../../../../data/model/product.dart';
+import '../../../../../data/model/pallet.dart';
 import '../../../receipt_pallet/screens/product_detail/add_product_screen.dart';
 import '../../../receipt_product/cubit/product_detail/product_menu_product_detail_cubit.dart';
 import '../../../receipt_product/cubit/scan/scan_cubit.dart';
@@ -30,7 +30,7 @@ import '../../../receipt_product/screens/product_detail/update_product_quantity_
 import '../../cubit/receipt_detail/receipt_both_detail_cubit.dart';
 
 class ReceiptBothProductDetailScreen extends StatefulWidget {
-  final Product product;
+  final Pallet product;
   final String tracking;
   final String status;
 
@@ -50,7 +50,7 @@ class _ReceiptBothProductDetailScreenState
     extends State<ReceiptBothProductDetailScreen>
     with SingleTickerProviderStateMixin {
   late ProductMenuProductDetailCubit bothCubit;
-  late Product product;
+  late Pallet product;
   String tracking = "";
   String status = "";
   // Scan Result
@@ -747,7 +747,7 @@ class _ReceiptBothProductDetailScreenState
 
   Widget buildItemQuantity(
     String code, {
-    Product? itemProduct,
+    Pallet? itemProduct,
     bool isHighlighted = false,
     SerialNumber? itemSerialNumber,
     int tabIndex = 0,

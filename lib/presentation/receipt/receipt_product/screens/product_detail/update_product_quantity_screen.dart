@@ -11,7 +11,7 @@ import '../../../../../common/helper/tracking_helper.dart';
 import '../../../../../common/theme/color/color_name.dart';
 import '../../../../../common/theme/text/base_text.dart';
 import '../../../../../data/model/item_card.dart';
-import '../../../../../data/model/product.dart';
+import '../../../../../data/model/pallet.dart';
 import '../../cubit/product_detail/product_menu_product_detail_cubit.dart';
 
 class UpdateProductQuantityScreen extends StatefulWidget {
@@ -44,7 +44,7 @@ class _UpdateProductQuantityScreenState
 
   late ProductMenuProductDetailCubit cubit;
 
-  late Product? _product;
+  late Pallet? _product;
   int totalNotDone = 0;
 
   // SN

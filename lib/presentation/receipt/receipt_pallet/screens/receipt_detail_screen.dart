@@ -335,7 +335,7 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
                         returnResult.then((value) {
                           if (value != null) {
                             var result = value as ReturnPallet;
-                            cubit.getReturnPallet(result);
+                            cubit.getReturnPalletAndProduct(result);
                             Future.delayed(const Duration(milliseconds: 600),
                                 () {
                               onShowSuccessNewDialog(
@@ -739,7 +739,8 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
                     style: BaseText.black2Text15
                         .copyWith(fontWeight: BaseText.medium),
                   ),
-                  (product0.isReturn == true)
+                  (product0.isReturn == true ||
+                          product0.isReturnPalletAndProduct == true)
                       ? buildBadgeReturn()
                       : const SizedBox()
                 ],

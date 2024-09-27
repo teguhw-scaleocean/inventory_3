@@ -329,7 +329,9 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
                   buildPalletButtonSection(
                     status: receipt.status,
                     onTapReturn: () {
-                      if (receipt.id == 1 || receipt.id == 6) {
+                      if (receipt.id == 1 ||
+                          receipt.id == 6 ||
+                          receipt.id == 7) {
                         final returnLotsResult = Navigator.push(
                             context,
                             MaterialPageRoute(

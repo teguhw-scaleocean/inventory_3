@@ -429,7 +429,76 @@ class _ReturnAddProductScreenState extends State<ReturnAddProductScreen> {
                         ],
                       );
                     })
-                  : const SizedBox(),
+                  : (idTracking == 2)
+                      ? StatefulBuilder(builder: (context, noTrackSetState) {
+                          double value = 0.0;
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              SizedBox(height: 14.h),
+                              buildRequiredLabel("Quantity"),
+                              SizedBox(height: 4.h),
+                              BlocConsumer<CountCubit, CountState>(
+                                  listener: (context, state) {
+                                qtyController.value = TextEditingValue(
+                                  text: state.quantity.toString(),
+                                );
+                                debugPrint(
+                                    "qtyController listen: ${qtyController.text}");
+
+                                isQtyButtonEnabled = state.quantity > 0;
+                              }, builder: (context, state) {
+                                var countCubit = context.read<CountCubit>();
+
+                                borderColor = ColorName.borderColor;
+
+                                qtyIconColor = (isQtyButtonEnabled)
+                                    ? ColorName.grey10Color
+                                    : ColorName.grey18Color;
+                                qtyTextColor = (isQtyButtonEnabled)
+                                    ? ColorName.grey10Color
+                                    : ColorName.grey12Color;
+
+                                return CustomQuantityButton(
+                                  controller: qtyController,
+                                  borderColor: borderColor,
+                                  iconColor: qtyIconColor,
+                                  textColor: qtyTextColor,
+                                  onChanged: (v) {
+                                    if (v.isEmpty || v == "0.0") {
+                                      noTrackSetState(() {
+                                        isQtyButtonEnabled = false;
+                                      });
+                                    } else {
+                                      noTrackSetState(() {
+                                        isQtyButtonEnabled = true;
+                                      });
+                                    }
+                                  },
+                                  onSubmitted: (v) {
+                                    noTrackSetState(() {
+                                      value = double.parse(v);
+                                      qtyController.value = TextEditingValue(
+                                        text: value.toString(),
+                                      );
+
+                                      countCubit.submit(value);
+                                    });
+                                  },
+                                  onDecreased: () {
+                                    if (state.quantity >= 1) {
+                                      countCubit.decrement(value);
+                                    }
+                                  },
+                                  onIncreased: () {
+                                    countCubit.increment(value);
+                                  },
+                                );
+                              }),
+                            ],
+                          );
+                        })
+                      : const SizedBox(),
               SizedBox(height: 14.h),
               buildRequiredLabel("Reason"),
               SizedBox(height: 4.h),

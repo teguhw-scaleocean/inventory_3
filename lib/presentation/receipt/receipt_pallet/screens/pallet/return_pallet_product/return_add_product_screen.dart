@@ -364,7 +364,20 @@ class _ReturnAddProductScreenState extends State<ReturnAddProductScreen> {
                   children: [
                     Flexible(
                       child: SecondaryButtonDialog(
-                        onPressed: () {},
+                        onPressed: () {
+                          Future.delayed(const Duration(milliseconds: 500), () {
+                            reusableConfirmDialog(
+                              context,
+                              title: "Confirm Return",
+                              message:
+                                  "Are you sure you want to delete this\nreturned product?",
+                              maxLines: 2,
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                            );
+                          });
+                        },
                         height: 40.h,
                         width: 160.w,
                         title: "Delete",
@@ -374,7 +387,20 @@ class _ReturnAddProductScreenState extends State<ReturnAddProductScreen> {
                     SizedBox(width: 8.w),
                     Flexible(
                       child: PrimaryButtonDialog(
-                        onPressed: () {},
+                        onPressed: () {
+                          Future.delayed(const Duration(milliseconds: 500), () {
+                            reusableConfirmDialog(
+                              context,
+                              title: "Confirm Return",
+                              message:
+                                  "Are you sure you want to update this\nreturned product?",
+                              maxLines: 2,
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                            );
+                          });
+                        },
                         height: 40.h,
                         width: 160.w,
                         title: "Update",

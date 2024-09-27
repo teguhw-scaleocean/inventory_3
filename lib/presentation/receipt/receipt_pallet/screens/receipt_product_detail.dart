@@ -210,10 +210,14 @@ class _ReceiptProductDetailScreenState extends State<ReceiptProductDetailScreen>
                     isSelectedTab = _tabController.index == _tabs.indexOf(e);
 
                     var total = 0;
-                    total = serialNumberList.length;
-
                     var totalDone = 0;
-                    totalDone = serialNumberResult.length;
+
+                    if (tracking.toLowerCase().contains("serial number")) {
+                      total = serialNumberList.length;
+                      totalDone = serialNumberResult.length;
+                    } else {
+                      total = product.productQty.toInt();
+                    }
 
                     var totalReturn = 1;
 
@@ -237,32 +241,48 @@ class _ReceiptProductDetailScreenState extends State<ReceiptProductDetailScreen>
                   controller: _tabController,
                   children: [
                     // Not Done
-                    SizedBox(
-                      height: 600.h,
-                      child: ListView.builder(
-                          shrinkWrap: true,
-                          physics: const AlwaysScrollableScrollPhysics(),
-                          padding: EdgeInsets.symmetric(
-                              vertical: 12.h, horizontal: 16.w),
-                          scrollDirection: Axis.vertical,
-                          itemCount: serialNumberList.length,
-                          itemBuilder: (context, index) {
-                            var item = serialNumberList[index];
-                            code = item.label;
+                    (tracking.toLowerCase().contains("serial number"))
+                        ? SizedBox(
+                            height: 600.h,
+                            child: ListView.builder(
+                                shrinkWrap: true,
+                                physics: const AlwaysScrollableScrollPhysics(),
+                                padding: EdgeInsets.symmetric(
+                                    vertical: 12.h, horizontal: 16.w),
+                                scrollDirection: Axis.vertical,
+                                itemCount: serialNumberList.length,
+                                itemBuilder: (context, index) {
+                                  var item = serialNumberList[index];
+                                  code = item.label;
 
-                            bool isHighlighted = false;
-                            isHighlighted = serialNumberResult.contains(item);
-                            debugPrint("isHighlighted: $isHighlighted");
+                                  bool isHighlighted = false;
+                                  isHighlighted =
+                                      serialNumberResult.contains(item);
+                                  debugPrint("isHighlighted: $isHighlighted");
 
-                            return Padding(
-                              padding: EdgeInsets.only(bottom: 8.h),
-                              child: buildItemQuantity(
-                                code,
-                                isHighlighted: isHighlighted,
-                              ),
-                            );
-                          }),
-                    ),
+                                  return Padding(
+                                    padding: EdgeInsets.only(bottom: 8.h),
+                                    child: buildItemQuantity(
+                                      code,
+                                      isHighlighted: isHighlighted,
+                                    ),
+                                  );
+                                }),
+                          )
+                        : Padding(
+                            padding: EdgeInsets.symmetric(
+                              vertical: 12.h,
+                              horizontal: 16.w,
+                            ),
+                            child: Column(
+                              children: [
+                                buildItemQuantity(
+                                  code,
+                                  itemProduct: product,
+                                ),
+                              ],
+                            ),
+                          ),
                     // DOne
                     Column(
                       mainAxisAlignment: MainAxisAlignment.center,

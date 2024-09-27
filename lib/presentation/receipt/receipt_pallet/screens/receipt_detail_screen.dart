@@ -329,7 +329,7 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
                   buildPalletButtonSection(
                     status: receipt.status,
                     onTapReturn: () {
-                      if (receipt.id == 1) {
+                      if (receipt.id == 1 || receipt.id == 6) {
                         final returnLotsResult = Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -339,20 +339,6 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
                                     )));
 
                         returnLotsResult.then((value) {
-                          if (value != null) {
-                            _onReturnPalletAndProduct(value, context);
-                          }
-                        });
-                      } else if (receipt.id == 6) {
-                        final returnResult = Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                    ReturnPalletAndProductScreen(
-                                      idTracking: idTracking,
-                                    )));
-
-                        returnResult.then((value) {
                           if (value != null) {
                             _onReturnPalletAndProduct(value, context);
                           }

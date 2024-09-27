@@ -58,6 +58,9 @@ class _ReturnAddProductScreenState extends State<ReturnAddProductScreen> {
   var selectedSerialNumber1;
   bool hasSerialNumber1Focus = false;
 
+  var selectedLots;
+  bool hasLotsFocus = false;
+
   String titleAppBar = "";
   bool isEdit = false;
 
@@ -79,6 +82,15 @@ class _ReturnAddProductScreenState extends State<ReturnAddProductScreen> {
     // "SN-NM1234567859",
     // "SN-NM1234567860",
   ];
+  List<String> listLots = [
+    "LOTS-NM0983642",
+    "LOTS-NM0983643",
+    "LOTS-NM0983644",
+    "LOTS-NM0983645",
+    "LOTS-NM0983646",
+    "LOTS-NM0983647",
+    "LOTS-NM0983648",
+  ];
 
   List<dynamic> listSnController = [];
   List<dynamic> listSnSelected = [];
@@ -97,6 +109,7 @@ class _ReturnAddProductScreenState extends State<ReturnAddProductScreen> {
     listProduct = listPallets;
 
     isEdit = widget.isEdit ?? false;
+    idTracking = widget.idTracking;
 
     titleAppBar = isEdit == true ? "Edit Product: Pallet A493" : "Add Product";
 
@@ -161,7 +174,9 @@ class _ReturnAddProductScreenState extends State<ReturnAddProductScreen> {
                       "selectedObjectProduct: ${selectedObjectProduct.toString()}");
                 },
               ),
-              SizedBox(height: 14.h),
+              (selectedProduct != null)
+                  ? SizedBox(height: 14.h)
+                  : const SizedBox(),
               (selectedProduct != null)
                   ? buildDisableField(
                       label: "SKU",
@@ -294,6 +309,56 @@ class _ReturnAddProductScreenState extends State<ReturnAddProductScreen> {
                   maxwidth: ScreenUtil().screenWidth - 32.w,
                   isCenterTitle: true,
                 ),
+              (idTracking == 1)
+                  ? Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(height: 16.h),
+                        buildRequiredLabel("Lots Number"),
+                        SizedBox(height: 4.h),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Flexible(
+                              child: LimitedBox(
+                                maxWidth: 280.w,
+                                child: Builder(builder: (context) {
+                                  return ReusableDropdownMenu(
+                                    maxHeight: 500.h,
+                                    offset: const Offset(0, -15),
+                                    hasSearch: false,
+                                    label: "",
+                                    listOfItemsValue:
+                                        listLots.map((e) => e).toList(),
+                                    selectedValue: selectedLots,
+                                    hintText: "   Select Lots Number",
+                                    hintTextStyle:
+                                        BaseText.grey1Text14.copyWith(
+                                      fontWeight: BaseText.regular,
+                                      color: ColorName.grey12Color,
+                                    ),
+                                    onTap: (focus) {},
+                                    onChange: (value) {
+                                      setState(() {
+                                        selectedLots = value;
+                                      });
+
+                                      debugPrint(
+                                          "selectedLots: ${selectedLots.toString()}");
+                                      // debugPrint(
+                                      //     "listSerialNumber: ${listSerialNumber.map((e) => e).toList()}");
+                                    },
+                                  );
+                                }),
+                              ),
+                            ),
+                            SizedBox(width: 8.w),
+                            reusableScanButton()
+                          ],
+                        ),
+                      ],
+                    )
+                  : const SizedBox(),
               SizedBox(height: 14.h),
               buildRequiredLabel("Reason"),
               SizedBox(height: 4.h),

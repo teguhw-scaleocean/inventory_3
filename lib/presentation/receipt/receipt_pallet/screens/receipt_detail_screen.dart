@@ -62,6 +62,8 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
 
   var selectedUpdatePallet;
 
+  int idTracking = 0;
+
   @override
   void initState() {
     super.initState();
@@ -83,11 +85,13 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
         .toLowerCase()
         .contains("no tracking")) {
       cubit.getInitNoTrackingListProduct();
+      idTracking = 2;
     } else if (receipt.packageStatus
         .toString()
         .toLowerCase()
         .contains("lots")) {
       cubit.getInitLotsListProduct();
+      idTracking = 1;
     } else if (receipt.packageStatus
         .toString()
         .toLowerCase()
@@ -325,12 +329,22 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
                   buildPalletButtonSection(
                     status: receipt.status,
                     onTapReturn: () {
-                      if (receipt.id == 6) {
+                      if (receipt.id == 1) {
                         final returnResult = Navigator.push(
                             context,
                             MaterialPageRoute(
                                 builder: (context) =>
-                                    const ReturnPalletAndProductScreen()));
+                                    ReturnPalletAndProductScreen(
+                                      idTracking: idTracking,
+                                    )));
+                      } else if (receipt.id == 6) {
+                        final returnResult = Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    ReturnPalletAndProductScreen(
+                                      idTracking: idTracking,
+                                    )));
 
                         returnResult.then((value) {
                           if (value != null) {

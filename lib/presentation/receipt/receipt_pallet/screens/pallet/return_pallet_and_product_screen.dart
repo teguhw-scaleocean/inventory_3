@@ -16,7 +16,9 @@ import '../../../../../common/theme/text/base_text.dart';
 import '../../../../../data/model/return_pallet.dart';
 
 class ReturnPalletAndProductScreen extends StatefulWidget {
-  const ReturnPalletAndProductScreen({super.key});
+  final int idTracking;
+
+  const ReturnPalletAndProductScreen({super.key, this.idTracking = 0});
 
   @override
   State<ReturnPalletAndProductScreen> createState() =>
@@ -27,6 +29,14 @@ class _ReturnPalletAndProductScreenState
     extends State<ReturnPalletAndProductScreen> {
   int idTracking = 0;
   bool isShowResult = false;
+
+  @override
+  void initState() {
+    super.initState();
+
+    idTracking = widget.idTracking;
+    debugPrint("idTracking: $idTracking");
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -102,22 +112,25 @@ class _ReturnPalletAndProductScreenState
                         style: BaseText.grey10Text14,
                       ),
                       _buildAddProductButton(onTap: () {
-                        if (idTracking == 0) {
-                          final addProductBySerialNumber = Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => ReturnAddProductScreen(
-                                idTracking: idTracking,
-                              ),
+                        final addProduct = Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ReturnAddProductScreen(
+                              idTracking: idTracking,
                             ),
-                          );
+                          ),
+                        );
 
-                          addProductBySerialNumber.then((value) {
+                        addProduct.then((value) {
+                          if (idTracking == 0) {
                             setState(() {
                               isShowResult = true;
                             });
-                          });
-                        }
+                          } else if (idTracking == 1) {
+                            debugPrint("value: $value");
+                            debugPrint("velum handle lots");
+                          }
+                        });
                       })
                     ],
                   ),

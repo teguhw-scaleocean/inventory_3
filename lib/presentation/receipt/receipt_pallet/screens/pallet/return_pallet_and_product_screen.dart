@@ -207,7 +207,24 @@ class _ReturnPalletAndProductScreenState
                   "Nebulizer Machine",
                   style: BaseText.grey10Text14,
                 ),
-                Text("Edit", style: BaseText.blue4Text11)
+                InkWell(
+                  onTap: () {
+                    if (idTracking == 0) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ReturnAddProductScreen(
+                            idTracking: idTracking,
+                            isEdit: true,
+                          ),
+                        ),
+                      );
+                    }
+                  },
+                  child: SizedBox(
+                    child: Text("Edit", style: BaseText.blue4Text11),
+                  ),
+                )
               ],
             ),
             SizedBox(height: 2.h),

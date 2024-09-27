@@ -15,10 +15,12 @@ import '../../../../../../common/theme/text/base_text.dart';
 
 class ReturnAddProductScreen extends StatefulWidget {
   final int idTracking;
+  final bool? isEdit;
 
   const ReturnAddProductScreen({
     super.key,
     required this.idTracking,
+    this.isEdit,
   });
 
   @override
@@ -55,6 +57,9 @@ class _ReturnAddProductScreenState extends State<ReturnAddProductScreen> {
   var selectedSerialNumber1;
   bool hasSerialNumber1Focus = false;
 
+  String titleAppBar = "";
+  bool isEdit = false;
+
   List<String> listSerialNumber = [
     "SN-NM1234567845",
     "SN-NM1234567846",
@@ -89,6 +94,16 @@ class _ReturnAddProductScreenState extends State<ReturnAddProductScreen> {
     super.initState();
 
     listProduct = listPallets;
+
+    isEdit = widget.isEdit ?? false;
+
+    titleAppBar = isEdit == true ? "Edit Product: Pallet A493" : "Add Product";
+
+    if (isEdit == true) {
+      selectedProduct = listProduct.first;
+      selectedObjectProduct = listProduct
+          .firstWhere((element) => element.productName == selectedProduct);
+    }
   }
 
   @override
@@ -97,7 +112,7 @@ class _ReturnAddProductScreenState extends State<ReturnAddProductScreen> {
       child: Scaffold(
         appBar: CustomAppBar(
           onTap: () => Navigator.pop(context),
-          title: "Add Product",
+          title: titleAppBar,
         ),
         body: Container(
           width: double.infinity,
@@ -338,17 +353,39 @@ class _ReturnAddProductScreenState extends State<ReturnAddProductScreen> {
           ),
         ),
         bottomNavigationBar: buildBottomNavbar(
-          child: PrimaryButton(
-            onPressed: () {
-              if (selectedProduct != null &&
-                  selectedReason != null &&
-                  selectedLocation != null) {
-                Navigator.pop(context, true);
-              }
-            },
-            height: 40.h,
-            title: "Submit",
-          ),
+          child: (isEdit)
+              ? Row(
+                  children: [
+                    Flexible(
+                      child: SecondaryButton(
+                        onPressed: () {},
+                        height: 40.h,
+                        width: 160.w,
+                        title: "Delete",
+                        hasBorder: true,
+                      ),
+                    ),
+                    Flexible(
+                      child: PrimaryButton(
+                        onPressed: () {},
+                        height: 40.h,
+                        width: 160.w,
+                        title: "Update",
+                      ),
+                    )
+                  ],
+                )
+              : PrimaryButton(
+                  onPressed: () {
+                    if (selectedProduct != null &&
+                        selectedReason != null &&
+                        selectedLocation != null) {
+                      Navigator.pop(context, true);
+                    }
+                  },
+                  height: 40.h,
+                  title: "Submit",
+                ),
         ),
       ),
     );

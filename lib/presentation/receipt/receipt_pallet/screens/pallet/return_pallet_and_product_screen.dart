@@ -30,6 +30,7 @@ class _ReturnPalletAndProductScreenState
   int idTracking = 0;
   bool isShowResult = false; // Serial Number Result
   bool isShowLotsResult = false; // Lots Result
+  bool isShowNoTrackingResult = false;
 
   @override
   void initState() {
@@ -59,7 +60,8 @@ class _ReturnPalletAndProductScreenState
                   ),
               itemBuilder: (context, index) {
                 if (isShowResult && index == 0 ||
-                    isShowLotsResult && index == 0) {
+                    isShowLotsResult && index == 0 ||
+                    isShowNoTrackingResult && index == 0) {
                   return Theme(
                     data: Theme.of(context).copyWith(
                       listTileTheme: ListTileTheme.of(context).copyWith(
@@ -87,8 +89,14 @@ class _ReturnPalletAndProductScreenState
                             buildProductItemCard(
                               name: (isShowResult)
                                   ? "Nebulizer Machine"
-                                  : "Syringes",
-                              code: (isShowResult) ? "NM928321" : "SY_12937",
+                                  : (isShowNoTrackingResult)
+                                      ? "Surgical Instruments"
+                                      : "Syringes",
+                              code: (isShowResult)
+                                  ? "NM928321"
+                                  : (isShowNoTrackingResult)
+                                      ? "SUR_12942"
+                                      : "SY_12937",
                             ),
                             SizedBox(height: 8.h),
                             SizedBox(
@@ -137,6 +145,10 @@ class _ReturnPalletAndProductScreenState
                             setState(() {
                               isShowLotsResult = true;
                             });
+                          } else if (idTracking == 2) {
+                            setState(() {
+                              isShowNoTrackingResult = true;
+                            });
                           }
                         });
                       })
@@ -153,6 +165,13 @@ class _ReturnPalletAndProductScreenState
                 returnPallet = ReturnPallet(
                   id: 1,
                   palletCode: "A494",
+                  reason: "Overstock",
+                  location: "Warehouse A-342-3-4",
+                );
+              } else if (isShowNoTrackingResult) {
+                returnPallet = ReturnPallet(
+                  id: 1,
+                  palletCode: "A490",
                   reason: "Overstock",
                   location: "Warehouse A-342-3-4",
                 );

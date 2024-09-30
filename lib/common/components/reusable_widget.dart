@@ -255,9 +255,9 @@ onShowSuccessNewDialog({
     animType: AnimType.bottomSlide,
     headerAnimationLoop: false,
     dialogType: DialogType.success,
-    showCloseIcon: true,
-    width: double.infinity,
+    // showCloseIcon: true,
     // padding: EdgeInsets.symmetric(horizontal: 16.w),
+    isDense: true,
     body: body,
     btnOkOnPress: () {
       debugPrint('OnClcik');

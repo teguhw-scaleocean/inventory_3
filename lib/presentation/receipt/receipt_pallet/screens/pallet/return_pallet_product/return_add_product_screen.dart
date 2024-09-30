@@ -191,6 +191,7 @@ class _ReturnAddProductScreenState extends State<ReturnAddProductScreen> {
                           : selectedObjectProduct.code,
                     )
                   : const SizedBox(),
+              if (idTracking == 0) SizedBox(height: 14.h),
               if (idTracking == 0) buildRequiredLabel("Serial Number"),
               if (idTracking == 0) SizedBox(height: 4.h),
               if (idTracking == 0)

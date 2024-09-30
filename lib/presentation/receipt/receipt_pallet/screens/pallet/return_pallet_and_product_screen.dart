@@ -17,8 +17,10 @@ import '../../../../../data/model/return_pallet.dart';
 
 class ReturnPalletAndProductScreen extends StatefulWidget {
   final int idTracking;
+  final bool? isBothLots;
 
-  const ReturnPalletAndProductScreen({super.key, this.idTracking = 0});
+  const ReturnPalletAndProductScreen(
+      {super.key, this.idTracking = 0, this.isBothLots});
 
   @override
   State<ReturnPalletAndProductScreen> createState() =>
@@ -32,12 +34,15 @@ class _ReturnPalletAndProductScreenState
   bool isShowLotsResult = false; // Lots Result
   bool isShowNoTrackingResult = false;
 
+  bool isBothLots = false;
+
   @override
   void initState() {
     super.initState();
 
     idTracking = widget.idTracking;
     debugPrint("idTracking: $idTracking");
+    isBothLots = widget.isBothLots ?? false;
   }
 
   @override
@@ -96,7 +101,9 @@ class _ReturnPalletAndProductScreenState
                                   ? "NM928321"
                                   : (isShowNoTrackingResult)
                                       ? "SUR_12942"
-                                      : "SY_12937",
+                                      : (isBothLots == true)
+                                          ? "SYR-LOTS-2842"
+                                          : "SY_12937",
                             ),
                             SizedBox(height: 8.h),
                             SizedBox(

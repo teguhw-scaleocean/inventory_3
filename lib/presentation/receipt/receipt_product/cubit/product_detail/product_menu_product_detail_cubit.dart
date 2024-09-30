@@ -174,7 +174,7 @@ class ProductMenuProductDetailCubit
     lastPallets[indexPallet] = itemReturn;
     emit(state.copyWith(pallets: lastPallets));
 
-    log("getReturnPallet: ${lastPallets.map((e) => e.isReturn.toString()).toList()}");
+    log("getReturnPallet: ${lastPallets.map((e) => e.isReturnPalletAndProduct.toString()).toList()}");
   }
 
   Pallet getCurrentPallet(ReturnPallet returnPallet) {

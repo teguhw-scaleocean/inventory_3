@@ -25,8 +25,10 @@ import '../../../../common/theme/text/base_text.dart';
 import '../../../../data/model/pallet_value.dart';
 import '../../../../data/model/pallet.dart';
 import '../../../../data/model/receipt.dart';
+import '../../../../data/model/return_pallet.dart';
 import '../../../../data/model/scan_view.dart';
 import '../../receipt_pallet/screens/pallet/add_pallet_screen.dart';
+import '../../receipt_pallet/screens/pallet/return_pallet_and_product_screen.dart';
 import '../../receipt_pallet/widget/scan_view_widget.dart';
 import '../../receipt_product/cubit/product_detail/product_menu_product_detail_cubit.dart';
 import '../cubit/receipt_detail/receipt_both_detail_cubit.dart';
@@ -340,8 +342,31 @@ class _ReceiptBothDetailScreenState extends State<ReceiptBothDetailScreen> {
                   ),
                   SizedBox(height: 12.h),
                   buildPalletButtonSection(
-                    status: receipt.status,
-                  ),
+                      status: receipt.status,
+                      onTapReturn: () {
+                        // 9: SN
+                        // 1: Lots
+                        // 4: No Tracking
+                        if (receipt.id == 9 ||
+                            receipt.id == 1 ||
+                            receipt.id == 4) {
+                          final returnResult = Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      ReturnPalletAndProductScreen(
+                                        idTracking: idTracking,
+                                        isBothLots:
+                                            (receipt.id == 1) ? true : false,
+                                      )));
+
+                          returnResult.then((value) {
+                            if (value != null) {
+                              _onReturnPalletAndProduct(value, context);
+                            }
+                          });
+                        }
+                      }),
                   SizedBox(height: 14.h),
                   BlocConsumer<ProductMenuProductDetailCubit,
                           ProductMenuProductDetailState>(
@@ -383,6 +408,7 @@ class _ReceiptBothDetailScreenState extends State<ReceiptBothDetailScreen> {
 
                           tracking = receipt.packageStatus.substring(10);
                           debugPrint("tracking: $tracking");
+                          debugPrint("item.id: ${item.id}");
 
                           return buildPalleteItemCard(item, tracking);
                         });
@@ -488,6 +514,7 @@ class _ReceiptBothDetailScreenState extends State<ReceiptBothDetailScreen> {
               product: product0,
               tracking: tracking,
               status: receipt.status,
+              isReturnPalletAndProduct: product0.isReturnPalletAndProduct,
             ),
           ),
         );
@@ -531,7 +558,7 @@ class _ReceiptBothDetailScreenState extends State<ReceiptBothDetailScreen> {
           children: [
             Container(
               width: double.infinity,
-              padding: EdgeInsets.fromLTRB(16.w, 12.h, 0, 10.h),
+              padding: EdgeInsets.fromLTRB(16.w, 12.h, 16.w, 10.h),
               decoration: const BoxDecoration(
                 border: Border(
                   bottom: BorderSide(
@@ -540,10 +567,19 @@ class _ReceiptBothDetailScreenState extends State<ReceiptBothDetailScreen> {
                   ),
                 ),
               ),
-              child: Text(
-                "Pallet ${product0.palletCode}",
-                style:
-                    BaseText.black2Text15.copyWith(fontWeight: BaseText.medium),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "Pallet ${product0.palletCode}",
+                    style: BaseText.black2Text15
+                        .copyWith(fontWeight: BaseText.medium),
+                  ),
+                  (product0.isReturn == true ||
+                          product0.isReturnPalletAndProduct == true)
+                      ? buildBadgeReturn()
+                      : const SizedBox()
+                ],
               ),
             ),
             Container(
@@ -731,7 +767,8 @@ class _ReceiptBothDetailScreenState extends State<ReceiptBothDetailScreen> {
     );
   }
 
-  Widget buildPalletButtonSection({required String status}) {
+  Widget buildPalletButtonSection(
+      {required String status, required Function()? onTapReturn}) {
     TextStyle? labelTextStyle;
     switch (status) {
       case "Late":
@@ -752,8 +789,11 @@ class _ReceiptBothDetailScreenState extends State<ReceiptBothDetailScreen> {
                 label: "Damage", labelTextStyle: labelTextStyle)),
         SizedBox(width: 12.w),
         Flexible(
-            child: buildOutlineButton(context,
-                label: "Return", labelTextStyle: labelTextStyle)),
+            child: GestureDetector(
+          onTap: onTapReturn,
+          child: buildOutlineButton(context,
+              label: "Return", labelTextStyle: labelTextStyle),
+        )),
       ],
     );
   }
@@ -973,5 +1013,43 @@ class _ReceiptBothDetailScreenState extends State<ReceiptBothDetailScreen> {
             ),
           ]),
     );
+  }
+
+  void _onReturnPalletAndProduct(value, BuildContext context) {
+    var result = value as ReturnPallet;
+    cubit.getReturnPalletAndProduct(result);
+    Future.delayed(const Duration(milliseconds: 600), () {
+      onShowSuccessNewDialog(
+        context: context,
+        onPressed: () {
+          Navigator.of(context).pop();
+        },
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(height: 10.h),
+            Text(
+              "Return Successful!",
+              style: BaseText.black2TextStyle.copyWith(
+                fontSize: 16.sp,
+                fontWeight: BaseText.semiBold,
+              ),
+            ),
+            Container(height: 4.h),
+            Text(
+              'Great job! You successfully returned the\npallet and product.',
+              textAlign: TextAlign.center,
+              maxLines: 2,
+              style: BaseText.grey2Text14.copyWith(
+                fontWeight: BaseText.light,
+              ),
+            ),
+            SizedBox(height: 24.h),
+          ],
+        ),
+      );
+    });
   }
 }

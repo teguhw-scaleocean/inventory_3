@@ -507,6 +507,7 @@ class _ReceiptBothDetailScreenState extends State<ReceiptBothDetailScreen> {
               product: product0,
               tracking: tracking,
               status: receipt.status,
+              isReturnPalletAndProduct: product0.isReturnPalletAndProduct,
             ),
           ),
         );

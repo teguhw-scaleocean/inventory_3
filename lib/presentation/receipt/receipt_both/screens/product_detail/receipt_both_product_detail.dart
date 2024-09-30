@@ -33,12 +33,14 @@ class ReceiptBothProductDetailScreen extends StatefulWidget {
   final Pallet product;
   final String tracking;
   final String status;
+  final bool? isReturnPalletAndProduct;
 
   const ReceiptBothProductDetailScreen({
     super.key,
     required this.product,
     required this.tracking,
     required this.status,
+    this.isReturnPalletAndProduct,
   });
 
   @override
@@ -104,13 +106,13 @@ class _ReceiptBothProductDetailScreenState
 
   bool isPalletScanned = false;
 
+  bool isReturnPalletAndProduct = false;
+
   @override
   void initState() {
     super.initState();
 
     debugPrint("ReceiptBothProductDetailScreen");
-
-    tabController = TabController(length: _tabs.length, vsync: this);
 
     debugPrint(widget.product.toJson());
 
@@ -118,6 +120,12 @@ class _ReceiptBothProductDetailScreenState
     isPalletScanned = product.hasBeenScanned ?? false;
     tracking = widget.tracking;
     status = widget.status;
+    isReturnPalletAndProduct = widget.isReturnPalletAndProduct ?? false;
+
+    if (isReturnPalletAndProduct == true) {
+      _tabs.insert(2, "Return");
+    }
+    tabController = TabController(length: _tabs.length, vsync: this);
 
     idTracking = TrackingHelper().getTrackingId(tracking);
 
@@ -400,6 +408,8 @@ class _ReceiptBothProductDetailScreenState
                       bool isSelectedTab = false;
                       isSelectedTab = tabController.index == _tabs.indexOf(e);
 
+                      var totalReturn = 1;
+
                       if (idTracking == 0) {
                         totalInt = serialNumberList.length;
                         total = totalInt.toString();
@@ -434,7 +444,11 @@ class _ReceiptBothProductDetailScreenState
 
                       return buildTabLabel(
                         label: e,
-                        total: (_tabs[0] == e) ? "($total)" : "($totalDone)",
+                        total: (_tabs[0] == e)
+                            ? "($total)"
+                            : (_tabs[1] == e)
+                                ? "($totalDone)"
+                                : "($totalReturn)",
                         isSelected: isSelectedTab,
                       );
                     }).toList(),
@@ -603,7 +617,22 @@ class _ReceiptBothProductDetailScreenState
                                       ? _buildDoneEmptyState()
                                       : (idTracking == 0 && totalDoneInt == 0)
                                           ? _buildDoneEmptyState()
-                                          : const SizedBox()
+                                          : const SizedBox(),
+                      if (idTracking == 0 && isReturnPalletAndProduct == true)
+                        Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 16.w,
+                            vertical: 12.h,
+                          ),
+                          child: Column(
+                            children: [
+                              buildItemQuantityReturn(
+                                code,
+                                itemProduct: product,
+                              )
+                            ],
+                          ),
+                        )
                     ],
                   ),
                 )
@@ -1196,6 +1225,94 @@ class _ReceiptBothProductDetailScreenState
         title,
         textAlign: TextAlign.center,
         style: BaseText.grey2Text12,
+      ),
+    );
+  }
+
+  Widget buildItemQuantityReturn(String code,
+      {Pallet? itemProduct, bool isHighlighted = false}) {
+    if (itemProduct != null) {
+      int? quantityInt = itemProduct.productQty.toInt();
+      quantity = quantityInt.toString();
+    }
+
+    return SmoothHighlight(
+      color: ColorName.highlightColor,
+      duration: const Duration(seconds: 3),
+      enabled: isHighlighted,
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 12.h, vertical: 10.h),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(6.r),
+          border: Border.all(
+            color: ColorName.grey9Color,
+          ),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  code,
+                  style: BaseText.black2Text14
+                      .copyWith(fontWeight: BaseText.regular),
+                ),
+                SizedBox(height: 9.h),
+                Text(
+                  "Reason: Does not meet standarts",
+                  style:
+                      BaseText.grey1Text12.copyWith(fontWeight: BaseText.light),
+                ),
+                SizedBox(height: 8.h),
+                Text(
+                  "Location: Storage Area B, IN01",
+                  style:
+                      BaseText.grey1Text12.copyWith(fontWeight: BaseText.light),
+                ),
+                SizedBox(height: 9.h),
+                Text(
+                  "Exp. Date: 12/07/2024 - 15:00",
+                  style: BaseText.baseTextStyle.copyWith(
+                    color: ColorName.dateTimeColor,
+                    fontSize: 12.sp,
+                    fontWeight: BaseText.light,
+                  ),
+                )
+              ],
+            ),
+            IntrinsicHeight(
+              child: Row(
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 0),
+                    child: VerticalDivider(
+                      color: ColorName.grey9Color,
+                      thickness: 1.0,
+                    ),
+                  ),
+                  SizedBox(
+                    height: 86.h,
+                    width: 60.w,
+                    child: Center(
+                      child: Text(
+                        (tracking.toLowerCase().contains("serial"))
+                            ? "1"
+                            : quantity,
+                        textAlign: TextAlign.center,
+                        style: BaseText.black2Text14.copyWith(
+                          fontWeight: BaseText.regular,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            )
+          ],
+        ),
       ),
     );
   }

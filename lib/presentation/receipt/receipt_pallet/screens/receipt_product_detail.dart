@@ -45,7 +45,7 @@ class _ReceiptProductDetailScreenState extends State<ReceiptProductDetailScreen>
   bool isReturnPalletAndProduct = false;
 
   late TabController _tabController;
-  final List<String> _tabs = ["Not Done", "Done", "Return"];
+  final List<String> _tabs = ["Not Done", "Done"];
 
   @override
   void initState() {
@@ -58,6 +58,10 @@ class _ReceiptProductDetailScreenState extends State<ReceiptProductDetailScreen>
 
     isReturn = product.isReturn ?? false;
     isReturnPalletAndProduct = product.isReturnPalletAndProduct ?? false;
+
+    if (isReturn || isReturnPalletAndProduct) {
+      _tabs.insert(2, "Return");
+    }
 
     // Serial Number
     serialNumberList = widget.product.serialNumber ?? <SerialNumber>[];

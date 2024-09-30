@@ -401,6 +401,7 @@ class _ReceiptBothDetailScreenState extends State<ReceiptBothDetailScreen> {
 
                           tracking = receipt.packageStatus.substring(10);
                           debugPrint("tracking: $tracking");
+                          debugPrint("item.id: ${item.id}");
 
                           return buildPalleteItemCard(item, tracking);
                         });
@@ -549,7 +550,7 @@ class _ReceiptBothDetailScreenState extends State<ReceiptBothDetailScreen> {
           children: [
             Container(
               width: double.infinity,
-              padding: EdgeInsets.fromLTRB(16.w, 12.h, 0, 10.h),
+              padding: EdgeInsets.fromLTRB(16.w, 12.h, 16.w, 10.h),
               decoration: const BoxDecoration(
                 border: Border(
                   bottom: BorderSide(
@@ -558,10 +559,19 @@ class _ReceiptBothDetailScreenState extends State<ReceiptBothDetailScreen> {
                   ),
                 ),
               ),
-              child: Text(
-                "Pallet ${product0.palletCode}",
-                style:
-                    BaseText.black2Text15.copyWith(fontWeight: BaseText.medium),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "Pallet ${product0.palletCode}",
+                    style: BaseText.black2Text15
+                        .copyWith(fontWeight: BaseText.medium),
+                  ),
+                  (product0.isReturn == true ||
+                          product0.isReturnPalletAndProduct == true)
+                      ? buildBadgeReturn()
+                      : const SizedBox()
+                ],
               ),
             ),
             Container(

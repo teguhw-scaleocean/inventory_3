@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:inventory_v3/common/components/button_dialog.dart';
 import 'package:inventory_v3/common/components/custom_app_bar.dart';
 import 'package:inventory_v3/data/model/pallet.dart';
 
 import '../../../../../../common/components/custom_form.dart';
+import '../../../../../../common/components/custom_quantity_button.dart';
 import '../../../../../../common/components/primary_button.dart';
 import '../../../../../../common/components/reusable_add_serial_number_button.dart';
 import '../../../../../../common/components/reusable_confirm_dialog.dart';
@@ -12,13 +15,17 @@ import '../../../../../../common/components/reusable_scan_button.dart';
 import '../../../../../../common/components/reusable_widget.dart';
 import '../../../../../../common/theme/color/color_name.dart';
 import '../../../../../../common/theme/text/base_text.dart';
+import '../../../cubit/count_cubit.dart';
+import '../../../cubit/count_state.dart';
 
 class ReturnAddProductScreen extends StatefulWidget {
   final int idTracking;
+  final bool? isEdit;
 
   const ReturnAddProductScreen({
     super.key,
     required this.idTracking,
+    this.isEdit,
   });
 
   @override
@@ -55,6 +62,14 @@ class _ReturnAddProductScreenState extends State<ReturnAddProductScreen> {
   var selectedSerialNumber1;
   bool hasSerialNumber1Focus = false;
 
+  var selectedLots;
+  bool hasLotsFocus = false;
+
+  String titleAppBar = "";
+  bool isEdit = false;
+
+  bool isQtyButtonEnabled = false;
+
   List<String> listSerialNumber = [
     "SN-NM1234567845",
     "SN-NM1234567846",
@@ -73,6 +88,15 @@ class _ReturnAddProductScreenState extends State<ReturnAddProductScreen> {
     // "SN-NM1234567859",
     // "SN-NM1234567860",
   ];
+  List<String> listLots = [
+    "LOTS-NM0983642",
+    "LOTS-NM0983643",
+    "LOTS-NM0983644",
+    "LOTS-NM0983645",
+    "LOTS-NM0983646",
+    "LOTS-NM0983647",
+    "LOTS-NM0983648",
+  ];
 
   List<dynamic> listSnController = [];
   List<dynamic> listSnSelected = [];
@@ -89,6 +113,22 @@ class _ReturnAddProductScreenState extends State<ReturnAddProductScreen> {
     super.initState();
 
     listProduct = listPallets;
+
+    isEdit = widget.isEdit ?? false;
+    idTracking = widget.idTracking;
+
+    titleAppBar = isEdit == true ? "Edit Product: Pallet A493" : "Add Product";
+
+    if (isEdit == true) {
+      selectedProduct = listProduct.first.productName;
+      selectedObjectProduct = listProduct.firstWhere(
+        (element) => element.productName == selectedProduct,
+        orElse: () => listProduct.first,
+      );
+      selectedSerialNumber = listSerialNumber.first;
+      selectedReason = listReason.first;
+      selectedLocation = listLocation.first;
+    }
   }
 
   @override
@@ -97,7 +137,7 @@ class _ReturnAddProductScreenState extends State<ReturnAddProductScreen> {
       child: Scaffold(
         appBar: CustomAppBar(
           onTap: () => Navigator.pop(context),
-          title: "Add Product",
+          title: titleAppBar,
         ),
         body: Container(
           width: double.infinity,
@@ -133,18 +173,22 @@ class _ReturnAddProductScreenState extends State<ReturnAddProductScreen> {
                 onChange: (value) {
                   setState(() {
                     selectedProduct = value;
-                    selectedObjectProduct = listProduct
-                        .firstWhere((element) => element.productName == value);
+                    selectedObjectProduct = listProduct.firstWhere(
+                        (element) => element.productName == selectedProduct);
                   });
                   debugPrint(
                       "selectedObjectProduct: ${selectedObjectProduct.toString()}");
                 },
               ),
-              SizedBox(height: 14.h),
+              (selectedProduct != null)
+                  ? SizedBox(height: 14.h)
+                  : const SizedBox(),
               (selectedProduct != null)
                   ? buildDisableField(
                       label: "SKU",
-                      value: selectedObjectProduct.sku!,
+                      value: (idTracking == 0)
+                          ? selectedObjectProduct.sku!
+                          : selectedObjectProduct.code,
                     )
                   : const SizedBox(),
               if (idTracking == 0) buildRequiredLabel("Serial Number"),
@@ -273,6 +317,188 @@ class _ReturnAddProductScreenState extends State<ReturnAddProductScreen> {
                   maxwidth: ScreenUtil().screenWidth - 32.w,
                   isCenterTitle: true,
                 ),
+              (idTracking == 1)
+                  ? StatefulBuilder(builder: (context, otherSetState) {
+                      double value = 0.0;
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(height: 14.h),
+                          buildRequiredLabel("Lots Number"),
+                          SizedBox(height: 4.h),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Flexible(
+                                child: LimitedBox(
+                                  maxWidth: 280.w,
+                                  child: Builder(builder: (context) {
+                                    return ReusableDropdownMenu(
+                                      maxHeight: 500.h,
+                                      offset: const Offset(0, -15),
+                                      hasSearch: false,
+                                      label: "",
+                                      listOfItemsValue:
+                                          listLots.map((e) => e).toList(),
+                                      selectedValue: selectedLots,
+                                      hintText: "   Select Lots Number",
+                                      hintTextStyle:
+                                          BaseText.grey1Text14.copyWith(
+                                        fontWeight: BaseText.regular,
+                                        color: ColorName.grey12Color,
+                                      ),
+                                      onTap: (focus) {},
+                                      onChange: (value) {
+                                        setState(() {
+                                          selectedLots = value;
+                                        });
+
+                                        debugPrint(
+                                            "selectedLots: ${selectedLots.toString()}");
+                                        // debugPrint(
+                                        //     "listSerialNumber: ${listSerialNumber.map((e) => e).toList()}");
+                                      },
+                                    );
+                                  }),
+                                ),
+                              ),
+                              SizedBox(width: 8.w),
+                              reusableScanButton()
+                            ],
+                          ),
+                          SizedBox(height: 14.h),
+                          buildRequiredLabel("Quantity"),
+                          SizedBox(height: 4.h),
+                          BlocConsumer<CountCubit, CountState>(
+                              listener: (context, state) {
+                            qtyController.value = TextEditingValue(
+                              text: state.quantity.toString(),
+                            );
+                            debugPrint(
+                                "qtyController listen: ${qtyController.text}");
+
+                            isQtyButtonEnabled = state.quantity > 0;
+                          }, builder: (context, state) {
+                            var countCubit = context.read<CountCubit>();
+
+                            borderColor = ColorName.borderColor;
+
+                            qtyIconColor = (isQtyButtonEnabled)
+                                ? ColorName.grey10Color
+                                : ColorName.grey18Color;
+                            qtyTextColor = (isQtyButtonEnabled)
+                                ? ColorName.grey10Color
+                                : ColorName.grey12Color;
+
+                            return CustomQuantityButton(
+                              controller: qtyController,
+                              borderColor: borderColor,
+                              iconColor: qtyIconColor,
+                              textColor: qtyTextColor,
+                              onChanged: (v) {
+                                if (v.isEmpty || v == "0.0") {
+                                  otherSetState(() {
+                                    isQtyButtonEnabled = false;
+                                  });
+                                } else {
+                                  otherSetState(() {
+                                    isQtyButtonEnabled = true;
+                                  });
+                                }
+                              },
+                              onSubmitted: (v) {
+                                otherSetState(() {
+                                  value = double.parse(v);
+                                  qtyController.value = TextEditingValue(
+                                    text: value.toString(),
+                                  );
+
+                                  countCubit.submit(value);
+                                });
+                              },
+                              onDecreased: () {
+                                if (state.quantity >= 1) {
+                                  countCubit.decrement(value);
+                                }
+                              },
+                              onIncreased: () {
+                                countCubit.increment(value);
+                              },
+                            );
+                          }),
+                        ],
+                      );
+                    })
+                  : (idTracking == 2)
+                      ? StatefulBuilder(builder: (context, noTrackSetState) {
+                          double value = 0.0;
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              SizedBox(height: 14.h),
+                              buildRequiredLabel("Quantity"),
+                              SizedBox(height: 4.h),
+                              BlocConsumer<CountCubit, CountState>(
+                                  listener: (context, state) {
+                                qtyController.value = TextEditingValue(
+                                  text: state.quantity.toString(),
+                                );
+                                debugPrint(
+                                    "qtyController listen: ${qtyController.text}");
+
+                                isQtyButtonEnabled = state.quantity > 0;
+                              }, builder: (context, state) {
+                                var countCubit = context.read<CountCubit>();
+
+                                borderColor = ColorName.borderColor;
+
+                                qtyIconColor = (isQtyButtonEnabled)
+                                    ? ColorName.grey10Color
+                                    : ColorName.grey18Color;
+                                qtyTextColor = (isQtyButtonEnabled)
+                                    ? ColorName.grey10Color
+                                    : ColorName.grey12Color;
+
+                                return CustomQuantityButton(
+                                  controller: qtyController,
+                                  borderColor: borderColor,
+                                  iconColor: qtyIconColor,
+                                  textColor: qtyTextColor,
+                                  onChanged: (v) {
+                                    if (v.isEmpty || v == "0.0") {
+                                      noTrackSetState(() {
+                                        isQtyButtonEnabled = false;
+                                      });
+                                    } else {
+                                      noTrackSetState(() {
+                                        isQtyButtonEnabled = true;
+                                      });
+                                    }
+                                  },
+                                  onSubmitted: (v) {
+                                    noTrackSetState(() {
+                                      value = double.parse(v);
+                                      qtyController.value = TextEditingValue(
+                                        text: value.toString(),
+                                      );
+
+                                      countCubit.submit(value);
+                                    });
+                                  },
+                                  onDecreased: () {
+                                    if (state.quantity >= 1) {
+                                      countCubit.decrement(value);
+                                    }
+                                  },
+                                  onIncreased: () {
+                                    countCubit.increment(value);
+                                  },
+                                );
+                              }),
+                            ],
+                          );
+                        })
+                      : const SizedBox(),
               SizedBox(height: 14.h),
               buildRequiredLabel("Reason"),
               SizedBox(height: 4.h),
@@ -338,17 +564,66 @@ class _ReturnAddProductScreenState extends State<ReturnAddProductScreen> {
           ),
         ),
         bottomNavigationBar: buildBottomNavbar(
-          child: PrimaryButton(
-            onPressed: () {
-              if (selectedProduct != null &&
-                  selectedReason != null &&
-                  selectedLocation != null) {
-                Navigator.pop(context, true);
-              }
-            },
-            height: 40.h,
-            title: "Submit",
-          ),
+          child: (isEdit)
+              ? Row(
+                  children: [
+                    Flexible(
+                      child: SecondaryButtonDialog(
+                        onPressed: () {
+                          Future.delayed(const Duration(milliseconds: 500), () {
+                            reusableConfirmDialog(
+                              context,
+                              title: "Confirm Return",
+                              message:
+                                  "Are you sure you want to delete this\nreturned product?",
+                              maxLines: 2,
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                            );
+                          });
+                        },
+                        height: 40.h,
+                        width: 160.w,
+                        title: "Delete",
+                        hasBorder: true,
+                      ),
+                    ),
+                    SizedBox(width: 8.w),
+                    Flexible(
+                      child: PrimaryButtonDialog(
+                        onPressed: () {
+                          Future.delayed(const Duration(milliseconds: 500), () {
+                            reusableConfirmDialog(
+                              context,
+                              title: "Confirm Return",
+                              message:
+                                  "Are you sure you want to update this\nreturned product?",
+                              maxLines: 2,
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                            );
+                          });
+                        },
+                        height: 40.h,
+                        width: 160.w,
+                        title: "Update",
+                      ),
+                    )
+                  ],
+                )
+              : PrimaryButton(
+                  onPressed: () {
+                    if (selectedProduct != null &&
+                        selectedReason != null &&
+                        selectedLocation != null) {
+                      Navigator.pop(context, true);
+                    }
+                  },
+                  height: 40.h,
+                  title: "Submit",
+                ),
         ),
       ),
     );

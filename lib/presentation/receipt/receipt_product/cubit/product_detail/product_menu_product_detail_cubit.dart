@@ -155,15 +155,39 @@ class ProductMenuProductDetailCubit
 
   getReturnPallet(ReturnPallet returnPallet) {
     List<Pallet> lastPallets = state.pallets;
-    int index =
-        lastPallets.indexWhere((element) => element.id == returnPallet.id);
-    var currentPallet =
-        lastPallets.firstWhere((element) => element.id == returnPallet.id);
+    var currentPallet = getCurrentPallet(returnPallet);
+    var indexPallet = getCurrentPalletIndex(returnPallet);
 
     var itemReturn = currentPallet.copyWith(isReturn: true);
-    lastPallets[index] = itemReturn;
+    lastPallets[indexPallet] = itemReturn;
     emit(state.copyWith(pallets: lastPallets));
 
     log("getReturnPallet: ${lastPallets.map((e) => e.isReturn.toString()).toList()}");
+  }
+
+  getReturnPalletAndProduct(ReturnPallet returnPallet) {
+    List<Pallet> lastPallets = state.pallets;
+    var currentPallet = getCurrentPallet(returnPallet);
+    var indexPallet = getCurrentPalletIndex(returnPallet);
+
+    var itemReturn = currentPallet.copyWith(isReturnPalletAndProduct: true);
+    lastPallets[indexPallet] = itemReturn;
+    emit(state.copyWith(pallets: lastPallets));
+
+    log("getReturnPallet: ${lastPallets.map((e) => e.isReturn.toString()).toList()}");
+  }
+
+  Pallet getCurrentPallet(ReturnPallet returnPallet) {
+    List<Pallet> lastPallets = state.pallets;
+    var currentPallet =
+        lastPallets.firstWhere((element) => element.id == returnPallet.id);
+    return currentPallet;
+  }
+
+  int getCurrentPalletIndex(ReturnPallet returnPallet) {
+    List<Pallet> lastPallets = state.pallets;
+    int index =
+        lastPallets.indexWhere((element) => element.id == returnPallet.id);
+    return index;
   }
 }

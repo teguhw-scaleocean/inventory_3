@@ -20,6 +20,7 @@ class Pallet {
   bool? isDoneQty;
   bool? hasBeenScanned;
   bool? isReturn;
+  bool? isReturnPalletAndProduct;
   List<SerialNumber>? serialNumber;
   List<SerialNumber>? scannedSerialNumber;
   List<Product>? productReturn;
@@ -39,6 +40,7 @@ class Pallet {
     this.isDoneQty,
     this.hasBeenScanned,
     this.isReturn,
+    this.isReturnPalletAndProduct,
     this.serialNumber,
     this.scannedSerialNumber,
     this.productReturn,
@@ -59,6 +61,7 @@ class Pallet {
     bool? isDoneQty,
     bool? hasBeenScanned,
     bool? isReturn,
+    bool? isReturnPalletAndProduct,
     List<SerialNumber>? serialNumber,
     List<SerialNumber>? scannedSerialNumber,
     List<Product>? productReturn,
@@ -78,6 +81,8 @@ class Pallet {
       isDoneQty: isDoneQty ?? this.isDoneQty,
       hasBeenScanned: hasBeenScanned ?? this.hasBeenScanned,
       isReturn: isReturn ?? this.isReturn,
+      isReturnPalletAndProduct:
+          isReturnPalletAndProduct ?? this.isReturnPalletAndProduct,
       serialNumber: serialNumber ?? this.serialNumber,
       scannedSerialNumber: scannedSerialNumber ?? this.scannedSerialNumber,
       productReturn: productReturn ?? this.productReturn,
@@ -100,6 +105,7 @@ class Pallet {
       'isDoneQty': isDoneQty,
       'hasBeenScanned': hasBeenScanned,
       'isReturn': isReturn,
+      'isReturnPalletAndProduct': isReturnPalletAndProduct,
       'serialNumber': serialNumber?.map((x) => x.toMap()).toList(),
       'scannedSerialNumber':
           scannedSerialNumber?.map((x) => x.toMap()).toList(),
@@ -128,6 +134,9 @@ class Pallet {
       hasBeenScanned:
           map['hasBeenScanned'] != null ? map['hasBeenScanned'] as bool : null,
       isReturn: map['isReturn'] != null ? map['isReturn'] as bool : null,
+      isReturnPalletAndProduct: map['isReturnPalletAndProduct'] != null
+          ? map['isReturnPalletAndProduct'] as bool
+          : null,
       serialNumber: map['serialNumber'] != null
           ? List<SerialNumber>.from(
               (map['serialNumber'] as List<int>).map<SerialNumber?>(
@@ -159,7 +168,7 @@ class Pallet {
 
   @override
   String toString() {
-    return 'Pallet(id: $id, palletCode: $palletCode, productName: $productName, code: $code, dateTime: $dateTime, hasActualDateTime: $hasActualDateTime, actualDateTime: $actualDateTime, sku: $sku, lotsCode: $lotsCode, productQty: $productQty, doneQty: $doneQty, isDoneQty: $isDoneQty, hasBeenScanned: $hasBeenScanned, isReturn: $isReturn, serialNumber: $serialNumber, scannedSerialNumber: $scannedSerialNumber, productReturn: $productReturn)';
+    return 'Pallet(id: $id, palletCode: $palletCode, productName: $productName, code: $code, dateTime: $dateTime, hasActualDateTime: $hasActualDateTime, actualDateTime: $actualDateTime, sku: $sku, lotsCode: $lotsCode, productQty: $productQty, doneQty: $doneQty, isDoneQty: $isDoneQty, hasBeenScanned: $hasBeenScanned, isReturn: $isReturn, isReturnPalletAndProduct: $isReturnPalletAndProduct, serialNumber: $serialNumber, scannedSerialNumber: $scannedSerialNumber, productReturn: $productReturn)';
   }
 
   @override
@@ -180,6 +189,7 @@ class Pallet {
         other.isDoneQty == isDoneQty &&
         other.hasBeenScanned == hasBeenScanned &&
         other.isReturn == isReturn &&
+        other.isReturnPalletAndProduct == isReturnPalletAndProduct &&
         listEquals(other.serialNumber, serialNumber) &&
         listEquals(other.scannedSerialNumber, scannedSerialNumber) &&
         listEquals(other.productReturn, productReturn);
@@ -201,6 +211,7 @@ class Pallet {
         isDoneQty.hashCode ^
         hasBeenScanned.hashCode ^
         isReturn.hashCode ^
+        isReturnPalletAndProduct.hashCode ^
         serialNumber.hashCode ^
         scannedSerialNumber.hashCode ^
         productReturn.hashCode;

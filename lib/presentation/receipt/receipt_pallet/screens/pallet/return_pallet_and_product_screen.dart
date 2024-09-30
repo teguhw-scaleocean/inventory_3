@@ -16,7 +16,9 @@ import '../../../../../common/theme/text/base_text.dart';
 import '../../../../../data/model/return_pallet.dart';
 
 class ReturnPalletAndProductScreen extends StatefulWidget {
-  const ReturnPalletAndProductScreen({super.key});
+  final int idTracking;
+
+  const ReturnPalletAndProductScreen({super.key, this.idTracking = 0});
 
   @override
   State<ReturnPalletAndProductScreen> createState() =>
@@ -26,7 +28,16 @@ class ReturnPalletAndProductScreen extends StatefulWidget {
 class _ReturnPalletAndProductScreenState
     extends State<ReturnPalletAndProductScreen> {
   int idTracking = 0;
-  bool isShowResult = false;
+  bool isShowResult = false; // Serial Number Result
+  bool isShowLotsResult = false; // Lots Result
+
+  @override
+  void initState() {
+    super.initState();
+
+    idTracking = widget.idTracking;
+    debugPrint("idTracking: $idTracking");
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +58,8 @@ class _ReturnPalletAndProductScreenState
                     ),
                   ),
               itemBuilder: (context, index) {
-                if (isShowResult && index == 0) {
+                if (isShowResult && index == 0 ||
+                    isShowLotsResult && index == 0) {
                   return Theme(
                     data: Theme.of(context).copyWith(
                       listTileTheme: ListTileTheme.of(context).copyWith(
@@ -72,7 +84,12 @@ class _ReturnPalletAndProductScreenState
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            buildProductItemCard(),
+                            buildProductItemCard(
+                              name: (isShowResult)
+                                  ? "Nebulizer Machine"
+                                  : "Syringes",
+                              code: (isShowResult) ? "NM928321" : "SY_12937",
+                            ),
                             SizedBox(height: 8.h),
                             SizedBox(
                               height: 30.h,
@@ -102,22 +119,26 @@ class _ReturnPalletAndProductScreenState
                         style: BaseText.grey10Text14,
                       ),
                       _buildAddProductButton(onTap: () {
-                        if (idTracking == 0) {
-                          final addProductBySerialNumber = Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => ReturnAddProductScreen(
-                                idTracking: idTracking,
-                              ),
+                        final addProduct = Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ReturnAddProductScreen(
+                              idTracking: idTracking,
                             ),
-                          );
+                          ),
+                        );
 
-                          addProductBySerialNumber.then((value) {
+                        addProduct.then((value) {
+                          if (idTracking == 0) {
                             setState(() {
                               isShowResult = true;
                             });
-                          });
-                        }
+                          } else if (idTracking == 1) {
+                            setState(() {
+                              isShowLotsResult = true;
+                            });
+                          }
+                        });
                       })
                     ],
                   ),
@@ -127,12 +148,22 @@ class _ReturnPalletAndProductScreenState
         bottomNavigationBar: buildBottomNavbar(
           child: PrimaryButton(
             onPressed: () {
-              ReturnPallet returnPallet = ReturnPallet(
-                id: 1,
-                palletCode: "A4910",
-                reason: "Overstock",
-                location: "Warehouse A-342-3-4",
-              );
+              ReturnPallet returnPallet;
+              if (isShowLotsResult) {
+                returnPallet = ReturnPallet(
+                  id: 1,
+                  palletCode: "A494",
+                  reason: "Overstock",
+                  location: "Warehouse A-342-3-4",
+                );
+              } else {
+                returnPallet = ReturnPallet(
+                  id: 1,
+                  palletCode: "A4910",
+                  reason: "Overstock",
+                  location: "Warehouse A-342-3-4",
+                );
+              }
 
               Future.delayed(const Duration(milliseconds: 500), () {
                 reusableConfirmDialog(
@@ -185,7 +216,12 @@ class _ReturnPalletAndProductScreenState
     );
   }
 
-  Widget buildProductItemCard() {
+  Widget buildProductItemCard(
+      // ReturnPallet? item,
+      {
+    required String name,
+    required String code,
+  }) {
     return Container(
         // width: 328,
         // height: 126,
@@ -204,15 +240,32 @@ class _ReturnPalletAndProductScreenState
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  "Nebulizer Machine",
+                  name,
                   style: BaseText.grey10Text14,
                 ),
-                Text("Edit", style: BaseText.blue4Text11)
+                InkWell(
+                  onTap: () {
+                    if (idTracking == 0) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ReturnAddProductScreen(
+                            idTracking: idTracking,
+                            isEdit: true,
+                          ),
+                        ),
+                      );
+                    }
+                  },
+                  child: SizedBox(
+                    child: Text("Edit", style: BaseText.blue4Text11),
+                  ),
+                )
               ],
             ),
             SizedBox(height: 2.h),
             Text(
-              "NM928321",
+              code,
               style: BaseText.grey2Text12.copyWith(
                 fontWeight: BaseText.light,
               ),

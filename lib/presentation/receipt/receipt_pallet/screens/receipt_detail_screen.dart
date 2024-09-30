@@ -62,6 +62,8 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
 
   var selectedUpdatePallet;
 
+  int idTracking = 0;
+
   @override
   void initState() {
     super.initState();
@@ -83,11 +85,13 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
         .toLowerCase()
         .contains("no tracking")) {
       cubit.getInitNoTrackingListProduct();
+      idTracking = 2;
     } else if (receipt.packageStatus
         .toString()
         .toLowerCase()
         .contains("lots")) {
       cubit.getInitLotsListProduct();
+      idTracking = 1;
     } else if (receipt.packageStatus
         .toString()
         .toLowerCase()
@@ -325,51 +329,20 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
                   buildPalletButtonSection(
                     status: receipt.status,
                     onTapReturn: () {
-                      if (receipt.id == 6) {
-                        final returnResult = Navigator.push(
+                      if (receipt.id == 1 ||
+                          receipt.id == 6 ||
+                          receipt.id == 7) {
+                        final returnLotsResult = Navigator.push(
                             context,
                             MaterialPageRoute(
                                 builder: (context) =>
-                                    const ReturnPalletAndProductScreen()));
+                                    ReturnPalletAndProductScreen(
+                                      idTracking: idTracking,
+                                    )));
 
-                        returnResult.then((value) {
+                        returnLotsResult.then((value) {
                           if (value != null) {
-                            var result = value as ReturnPallet;
-                            cubit.getReturnPallet(result);
-                            Future.delayed(const Duration(milliseconds: 600),
-                                () {
-                              onShowSuccessNewDialog(
-                                context: context,
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                },
-                                body: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Container(height: 10.h),
-                                    Text(
-                                      "Return Successful!",
-                                      style: BaseText.black2TextStyle.copyWith(
-                                        fontSize: 16.sp,
-                                        fontWeight: BaseText.semiBold,
-                                      ),
-                                    ),
-                                    Container(height: 4.h),
-                                    Text(
-                                      'Great job! You successfully returned the\npallet and product.',
-                                      textAlign: TextAlign.center,
-                                      maxLines: 2,
-                                      style: BaseText.grey2Text14.copyWith(
-                                        fontWeight: BaseText.light,
-                                      ),
-                                    ),
-                                    SizedBox(height: 24.h),
-                                  ],
-                                ),
-                              );
-                            });
+                            _onReturnPalletAndProduct(value, context);
                           }
                         });
                       } else {
@@ -457,6 +430,44 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
         ),
       ),
     );
+  }
+
+  void _onReturnPalletAndProduct(value, BuildContext context) {
+    var result = value as ReturnPallet;
+    cubit.getReturnPalletAndProduct(result);
+    Future.delayed(const Duration(milliseconds: 600), () {
+      onShowSuccessNewDialog(
+        context: context,
+        onPressed: () {
+          Navigator.of(context).pop();
+        },
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(height: 10.h),
+            Text(
+              "Return Successful!",
+              style: BaseText.black2TextStyle.copyWith(
+                fontSize: 16.sp,
+                fontWeight: BaseText.semiBold,
+              ),
+            ),
+            Container(height: 4.h),
+            Text(
+              'Great job! You successfully returned the\npallet and product.',
+              textAlign: TextAlign.center,
+              maxLines: 2,
+              style: BaseText.grey2Text14.copyWith(
+                fontWeight: BaseText.light,
+              ),
+            ),
+            SizedBox(height: 24.h),
+          ],
+        ),
+      );
+    });
   }
 
   buildDropdownMaxHeight(bool hasUpdateFocus) {
@@ -739,7 +750,8 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
                     style: BaseText.black2Text15
                         .copyWith(fontWeight: BaseText.medium),
                   ),
-                  (product0.isReturn == true)
+                  (product0.isReturn == true ||
+                          product0.isReturnPalletAndProduct == true)
                       ? buildBadgeReturn()
                       : const SizedBox()
                 ],

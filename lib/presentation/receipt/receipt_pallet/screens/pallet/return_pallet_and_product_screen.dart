@@ -264,17 +264,17 @@ class _ReturnPalletAndProductScreenState
                 ),
                 InkWell(
                   onTap: () {
-                    if (idTracking == 0) {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => ReturnAddProductScreen(
-                            idTracking: idTracking,
-                            isEdit: true,
-                          ),
+                    // if (idTracking == 0) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ReturnAddProductScreen(
+                          idTracking: idTracking,
+                          isEdit: true,
                         ),
-                      );
-                    }
+                      ),
+                    );
+                    // }
                   },
                   child: SizedBox(
                     child: Text("Edit", style: BaseText.blue4Text11),

@@ -344,16 +344,20 @@ class _ReceiptBothDetailScreenState extends State<ReceiptBothDetailScreen> {
                   buildPalletButtonSection(
                       status: receipt.status,
                       onTapReturn: () {
-                        if (receipt.id == 9) {
-                          final returnLotsResult = Navigator.push(
+                        // 9: SN
+                        // 1: Lots
+                        if (receipt.id == 9 || receipt.id == 1) {
+                          final returnResult = Navigator.push(
                               context,
                               MaterialPageRoute(
                                   builder: (context) =>
                                       ReturnPalletAndProductScreen(
                                         idTracking: idTracking,
+                                        isBothLots:
+                                            (receipt.id == 1) ? true : false,
                                       )));
 
-                          returnLotsResult.then((value) {
+                          returnResult.then((value) {
                             if (value != null) {
                               _onReturnPalletAndProduct(value, context);
                             }

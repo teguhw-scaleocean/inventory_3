@@ -26,6 +26,7 @@ import 'package:inventory_v3/presentation/receipt/receipt_pallet/screens/receipt
 import 'package:inventory_v3/presentation/receipt/receipt_pallet/widget/scan_view_widget.dart';
 import 'package:inventory_v3/presentation/receipt/receipt_product/cubit/product_detail/product_menu_product_detail_cubit.dart';
 import 'package:inventory_v3/presentation/receipt/receipt_product/cubit/product_detail/product_menu_product_detail_state.dart';
+import 'package:inventory_v3/presentation/receipt/receipt_product/screens/return/return_product_screen.dart';
 
 import '../../../../common/components/status_badge.dart';
 import '../../../../common/extensions/empty_space_extension.dart';
@@ -60,6 +61,8 @@ class _ReceiptProductMenuDetailScreenState
 
   var selectedUpdatePallet;
 
+  int idTracking = 0;
+
   @override
   void initState() {
     super.initState();
@@ -80,12 +83,14 @@ class _ReceiptProductMenuDetailScreenState
         .contains("no tracking")) {
       BlocProvider.of<ProductMenuProductDetailCubit>(context)
           .getInitNoTrackingListProduct();
+      idTracking = 2;
     } else if (receipt.packageStatus
         .toString()
         .toLowerCase()
         .contains("lots")) {
       BlocProvider.of<ProductMenuProductDetailCubit>(context)
           .getInitLotsListProduct();
+      idTracking = 1;
     } else if (receipt.packageStatus
         .toString()
         .toLowerCase()
@@ -366,6 +371,20 @@ class _ReceiptProductMenuDetailScreenState
                   SizedBox(height: 12.h),
                   buildPalletButtonSection(
                     status: receipt.status,
+                    onTapReturn: () {
+                      // SN: 9
+                      if (receipt.id == 9) {
+                        final returnResult = Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => ReturnProductScreen(
+                                    idTracking: idTracking)));
+
+                        returnResult.then((value) {
+                          if (value != null) {}
+                        });
+                      }
+                    },
                   ),
                   SizedBox(height: 14.h),
                   BlocConsumer<ProductMenuProductDetailCubit,
@@ -1004,7 +1023,10 @@ class _ReceiptProductMenuDetailScreenState
     );
   }
 
-  Widget buildPalletButtonSection({required String status}) {
+  Widget buildPalletButtonSection({
+    required String status,
+    void Function()? onTapReturn,
+  }) {
     TextStyle? labelTextStyle;
     switch (status) {
       case "Late":
@@ -1025,8 +1047,11 @@ class _ReceiptProductMenuDetailScreenState
                 label: "Damage", labelTextStyle: labelTextStyle)),
         SizedBox(width: 12.w),
         Flexible(
-            child: buildOutlineButton(context,
-                label: "Return", labelTextStyle: labelTextStyle)),
+            child: GestureDetector(
+          onTap: onTapReturn,
+          child: buildOutlineButton(context,
+              label: "Return", labelTextStyle: labelTextStyle),
+        )),
       ],
     );
   }

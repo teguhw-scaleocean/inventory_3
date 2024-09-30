@@ -618,7 +618,7 @@ class _ReceiptBothProductDetailScreenState
                                       : (idTracking == 0 && totalDoneInt == 0)
                                           ? _buildDoneEmptyState()
                                           : const SizedBox(),
-                      if (idTracking == 0 && isReturnPalletAndProduct == true)
+                      if (isReturnPalletAndProduct == true)
                         Padding(
                           padding: EdgeInsets.symmetric(
                             horizontal: 16.w,
@@ -632,7 +632,8 @@ class _ReceiptBothProductDetailScreenState
                               )
                             ],
                           ),
-                        )
+                        ),
+                      //  if (idTracking == 1 && isReturnPalletAndProduct == true)
                     ],
                   ),
                 )

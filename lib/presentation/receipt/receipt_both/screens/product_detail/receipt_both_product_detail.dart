@@ -96,6 +96,8 @@ class _ReceiptBothProductDetailScreenState
   // Total Done
   int totalDoneInt = 0;
   String totalDone = "";
+  // Total Return
+  var totalReturn = 1;
 
   // Serial Number
   bool isHighlighted = false;
@@ -407,8 +409,6 @@ class _ReceiptBothProductDetailScreenState
                     tabs: _tabs.map((e) {
                       bool isSelectedTab = false;
                       isSelectedTab = tabController.index == _tabs.indexOf(e);
-
-                      var totalReturn = 1;
 
                       if (idTracking == 0) {
                         totalInt = serialNumberList.length;
@@ -1301,7 +1301,7 @@ class _ReceiptBothProductDetailScreenState
                       child: Text(
                         (tracking.toLowerCase().contains("serial"))
                             ? "1"
-                            : quantity,
+                            : "$totalReturn",
                         textAlign: TextAlign.center,
                         style: BaseText.black2Text14.copyWith(
                           fontWeight: BaseText.regular,

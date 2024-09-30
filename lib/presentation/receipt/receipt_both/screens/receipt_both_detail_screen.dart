@@ -346,7 +346,10 @@ class _ReceiptBothDetailScreenState extends State<ReceiptBothDetailScreen> {
                       onTapReturn: () {
                         // 9: SN
                         // 1: Lots
-                        if (receipt.id == 9 || receipt.id == 1) {
+                        // 4: No Tracking
+                        if (receipt.id == 9 ||
+                            receipt.id == 1 ||
+                            receipt.id == 4) {
                           final returnResult = Navigator.push(
                               context,
                               MaterialPageRoute(

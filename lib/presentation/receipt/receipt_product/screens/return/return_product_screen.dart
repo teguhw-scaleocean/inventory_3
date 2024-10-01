@@ -96,7 +96,7 @@ class _ReturnProductScreenState extends State<ReturnProductScreen> {
 
   var lotsBottomSheet;
   String titleLotsMenu = "Add Lots Number";
-  var selectedLots;
+
   bool isQtyButtonEnabled = false;
 
   Color qtyIconColor = ColorName.grey18Color;
@@ -173,7 +173,7 @@ class _ReturnProductScreenState extends State<ReturnProductScreen> {
                       ],
                     )
                   : const SizedBox(),
-              (isShowResult)
+              (idTracking == 0 && isShowResult)
                   ? Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -217,7 +217,18 @@ class _ReturnProductScreenState extends State<ReturnProductScreen> {
                         ),
                       ],
                     )
-                  : const SizedBox(),
+                  : (idTracking == 1 && isShowResult)
+                      ? Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            buildRequiredLabel("Lots Number"),
+                            SizedBox(height: 4.h),
+                            ProductReturnItemCard(
+                              item: returnProduct,
+                            )
+                          ],
+                        )
+                      : const SizedBox(),
               (idTracking == 0)
                   ? Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -265,15 +276,30 @@ class _ReturnProductScreenState extends State<ReturnProductScreen> {
                             SizedBox(height: 14.h),
                             reusableAddSerialNumberButton(
                               onTap: () {
+                                var selectedLots;
+                                var selectedReason;
+                                var selectedLocation;
+
                                 lotsBottomSheet = reusableBottomSheet(context,
                                     isShowDragHandle: false, Builder(
                                   builder: (context) {
                                     return reusableProductBottomSheet(
                                       context,
                                       titleLotsMenu,
+                                      selectedLotsNumber: selectedLots,
+                                      selectedReason: selectedReason,
                                     );
                                   },
                                 ));
+
+                                lotsBottomSheet.then((value) {
+                                  if (value != null) {
+                                    setState(() {
+                                      isShowResult = true;
+                                      returnProduct = value;
+                                    });
+                                  }
+                                });
                               },
                               maxwidth: ScreenUtil().screenWidth - 32.w,
                               isCenterTitle: true,
@@ -325,6 +351,7 @@ class _ReturnProductScreenState extends State<ReturnProductScreen> {
     BuildContext context,
     String titleMenu, {
     selectedSerialNumber,
+    selectedLotsNumber,
     selectedReason,
     selectedLocation,
     bool isEdit = false,
@@ -427,7 +454,7 @@ class _ReturnProductScreenState extends State<ReturnProductScreen> {
                                 label: "",
                                 listOfItemsValue:
                                     listLots.map((e) => e).toList(),
-                                selectedValue: selectedLots,
+                                selectedValue: selectedLotsNumber,
                                 hintText: "   Select Lots Number",
                                 hintTextStyle: BaseText.grey1Text14.copyWith(
                                   fontWeight: BaseText.regular,
@@ -436,11 +463,11 @@ class _ReturnProductScreenState extends State<ReturnProductScreen> {
                                 onTap: (focus) {},
                                 onChange: (value) {
                                   setState(() {
-                                    selectedLots = value;
+                                    selectedLotsNumber = value;
                                   });
 
                                   debugPrint(
-                                      "selectedLots: ${selectedLots.toString()}");
+                                      "selectedLots: ${selectedLotsNumber.toString()}");
                                   // debugPrint(
                                   //     "listSerialNumber: ${listSerialNumber.map((e) => e).toList()}");
                                 },
@@ -638,18 +665,34 @@ class _ReturnProductScreenState extends State<ReturnProductScreen> {
                       )
                     : PrimaryButton(
                         onPressed: () {
-                          if (_listSnSelected.isEmpty ||
-                              selectedReason == null ||
-                              selectedLocation == null) {
-                            return;
+                          ReturnProduct? returnObject;
+
+                          if (idTracking == 0) {
+                            if (_listSnSelected.isEmpty ||
+                                selectedReason == null ||
+                                selectedLocation == null) {
+                              return;
+                            }
+                            returnObject = ReturnProduct(
+                              id: 1,
+                              code: _listSnSelected.first,
+                              reason: selectedReason,
+                              location: selectedLocation,
+                            );
+                          } else if (idTracking == 1) {
+                            if (selectedLotsNumber == null ||
+                                selectedReason == null ||
+                                selectedLocation == null) {
+                              return;
+                            }
+                            returnObject = ReturnProduct(
+                              id: selectedObjectProduct.id,
+                              code: selectedLotsNumber,
+                              reason: selectedReason,
+                              location: selectedLocation,
+                            );
                           }
-                          var returnSn = ReturnProduct(
-                            id: 1,
-                            code: _listSnSelected.first,
-                            reason: selectedReason,
-                            location: selectedLocation,
-                          );
-                          Navigator.pop(context, returnSn);
+                          Navigator.pop(context, returnObject);
                         },
                         height: 40.h,
                         title: "Submit",

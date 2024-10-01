@@ -374,7 +374,8 @@ class _ReceiptProductMenuDetailScreenState
                     status: receipt.status,
                     onTapReturn: () {
                       // SN: 9
-                      if (receipt.id == 9) {
+                      // Lots: 1
+                      if (receipt.id == 9 || receipt.id == 1) {
                         final returnResult = Navigator.push(
                             context,
                             MaterialPageRoute(

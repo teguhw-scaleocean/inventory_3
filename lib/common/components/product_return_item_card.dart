@@ -8,8 +8,13 @@ import 'reusable_widget.dart';
 
 class ProductReturnItemCard extends StatelessWidget {
   final ReturnProduct item;
+  final void Function()? onTapEdit;
 
-  const ProductReturnItemCard({super.key, required this.item});
+  const ProductReturnItemCard({
+    super.key,
+    required this.item,
+    this.onTapEdit,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +38,7 @@ class ProductReturnItemCard extends StatelessWidget {
                 style: BaseText.grey10Text14,
               ),
               InkWell(
-                onTap: () {},
+                onTap: onTapEdit,
                 child: SizedBox(
                   child: Text("Edit", style: BaseText.blue4Text11),
                 ),

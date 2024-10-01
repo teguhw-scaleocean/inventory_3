@@ -1,21 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:inventory_v3/common/components/custom_divider.dart';
-import 'package:inventory_v3/common/components/reusable_add_serial_number_button.dart';
-import 'package:inventory_v3/common/components/reusable_bottom_sheet.dart';
-import 'package:inventory_v3/data/model/pallet.dart';
-import 'package:inventory_v3/data/model/return_product.dart';
 
+import '../../../../../common/components/button_dialog.dart';
 import '../../../../../common/components/custom_app_bar.dart';
 import '../../../../../common/components/primary_button.dart';
 import '../../../../../common/components/product_return_item_card.dart';
+import '../../../../../common/components/reusable_add_serial_number_button.dart';
+import '../../../../../common/components/reusable_bottom_sheet.dart';
 import '../../../../../common/components/reusable_confirm_dialog.dart';
 import '../../../../../common/components/reusable_dropdown_menu.dart';
 import '../../../../../common/components/reusable_scan_button.dart';
 import '../../../../../common/components/reusable_widget.dart';
 import '../../../../../common/theme/color/color_name.dart';
 import '../../../../../common/theme/text/base_text.dart';
+import '../../../../../data/model/pallet.dart';
 import '../../../../../data/model/return_pallet.dart';
+import '../../../../../data/model/return_product.dart';
 
 class ReturnProductScreen extends StatefulWidget {
   final int idTracking;
@@ -157,6 +157,8 @@ class _ReturnProductScreenState extends State<ReturnProductScreen> {
                         SizedBox(height: 6.h),
                         ProductReturnItemCard(
                           onTapEdit: () {
+                            isEdit = true;
+                            debugPrint("isEdit: $isEdit");
                             titleMenu = "Edit Serial Number";
                             //BottomSheet
                             var selectedSerialNumber = returnProduct.code;
@@ -171,6 +173,7 @@ class _ReturnProductScreenState extends State<ReturnProductScreen> {
                                 context,
                                 // addSetState,
                                 titleMenu,
+                                isEdit: true,
                                 selectedSerialNumber: selectedSerialNumber,
                                 selectedReason: selectedReason,
                                 selectedLocation: selectedLocation,
@@ -238,26 +241,27 @@ class _ReturnProductScreenState extends State<ReturnProductScreen> {
         bottomNavigationBar: buildBottomNavbar(
           child: PrimaryButton(
             onPressed: () {
-              if (selectedProduct == null) {
+              if (selectedObjectProduct == null || _listProduct.isEmpty) {
                 return;
               }
 
-              // ReturnPallet returnPallet = ReturnPallet(
-              //   id: selectedObjectProduct.id,
-              //   palletCode: selectedProduct,
-              //   reason: selectedReason,
-              //   location: selectedLocation,
-              // );
-              var returnPallet;
+              ReturnPallet returnOfProducts = ReturnPallet(
+                id: selectedObjectProduct.id,
+                palletCode: selectedObjectProduct.palletCode,
+                reason: returnProduct.reason,
+                location: returnProduct.location,
+              );
+              // var returnOfProducts;
 
               Future.delayed(const Duration(milliseconds: 500), () {
                 reusableConfirmDialog(
                   context,
                   title: "Confirm Return",
-                  message: "Are you sure you want to return this pallet?",
+                  message: "Are you sure you want to return this\nProduct?",
+                  maxLines: 2,
                   onPressed: () {
                     Navigator.pop(context);
-                    Navigator.pop(context, returnPallet);
+                    Navigator.pop(context, returnOfProducts);
                   },
                 );
               });
@@ -272,11 +276,11 @@ class _ReturnProductScreenState extends State<ReturnProductScreen> {
 
   Widget reusableProductBottomSheet(
     BuildContext context,
-    // StateSetter addSetState,
     String titleMenu, {
     selectedSerialNumber,
     selectedReason,
     selectedLocation,
+    bool isEdit = false,
   }) {
     return StatefulBuilder(builder: (context, addSetState) {
       return SingleChildScrollView(
@@ -416,25 +420,77 @@ class _ReturnProductScreenState extends State<ReturnProductScreen> {
                   : Container(height: 0),
               Padding(
                 padding: EdgeInsets.only(
-                    top: (hasLocationFocus) ? 36.h : 24.h, bottom: 24.h),
-                child: PrimaryButton(
-                  onPressed: () {
-                    if (_listSnSelected.isEmpty ||
-                        selectedReason == null ||
-                        selectedLocation == null) {
-                      return;
-                    }
-                    var returnSn = ReturnProduct(
-                      id: 1,
-                      code: _listSnSelected.first,
-                      reason: selectedReason,
-                      location: selectedLocation,
-                    );
-                    Navigator.pop(context, returnSn);
-                  },
-                  height: 40.h,
-                  title: "Submit",
+                  top: (hasLocationFocus) ? 36.h : 24.h,
                 ),
+                child: (isEdit)
+                    ? Row(
+                        children: [
+                          Flexible(
+                            child: SecondaryButtonDialog(
+                              onPressed: () {
+                                Future.delayed(
+                                    const Duration(milliseconds: 500), () {
+                                  reusableConfirmDialog(
+                                    context,
+                                    title: "Confirm Delete",
+                                    message:
+                                        "Are you sure you want to delete this\nSerial Number?",
+                                    maxLines: 2,
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                  );
+                                });
+                              },
+                              height: 40.h,
+                              width: 160.w,
+                              title: "Delete",
+                              hasBorder: true,
+                            ),
+                          ),
+                          SizedBox(width: 8.w),
+                          Flexible(
+                            child: PrimaryButtonDialog(
+                              onPressed: () {
+                                Future.delayed(
+                                    const Duration(milliseconds: 500), () {
+                                  reusableConfirmDialog(
+                                    context,
+                                    title: "Confirm Update",
+                                    message:
+                                        "Are you sure you want to update this\nSerial Number?",
+                                    maxLines: 2,
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                  );
+                                });
+                              },
+                              height: 40.h,
+                              width: 160.w,
+                              title: "Update",
+                            ),
+                          )
+                        ],
+                      )
+                    : PrimaryButton(
+                        onPressed: () {
+                          if (_listSnSelected.isEmpty ||
+                              selectedReason == null ||
+                              selectedLocation == null) {
+                            return;
+                          }
+                          var returnSn = ReturnProduct(
+                            id: 1,
+                            code: _listSnSelected.first,
+                            reason: selectedReason,
+                            location: selectedLocation,
+                          );
+                          Navigator.pop(context, returnSn);
+                        },
+                        height: 40.h,
+                        title: "Submit",
+                      ),
               ),
               SizedBox(height: 16.h),
             ],

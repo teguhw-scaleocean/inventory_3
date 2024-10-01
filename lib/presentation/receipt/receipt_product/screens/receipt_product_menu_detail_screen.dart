@@ -28,10 +28,12 @@ import 'package:inventory_v3/presentation/receipt/receipt_product/cubit/product_
 import 'package:inventory_v3/presentation/receipt/receipt_product/cubit/product_detail/product_menu_product_detail_state.dart';
 import 'package:inventory_v3/presentation/receipt/receipt_product/screens/return/return_product_screen.dart';
 
+import '../../../../common/components/reusable_widget.dart';
 import '../../../../common/components/status_badge.dart';
 import '../../../../common/extensions/empty_space_extension.dart';
 import '../../../../common/theme/color/color_name.dart';
 import '../../../../common/theme/text/base_text.dart';
+import '../../../../data/model/return_pallet.dart';
 import 'product_detail/receipt_product_menu_of_product_detail_screen.dart';
 
 class ReceiptProductMenuDetailScreen extends StatefulWidget {
@@ -48,6 +50,7 @@ class ReceiptProductMenuDetailScreen extends StatefulWidget {
 
 class _ReceiptProductMenuDetailScreenState
     extends State<ReceiptProductMenuDetailScreen> {
+  late ProductMenuProductDetailCubit cubit;
   final TextEditingController _searchController = TextEditingController();
   late Receipt receipt;
 
@@ -66,6 +69,7 @@ class _ReceiptProductMenuDetailScreenState
   @override
   void initState() {
     super.initState();
+    cubit = BlocProvider.of<ProductMenuProductDetailCubit>(context);
 
     if (widget.receipt != null) {
       receipt = widget.receipt!;
@@ -81,22 +85,19 @@ class _ReceiptProductMenuDetailScreenState
         .toString()
         .toLowerCase()
         .contains("no tracking")) {
-      BlocProvider.of<ProductMenuProductDetailCubit>(context)
-          .getInitNoTrackingListProduct();
+      cubit.getInitNoTrackingListProduct();
       idTracking = 2;
     } else if (receipt.packageStatus
         .toString()
         .toLowerCase()
         .contains("lots")) {
-      BlocProvider.of<ProductMenuProductDetailCubit>(context)
-          .getInitLotsListProduct();
+      cubit.getInitLotsListProduct();
       idTracking = 1;
     } else if (receipt.packageStatus
         .toString()
         .toLowerCase()
         .contains("serial number")) {
-      BlocProvider.of<ProductMenuProductDetailCubit>(context)
-          .getInitListProduct();
+      cubit.getInitListProduct();
     }
 
     date = receipt.dateTime.substring(0, 10);
@@ -381,7 +382,10 @@ class _ReceiptProductMenuDetailScreenState
                                     idTracking: idTracking)));
 
                         returnResult.then((value) {
-                          if (value != null) {}
+                          debugPrint("returnResultvalue: $value");
+                          if (value != null) {
+                            _onReturnProduct(value, context);
+                          }
                         });
                       }
                     },
@@ -389,7 +393,9 @@ class _ReceiptProductMenuDetailScreenState
                   SizedBox(height: 14.h),
                   BlocConsumer<ProductMenuProductDetailCubit,
                           ProductMenuProductDetailState>(
-                      listener: (context, state) {
+                      listenWhen: (previous, current) {
+                    return previous.pallets != current.pallets;
+                  }, listener: (context, state) {
                     debugPrint("listener");
 
                     if (receipt.packageStatus
@@ -475,6 +481,45 @@ class _ReceiptProductMenuDetailScreenState
         ),
       ),
     );
+  }
+
+  void _onReturnProduct(value, BuildContext context) {
+    var result = value as ReturnPallet;
+    cubit.getReturnPallet(result);
+
+    Future.delayed(const Duration(milliseconds: 600), () {
+      onShowSuccessNewDialog(
+        context: context,
+        onPressed: () {
+          Navigator.of(context).pop();
+        },
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(height: 10.h),
+            Text(
+              "Return Successful!",
+              style: BaseText.black2TextStyle.copyWith(
+                fontSize: 16.sp,
+                fontWeight: BaseText.semiBold,
+              ),
+            ),
+            Container(height: 4.h),
+            Text(
+              'Great job! You successfully returned product.',
+              textAlign: TextAlign.center,
+              maxLines: 2,
+              style: BaseText.grey2Text14.copyWith(
+                fontWeight: BaseText.light,
+              ),
+            ),
+            SizedBox(height: 24.h),
+          ],
+        ),
+      );
+    });
   }
 
   buildDropdownMaxHeight(bool hasUpdateFocus) {
@@ -824,10 +869,18 @@ class _ReceiptProductMenuDetailScreenState
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(
-                    product0.productName,
-                    style: BaseText.black2Text15
-                        .copyWith(fontWeight: BaseText.medium),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        "Pallet ${product0.palletCode}",
+                        style: BaseText.black2Text15
+                            .copyWith(fontWeight: BaseText.medium),
+                      ),
+                      (product0.isReturn == true)
+                          ? buildBadgeReturn()
+                          : const SizedBox()
+                    ],
                   ),
                   Text(
                     code,

@@ -342,3 +342,17 @@ Container buildBottomNavbar({required Widget child}) {
       ),
       child: child);
 }
+
+Row buildProductDescPerRow({
+  required String label,
+  required String value,
+}) {
+  return Row(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Text(label, style: BaseText.grey2Text12),
+      Text(value,
+          style: BaseText.grey2Text12.copyWith(color: const Color(0xFF797979))),
+    ],
+  );
+}

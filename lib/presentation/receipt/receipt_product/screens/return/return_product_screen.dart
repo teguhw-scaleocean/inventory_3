@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:inventory_v3/common/components/custom_divider.dart';
 import 'package:inventory_v3/common/components/reusable_add_serial_number_button.dart';
 import 'package:inventory_v3/common/components/reusable_bottom_sheet.dart';
 import 'package:inventory_v3/data/model/pallet.dart';
+import 'package:inventory_v3/data/model/return_product.dart';
 
 import '../../../../../common/components/custom_app_bar.dart';
 import '../../../../../common/components/primary_button.dart';
+import '../../../../../common/components/product_return_item_card.dart';
 import '../../../../../common/components/reusable_confirm_dialog.dart';
 import '../../../../../common/components/reusable_dropdown_menu.dart';
 import '../../../../../common/components/reusable_scan_button.dart';
@@ -62,14 +65,16 @@ class _ReturnProductScreenState extends State<ReturnProductScreen> {
 
   var selectedObjectProduct;
   var selectedProduct;
-  var selectedSerialNumber;
-  var selectedReason;
-  var selectedLocation;
 
   bool hasProductFocus = false;
+  bool hasSerialNumberFocus = false;
   bool hasReasonFocus = false;
   bool hasLocationFocus = false;
+  bool isShowResult = false;
+
   int idTracking = 0;
+
+  late ReturnProduct returnProduct;
 
   @override
   void initState() {
@@ -84,7 +89,7 @@ class _ReturnProductScreenState extends State<ReturnProductScreen> {
     return SafeArea(
       child: Scaffold(
         appBar: CustomAppBar(
-          onTap: () {},
+          onTap: () => Navigator.pop(context),
           title: "Return: Product",
         ),
         body: Padding(
@@ -141,6 +146,16 @@ class _ReturnProductScreenState extends State<ReturnProductScreen> {
                       ],
                     )
                   : const SizedBox(),
+              (isShowResult)
+                  ? Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        buildRequiredLabel("Serial Number"),
+                        SizedBox(height: 6.h),
+                        ProductReturnItemCard(item: returnProduct),
+                      ],
+                    )
+                  : const SizedBox(),
               (idTracking == 0)
                   ? Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -148,163 +163,211 @@ class _ReturnProductScreenState extends State<ReturnProductScreen> {
                         SizedBox(height: 14.h),
                         reusableAddSerialNumberButton(
                           onTap: () {
+                            var selectedSerialNumber;
+                            var selectedReason;
+                            var selectedLocation;
                             final addSerialNumberBottomSheet =
-                                reusableBottomSheet(
-                                    context,
-                                    isShowDragHandle: false,
-                                    SingleChildScrollView(
-                                      child: Padding(
-                                        padding: EdgeInsets.symmetric(
-                                            horizontal: 16.w),
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Center(child: reusableDragHandle()),
-                                            SizedBox(height: 16.h),
-                                            reusableTitleBottomSheet(
-                                              context,
-                                              title: "Add Serial Number",
-                                              isMainColor: false,
-                                            ),
-                                            SizedBox(height: 16.h),
-                                            buildRequiredLabel("Serial Number"),
-                                            SizedBox(height: 4.h),
-                                            Row(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Flexible(
-                                                  child: LimitedBox(
-                                                    maxWidth: 280.w,
-                                                    child: Builder(
-                                                        builder: (context) {
-                                                      return ReusableDropdownMenu(
-                                                        maxHeight: 500.h,
-                                                        offset: const Offset(
-                                                            0, -15),
-                                                        hasSearch: false,
-                                                        label: "",
-                                                        listOfItemsValue:
-                                                            _listSerialNumber
-                                                                .map((e) => e)
-                                                                .toList(),
-                                                        selectedValue:
-                                                            selectedSerialNumber,
-                                                        hintText:
-                                                            "   Select Product",
-                                                        hintTextStyle: BaseText
-                                                            .grey1Text14
-                                                            .copyWith(
-                                                          fontWeight:
-                                                              BaseText.regular,
-                                                          color: ColorName
-                                                              .grey12Color,
-                                                        ),
-                                                        onTap: (focus) {},
-                                                        onChange: (value) {
-                                                          setState(() {
-                                                            // selectedSerialNumber = value;
-                                                            _listSnSelected
-                                                                .add(value);
-                                                            // listSerialNumber = [...listSerialNumber]
-                                                            //   ..removeWhere((element) => element == value);
-                                                          });
-
-                                                          debugPrint(
-                                                              "selectedSerialNumber field 1: ${_listSnSelected.toString()}");
-                                                          // debugPrint(
-                                                          //     "listSerialNumber: ${listSerialNumber.map((e) => e).toList()}");
-                                                        },
-                                                      );
-                                                    }),
+                                reusableBottomSheet(context,
+                                    isShowDragHandle: false, StatefulBuilder(
+                                        builder: (context, addSetState) {
+                              return SingleChildScrollView(
+                                child: Padding(
+                                  padding:
+                                      EdgeInsets.symmetric(horizontal: 16.w),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Center(child: reusableDragHandle()),
+                                      SizedBox(height: 16.h),
+                                      reusableTitleBottomSheet(
+                                        context,
+                                        title: "Add Serial Number",
+                                        isMainColor: false,
+                                      ),
+                                      SizedBox(height: 16.h),
+                                      buildRequiredLabel("Serial Number"),
+                                      SizedBox(height: 4.h),
+                                      Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Flexible(
+                                            child: LimitedBox(
+                                              maxWidth: 280.w,
+                                              child:
+                                                  Builder(builder: (context) {
+                                                return ReusableDropdownMenu(
+                                                  maxHeight: 500.h,
+                                                  offset: const Offset(0, -15),
+                                                  hasSearch: false,
+                                                  label: "",
+                                                  listOfItemsValue:
+                                                      _listSerialNumber
+                                                          .map((e) => e)
+                                                          .toList(),
+                                                  selectedValue:
+                                                      selectedSerialNumber,
+                                                  isExpand:
+                                                      hasSerialNumberFocus,
+                                                  borderColor:
+                                                      (hasSerialNumberFocus)
+                                                          ? ColorName.mainColor
+                                                          : ColorName
+                                                              .borderColor,
+                                                  hintText: "   Select Product",
+                                                  hintTextStyle: BaseText
+                                                      .grey1Text14
+                                                      .copyWith(
+                                                    fontWeight:
+                                                        BaseText.regular,
+                                                    color:
+                                                        ColorName.grey12Color,
                                                   ),
-                                                ),
-                                                SizedBox(width: 8.w),
-                                                reusableScanButton()
-                                              ],
+                                                  onTap: (focus) {
+                                                    addSetState(() {
+                                                      hasSerialNumberFocus =
+                                                          !hasSerialNumberFocus;
+                                                    });
+                                                  },
+                                                  onChange: (value) {
+                                                    addSetState(() {
+                                                      // selectedSerialNumber = value;
+                                                      _listSnSelected
+                                                          .add(value);
+                                                      // listSerialNumber = [...listSerialNumber]
+                                                      //   ..removeWhere((element) => element == value);
+                                                    });
+
+                                                    debugPrint(
+                                                        "selectedSerialNumber field 1: ${_listSnSelected.toString()}");
+                                                    // debugPrint(
+                                                    //     "listSerialNumber: ${listSerialNumber.map((e) => e).toList()}");
+                                                  },
+                                                );
+                                              }),
                                             ),
-                                            SizedBox(height: 14.h),
-                                            buildRequiredLabel("Reason"),
-                                            SizedBox(height: 4.h),
-                                            ReusableDropdownMenu(
-                                              maxHeight: 500.h,
-                                              offset: const Offset(0, -15),
-                                              hasSearch: false,
-                                              label: "",
-                                              listOfItemsValue: listReason
-                                                  .map((e) => e)
-                                                  .toList(),
-                                              selectedValue: selectedReason,
-                                              isExpand: hasReasonFocus,
-                                              hintText: "   Select Reason",
-                                              borderColor: (hasReasonFocus)
-                                                  ? ColorName.mainColor
-                                                  : ColorName.borderColor,
-                                              hintTextStyle:
-                                                  BaseText.grey1Text14.copyWith(
-                                                fontWeight: BaseText.regular,
-                                                color: ColorName.grey12Color,
-                                              ),
-                                              onTap: (focus) {
-                                                setState(() {
-                                                  hasReasonFocus =
-                                                      !hasReasonFocus;
-                                                });
-                                              },
-                                              onChange: (value) {
-                                                setState(() {
-                                                  selectedReason = value;
-                                                });
-                                              },
-                                            ),
-                                            SizedBox(height: 14.h),
-                                            buildRequiredLabel("Location"),
-                                            SizedBox(height: 4.h),
-                                            ReusableDropdownMenu(
-                                              maxHeight: 500.h,
-                                              offset: const Offset(0, -15),
-                                              hasSearch: false,
-                                              label: "",
-                                              listOfItemsValue: listLocation
-                                                  .map((e) => e)
-                                                  .toList(),
-                                              selectedValue: selectedLocation,
-                                              isExpand: hasLocationFocus,
-                                              hintText: "   Select Location",
-                                              borderColor: (hasLocationFocus)
-                                                  ? ColorName.mainColor
-                                                  : ColorName.borderColor,
-                                              hintTextStyle:
-                                                  BaseText.grey1Text14.copyWith(
-                                                fontWeight: BaseText.regular,
-                                                color: ColorName.grey12Color,
-                                              ),
-                                              onTap: (focus) {
-                                                setState(() {
-                                                  hasLocationFocus =
-                                                      !hasLocationFocus;
-                                                });
-                                              },
-                                              onChange: (value) {
-                                                setState(() {
-                                                  selectedLocation = value;
-                                                });
-                                              },
-                                            ),
-                                            SizedBox(height: 14.h),
-                                            PrimaryButton(
-                                              onPressed: () {},
-                                              height: 40.h,
-                                              title: "Submit",
-                                            ),
-                                            SizedBox(height: 16.h),
-                                          ],
+                                          ),
+                                          SizedBox(width: 8.w),
+                                          reusableScanButton()
+                                        ],
+                                      ),
+                                      SizedBox(height: 14.h),
+                                      buildRequiredLabel("Reason"),
+                                      SizedBox(height: 4.h),
+                                      ReusableDropdownMenu(
+                                        maxHeight: 120.h,
+                                        offset: const Offset(0, -15),
+                                        hasSearch: false,
+                                        label: "",
+                                        listOfItemsValue:
+                                            listReason.map((e) => e).toList(),
+                                        selectedValue: selectedReason,
+                                        isExpand: hasReasonFocus,
+                                        hintText: "   Select Reason",
+                                        borderColor: (hasReasonFocus)
+                                            ? ColorName.mainColor
+                                            : ColorName.borderColor,
+                                        hintTextStyle:
+                                            BaseText.grey1Text14.copyWith(
+                                          fontWeight: BaseText.regular,
+                                          color: ColorName.grey12Color,
+                                        ),
+                                        onTap: (focus) {
+                                          addSetState(() {
+                                            hasReasonFocus = !hasReasonFocus;
+                                          });
+                                        },
+                                        onChange: (value) {
+                                          addSetState(() {
+                                            selectedReason = value;
+
+                                            debugPrint(
+                                                "selectedReason: $selectedReason");
+                                          });
+                                        },
+                                      ),
+                                      SizedBox(height: 14.h),
+                                      buildRequiredLabel("Location"),
+                                      SizedBox(height: 4.h),
+                                      ReusableDropdownMenu(
+                                        maxHeight: 120.h,
+                                        offset: const Offset(0, 121),
+                                        hasSearch: false,
+                                        label: "",
+                                        listOfItemsValue:
+                                            listLocation.map((e) => e).toList(),
+                                        selectedValue: selectedLocation,
+                                        isExpand: hasLocationFocus,
+                                        hintText: "   Select Location",
+                                        borderColor: (hasLocationFocus)
+                                            ? ColorName.mainColor
+                                            : ColorName.borderColor,
+                                        hintTextStyle:
+                                            BaseText.grey1Text14.copyWith(
+                                          fontWeight: BaseText.regular,
+                                          color: ColorName.grey12Color,
+                                        ),
+                                        onTap: (focus) {
+                                          addSetState(() {
+                                            hasLocationFocus =
+                                                !hasLocationFocus;
+                                          });
+                                        },
+                                        onChange: (value) {
+                                          addSetState(() {
+                                            selectedLocation = value;
+                                            debugPrint(
+                                                "selectedLocation: $selectedLocation");
+                                          });
+                                        },
+                                      ),
+                                      (hasLocationFocus)
+                                          ? Container(
+                                              height: 110.h,
+                                            )
+                                          : Container(height: 0),
+                                      Padding(
+                                        padding: EdgeInsets.only(
+                                            top: (hasLocationFocus)
+                                                ? 36.h
+                                                : 24.h,
+                                            bottom: 24.h),
+                                        child: PrimaryButton(
+                                          onPressed: () {
+                                            if (_listSnSelected.isEmpty ||
+                                                selectedReason == null ||
+                                                selectedLocation == null) {
+                                              return;
+                                            }
+                                            var returnSn = ReturnProduct(
+                                              id: 1,
+                                              code: _listSnSelected.first,
+                                              reason: selectedReason,
+                                              location: selectedLocation,
+                                            );
+                                            Navigator.pop(context, returnSn);
+                                          },
+                                          height: 40.h,
+                                          title: "Submit",
                                         ),
                                       ),
-                                    ));
+                                      SizedBox(height: 16.h),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            }));
 
-                            addSerialNumberBottomSheet.then((value) => null);
+                            addSerialNumberBottomSheet.then((value) {
+                              if (value != null) {
+                                setState(() {
+                                  isShowResult = true;
+                                  returnProduct = value;
+                                });
+                              }
+                            });
                           },
                           maxwidth: ScreenUtil().screenWidth - 32.w,
                           isCenterTitle: true,
@@ -318,18 +381,17 @@ class _ReturnProductScreenState extends State<ReturnProductScreen> {
         bottomNavigationBar: buildBottomNavbar(
           child: PrimaryButton(
             onPressed: () {
-              if (selectedProduct == null ||
-                  selectedReason == null ||
-                  selectedLocation == null) {
+              if (selectedProduct == null) {
                 return;
               }
 
-              ReturnPallet returnPallet = ReturnPallet(
-                id: selectedObjectProduct.id,
-                palletCode: selectedProduct,
-                reason: selectedReason,
-                location: selectedLocation,
-              );
+              // ReturnPallet returnPallet = ReturnPallet(
+              //   id: selectedObjectProduct.id,
+              //   palletCode: selectedProduct,
+              //   reason: selectedReason,
+              //   location: selectedLocation,
+              // );
+              var returnPallet;
 
               Future.delayed(const Duration(milliseconds: 500), () {
                 reusableConfirmDialog(

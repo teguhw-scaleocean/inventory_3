@@ -66,6 +66,10 @@ class _ReturnProductScreenState extends State<ReturnProductScreen> {
     "LOTS-NM0983648",
   ];
 
+  List<String> listLots2 = [
+    "LOTS-2024-002B",
+  ];
+
   List<String> listReason = [
     "Excess inventory",
     "Does not meet standards",
@@ -97,6 +101,7 @@ class _ReturnProductScreenState extends State<ReturnProductScreen> {
   var lotsBottomSheet;
   String titleLotsMenu = "Add Lots Number";
 
+  bool isAddLotsButtonEnable = false;
   bool isQtyButtonEnabled = false;
 
   Color qtyIconColor = ColorName.grey18Color;
@@ -309,37 +314,47 @@ class _ReturnProductScreenState extends State<ReturnProductScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             SizedBox(height: 14.h),
-                            reusableAddSerialNumberButton(
-                              onTap: () {
-                                var selectedLots;
-                                var selectedReason;
-                                var selectedLocation;
+                            (isAddLotsButtonEnable)
+                                ? reusableAddSerialNumberButton(
+                                    onTap: () {},
+                                    maxwidth: ScreenUtil().screenWidth - 32.w,
+                                    isCenterTitle: true,
+                                    title: titleLotsMenu,
+                                    isDisable: true,
+                                    color: ColorName.borderColor,
+                                  )
+                                : reusableAddSerialNumberButton(
+                                    onTap: () {
+                                      var selectedLots;
+                                      var selectedReason;
+                                      var selectedLocation;
 
-                                lotsBottomSheet = reusableBottomSheet(context,
-                                    isShowDragHandle: false, Builder(
-                                  builder: (context) {
-                                    return reusableProductBottomSheet(
-                                      context,
-                                      titleLotsMenu,
-                                      selectedLotsNumber: selectedLots,
-                                      selectedReason: selectedReason,
-                                    );
-                                  },
-                                ));
+                                      lotsBottomSheet = reusableBottomSheet(
+                                          context,
+                                          isShowDragHandle: false, Builder(
+                                        builder: (context) {
+                                          return reusableProductBottomSheet(
+                                            context,
+                                            titleLotsMenu,
+                                            selectedLotsNumber: selectedLots,
+                                            selectedReason: selectedReason,
+                                          );
+                                        },
+                                      ));
 
-                                lotsBottomSheet.then((value) {
-                                  if (value != null) {
-                                    setState(() {
-                                      isShowResult = true;
-                                      returnProduct = value;
-                                    });
-                                  }
-                                });
-                              },
-                              maxwidth: ScreenUtil().screenWidth - 32.w,
-                              isCenterTitle: true,
-                              title: titleLotsMenu,
-                            )
+                                      lotsBottomSheet.then((value) {
+                                        if (value != null) {
+                                          setState(() {
+                                            isShowResult = true;
+                                            returnProduct = value;
+                                          });
+                                        }
+                                      });
+                                    },
+                                    maxwidth: ScreenUtil().screenWidth - 32.w,
+                                    isCenterTitle: true,
+                                    title: titleLotsMenu,
+                                  )
                           ],
                         )
                       : const SizedBox(),
@@ -498,7 +513,9 @@ class _ReturnProductScreenState extends State<ReturnProductScreen> {
                                 hasSearch: false,
                                 label: "",
                                 listOfItemsValue:
-                                    listLots.map((e) => e).toList(),
+                                    (selectedObjectProduct.id == 2)
+                                        ? listLots2
+                                        : listLots,
                                 selectedValue: selectedLotsNumber,
                                 hintText: "   Select Lots Number",
                                 hintTextStyle: BaseText.grey1Text14.copyWith(
@@ -732,6 +749,11 @@ class _ReturnProductScreenState extends State<ReturnProductScreen> {
                               reason: selectedReason,
                               location: selectedLocation,
                             );
+                            if (selectedObjectProduct.id == 2) {
+                              isAddLotsButtonEnable = true;
+                              debugPrint(
+                                  "isAddLotsButtonEnable: $isAddLotsButtonEnable");
+                            }
                           }
                           Navigator.pop(context, returnObject);
                         },

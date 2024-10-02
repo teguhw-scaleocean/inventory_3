@@ -358,14 +358,20 @@ class _ReceiptProductMenuDetailScreenState
                   Row(
                     children: [
                       Text(
-                        "Pallet ",
+                        "Product ",
                         style: BaseText.black2Text15
                             .copyWith(fontWeight: BaseText.medium),
                       ),
-                      Text(
-                        "(7)",
-                        style: BaseText.black2Text15
-                            .copyWith(fontWeight: BaseText.regular),
+                      BlocBuilder<ProductMenuProductDetailCubit,
+                          ProductMenuProductDetailState>(
+                        builder: (context, state) {
+                          final list = state.pallets.length.toString();
+                          return Text(
+                            "($list)",
+                            style: BaseText.black2Text15
+                                .copyWith(fontWeight: BaseText.regular),
+                          );
+                        },
                       )
                     ],
                   ),
@@ -874,7 +880,7 @@ class _ReceiptProductMenuDetailScreenState
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        "Pallet ${product0.palletCode}",
+                        product0.productName,
                         style: BaseText.black2Text15
                             .copyWith(fontWeight: BaseText.medium),
                       ),

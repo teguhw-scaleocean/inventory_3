@@ -18,6 +18,8 @@ import '../../../../../common/theme/color/color_name.dart';
 import '../../../../../common/theme/text/base_text.dart';
 import '../../../../../data/model/date_time_button.dart';
 import '../../../../../data/model/pallet.dart';
+import '../../../../../data/model/product.dart';
+import '../../../../../data/model/return_product.dart';
 import '../../../../../data/model/scan_view.dart';
 import '../../../receipt_pallet/screens/product_detail/add_product_screen.dart';
 import '../../../receipt_pallet/widget/scan_view_widget.dart';
@@ -649,7 +651,7 @@ class _ReceiptProductMenuOfProductDetailScreenState
                                     )
                                   ],
                                 ),
-                      if (isReturnProduct)
+                      if (isReturnProduct && idTracking != 2)
                         Padding(
                           padding: EdgeInsets.symmetric(
                               vertical: 12.h, horizontal: 16.w),
@@ -658,7 +660,25 @@ class _ReceiptProductMenuOfProductDetailScreenState
                               buildItemQuantityReturn(code),
                             ],
                           ),
-                        )
+                        ),
+                      if (isReturnProduct && idTracking == 2)
+                        ListView.builder(
+                            padding: EdgeInsets.symmetric(horizontal: 16.w),
+                            shrinkWrap: true,
+                            itemCount: product.returnProductNoTracking?.length,
+                            itemBuilder: (context, index) {
+                              var item =
+                                  product.returnProductNoTracking![index];
+
+                              return Padding(
+                                padding: EdgeInsets.only(
+                                    top: (index == 0) ? 12.h : 8.h),
+                                child: buildItemQuantityReturn(
+                                  code,
+                                  product: item,
+                                ),
+                              );
+                            })
                     ],
                   ),
                 )
@@ -720,7 +740,9 @@ class _ReceiptProductMenuOfProductDetailScreenState
   }
 
   Widget buildItemQuantityReturn(String code,
-      {Pallet? itemProduct, bool isHighlighted = false}) {
+      {Pallet? itemProduct,
+      ReturnProduct? product,
+      bool isHighlighted = false}) {
     if (itemProduct != null) {
       int? quantityInt = itemProduct.productQty.toInt();
       quantity = quantityInt.toString();
@@ -751,17 +773,29 @@ class _ReceiptProductMenuOfProductDetailScreenState
                       .copyWith(fontWeight: BaseText.regular),
                 ),
                 SizedBox(height: 9.h),
-                Text(
-                  "Reason: Overstock",
-                  style:
-                      BaseText.grey1Text12.copyWith(fontWeight: BaseText.light),
-                ),
+                (isReturnProduct && idTracking == 2)
+                    ? Text(
+                        "Reason: ${product!.reason}",
+                        style: BaseText.grey1Text12
+                            .copyWith(fontWeight: BaseText.light),
+                      )
+                    : Text(
+                        "Reason: Overstock",
+                        style: BaseText.grey1Text12
+                            .copyWith(fontWeight: BaseText.light),
+                      ),
                 SizedBox(height: 8.h),
-                Text(
-                  "Location: Warehouse A-342-3-4",
-                  style:
-                      BaseText.grey1Text12.copyWith(fontWeight: BaseText.light),
-                ),
+                (isReturnProduct && idTracking == 2)
+                    ? Text(
+                        "Location: ${product!.location}",
+                        style: BaseText.grey1Text12
+                            .copyWith(fontWeight: BaseText.light),
+                      )
+                    : Text(
+                        "Location: Warehouse A-342-3-4",
+                        style: BaseText.grey1Text12
+                            .copyWith(fontWeight: BaseText.light),
+                      ),
                 SizedBox(height: 9.h),
                 Text(
                   "Exp. Date: 12/07/2024 - 15:00",
@@ -790,7 +824,9 @@ class _ReceiptProductMenuOfProductDetailScreenState
                       child: Text(
                         (tracking.toLowerCase().contains("serial"))
                             ? "1"
-                            : "$totalReturn",
+                            : (isReturnProduct && idTracking == 2)
+                                ? "${product?.quantity}"
+                                : "$totalReturn",
                         textAlign: TextAlign.center,
                         style: BaseText.black2Text14.copyWith(
                           fontWeight: BaseText.regular,

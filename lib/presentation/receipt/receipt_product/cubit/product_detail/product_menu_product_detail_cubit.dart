@@ -5,6 +5,7 @@ import 'package:inventory_v3/data/model/return_product.dart';
 import 'package:inventory_v3/presentation/receipt/receipt_product/cubit/product_detail/product_menu_product_detail_state.dart';
 
 import '../../../../../data/model/pallet.dart';
+import '../../../../../data/model/product.dart';
 import '../../../../../data/model/return_pallet.dart';
 
 class ProductMenuProductDetailCubit
@@ -162,6 +163,7 @@ class ProductMenuProductDetailCubit
     var itemReturn = currentPallet.copyWith(
       isReturn: true,
       returnQty: returnQty,
+      returnProductNoTracking: returnPallet.returnProducts,
     );
     lastPallets[indexPallet] = itemReturn;
     emit(state.copyWith(pallets: lastPallets));

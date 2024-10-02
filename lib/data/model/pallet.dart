@@ -5,6 +5,8 @@ import 'package:flutter/foundation.dart';
 
 import 'package:inventory_v3/data/model/product.dart';
 
+import 'return_product.dart';
+
 class Pallet {
   int id;
   String palletCode;
@@ -25,6 +27,7 @@ class Pallet {
   List<SerialNumber>? serialNumber;
   List<SerialNumber>? scannedSerialNumber;
   List<Product>? productReturn;
+  List<ReturnProduct>? returnProductNoTracking;
 
   Pallet({
     required this.id,
@@ -46,6 +49,7 @@ class Pallet {
     this.serialNumber,
     this.scannedSerialNumber,
     this.productReturn,
+    this.returnProductNoTracking,
   });
 
   Pallet copyWith({
@@ -68,6 +72,7 @@ class Pallet {
     List<SerialNumber>? serialNumber,
     List<SerialNumber>? scannedSerialNumber,
     List<Product>? productReturn,
+    List<ReturnProduct>? returnProductNoTracking,
   }) {
     return Pallet(
       id: id ?? this.id,
@@ -90,6 +95,8 @@ class Pallet {
       serialNumber: serialNumber ?? this.serialNumber,
       scannedSerialNumber: scannedSerialNumber ?? this.scannedSerialNumber,
       productReturn: productReturn ?? this.productReturn,
+      returnProductNoTracking:
+          returnProductNoTracking ?? this.returnProductNoTracking,
     );
   }
 
@@ -115,6 +122,8 @@ class Pallet {
       'scannedSerialNumber':
           scannedSerialNumber?.map((x) => x.toMap()).toList(),
       'productReturn': productReturn?.map((x) => x.toMap()).toList(),
+      'returnProductNoTracking':
+          returnProductNoTracking?.map((x) => x.toMap()).toList(),
     };
   }
 
@@ -164,6 +173,13 @@ class Pallet {
               ),
             )
           : null,
+      returnProductNoTracking: map['returnProductNoTracking'] != null
+          ? List<ReturnProduct>.from(
+              (map['returnProductNoTracking'] as List<int>).map<ReturnProduct?>(
+                (x) => ReturnProduct.fromMap(x as Map<String, dynamic>),
+              ),
+            )
+          : null,
     );
   }
 
@@ -174,7 +190,7 @@ class Pallet {
 
   @override
   String toString() {
-    return 'Pallet(id: $id, palletCode: $palletCode, productName: $productName, code: $code, dateTime: $dateTime, hasActualDateTime: $hasActualDateTime, actualDateTime: $actualDateTime, sku: $sku, lotsCode: $lotsCode, productQty: $productQty, doneQty: $doneQty, returnQty: $returnQty, isDoneQty: $isDoneQty, hasBeenScanned: $hasBeenScanned, isReturn: $isReturn, isReturnPalletAndProduct: $isReturnPalletAndProduct, serialNumber: $serialNumber, scannedSerialNumber: $scannedSerialNumber, productReturn: $productReturn)';
+    return 'Pallet(id: $id, palletCode: $palletCode, productName: $productName, code: $code, dateTime: $dateTime, hasActualDateTime: $hasActualDateTime, actualDateTime: $actualDateTime, sku: $sku, lotsCode: $lotsCode, productQty: $productQty, doneQty: $doneQty, returnQty: $returnQty, isDoneQty: $isDoneQty, hasBeenScanned: $hasBeenScanned, isReturn: $isReturn, isReturnPalletAndProduct: $isReturnPalletAndProduct, serialNumber: $serialNumber, scannedSerialNumber: $scannedSerialNumber, productReturn: $productReturn, returnProductNoTracking: $returnProductNoTracking)';
   }
 
   @override
@@ -199,7 +215,8 @@ class Pallet {
         other.isReturnPalletAndProduct == isReturnPalletAndProduct &&
         listEquals(other.serialNumber, serialNumber) &&
         listEquals(other.scannedSerialNumber, scannedSerialNumber) &&
-        listEquals(other.productReturn, productReturn);
+        listEquals(other.productReturn, productReturn) &&
+        listEquals(other.returnProductNoTracking, returnProductNoTracking);
   }
 
   @override
@@ -222,7 +239,8 @@ class Pallet {
         isReturnPalletAndProduct.hashCode ^
         serialNumber.hashCode ^
         scannedSerialNumber.hashCode ^
-        productReturn.hashCode;
+        productReturn.hashCode ^
+        returnProductNoTracking.hashCode;
   }
 }
 

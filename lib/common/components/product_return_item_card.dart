@@ -49,6 +49,9 @@ class ProductReturnItemCard extends StatelessWidget {
             padding: EdgeInsets.symmetric(vertical: 8.h),
             child: CustomDivider(height: 0.5.h),
           ),
+          if (item.quantity != null)
+            buildProductDescPerRow(
+                label: "Qty: ", value: "${item.quantity} Unit"),
           buildProductDescPerRow(label: "Reason: ", value: item.reason),
           buildProductDescPerRow(
             label: "Location: ",

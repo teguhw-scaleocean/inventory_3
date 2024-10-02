@@ -103,12 +103,17 @@ class _ReturnProductScreenState extends State<ReturnProductScreen> {
   Color qtyTextColor = ColorName.grey12Color;
   Color borderColor = ColorName.borderColor;
 
+  late CountCubit countCubit;
+  ReturnProduct? returnObject;
+
   @override
   void initState() {
     super.initState();
     idTracking = widget.idTracking;
 
     _listProduct = listPallets;
+
+    countCubit = context.read<CountCubit>();
   }
 
   @override
@@ -225,6 +230,36 @@ class _ReturnProductScreenState extends State<ReturnProductScreen> {
                             SizedBox(height: 4.h),
                             ProductReturnItemCard(
                               item: returnProduct,
+                              onTapEdit: () {
+                                isEdit = true;
+                                titleLotsMenu = "Edit Lots Number";
+                                //BottomSheet
+                                var selectedLotsNumber = returnProduct.code;
+                                var selectedReason = returnProduct.reason;
+                                var selectedLocation = returnProduct.location;
+
+                                lotsBottomSheet = reusableBottomSheet(context,
+                                    isShowDragHandle: false,
+                                    Builder(builder: (context) {
+                                  return reusableProductBottomSheet(
+                                    context,
+                                    titleLotsMenu,
+                                    isEdit: true,
+                                    selectedLotsNumber: selectedLotsNumber,
+                                    selectedReason: selectedReason,
+                                    selectedLocation: selectedLocation,
+                                  );
+                                }));
+
+                                lotsBottomSheet.then((value) {
+                                  if (value != null) {
+                                    setState(() {
+                                      isShowResult = true;
+                                      returnProduct = value;
+                                    });
+                                  }
+                                });
+                              },
                             )
                           ],
                         )
@@ -334,7 +369,7 @@ class _ReturnProductScreenState extends State<ReturnProductScreen> {
                   maxLines: 2,
                   onPressed: () {
                     Navigator.pop(context);
-                    Navigator.pop(context, returnOfProducts);
+                    Navigator.pop(context, returnObject);
                   },
                 );
               });
@@ -491,8 +526,6 @@ class _ReturnProductScreenState extends State<ReturnProductScreen> {
 
                       isQtyButtonEnabled = state.quantity > 0;
                     }, builder: (context, state) {
-                      var countCubit = context.read<CountCubit>();
-
                       borderColor = ColorName.borderColor;
 
                       qtyIconColor = (isQtyButtonEnabled)
@@ -665,8 +698,6 @@ class _ReturnProductScreenState extends State<ReturnProductScreen> {
                       )
                     : PrimaryButton(
                         onPressed: () {
-                          ReturnProduct? returnObject;
-
                           if (idTracking == 0) {
                             if (_listSnSelected.isEmpty ||
                                 selectedReason == null ||
@@ -685,9 +716,11 @@ class _ReturnProductScreenState extends State<ReturnProductScreen> {
                                 selectedLocation == null) {
                               return;
                             }
+                            var quantity = countCubit.state.quantity;
                             returnObject = ReturnProduct(
                               id: selectedObjectProduct.id,
                               code: selectedLotsNumber,
+                              quantity: quantity.toInt(),
                               reason: selectedReason,
                               location: selectedLocation,
                             );

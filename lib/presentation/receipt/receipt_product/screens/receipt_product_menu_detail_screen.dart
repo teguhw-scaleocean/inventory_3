@@ -20,6 +20,7 @@ import 'package:inventory_v3/common/constants/local_images.dart';
 import 'package:inventory_v3/data/model/pallet_value.dart';
 import 'package:inventory_v3/data/model/pallet.dart';
 import 'package:inventory_v3/data/model/receipt.dart';
+import 'package:inventory_v3/data/model/return_product.dart';
 import 'package:inventory_v3/presentation/receipt/receipt_pallet/cubit/add_pallet_cubit/add_pallet_state.dart';
 import 'package:inventory_v3/presentation/receipt/receipt_pallet/screens/pallet/add_pallet_screen.dart';
 import 'package:inventory_v3/presentation/receipt/receipt_pallet/screens/receipt_product_detail.dart';
@@ -491,8 +492,21 @@ class _ReceiptProductMenuDetailScreenState
   }
 
   void _onReturnProduct(value, BuildContext context) {
-    var result = value as ReturnPallet;
-    cubit.getReturnPallet(result);
+    if (idTracking == 0) {
+      var result = value as ReturnPallet;
+      cubit.getReturnPallet(result);
+    } else if (idTracking == 1) {
+      var result = value as ReturnProduct;
+      ReturnPallet returnPallet = ReturnPallet(
+        id: result.id,
+        palletCode: result.code,
+        reason: result.reason,
+        location: result.location,
+      );
+      double returnQty = result.quantity?.toDouble() ?? 0.0;
+
+      cubit.getReturnProduct(returnPallet, returnQty);
+    }
 
     Future.delayed(const Duration(milliseconds: 600), () {
       onShowSuccessNewDialog(

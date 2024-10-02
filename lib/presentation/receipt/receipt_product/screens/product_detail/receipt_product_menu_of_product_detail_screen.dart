@@ -649,15 +649,16 @@ class _ReceiptProductMenuOfProductDetailScreenState
                                     )
                                   ],
                                 ),
-                      Padding(
-                        padding: EdgeInsets.symmetric(
-                            vertical: 12.h, horizontal: 16.w),
-                        child: Column(
-                          children: [
-                            buildItemQuantityReturn(code),
-                          ],
-                        ),
-                      )
+                      if (isReturnProduct)
+                        Padding(
+                          padding: EdgeInsets.symmetric(
+                              vertical: 12.h, horizontal: 16.w),
+                          child: Column(
+                            children: [
+                              buildItemQuantityReturn(code),
+                            ],
+                          ),
+                        )
                     ],
                   ),
                 )

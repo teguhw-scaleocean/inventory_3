@@ -429,6 +429,7 @@ class _ReturnProductScreenState extends State<ReturnProductScreen> {
                                   onTap: () {
                                     var selectedReason;
                                     var selectedLocation = listLocation.last;
+                                    var initQty = 0.0;
 
                                     noTrackingBottomSheet = reusableBottomSheet(
                                         context,
@@ -437,6 +438,7 @@ class _ReturnProductScreenState extends State<ReturnProductScreen> {
                                         return reusableProductBottomSheet(
                                           context,
                                           titleNoTrackingMenu,
+                                          noTrackingQuantity: initQty,
                                           selectedReason: selectedReason,
                                           selectedLocation: selectedLocation,
                                         );
@@ -463,8 +465,9 @@ class _ReturnProductScreenState extends State<ReturnProductScreen> {
               ReturnPallet returnOfProducts = ReturnPallet(
                 id: selectedObjectProduct.id,
                 palletCode: selectedObjectProduct.palletCode,
-                reason: returnProduct.reason,
-                location: returnProduct.location,
+                reason: "",
+                location: "",
+                returnProducts: _listNoTracking,
               );
               // var returnOfProducts;
 
@@ -476,7 +479,12 @@ class _ReturnProductScreenState extends State<ReturnProductScreen> {
                   maxLines: 2,
                   onPressed: () {
                     Navigator.pop(context);
-                    Navigator.pop(context, returnObject);
+
+                    if (idTracking == 2) {
+                      Navigator.pop(context, returnOfProducts);
+                    } else {
+                      Navigator.pop(context, returnObject);
+                    }
                   },
                 );
               });
@@ -500,7 +508,6 @@ class _ReturnProductScreenState extends State<ReturnProductScreen> {
     bool isEdit = false,
   }) {
     return StatefulBuilder(builder: (context, addSetState) {
-      debugPrint("noTrackingQuantity: $noTrackingQuantity");
       double value = 0.0;
       String deleteMessage = "";
       String updateMessage = "";
@@ -899,6 +906,8 @@ class _ReturnProductScreenState extends State<ReturnProductScreen> {
                               reason: selectedReason,
                               location: selectedLocation,
                             );
+
+                            Navigator.pop(context, returnObject);
                           } else if (idTracking == 1) {
                             if (selectedLotsNumber == null ||
                                 selectedReason == null ||
@@ -918,6 +927,8 @@ class _ReturnProductScreenState extends State<ReturnProductScreen> {
                               debugPrint(
                                   "isAddLotsButtonEnable: $isAddLotsButtonEnable");
                             }
+
+                            Navigator.pop(context, returnObject);
                           } else if (idTracking == 2) {
                             var quantity = countCubit.state.quantity;
                             if (quantity == 0 ||
@@ -932,13 +943,14 @@ class _ReturnProductScreenState extends State<ReturnProductScreen> {
                               reason: selectedReason,
                               location: selectedLocation,
                             );
-                            if (returnObject != null) {
+                            if (returnObject != null &&
+                                _listNoTracking.length < 2) {
                               setState(() {
                                 _listNoTracking.add(returnObject!);
                               });
                             }
+                            Navigator.pop(context);
                           }
-                          Navigator.pop(context, returnObject);
                         },
                         height: 40.h,
                         title: "Submit",

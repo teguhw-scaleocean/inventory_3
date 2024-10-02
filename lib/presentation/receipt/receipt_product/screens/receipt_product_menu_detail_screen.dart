@@ -509,6 +509,12 @@ class _ReceiptProductMenuDetailScreenState
       double returnQty = result.quantity?.toDouble() ?? 0.0;
 
       cubit.getReturnProduct(returnPallet, returnQty);
+    } else {
+      var result = value as ReturnPallet;
+      double returnQty = 0.0;
+      result.returnProducts?.map((e) => returnQty += e.quantity!).toList();
+
+      cubit.getReturnProduct(result, returnQty);
     }
 
     Future.delayed(const Duration(milliseconds: 600), () {

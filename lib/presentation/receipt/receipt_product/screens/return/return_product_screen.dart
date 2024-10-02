@@ -7,6 +7,7 @@ import '../../../../../common/components/custom_app_bar.dart';
 import '../../../../../common/components/custom_quantity_button.dart';
 import '../../../../../common/components/primary_button.dart';
 import '../../../../../common/components/product_return_item_card.dart';
+import '../../../../../common/components/product_return_no_tracking_item_card.dart';
 import '../../../../../common/components/reusable_add_serial_number_button.dart';
 import '../../../../../common/components/reusable_bottom_sheet.dart';
 import '../../../../../common/components/reusable_confirm_dialog.dart';
@@ -37,6 +38,7 @@ class _ReturnProductScreenState extends State<ReturnProductScreen> {
   TextEditingController qtyController = TextEditingController();
   List<Pallet> _listProduct = [];
   final List<dynamic> _listSnSelected = [];
+  final List<ReturnProduct> _listNoTracking = [];
   final List<String> _listSerialNumber = [
     "SN-8286313032",
     "SN-NM1234567845",
@@ -100,6 +102,9 @@ class _ReturnProductScreenState extends State<ReturnProductScreen> {
 
   var lotsBottomSheet;
   String titleLotsMenu = "Add Lots Number";
+
+  var noTrackingBottomSheet;
+  String titleNoTrackingMenu = "Add Qty";
 
   bool isAddLotsButtonEnable = false;
   bool isQtyButtonEnabled = false;
@@ -357,7 +362,89 @@ class _ReturnProductScreenState extends State<ReturnProductScreen> {
                                   )
                           ],
                         )
-                      : const SizedBox(),
+                      : (idTracking == 2)
+                          ? Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                (selectedObjectProduct == null)
+                                    ? SizedBox(height: 14.h)
+                                    : const SizedBox(),
+                                Builder(builder: (context) {
+                                  if (_listNoTracking.isNotEmpty) {
+                                    return Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        buildRequiredLabel(
+                                            "No Tracking Product"),
+                                        SizedBox(height: 6.h),
+                                        ListView.builder(
+                                            shrinkWrap: true,
+                                            itemCount: _listNoTracking.length,
+                                            itemBuilder: (context, index) {
+                                              var item = _listNoTracking[index];
+
+                                              return ProductReturnNoTrackingItemCard(
+                                                margin: (index != 0) ? 6.h : 0,
+                                                item: item,
+                                                onTapEdit: () {
+                                                  var selectedReason =
+                                                      item.reason;
+                                                  var selectedLocation =
+                                                      item.location;
+
+                                                  noTrackingBottomSheet =
+                                                      reusableBottomSheet(
+                                                    context,
+                                                    isShowDragHandle: false,
+                                                    Builder(
+                                                      builder: (context) {
+                                                        return reusableProductBottomSheet(
+                                                          context,
+                                                          titleNoTrackingMenu,
+                                                          selectedReason:
+                                                              selectedReason,
+                                                          selectedLocation:
+                                                              selectedLocation,
+                                                          isEdit: true,
+                                                        );
+                                                      },
+                                                    ),
+                                                  );
+                                                },
+                                              );
+                                            }),
+                                        SizedBox(height: 14.h),
+                                      ],
+                                    );
+                                  }
+                                  return const SizedBox();
+                                }),
+                                reusableAddSerialNumberButton(
+                                  onTap: () {
+                                    var selectedReason;
+                                    var selectedLocation = listLocation.last;
+
+                                    noTrackingBottomSheet = reusableBottomSheet(
+                                        context,
+                                        isShowDragHandle: false, Builder(
+                                      builder: (context) {
+                                        return reusableProductBottomSheet(
+                                          context,
+                                          titleNoTrackingMenu,
+                                          selectedReason: selectedReason,
+                                          selectedLocation: selectedLocation,
+                                        );
+                                      },
+                                    ));
+                                  },
+                                  title: "Add Qty",
+                                  isCenterTitle: true,
+                                  maxwidth: ScreenUtil().screenWidth - 32.w,
+                                )
+                              ],
+                            )
+                          : const SizedBox(),
             ],
           ),
         ),
@@ -600,6 +687,69 @@ class _ReturnProductScreenState extends State<ReturnProductScreen> {
                     }),
                   ],
                 ),
+              if (idTracking == 2)
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    buildRequiredLabel("Quantity"),
+                    SizedBox(height: 4.h),
+                    BlocConsumer<CountCubit, CountState>(
+                        listener: (context, state) {
+                      qtyController.value = TextEditingValue(
+                        text: state.quantity.toString(),
+                      );
+                      debugPrint("qtyController listen: ${qtyController.text}");
+
+                      isQtyButtonEnabled = state.quantity > 0;
+                    }, builder: (context, state) {
+                      borderColor = ColorName.borderColor;
+
+                      qtyIconColor = (isQtyButtonEnabled)
+                          ? ColorName.grey10Color
+                          : ColorName.grey18Color;
+                      qtyTextColor = (isQtyButtonEnabled)
+                          ? ColorName.grey10Color
+                          : ColorName.grey12Color;
+
+                      return CustomQuantityButton(
+                        controller: qtyController,
+                        borderColor: borderColor,
+                        iconColor: qtyIconColor,
+                        textColor: qtyTextColor,
+                        onChanged: (v) {
+                          if (v.isEmpty || v == "0.0") {
+                            addSetState(() {
+                              isQtyButtonEnabled = false;
+                            });
+                          } else {
+                            addSetState(() {
+                              isQtyButtonEnabled = true;
+                            });
+                          }
+                        },
+                        onSubmitted: (v) {
+                          addSetState(() {
+                            value = double.parse(v);
+                            qtyController.value = TextEditingValue(
+                              text: value.toString(),
+                            );
+
+                            countCubit.submit(value);
+                          });
+                        },
+                        onDecreased: () {
+                          if (state.quantity >= 1) {
+                            countCubit.decrement(value);
+                          }
+                        },
+                        onIncreased: () {
+                          countCubit.increment(value);
+                        },
+                      );
+                    }),
+                  ],
+                ),
               SizedBox(height: 14.h),
               buildRequiredLabel("Reason"),
               SizedBox(height: 4.h),
@@ -753,6 +903,25 @@ class _ReturnProductScreenState extends State<ReturnProductScreen> {
                               isAddLotsButtonEnable = true;
                               debugPrint(
                                   "isAddLotsButtonEnable: $isAddLotsButtonEnable");
+                            }
+                          } else if (idTracking == 2) {
+                            var quantity = countCubit.state.quantity;
+                            if (quantity == 0 ||
+                                selectedReason == null ||
+                                selectedLocation == null) {
+                              return;
+                            }
+                            returnObject = ReturnProduct(
+                              id: selectedObjectProduct.id,
+                              code: selectedObjectProduct.code,
+                              quantity: quantity.toInt(),
+                              reason: selectedReason,
+                              location: selectedLocation,
+                            );
+                            if (returnObject != null) {
+                              setState(() {
+                                _listNoTracking.add(returnObject!);
+                              });
                             }
                           }
                           Navigator.pop(context, returnObject);

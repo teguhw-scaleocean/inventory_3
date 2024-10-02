@@ -388,6 +388,9 @@ class _ReturnProductScreenState extends State<ReturnProductScreen> {
                                                 margin: (index != 0) ? 6.h : 0,
                                                 item: item,
                                                 onTapEdit: () {
+                                                  isEdit = true;
+                                                  titleNoTrackingMenu =
+                                                      "Edit Qty";
                                                   var selectedReason =
                                                       item.reason;
                                                   var selectedLocation =
@@ -402,6 +405,8 @@ class _ReturnProductScreenState extends State<ReturnProductScreen> {
                                                         return reusableProductBottomSheet(
                                                           context,
                                                           titleNoTrackingMenu,
+                                                          noTrackingQuantity:
+                                                              item.quantity,
                                                           selectedReason:
                                                               selectedReason,
                                                           selectedLocation:
@@ -489,11 +494,13 @@ class _ReturnProductScreenState extends State<ReturnProductScreen> {
     String titleMenu, {
     selectedSerialNumber,
     selectedLotsNumber,
+    noTrackingQuantity,
     selectedReason,
     selectedLocation,
     bool isEdit = false,
   }) {
     return StatefulBuilder(builder: (context, addSetState) {
+      debugPrint("noTrackingQuantity: $noTrackingQuantity");
       double value = 0.0;
       String deleteMessage = "";
       String updateMessage = "";
@@ -504,7 +511,14 @@ class _ReturnProductScreenState extends State<ReturnProductScreen> {
       } else if (idTracking == 1) {
         deleteMessage = "Are you sure you want to delete this\nLots Number?";
         updateMessage = "Are you sure you want to update this\nLots Number?";
+      } else if (idTracking == 2) {
+        qtyController.value = TextEditingValue(
+          text: "$noTrackingQuantity",
+        );
+        deleteMessage = "Are you sure you want to delete this\nquantity?";
+        updateMessage = "Are you sure you want to update this\nquantity?";
       }
+
       return SingleChildScrollView(
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 16.w),

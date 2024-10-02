@@ -393,6 +393,16 @@ class _ReturnProductScreenState extends State<ReturnProductScreen> {
   }) {
     return StatefulBuilder(builder: (context, addSetState) {
       double value = 0.0;
+      String deleteMessage = "";
+      String updateMessage = "";
+
+      if (idTracking == 0) {
+        deleteMessage = "Are you sure you want to delete this\nSerial Number?";
+        updateMessage = "Are you sure you want to update this\nSerial Number?";
+      } else if (idTracking == 1) {
+        deleteMessage = "Are you sure you want to delete this\nLots Number?";
+        updateMessage = "Are you sure you want to update this\nLots Number?";
+      }
       return SingleChildScrollView(
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 16.w),
@@ -656,8 +666,7 @@ class _ReturnProductScreenState extends State<ReturnProductScreen> {
                                   reusableConfirmDialog(
                                     context,
                                     title: "Confirm Delete",
-                                    message:
-                                        "Are you sure you want to delete this\nSerial Number?",
+                                    message: deleteMessage,
                                     maxLines: 2,
                                     onPressed: () {
                                       Navigator.pop(context);
@@ -680,8 +689,7 @@ class _ReturnProductScreenState extends State<ReturnProductScreen> {
                                   reusableConfirmDialog(
                                     context,
                                     title: "Confirm Update",
-                                    message:
-                                        "Are you sure you want to update this\nSerial Number?",
+                                    message: updateMessage,
                                     maxLines: 2,
                                     onPressed: () {
                                       Navigator.pop(context);

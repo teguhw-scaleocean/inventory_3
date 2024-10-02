@@ -464,6 +464,12 @@ class _ReceiptProductMenuOfProductDetailScreenState
                         totalInt =
                             _tabs[0] == e ? product.productQty.toInt() : 0;
                         total = totalInt.toString();
+                        if (product.returnQty != null) {
+                          total = (totalInt - product.returnQty!)
+                              .toInt()
+                              .toString();
+                          totalReturn = (product.returnQty)?.toInt() ?? 0;
+                        }
 
                         totalDoneInt = context
                                 .watch<ProductMenuProductDetailCubit>()

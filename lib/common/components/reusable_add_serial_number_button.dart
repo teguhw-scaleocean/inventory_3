@@ -8,6 +8,7 @@ GestureDetector reusableAddSerialNumberButton({
   void Function()? onTap,
   double? maxwidth,
   bool isCenterTitle = false,
+  String? title,
 }) {
   return GestureDetector(
     onTap: onTap,
@@ -43,7 +44,7 @@ GestureDetector reusableAddSerialNumberButton({
                 ),
                 SizedBox(width: 4.w),
                 Text(
-                  "Add Serial Number",
+                  title ?? "Add Serial Number",
                   textAlign: TextAlign.center,
                   style: BaseText.mainText12.copyWith(
                     fontWeight: BaseText.medium,

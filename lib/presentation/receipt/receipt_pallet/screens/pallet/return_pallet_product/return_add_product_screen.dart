@@ -1,9 +1,12 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:inventory_v3/common/components/button_dialog.dart';
 import 'package:inventory_v3/common/components/custom_app_bar.dart';
 import 'package:inventory_v3/data/model/pallet.dart';
+import 'package:inventory_v3/data/model/product.dart';
 
 import '../../../../../../common/components/custom_form.dart';
 import '../../../../../../common/components/custom_quantity_button.dart';
@@ -636,7 +639,33 @@ class _ReturnAddProductScreenState extends State<ReturnAddProductScreen> {
                     if (selectedProduct != null &&
                         selectedReason != null &&
                         selectedLocation != null) {
-                      Navigator.pop(context, true);
+                      if (isDamagePalletIncSn) {
+                        List<SerialNumber> serialNumbers = [];
+                        listSnSelected.map((e) {
+                          serialNumbers.add(SerialNumber(
+                            id: Random().nextInt(20),
+                            label: e,
+                            expiredDateTime: "Exp. Date: 02/07/2024 - 14:00",
+                            quantity: 1,
+                          ));
+                        }).toList(growable: false);
+
+                        Product damageProduct = Product(
+                          id: selectedObjectProduct!.id,
+                          name: selectedObjectProduct!.productName,
+                          sku: selectedObjectProduct!.sku,
+                          serialNumbers: serialNumbers,
+                          reason: selectedReason,
+                          location: selectedLocation,
+                        );
+
+                        BlocProvider.of<DamageCubit>(context)
+                            .addDamage(damageProduct);
+                      }
+
+                      Future.delayed(const Duration(milliseconds: 500), () {
+                        Navigator.pop(context, true);
+                      });
                     }
                   },
                   height: 40.h,

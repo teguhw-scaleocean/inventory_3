@@ -190,16 +190,23 @@ class ProductMenuProductDetailCubit
     log("getReturnPallet->Damage: ${lastPallets.map((e) => e.isDamage.toString()).toList()}");
   }
 
-  getReturnPalletAndProduct(ReturnPallet returnPallet) {
+  getReturnPalletAndProduct(ReturnPallet returnPallet,
+      {bool? isPalletAndProductDamage}) {
+    Pallet itemReturn;
     List<Pallet> lastPallets = state.pallets;
     var currentPallet = getCurrentPallet(returnPallet);
     var indexPallet = getCurrentPalletIndex(returnPallet);
 
-    var itemReturn = currentPallet.copyWith(isReturnPalletAndProduct: true);
+    if (isPalletAndProductDamage == true) {
+      itemReturn = currentPallet.copyWith(isDamagePalletAndProduct: true);
+    } else {
+      itemReturn = currentPallet.copyWith(isReturnPalletAndProduct: true);
+    }
     lastPallets[indexPallet] = itemReturn;
     emit(state.copyWith(pallets: lastPallets));
 
-    log("getReturnPallet: ${lastPallets.map((e) => e.isReturnPalletAndProduct.toString()).toList()}");
+    log("getReturnPalletAndProduct: ${lastPallets.map((e) => e.isReturnPalletAndProduct.toString()).toList()}");
+    log("getReturnPalletAndProduct->isDamagePalletAndProduct: ${lastPallets.map((e) => e.isDamagePalletAndProduct.toString()).toList()}");
   }
 
   Pallet getCurrentPallet(ReturnPallet returnPallet) {

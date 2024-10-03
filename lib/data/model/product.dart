@@ -9,7 +9,7 @@ class Product {
   int id;
   String name;
   String sku;
-  List<SerialNumber> serialNumbers;
+  List<SerialNumber>? serialNumbers;
   String reason;
   String location;
 
@@ -17,7 +17,7 @@ class Product {
     required this.id,
     required this.name,
     required this.sku,
-    required this.serialNumbers,
+    this.serialNumbers,
     required this.reason,
     required this.location,
   });
@@ -45,7 +45,7 @@ class Product {
       'id': id,
       'name': name,
       'sku': sku,
-      'serialNumbers': serialNumbers.map((x) => x.toMap()).toList(),
+      'serialNumbers': serialNumbers?.map((x) => x.toMap()).toList(),
       'reason': reason,
       'location': location,
     };
@@ -56,11 +56,13 @@ class Product {
       id: map['id'] as int,
       name: map['name'] as String,
       sku: map['sku'] as String,
-      serialNumbers: List<SerialNumber>.from(
-        (map['serialNumbers'] as List<int>).map<SerialNumber>(
-          (x) => SerialNumber.fromMap(x as Map<String, dynamic>),
-        ),
-      ),
+      serialNumbers: map['serialNumbers'] != null
+          ? List<SerialNumber>.from(
+              (map['serialNumbers'] as List<int>).map<SerialNumber?>(
+                (x) => SerialNumber.fromMap(x as Map<String, dynamic>),
+              ),
+            )
+          : null,
       reason: map['reason'] as String,
       location: map['location'] as String,
     );

@@ -374,7 +374,7 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
                         if (receipt.id == 6) {
                           BlocProvider.of<DamageCubit>(context)
                               .setDamage(isDamagePalletIncSn: true);
-                          final returnLotsResult = Navigator.push(
+                          final damagePalletAndProductResult = Navigator.push(
                               context,
                               MaterialPageRoute(
                                   builder: (context) =>
@@ -383,9 +383,49 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
                                         isDamage: true,
                                       )));
 
-                          returnLotsResult.then((value) {
+                          damagePalletAndProductResult.then((value) {
                             if (value != null) {
-                              _onReturnPalletAndProduct(value, context);
+                              var result = value as ReturnPallet;
+                              cubit.getReturnPalletAndProduct(
+                                result,
+                                isPalletAndProductDamage: true,
+                              );
+
+                              Future.delayed(const Duration(seconds: 1), () {
+                                onShowSuccessNewDialog(
+                                  context: context,
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                  body: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Container(height: 10.h),
+                                      Text(
+                                        "Damage Successful!",
+                                        style:
+                                            BaseText.black2TextStyle.copyWith(
+                                          fontSize: 16.sp,
+                                          fontWeight: BaseText.semiBold,
+                                        ),
+                                      ),
+                                      Container(height: 4.h),
+                                      Text(
+                                        'Great job! You successfully damaged the\npallet and product.',
+                                        textAlign: TextAlign.center,
+                                        maxLines: 2,
+                                        style: BaseText.grey2Text14.copyWith(
+                                          fontWeight: BaseText.light,
+                                        ),
+                                      ),
+                                      SizedBox(height: 24.h),
+                                    ],
+                                  ),
+                                );
+                              });
                             }
                           });
                         } else {
@@ -801,7 +841,8 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
                           product0.isReturnPalletAndProduct == true)
                       ? buildBadgeReturn()
                       : const SizedBox(),
-                  (product0.isDamage == true)
+                  (product0.isDamage == true ||
+                          product0.isDamagePalletAndProduct == true)
                       ? buildBadgeDamage()
                       : const SizedBox()
                 ],

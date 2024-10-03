@@ -24,6 +24,7 @@ class Pallet {
   bool? hasBeenScanned;
   bool? isReturn;
   bool? isDamage;
+  bool? isDamagePalletAndProduct;
   bool? isReturnPalletAndProduct;
   List<SerialNumber>? serialNumber;
   List<SerialNumber>? scannedSerialNumber;
@@ -47,6 +48,7 @@ class Pallet {
     this.hasBeenScanned,
     this.isReturn,
     this.isDamage,
+    this.isDamagePalletAndProduct,
     this.isReturnPalletAndProduct,
     this.serialNumber,
     this.scannedSerialNumber,
@@ -71,6 +73,7 @@ class Pallet {
     bool? hasBeenScanned,
     bool? isReturn,
     bool? isDamage,
+    bool? isDamagePalletAndProduct,
     bool? isReturnPalletAndProduct,
     List<SerialNumber>? serialNumber,
     List<SerialNumber>? scannedSerialNumber,
@@ -94,6 +97,8 @@ class Pallet {
       hasBeenScanned: hasBeenScanned ?? this.hasBeenScanned,
       isReturn: isReturn ?? this.isReturn,
       isDamage: isDamage ?? this.isDamage,
+      isDamagePalletAndProduct:
+          isDamagePalletAndProduct ?? this.isDamagePalletAndProduct,
       isReturnPalletAndProduct:
           isReturnPalletAndProduct ?? this.isReturnPalletAndProduct,
       serialNumber: serialNumber ?? this.serialNumber,
@@ -122,6 +127,7 @@ class Pallet {
       'hasBeenScanned': hasBeenScanned,
       'isReturn': isReturn,
       'isDamage': isDamage,
+      'isDamagePalletAndProduct': isDamagePalletAndProduct,
       'isReturnPalletAndProduct': isReturnPalletAndProduct,
       'serialNumber': serialNumber?.map((x) => x.toMap()).toList(),
       'scannedSerialNumber':
@@ -155,6 +161,9 @@ class Pallet {
           map['hasBeenScanned'] != null ? map['hasBeenScanned'] as bool : null,
       isReturn: map['isReturn'] != null ? map['isReturn'] as bool : null,
       isDamage: map['isDamage'] != null ? map['isDamage'] as bool : null,
+      isDamagePalletAndProduct: map['isDamagePalletAndProduct'] != null
+          ? map['isDamagePalletAndProduct'] as bool
+          : null,
       isReturnPalletAndProduct: map['isReturnPalletAndProduct'] != null
           ? map['isReturnPalletAndProduct'] as bool
           : null,
@@ -196,7 +205,7 @@ class Pallet {
 
   @override
   String toString() {
-    return 'Pallet(id: $id, palletCode: $palletCode, productName: $productName, code: $code, dateTime: $dateTime, hasActualDateTime: $hasActualDateTime, actualDateTime: $actualDateTime, sku: $sku, lotsCode: $lotsCode, productQty: $productQty, doneQty: $doneQty, returnQty: $returnQty, isDoneQty: $isDoneQty, hasBeenScanned: $hasBeenScanned, isReturn: $isReturn, isDamage: $isDamage, isReturnPalletAndProduct: $isReturnPalletAndProduct, serialNumber: $serialNumber, scannedSerialNumber: $scannedSerialNumber, productReturn: $productReturn, returnProductNoTracking: $returnProductNoTracking)';
+    return 'Pallet(id: $id, palletCode: $palletCode, productName: $productName, code: $code, dateTime: $dateTime, hasActualDateTime: $hasActualDateTime, actualDateTime: $actualDateTime, sku: $sku, lotsCode: $lotsCode, productQty: $productQty, doneQty: $doneQty, returnQty: $returnQty, isDoneQty: $isDoneQty, hasBeenScanned: $hasBeenScanned, isReturn: $isReturn, isDamage: $isDamage, isDamagePalletAndProduct: $isDamagePalletAndProduct, isReturnPalletAndProduct: $isReturnPalletAndProduct, serialNumber: $serialNumber, scannedSerialNumber: $scannedSerialNumber, productReturn: $productReturn, returnProductNoTracking: $returnProductNoTracking)';
   }
 
   @override
@@ -219,6 +228,7 @@ class Pallet {
         other.hasBeenScanned == hasBeenScanned &&
         other.isReturn == isReturn &&
         other.isDamage == isDamage &&
+        other.isDamagePalletAndProduct == isDamagePalletAndProduct &&
         other.isReturnPalletAndProduct == isReturnPalletAndProduct &&
         listEquals(other.serialNumber, serialNumber) &&
         listEquals(other.scannedSerialNumber, scannedSerialNumber) &&
@@ -244,6 +254,7 @@ class Pallet {
         hasBeenScanned.hashCode ^
         isReturn.hashCode ^
         isDamage.hashCode ^
+        isDamagePalletAndProduct.hashCode ^
         isReturnPalletAndProduct.hashCode ^
         serialNumber.hashCode ^
         scannedSerialNumber.hashCode ^

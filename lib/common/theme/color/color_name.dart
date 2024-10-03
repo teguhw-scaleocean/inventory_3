@@ -51,4 +51,5 @@ class ColorName {
   static const Color yellow2Color = Color(0xFFEDA24B);
   static const Color yellowReturnColor = Color(0xFFFFBF00);
   static const Color weekendLabelColor = Color(0xFFED2000);
+  static const Color damageColor = Color(0xFF035397);
 }

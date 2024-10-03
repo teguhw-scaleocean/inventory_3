@@ -44,6 +44,8 @@ class _ReceiptProductDetailScreenState extends State<ReceiptProductDetailScreen>
   bool isReturn = false;
   bool isReturnPalletAndProduct = false;
 
+  bool isDamage = false;
+
   late TabController _tabController;
   final List<String> _tabs = ["Not Done", "Done"];
 
@@ -58,6 +60,8 @@ class _ReceiptProductDetailScreenState extends State<ReceiptProductDetailScreen>
 
     isReturn = product.isReturn ?? false;
     isReturnPalletAndProduct = product.isReturnPalletAndProduct ?? false;
+
+    isDamage = product.isDamage ?? false;
 
     if (isReturn || isReturnPalletAndProduct) {
       _tabs.insert(2, "Return");
@@ -404,7 +408,7 @@ class _ReceiptProductDetailScreenState extends State<ReceiptProductDetailScreen>
 
                           return Padding(
                               padding: EdgeInsets.only(bottom: 8.h),
-                              child: (isReturn)
+                              child: (isReturn || isDamage)
                                   ? buildItemQuantityReturn(
                                       code,
                                       isHighlighted: isHighlighted,
@@ -449,7 +453,11 @@ class _ReceiptProductDetailScreenState extends State<ReceiptProductDetailScreen>
           child: RichText(
               text: TextSpan(children: [
             TextSpan(
-              text: (isReturn) ? "Return: $tracking " : "$tracking ",
+              text: (isReturn)
+                  ? "Return: $tracking "
+                  : (isDamage)
+                      ? "Damage: $tracking"
+                      : "$tracking ",
               style: BaseText.blackText15.copyWith(
                 fontWeight: BaseText.medium,
               ),

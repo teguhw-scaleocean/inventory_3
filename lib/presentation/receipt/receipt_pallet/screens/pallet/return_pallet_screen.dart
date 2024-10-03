@@ -14,7 +14,9 @@ import '../../../../../common/theme/text/base_text.dart';
 import '../../../../../data/model/return_pallet.dart';
 
 class ReturnPalletScreen extends StatefulWidget {
-  const ReturnPalletScreen({super.key});
+  final bool? isDamage;
+
+  const ReturnPalletScreen({super.key, this.isDamage});
 
   @override
   State<ReturnPalletScreen> createState() => _ReturnPalletScreenState();
@@ -38,10 +40,30 @@ class _ReturnPalletScreenState extends State<ReturnPalletScreen> {
     "Other"
   ];
   List<String> listLocation = ["Warehouse A-342-3-4", "Warehouse B-342-3-4"];
+  List<String> listDamageReason = [
+    "Dropped during transportation",
+    "Broken",
+    "Other"
+  ];
+
+  bool isDamage = false;
+
+  String appbarTitle = "";
 
   @override
   void initState() {
     super.initState();
+
+    isDamage = widget.isDamage ?? false;
+
+    if (isDamage) {
+      appbarTitle = "Damage: Pallet";
+      listReason = listDamageReason;
+    } else {
+      appbarTitle = "Return: Pallet";
+    }
+
+    debugPrint(appbarTitle);
 
     listPalletTemp = listPallets.map((e) {
       return e.copyWith(palletCode: "Pallet ${e.palletCode}");
@@ -54,7 +76,7 @@ class _ReturnPalletScreenState extends State<ReturnPalletScreen> {
       child: Scaffold(
         appBar: CustomAppBar(
           onTap: () => Navigator.pop(context),
-          title: "Return: Pallet",
+          title: appbarTitle,
         ),
         body: Padding(
           padding: EdgeInsets.all(16.w),
@@ -137,7 +159,7 @@ class _ReturnPalletScreenState extends State<ReturnPalletScreen> {
                 listOfItemsValue: listLocation.map((e) => e).toList(),
                 selectedValue: selectedLocation,
                 isExpand: hasLocationFocus,
-                hintText: "   Select Location",
+                hintText: "   Select Return Location",
                 borderColor: (hasLocationFocus)
                     ? ColorName.mainColor
                     : ColorName.borderColor,

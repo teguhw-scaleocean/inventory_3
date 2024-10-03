@@ -327,49 +327,75 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
                   ),
                   SizedBox(height: 12.h),
                   buildPalletButtonSection(
-                    status: receipt.status,
-                    onTapReturn: () {
-                      if (receipt.id == 1 ||
-                          receipt.id == 6 ||
-                          receipt.id == 7) {
-                        final returnLotsResult = Navigator.push(
+                      status: receipt.status,
+                      onTapReturn: () {
+                        if (receipt.id == 1 ||
+                            receipt.id == 6 ||
+                            receipt.id == 7) {
+                          final returnLotsResult = Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      ReturnPalletAndProductScreen(
+                                        idTracking: idTracking,
+                                      )));
+
+                          returnLotsResult.then((value) {
+                            if (value != null) {
+                              _onReturnPalletAndProduct(value, context);
+                            }
+                          });
+                        } else {
+                          final returnResult = Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      const ReturnPalletScreen()));
+
+                          returnResult.then((value) {
+                            if (value != null) {
+                              var result = value as ReturnPallet;
+
+                              cubit.getReturnPallet(result);
+
+                              Future.delayed(const Duration(seconds: 1), () {
+                                onShowSuccessDialog(
+                                  context: context,
+                                  scannedItem: result.palletCode,
+                                  isOnReturn: true,
+                                );
+                              });
+                            }
+                          });
+                        }
+                      },
+                      onTapDamage: () {
+                        final damageResult = Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) =>
-                                    ReturnPalletAndProductScreen(
-                                      idTracking: idTracking,
+                                builder: (context) => const ReturnPalletScreen(
+                                      isDamage: true,
                                     )));
 
-                        returnLotsResult.then((value) {
-                          if (value != null) {
-                            _onReturnPalletAndProduct(value, context);
-                          }
-                        });
-                      } else {
-                        final returnResult = Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                    const ReturnPalletScreen()));
-
-                        returnResult.then((value) {
+                        damageResult.then((value) {
                           if (value != null) {
                             var result = value as ReturnPallet;
 
-                            cubit.getReturnPallet(result);
+                            cubit.getReturnPallet(
+                              result,
+                              isPalletDamage: true,
+                            );
 
                             Future.delayed(const Duration(seconds: 1), () {
                               onShowSuccessDialog(
                                 context: context,
                                 scannedItem: result.palletCode,
-                                isOnReturn: true,
+                                isDamage: true,
                               );
                             });
                           }
                         });
-                      }
-                    },
-                  ),
+                      }),
                   SizedBox(height: 14.h),
                   BlocBuilder<ProductMenuProductDetailCubit,
                       ProductMenuProductDetailState>(builder: (context, state) {
@@ -753,6 +779,9 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
                   (product0.isReturn == true ||
                           product0.isReturnPalletAndProduct == true)
                       ? buildBadgeReturn()
+                      : const SizedBox(),
+                  (product0.isDamage == true)
+                      ? buildBadgeDamage()
                       : const SizedBox()
                 ],
               ),
@@ -921,6 +950,7 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
 
   Widget buildPalletButtonSection({
     required String status,
+    void Function()? onTapDamage,
     void Function()? onTapReturn,
   }) {
     TextStyle? labelTextStyle;
@@ -939,10 +969,13 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
     return Row(
       children: [
         Flexible(
-          child: buildOutlineButton(
-            context,
-            label: "Damage",
-            labelTextStyle: labelTextStyle,
+          child: InkWell(
+            onTap: onTapDamage,
+            child: buildOutlineButton(
+              context,
+              label: "Damage",
+              labelTextStyle: labelTextStyle,
+            ),
           ),
         ),
         SizedBox(width: 12.w),

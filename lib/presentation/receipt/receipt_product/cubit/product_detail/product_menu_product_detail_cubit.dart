@@ -1,9 +1,11 @@
 import 'dart:developer';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:inventory_v3/data/model/return_product.dart';
 import 'package:inventory_v3/presentation/receipt/receipt_product/cubit/product_detail/product_menu_product_detail_state.dart';
 
 import '../../../../../data/model/pallet.dart';
+import '../../../../../data/model/product.dart';
 import '../../../../../data/model/return_pallet.dart';
 
 class ProductMenuProductDetailCubit
@@ -151,6 +153,22 @@ class ProductMenuProductDetailCubit
     lastProducts[index] = scannedPallet;
     emit(state.copyWith(pallets: lastProducts));
     log("scannedPallet: ${lastProducts.map((e) => e.hasBeenScanned.toString()).toList()}");
+  }
+
+  getReturnProduct(ReturnPallet returnPallet, double returnQty) {
+    List<Pallet> lastPallets = state.pallets;
+    var currentPallet = getCurrentPallet(returnPallet);
+    var indexPallet = getCurrentPalletIndex(returnPallet);
+
+    var itemReturn = currentPallet.copyWith(
+      isReturn: true,
+      returnQty: returnQty,
+      returnProductNoTracking: returnPallet.returnProducts,
+    );
+    lastPallets[indexPallet] = itemReturn;
+    emit(state.copyWith(pallets: lastPallets));
+
+    log("getReturnProduct: ${lastPallets.map((e) => e.returnQty.toString()).toList()}");
   }
 
   getReturnPallet(ReturnPallet returnPallet) {

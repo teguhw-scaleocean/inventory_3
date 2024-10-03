@@ -20,6 +20,7 @@ import 'package:inventory_v3/common/constants/local_images.dart';
 import 'package:inventory_v3/data/model/pallet_value.dart';
 import 'package:inventory_v3/data/model/pallet.dart';
 import 'package:inventory_v3/data/model/receipt.dart';
+import 'package:inventory_v3/data/model/return_product.dart';
 import 'package:inventory_v3/presentation/receipt/receipt_pallet/cubit/add_pallet_cubit/add_pallet_state.dart';
 import 'package:inventory_v3/presentation/receipt/receipt_pallet/screens/pallet/add_pallet_screen.dart';
 import 'package:inventory_v3/presentation/receipt/receipt_pallet/screens/receipt_product_detail.dart';
@@ -358,14 +359,20 @@ class _ReceiptProductMenuDetailScreenState
                   Row(
                     children: [
                       Text(
-                        "Pallet ",
+                        "Product ",
                         style: BaseText.black2Text15
                             .copyWith(fontWeight: BaseText.medium),
                       ),
-                      Text(
-                        "(7)",
-                        style: BaseText.black2Text15
-                            .copyWith(fontWeight: BaseText.regular),
+                      BlocBuilder<ProductMenuProductDetailCubit,
+                          ProductMenuProductDetailState>(
+                        builder: (context, state) {
+                          final list = state.pallets.length.toString();
+                          return Text(
+                            "($list)",
+                            style: BaseText.black2Text15
+                                .copyWith(fontWeight: BaseText.regular),
+                          );
+                        },
                       )
                     ],
                   ),
@@ -375,7 +382,10 @@ class _ReceiptProductMenuDetailScreenState
                     onTapReturn: () {
                       // SN: 9
                       // Lots: 1
-                      if (receipt.id == 9 || receipt.id == 1) {
+                      // No Tracking: 10
+                      if (receipt.id == 9 ||
+                          receipt.id == 1 ||
+                          receipt.id == 10) {
                         final returnResult = Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -485,8 +495,27 @@ class _ReceiptProductMenuDetailScreenState
   }
 
   void _onReturnProduct(value, BuildContext context) {
-    var result = value as ReturnPallet;
-    cubit.getReturnPallet(result);
+    if (idTracking == 0) {
+      var result = value as ReturnPallet;
+      cubit.getReturnPallet(result);
+    } else if (idTracking == 1) {
+      var result = value as ReturnProduct;
+      ReturnPallet returnPallet = ReturnPallet(
+        id: result.id,
+        palletCode: result.code,
+        reason: result.reason,
+        location: result.location,
+      );
+      double returnQty = result.quantity?.toDouble() ?? 0.0;
+
+      cubit.getReturnProduct(returnPallet, returnQty);
+    } else {
+      var result = value as ReturnPallet;
+      double returnQty = 0.0;
+      result.returnProducts?.map((e) => returnQty += e.quantity!).toList();
+
+      cubit.getReturnProduct(result, returnQty);
+    }
 
     Future.delayed(const Duration(milliseconds: 600), () {
       onShowSuccessNewDialog(
@@ -874,7 +903,7 @@ class _ReceiptProductMenuDetailScreenState
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        "Pallet ${product0.palletCode}",
+                        product0.productName,
                         style: BaseText.black2Text15
                             .copyWith(fontWeight: BaseText.medium),
                       ),

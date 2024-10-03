@@ -6,19 +6,22 @@ import '../theme/text/base_text.dart';
 import 'custom_divider.dart';
 import 'reusable_widget.dart';
 
-class ProductReturnItemCard extends StatelessWidget {
+class ProductReturnNoTrackingItemCard extends StatelessWidget {
   final ReturnProduct item;
+  final double margin;
   final void Function()? onTapEdit;
 
-  const ProductReturnItemCard({
+  const ProductReturnNoTrackingItemCard({
     super.key,
     required this.item,
+    this.margin = 0,
     this.onTapEdit,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
+      margin: EdgeInsets.only(top: margin),
       padding: EdgeInsets.all(12.w),
       decoration: ShapeDecoration(
         color: Colors.white,
@@ -33,10 +36,7 @@ class ProductReturnItemCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                item.code,
-                style: BaseText.grey10Text14,
-              ),
+              Text("Qty: ${item.quantity} Unit", style: BaseText.grey10Text14),
               InkWell(
                 onTap: onTapEdit,
                 child: SizedBox(
@@ -49,9 +49,6 @@ class ProductReturnItemCard extends StatelessWidget {
             padding: EdgeInsets.symmetric(vertical: 8.h),
             child: CustomDivider(height: 0.5.h),
           ),
-          if (item.quantity != null)
-            buildProductDescPerRow(
-                label: "Qty: ", value: "${item.quantity} Unit"),
           buildProductDescPerRow(label: "Reason: ", value: item.reason),
           buildProductDescPerRow(
             label: "Location: ",

@@ -45,6 +45,16 @@ class _ReceiptProductMenuListScreenState
     tabs = ["All", "Waiting", "Ready", "Late"];
     listReceipt = [
       Receipt(
+        id: 10,
+        name: "WH/IN/00010",
+        status: "Ready",
+        statusColor: ColorName.readyColor,
+        packageName: "Package: Pallet",
+        packageStatus: "Tracking: No Tracking",
+        dateTime: "10/06/2024 - 15:10",
+        destination: "To: Shipping and Receiving Dock",
+      ),
+      Receipt(
         id: 9,
         name: "WH/IN/00008",
         status: "Ready",

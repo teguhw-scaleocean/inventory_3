@@ -7,6 +7,7 @@ import '../../../../../common/components/custom_app_bar.dart';
 import '../../../../../common/components/custom_quantity_button.dart';
 import '../../../../../common/components/primary_button.dart';
 import '../../../../../common/components/product_return_item_card.dart';
+import '../../../../../common/components/product_return_no_tracking_item_card.dart';
 import '../../../../../common/components/reusable_add_serial_number_button.dart';
 import '../../../../../common/components/reusable_bottom_sheet.dart';
 import '../../../../../common/components/reusable_confirm_dialog.dart';
@@ -37,6 +38,7 @@ class _ReturnProductScreenState extends State<ReturnProductScreen> {
   TextEditingController qtyController = TextEditingController();
   List<Pallet> _listProduct = [];
   final List<dynamic> _listSnSelected = [];
+  final List<ReturnProduct> _listNoTracking = [];
   final List<String> _listSerialNumber = [
     "SN-8286313032",
     "SN-NM1234567845",
@@ -64,6 +66,10 @@ class _ReturnProductScreenState extends State<ReturnProductScreen> {
     "LOTS-NM0983646",
     "LOTS-NM0983647",
     "LOTS-NM0983648",
+  ];
+
+  List<String> listLots2 = [
+    "LOTS-2024-002B",
   ];
 
   List<String> listReason = [
@@ -97,11 +103,18 @@ class _ReturnProductScreenState extends State<ReturnProductScreen> {
   var lotsBottomSheet;
   String titleLotsMenu = "Add Lots Number";
 
+  var noTrackingBottomSheet;
+  String titleNoTrackingMenu = "Add Qty";
+
+  bool isAddLotsButtonEnable = false;
   bool isQtyButtonEnabled = false;
 
   Color qtyIconColor = ColorName.grey18Color;
   Color qtyTextColor = ColorName.grey12Color;
   Color borderColor = ColorName.borderColor;
+
+  late CountCubit countCubit;
+  ReturnProduct? returnObject;
 
   @override
   void initState() {
@@ -109,6 +122,8 @@ class _ReturnProductScreenState extends State<ReturnProductScreen> {
     idTracking = widget.idTracking;
 
     _listProduct = listPallets;
+
+    countCubit = context.read<CountCubit>();
   }
 
   @override
@@ -225,6 +240,36 @@ class _ReturnProductScreenState extends State<ReturnProductScreen> {
                             SizedBox(height: 4.h),
                             ProductReturnItemCard(
                               item: returnProduct,
+                              onTapEdit: () {
+                                isEdit = true;
+                                titleLotsMenu = "Edit Lots Number";
+                                //BottomSheet
+                                var selectedLotsNumber = returnProduct.code;
+                                var selectedReason = returnProduct.reason;
+                                var selectedLocation = returnProduct.location;
+
+                                lotsBottomSheet = reusableBottomSheet(context,
+                                    isShowDragHandle: false,
+                                    Builder(builder: (context) {
+                                  return reusableProductBottomSheet(
+                                    context,
+                                    titleLotsMenu,
+                                    isEdit: true,
+                                    selectedLotsNumber: selectedLotsNumber,
+                                    selectedReason: selectedReason,
+                                    selectedLocation: selectedLocation,
+                                  );
+                                }));
+
+                                lotsBottomSheet.then((value) {
+                                  if (value != null) {
+                                    setState(() {
+                                      isShowResult = true;
+                                      returnProduct = value;
+                                    });
+                                  }
+                                });
+                              },
                             )
                           ],
                         )
@@ -274,40 +319,139 @@ class _ReturnProductScreenState extends State<ReturnProductScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             SizedBox(height: 14.h),
-                            reusableAddSerialNumberButton(
-                              onTap: () {
-                                var selectedLots;
-                                var selectedReason;
-                                var selectedLocation;
+                            (isAddLotsButtonEnable)
+                                ? reusableAddSerialNumberButton(
+                                    onTap: () {},
+                                    maxwidth: ScreenUtil().screenWidth - 32.w,
+                                    isCenterTitle: true,
+                                    title: titleLotsMenu,
+                                    isDisable: true,
+                                    color: ColorName.borderColor,
+                                  )
+                                : reusableAddSerialNumberButton(
+                                    onTap: () {
+                                      var selectedLots;
+                                      var selectedReason;
+                                      var selectedLocation;
 
-                                lotsBottomSheet = reusableBottomSheet(context,
-                                    isShowDragHandle: false, Builder(
-                                  builder: (context) {
-                                    return reusableProductBottomSheet(
-                                      context,
-                                      titleLotsMenu,
-                                      selectedLotsNumber: selectedLots,
-                                      selectedReason: selectedReason,
-                                    );
-                                  },
-                                ));
+                                      lotsBottomSheet = reusableBottomSheet(
+                                          context,
+                                          isShowDragHandle: false, Builder(
+                                        builder: (context) {
+                                          return reusableProductBottomSheet(
+                                            context,
+                                            titleLotsMenu,
+                                            selectedLotsNumber: selectedLots,
+                                            selectedReason: selectedReason,
+                                          );
+                                        },
+                                      ));
 
-                                lotsBottomSheet.then((value) {
-                                  if (value != null) {
-                                    setState(() {
-                                      isShowResult = true;
-                                      returnProduct = value;
-                                    });
-                                  }
-                                });
-                              },
-                              maxwidth: ScreenUtil().screenWidth - 32.w,
-                              isCenterTitle: true,
-                              title: titleLotsMenu,
-                            )
+                                      lotsBottomSheet.then((value) {
+                                        if (value != null) {
+                                          setState(() {
+                                            isShowResult = true;
+                                            returnProduct = value;
+                                          });
+                                        }
+                                      });
+                                    },
+                                    maxwidth: ScreenUtil().screenWidth - 32.w,
+                                    isCenterTitle: true,
+                                    title: titleLotsMenu,
+                                  )
                           ],
                         )
-                      : const SizedBox(),
+                      : (idTracking == 2)
+                          ? Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                (selectedObjectProduct == null)
+                                    ? SizedBox(height: 14.h)
+                                    : const SizedBox(),
+                                Builder(builder: (context) {
+                                  if (_listNoTracking.isNotEmpty) {
+                                    return Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        buildRequiredLabel(
+                                            "No Tracking Product"),
+                                        SizedBox(height: 6.h),
+                                        ListView.builder(
+                                            shrinkWrap: true,
+                                            itemCount: _listNoTracking.length,
+                                            itemBuilder: (context, index) {
+                                              var item = _listNoTracking[index];
+
+                                              return ProductReturnNoTrackingItemCard(
+                                                margin: (index != 0) ? 6.h : 0,
+                                                item: item,
+                                                onTapEdit: () {
+                                                  isEdit = true;
+                                                  titleNoTrackingMenu =
+                                                      "Edit Qty";
+                                                  var selectedReason =
+                                                      item.reason;
+                                                  var selectedLocation =
+                                                      item.location;
+
+                                                  noTrackingBottomSheet =
+                                                      reusableBottomSheet(
+                                                    context,
+                                                    isShowDragHandle: false,
+                                                    Builder(
+                                                      builder: (context) {
+                                                        return reusableProductBottomSheet(
+                                                          context,
+                                                          titleNoTrackingMenu,
+                                                          noTrackingQuantity:
+                                                              item.quantity,
+                                                          selectedReason:
+                                                              selectedReason,
+                                                          selectedLocation:
+                                                              selectedLocation,
+                                                          isEdit: true,
+                                                        );
+                                                      },
+                                                    ),
+                                                  );
+                                                },
+                                              );
+                                            }),
+                                        SizedBox(height: 14.h),
+                                      ],
+                                    );
+                                  }
+                                  return const SizedBox();
+                                }),
+                                reusableAddSerialNumberButton(
+                                  onTap: () {
+                                    var selectedReason;
+                                    var selectedLocation = listLocation.last;
+                                    var initQty = 0.0;
+
+                                    noTrackingBottomSheet = reusableBottomSheet(
+                                        context,
+                                        isShowDragHandle: false, Builder(
+                                      builder: (context) {
+                                        return reusableProductBottomSheet(
+                                          context,
+                                          titleNoTrackingMenu,
+                                          noTrackingQuantity: initQty,
+                                          selectedReason: selectedReason,
+                                          selectedLocation: selectedLocation,
+                                        );
+                                      },
+                                    ));
+                                  },
+                                  title: "Add Qty",
+                                  isCenterTitle: true,
+                                  maxwidth: ScreenUtil().screenWidth - 32.w,
+                                )
+                              ],
+                            )
+                          : const SizedBox(),
             ],
           ),
         ),
@@ -321,8 +465,9 @@ class _ReturnProductScreenState extends State<ReturnProductScreen> {
               ReturnPallet returnOfProducts = ReturnPallet(
                 id: selectedObjectProduct.id,
                 palletCode: selectedObjectProduct.palletCode,
-                reason: returnProduct.reason,
-                location: returnProduct.location,
+                reason: "",
+                location: "",
+                returnProducts: _listNoTracking,
               );
               // var returnOfProducts;
 
@@ -334,7 +479,12 @@ class _ReturnProductScreenState extends State<ReturnProductScreen> {
                   maxLines: 2,
                   onPressed: () {
                     Navigator.pop(context);
-                    Navigator.pop(context, returnOfProducts);
+
+                    if (idTracking == 2) {
+                      Navigator.pop(context, returnOfProducts);
+                    } else {
+                      Navigator.pop(context, returnObject);
+                    }
                   },
                 );
               });
@@ -352,12 +502,30 @@ class _ReturnProductScreenState extends State<ReturnProductScreen> {
     String titleMenu, {
     selectedSerialNumber,
     selectedLotsNumber,
+    noTrackingQuantity,
     selectedReason,
     selectedLocation,
     bool isEdit = false,
   }) {
     return StatefulBuilder(builder: (context, addSetState) {
       double value = 0.0;
+      String deleteMessage = "";
+      String updateMessage = "";
+
+      if (idTracking == 0) {
+        deleteMessage = "Are you sure you want to delete this\nSerial Number?";
+        updateMessage = "Are you sure you want to update this\nSerial Number?";
+      } else if (idTracking == 1) {
+        deleteMessage = "Are you sure you want to delete this\nLots Number?";
+        updateMessage = "Are you sure you want to update this\nLots Number?";
+      } else if (idTracking == 2) {
+        qtyController.value = TextEditingValue(
+          text: "$noTrackingQuantity",
+        );
+        deleteMessage = "Are you sure you want to delete this\nquantity?";
+        updateMessage = "Are you sure you want to update this\nquantity?";
+      }
+
       return SingleChildScrollView(
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 16.w),
@@ -453,7 +621,9 @@ class _ReturnProductScreenState extends State<ReturnProductScreen> {
                                 hasSearch: false,
                                 label: "",
                                 listOfItemsValue:
-                                    listLots.map((e) => e).toList(),
+                                    (selectedObjectProduct.id == 2)
+                                        ? listLots2
+                                        : listLots,
                                 selectedValue: selectedLotsNumber,
                                 hintText: "   Select Lots Number",
                                 hintTextStyle: BaseText.grey1Text14.copyWith(
@@ -491,8 +661,69 @@ class _ReturnProductScreenState extends State<ReturnProductScreen> {
 
                       isQtyButtonEnabled = state.quantity > 0;
                     }, builder: (context, state) {
-                      var countCubit = context.read<CountCubit>();
+                      borderColor = ColorName.borderColor;
 
+                      qtyIconColor = (isQtyButtonEnabled)
+                          ? ColorName.grey10Color
+                          : ColorName.grey18Color;
+                      qtyTextColor = (isQtyButtonEnabled)
+                          ? ColorName.grey10Color
+                          : ColorName.grey12Color;
+
+                      return CustomQuantityButton(
+                        controller: qtyController,
+                        borderColor: borderColor,
+                        iconColor: qtyIconColor,
+                        textColor: qtyTextColor,
+                        onChanged: (v) {
+                          if (v.isEmpty || v == "0.0") {
+                            addSetState(() {
+                              isQtyButtonEnabled = false;
+                            });
+                          } else {
+                            addSetState(() {
+                              isQtyButtonEnabled = true;
+                            });
+                          }
+                        },
+                        onSubmitted: (v) {
+                          addSetState(() {
+                            value = double.parse(v);
+                            qtyController.value = TextEditingValue(
+                              text: value.toString(),
+                            );
+
+                            countCubit.submit(value);
+                          });
+                        },
+                        onDecreased: () {
+                          if (state.quantity >= 1) {
+                            countCubit.decrement(value);
+                          }
+                        },
+                        onIncreased: () {
+                          countCubit.increment(value);
+                        },
+                      );
+                    }),
+                  ],
+                ),
+              if (idTracking == 2)
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    buildRequiredLabel("Quantity"),
+                    SizedBox(height: 4.h),
+                    BlocConsumer<CountCubit, CountState>(
+                        listener: (context, state) {
+                      qtyController.value = TextEditingValue(
+                        text: state.quantity.toString(),
+                      );
+                      debugPrint("qtyController listen: ${qtyController.text}");
+
+                      isQtyButtonEnabled = state.quantity > 0;
+                    }, builder: (context, state) {
                       borderColor = ColorName.borderColor;
 
                       qtyIconColor = (isQtyButtonEnabled)
@@ -623,8 +854,7 @@ class _ReturnProductScreenState extends State<ReturnProductScreen> {
                                   reusableConfirmDialog(
                                     context,
                                     title: "Confirm Delete",
-                                    message:
-                                        "Are you sure you want to delete this\nSerial Number?",
+                                    message: deleteMessage,
                                     maxLines: 2,
                                     onPressed: () {
                                       Navigator.pop(context);
@@ -647,8 +877,7 @@ class _ReturnProductScreenState extends State<ReturnProductScreen> {
                                   reusableConfirmDialog(
                                     context,
                                     title: "Confirm Update",
-                                    message:
-                                        "Are you sure you want to update this\nSerial Number?",
+                                    message: updateMessage,
                                     maxLines: 2,
                                     onPressed: () {
                                       Navigator.pop(context);
@@ -665,8 +894,6 @@ class _ReturnProductScreenState extends State<ReturnProductScreen> {
                       )
                     : PrimaryButton(
                         onPressed: () {
-                          ReturnProduct? returnObject;
-
                           if (idTracking == 0) {
                             if (_listSnSelected.isEmpty ||
                                 selectedReason == null ||
@@ -679,20 +906,51 @@ class _ReturnProductScreenState extends State<ReturnProductScreen> {
                               reason: selectedReason,
                               location: selectedLocation,
                             );
+
+                            Navigator.pop(context, returnObject);
                           } else if (idTracking == 1) {
                             if (selectedLotsNumber == null ||
                                 selectedReason == null ||
                                 selectedLocation == null) {
                               return;
                             }
+                            var quantity = countCubit.state.quantity;
                             returnObject = ReturnProduct(
                               id: selectedObjectProduct.id,
                               code: selectedLotsNumber,
+                              quantity: quantity.toInt(),
                               reason: selectedReason,
                               location: selectedLocation,
                             );
+                            if (selectedObjectProduct.id == 2) {
+                              isAddLotsButtonEnable = true;
+                              debugPrint(
+                                  "isAddLotsButtonEnable: $isAddLotsButtonEnable");
+                            }
+
+                            Navigator.pop(context, returnObject);
+                          } else if (idTracking == 2) {
+                            var quantity = countCubit.state.quantity;
+                            if (quantity == 0 ||
+                                selectedReason == null ||
+                                selectedLocation == null) {
+                              return;
+                            }
+                            returnObject = ReturnProduct(
+                              id: selectedObjectProduct.id,
+                              code: selectedObjectProduct.code,
+                              quantity: quantity.toInt(),
+                              reason: selectedReason,
+                              location: selectedLocation,
+                            );
+                            if (returnObject != null &&
+                                _listNoTracking.length < 2) {
+                              setState(() {
+                                _listNoTracking.add(returnObject!);
+                              });
+                            }
+                            Navigator.pop(context);
                           }
-                          Navigator.pop(context, returnObject);
                         },
                         height: 40.h,
                         title: "Submit",

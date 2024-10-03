@@ -9,6 +9,8 @@ GestureDetector reusableAddSerialNumberButton({
   double? maxwidth,
   bool isCenterTitle = false,
   String? title,
+  bool? isDisable,
+  Color? color,
 }) {
   return GestureDetector(
     onTap: onTap,
@@ -22,7 +24,7 @@ GestureDetector reusableAddSerialNumberButton({
             decoration: BoxDecoration(
               shape: BoxShape.rectangle,
               borderRadius: BorderRadius.circular(6.w),
-              color: ColorName.blue2Color,
+              color: color ?? ColorName.blue2Color,
             ),
             child: Row(
               crossAxisAlignment: (isCenterTitle)
@@ -38,7 +40,9 @@ GestureDetector reusableAddSerialNumberButton({
                   alignment: Alignment.center,
                   child: Icon(
                     Icons.add,
-                    color: ColorName.blue1Color,
+                    color: (isDisable == true)
+                        ? ColorName.whiteColor
+                        : ColorName.blue1Color,
                     size: 13.h,
                   ),
                 ),
@@ -48,7 +52,9 @@ GestureDetector reusableAddSerialNumberButton({
                   textAlign: TextAlign.center,
                   style: BaseText.mainText12.copyWith(
                     fontWeight: BaseText.medium,
-                    color: ColorName.blue1Color,
+                    color: (isDisable == true)
+                        ? ColorName.whiteColor
+                        : ColorName.blue1Color,
                   ),
                 )
               ],

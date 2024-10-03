@@ -1,12 +1,14 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:inventory_v3/common/components/custom_app_bar.dart';
 import 'package:inventory_v3/common/components/custom_divider.dart';
 import 'package:inventory_v3/common/components/primary_button.dart';
 import 'package:inventory_v3/common/components/reusable_confirm_dialog.dart';
 import 'package:inventory_v3/data/model/pallet.dart';
+import 'package:inventory_v3/presentation/receipt/receipt_pallet/cubit/damage_cubit/damage_cubit.dart';
 import 'package:inventory_v3/presentation/receipt/receipt_pallet/screens/pallet/return_pallet_product/return_add_product_screen.dart';
 
 import '../../../../../common/components/reusable_dropdown_menu.dart';
@@ -18,9 +20,10 @@ import '../../../../../data/model/return_pallet.dart';
 class ReturnPalletAndProductScreen extends StatefulWidget {
   final int idTracking;
   final bool? isBothLots;
+  final bool? isDamage;
 
   const ReturnPalletAndProductScreen(
-      {super.key, this.idTracking = 0, this.isBothLots});
+      {super.key, this.idTracking = 0, this.isBothLots, this.isDamage});
 
   @override
   State<ReturnPalletAndProductScreen> createState() =>
@@ -35,6 +38,9 @@ class _ReturnPalletAndProductScreenState
   bool isShowNoTrackingResult = false;
 
   bool isBothLots = false;
+  bool isDamage = false;
+
+  String appBarTitle = "Return";
 
   @override
   void initState() {
@@ -43,6 +49,22 @@ class _ReturnPalletAndProductScreenState
     idTracking = widget.idTracking;
     debugPrint("idTracking: $idTracking");
     isBothLots = widget.isBothLots ?? false;
+    // isDamage = widget.isDamage ?? false;
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    isDamage =
+        BlocProvider.of<DamageCubit>(context).state.isDamagePalletIncSn ??
+            false;
+
+    if (isDamage) {
+      appBarTitle = "Damage";
+    }
+
+    debugPrint("ReturnPalletAndProductScreen isDamage: $isDamage");
   }
 
   @override
@@ -51,7 +73,7 @@ class _ReturnPalletAndProductScreenState
       child: Scaffold(
         appBar: CustomAppBar(
           onTap: () => Navigator.pop(context),
-          title: "Return: Pallet and Product",
+          title: "$appBarTitle: Pallet and Product",
         ),
         body: Padding(
           padding: EdgeInsets.all(16.w),

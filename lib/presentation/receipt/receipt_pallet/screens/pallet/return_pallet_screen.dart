@@ -11,6 +11,7 @@ import '../../../../../common/components/reusable_dropdown_menu.dart';
 import '../../../../../common/components/reusable_widget.dart';
 import '../../../../../common/theme/color/color_name.dart';
 import '../../../../../common/theme/text/base_text.dart';
+import '../../../../../data/model/reason.dart';
 import '../../../../../data/model/return_pallet.dart';
 
 class ReturnPalletScreen extends StatefulWidget {
@@ -40,11 +41,6 @@ class _ReturnPalletScreenState extends State<ReturnPalletScreen> {
     "Other"
   ];
   List<String> listLocation = ["Warehouse A-342-3-4", "Warehouse B-342-3-4"];
-  List<String> listDamageReason = [
-    "Dropped during transportation",
-    "Broken",
-    "Other"
-  ];
 
   bool isDamage = false;
 

@@ -35,6 +35,7 @@ import '../../../../common/theme/color/color_name.dart';
 import '../../../../common/theme/text/base_text.dart';
 import '../../../../data/model/return_pallet.dart';
 import '../cubit/add_pallet_cubit/add_pallet_cubit.dart';
+import '../cubit/damage_cubit/damage_cubit.dart';
 import 'pallet/return_pallet_screen.dart';
 
 class ReceiptDetailScreen extends StatefulWidget {
@@ -370,31 +371,51 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
                         }
                       },
                       onTapDamage: () {
-                        final damageResult = Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const ReturnPalletScreen(
-                                      isDamage: true,
-                                    )));
+                        if (receipt.id == 6) {
+                          BlocProvider.of<DamageCubit>(context)
+                              .setDamage(isDamagePalletIncSn: true);
+                          final returnLotsResult = Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      ReturnPalletAndProductScreen(
+                                        idTracking: idTracking,
+                                        isDamage: true,
+                                      )));
 
-                        damageResult.then((value) {
-                          if (value != null) {
-                            var result = value as ReturnPallet;
+                          returnLotsResult.then((value) {
+                            if (value != null) {
+                              _onReturnPalletAndProduct(value, context);
+                            }
+                          });
+                        } else {
+                          final damageResult = Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      const ReturnPalletScreen(
+                                        isDamage: true,
+                                      )));
 
-                            cubit.getReturnPallet(
-                              result,
-                              isPalletDamage: true,
-                            );
+                          damageResult.then((value) {
+                            if (value != null) {
+                              var result = value as ReturnPallet;
 
-                            Future.delayed(const Duration(seconds: 1), () {
-                              onShowSuccessDialog(
-                                context: context,
-                                scannedItem: result.palletCode,
-                                isDamage: true,
+                              cubit.getReturnPallet(
+                                result,
+                                isPalletDamage: true,
                               );
-                            });
-                          }
-                        });
+
+                              Future.delayed(const Duration(seconds: 1), () {
+                                onShowSuccessDialog(
+                                  context: context,
+                                  scannedItem: result.palletCode,
+                                  isDamage: true,
+                                );
+                              });
+                            }
+                          });
+                        }
                       }),
                   SizedBox(height: 14.h),
                   BlocBuilder<ProductMenuProductDetailCubit,

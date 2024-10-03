@@ -15,8 +15,10 @@ import '../../../../../../common/components/reusable_scan_button.dart';
 import '../../../../../../common/components/reusable_widget.dart';
 import '../../../../../../common/theme/color/color_name.dart';
 import '../../../../../../common/theme/text/base_text.dart';
+import '../../../../../../data/model/reason.dart';
 import '../../../cubit/count_cubit.dart';
 import '../../../cubit/count_state.dart';
+import '../../../cubit/damage_cubit/damage_cubit.dart';
 
 class ReturnAddProductScreen extends StatefulWidget {
   final int idTracking;
@@ -69,6 +71,8 @@ class _ReturnAddProductScreenState extends State<ReturnAddProductScreen> {
   bool isEdit = false;
 
   bool isQtyButtonEnabled = false;
+
+  bool isDamagePalletIncSn = false;
 
   List<String> listSerialNumber = [
     "SN-NM1234567845",
@@ -128,6 +132,19 @@ class _ReturnAddProductScreenState extends State<ReturnAddProductScreen> {
       selectedSerialNumber = listSerialNumber.first;
       selectedReason = listReason.first;
       selectedLocation = listLocation.first;
+    }
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    isDamagePalletIncSn =
+        BlocProvider.of<DamageCubit>(context).state.isDamagePalletIncSn ??
+            false;
+
+    if (isDamagePalletIncSn) {
+      listReason = listDamageReason;
     }
   }
 

@@ -5,6 +5,7 @@ import 'package:inventory_v3/common/components/custom_app_bar.dart';
 import 'package:inventory_v3/common/components/reusable_floating_action_button.dart';
 import 'package:inventory_v3/common/extensions/empty_space_extension.dart';
 import 'package:inventory_v3/data/model/pallet.dart';
+import 'package:inventory_v3/data/model/product.dart';
 import 'package:inventory_v3/presentation/receipt/receipt_pallet/cubit/add_pallet_cubit/add_pallet_cubit.dart';
 import 'package:inventory_v3/presentation/receipt/receipt_pallet/screens/product_detail/add_product_screen.dart';
 import 'package:smooth_highlight/smooth_highlight.dart';
@@ -14,6 +15,7 @@ import '../../../../common/components/reusable_search_bar_border.dart';
 import '../../../../common/components/reusable_tab_bar.dart';
 import '../../../../common/theme/color/color_name.dart';
 import '../../../../common/theme/text/base_text.dart';
+import '../cubit/damage_cubit/damage_cubit.dart';
 
 class ReceiptProductDetailScreen extends StatefulWidget {
   final Pallet product;
@@ -45,9 +47,12 @@ class _ReceiptProductDetailScreenState extends State<ReceiptProductDetailScreen>
   bool isReturnPalletAndProduct = false;
 
   bool isDamage = false;
+  bool isDamagePalletAndProduct = false;
 
   late TabController _tabController;
   final List<String> _tabs = ["Not Done", "Done"];
+
+  var totalDamageQty = 1;
 
   @override
   void initState() {
@@ -62,9 +67,14 @@ class _ReceiptProductDetailScreenState extends State<ReceiptProductDetailScreen>
     isReturnPalletAndProduct = product.isReturnPalletAndProduct ?? false;
 
     isDamage = product.isDamage ?? false;
+    isDamagePalletAndProduct = product.isDamagePalletAndProduct ?? false;
 
     if (isReturn || isReturnPalletAndProduct) {
       _tabs.insert(2, "Return");
+    }
+
+    if (isDamage || isDamagePalletAndProduct) {
+      _tabs.insert(2, "Damage");
     }
 
     // Serial Number
@@ -91,7 +101,7 @@ class _ReceiptProductDetailScreenState extends State<ReceiptProductDetailScreen>
             onTap: () => Navigator.of(context).pop(product),
             title: "Product Detail",
           ),
-          body: (product.isReturnPalletAndProduct == true)
+          body: (isReturnPalletAndProduct || isDamagePalletAndProduct)
               ? buildReturnProductDetail(context)
               : buildDefaultProductDetail(context),
           floatingActionButton: reusableFloatingActionButton(
@@ -223,6 +233,19 @@ class _ReceiptProductDetailScreenState extends State<ReceiptProductDetailScreen>
                     if (tracking.toLowerCase().contains("serial number")) {
                       total = serialNumberList.length;
                       totalDone = serialNumberResult.length;
+
+                      if (isDamagePalletAndProduct) {
+                        Product? damageProduct =
+                            BlocProvider.of<DamageCubit>(context)
+                                .state
+                                .damageProduct;
+
+                        debugPrint("damageProduct: ${damageProduct?.toJson()}");
+                        totalDamageQty =
+                            (damageProduct?.serialNumbers?.length)?.toInt() ??
+                                0;
+                        total = (total - totalDamageQty).toInt();
+                      }
                     } else {
                       total = product.productQty.toInt();
                     }
@@ -235,7 +258,9 @@ class _ReceiptProductDetailScreenState extends State<ReceiptProductDetailScreen>
                           ? "($total)"
                           : (_tabs[1] == e)
                               ? "($totalDone)"
-                              : "($totalReturn)",
+                              : (_tabs[2] == "Damage")
+                                  ? "($totalDamageQty)"
+                                  : "($totalReturn)",
                       isSelected: isSelectedTab,
                     );
                   }).toList(),

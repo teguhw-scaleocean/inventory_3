@@ -229,14 +229,10 @@ class _ReturnPalletAndProductScreenState
 
               Future.delayed(const Duration(milliseconds: 500), () {
                 if (isDamage) {
-                  returnPallet.copyWith(
-                    reason: _damageProduct?.reason,
-                  );
                   confirmTitle = "Confirm Damage";
                   confirmMessage =
                       "Are you sure you want to damage this\nPallet and Product?";
                 }
-
                 reusableConfirmDialog(
                   context,
                   title: confirmTitle,

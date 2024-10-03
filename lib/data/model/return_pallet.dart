@@ -12,6 +12,7 @@ class ReturnPallet {
   String location;
   // Sementara
   List<ReturnProduct>? returnProducts = [];
+  double? damageQty = 0.0;
 
   ReturnPallet({
     required this.id,
@@ -19,6 +20,7 @@ class ReturnPallet {
     required this.reason,
     required this.location,
     this.returnProducts,
+    this.damageQty,
   });
 
   ReturnPallet copyWith({
@@ -27,6 +29,7 @@ class ReturnPallet {
     String? reason,
     String? location,
     List<ReturnProduct>? returnProducts,
+    double? damageQty,
   }) {
     return ReturnPallet(
       id: id ?? this.id,
@@ -34,6 +37,7 @@ class ReturnPallet {
       reason: reason ?? this.reason,
       location: location ?? this.location,
       returnProducts: returnProducts ?? this.returnProducts,
+      damageQty: damageQty ?? this.damageQty,
     );
   }
 
@@ -44,6 +48,7 @@ class ReturnPallet {
       'reason': reason,
       'location': location,
       'returnProducts': returnProducts?.map((x) => x.toMap()).toList(),
+      'damageQty': damageQty,
     };
   }
 
@@ -60,6 +65,7 @@ class ReturnPallet {
               ),
             )
           : null,
+      damageQty: map['damageQty'] != null ? map['damageQty'] as double : null,
     );
   }
 
@@ -70,7 +76,7 @@ class ReturnPallet {
 
   @override
   String toString() {
-    return 'ReturnPallet(id: $id, palletCode: $palletCode, reason: $reason, location: $location, returnProducts: $returnProducts)';
+    return 'ReturnPallet(id: $id, palletCode: $palletCode, reason: $reason, location: $location, returnProducts: $returnProducts, damageQty: $damageQty)';
   }
 
   @override
@@ -81,7 +87,8 @@ class ReturnPallet {
         other.palletCode == palletCode &&
         other.reason == reason &&
         other.location == location &&
-        listEquals(other.returnProducts, returnProducts);
+        listEquals(other.returnProducts, returnProducts) &&
+        other.damageQty == damageQty;
   }
 
   @override
@@ -90,6 +97,7 @@ class ReturnPallet {
         palletCode.hashCode ^
         reason.hashCode ^
         location.hashCode ^
-        returnProducts.hashCode;
+        returnProducts.hashCode ^
+        damageQty.hashCode;
   }
 }

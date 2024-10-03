@@ -198,7 +198,10 @@ class ProductMenuProductDetailCubit
     var indexPallet = getCurrentPalletIndex(returnPallet);
 
     if (isPalletAndProductDamage == true) {
-      itemReturn = currentPallet.copyWith(isDamagePalletAndProduct: true);
+      itemReturn = currentPallet.copyWith(
+        isDamagePalletAndProduct: true,
+        damagedQty: returnPallet.damageQty,
+      );
     } else {
       itemReturn = currentPallet.copyWith(isReturnPalletAndProduct: true);
     }
@@ -206,7 +209,7 @@ class ProductMenuProductDetailCubit
     emit(state.copyWith(pallets: lastPallets));
 
     log("getReturnPalletAndProduct: ${lastPallets.map((e) => e.isReturnPalletAndProduct.toString()).toList()}");
-    log("getReturnPalletAndProduct->isDamagePalletAndProduct: ${lastPallets.map((e) => e.isDamagePalletAndProduct.toString()).toList()}");
+    log("getReturnPalletAndProduct->isDamagePalletAndProduct: ${lastPallets.map((e) => e.damagedQty.toString()).toList()}");
   }
 
   Pallet getCurrentPallet(ReturnPallet returnPallet) {

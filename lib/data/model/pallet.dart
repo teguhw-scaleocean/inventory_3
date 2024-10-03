@@ -20,6 +20,7 @@ class Pallet {
   double productQty;
   double? doneQty;
   double? returnQty;
+  double? damagedQty;
   bool? isDoneQty;
   bool? hasBeenScanned;
   bool? isReturn;
@@ -44,6 +45,7 @@ class Pallet {
     required this.productQty,
     this.doneQty,
     this.returnQty,
+    this.damagedQty,
     this.isDoneQty,
     this.hasBeenScanned,
     this.isReturn,
@@ -69,6 +71,7 @@ class Pallet {
     double? productQty,
     double? doneQty,
     double? returnQty,
+    double? damagedQty,
     bool? isDoneQty,
     bool? hasBeenScanned,
     bool? isReturn,
@@ -93,6 +96,7 @@ class Pallet {
       productQty: productQty ?? this.productQty,
       doneQty: doneQty ?? this.doneQty,
       returnQty: returnQty ?? this.returnQty,
+      damagedQty: damagedQty ?? this.damagedQty,
       isDoneQty: isDoneQty ?? this.isDoneQty,
       hasBeenScanned: hasBeenScanned ?? this.hasBeenScanned,
       isReturn: isReturn ?? this.isReturn,
@@ -123,6 +127,7 @@ class Pallet {
       'productQty': productQty,
       'doneQty': doneQty,
       'returnQty': returnQty,
+      'damagedQty': damagedQty,
       'isDoneQty': isDoneQty,
       'hasBeenScanned': hasBeenScanned,
       'isReturn': isReturn,
@@ -156,6 +161,8 @@ class Pallet {
       productQty: map['productQty'] as double,
       doneQty: map['doneQty'] != null ? map['doneQty'] as double : null,
       returnQty: map['returnQty'] != null ? map['returnQty'] as double : null,
+      damagedQty:
+          map['damagedQty'] != null ? map['damagedQty'] as double : null,
       isDoneQty: map['isDoneQty'] != null ? map['isDoneQty'] as bool : null,
       hasBeenScanned:
           map['hasBeenScanned'] != null ? map['hasBeenScanned'] as bool : null,
@@ -205,7 +212,7 @@ class Pallet {
 
   @override
   String toString() {
-    return 'Pallet(id: $id, palletCode: $palletCode, productName: $productName, code: $code, dateTime: $dateTime, hasActualDateTime: $hasActualDateTime, actualDateTime: $actualDateTime, sku: $sku, lotsCode: $lotsCode, productQty: $productQty, doneQty: $doneQty, returnQty: $returnQty, isDoneQty: $isDoneQty, hasBeenScanned: $hasBeenScanned, isReturn: $isReturn, isDamage: $isDamage, isDamagePalletAndProduct: $isDamagePalletAndProduct, isReturnPalletAndProduct: $isReturnPalletAndProduct, serialNumber: $serialNumber, scannedSerialNumber: $scannedSerialNumber, productReturn: $productReturn, returnProductNoTracking: $returnProductNoTracking)';
+    return 'Pallet(id: $id, palletCode: $palletCode, productName: $productName, code: $code, dateTime: $dateTime, hasActualDateTime: $hasActualDateTime, actualDateTime: $actualDateTime, sku: $sku, lotsCode: $lotsCode, productQty: $productQty, doneQty: $doneQty, returnQty: $returnQty, damagedQty: $damagedQty, isDoneQty: $isDoneQty, hasBeenScanned: $hasBeenScanned, isReturn: $isReturn, isDamage: $isDamage, isDamagePalletAndProduct: $isDamagePalletAndProduct, isReturnPalletAndProduct: $isReturnPalletAndProduct, serialNumber: $serialNumber, scannedSerialNumber: $scannedSerialNumber, productReturn: $productReturn, returnProductNoTracking: $returnProductNoTracking)';
   }
 
   @override
@@ -224,6 +231,7 @@ class Pallet {
         other.productQty == productQty &&
         other.doneQty == doneQty &&
         other.returnQty == returnQty &&
+        other.damagedQty == damagedQty &&
         other.isDoneQty == isDoneQty &&
         other.hasBeenScanned == hasBeenScanned &&
         other.isReturn == isReturn &&
@@ -250,6 +258,7 @@ class Pallet {
         productQty.hashCode ^
         doneQty.hashCode ^
         returnQty.hashCode ^
+        damagedQty.hashCode ^
         isDoneQty.hashCode ^
         hasBeenScanned.hashCode ^
         isReturn.hashCode ^

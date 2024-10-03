@@ -371,7 +371,7 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
                         }
                       },
                       onTapDamage: () {
-                        if (receipt.id == 6) {
+                        if (receipt.id == 6 || receipt.id == 1) {
                           BlocProvider.of<DamageCubit>(context)
                               .setDamage(isDamagePalletIncSn: true);
                           final damagePalletAndProductResult = Navigator.push(

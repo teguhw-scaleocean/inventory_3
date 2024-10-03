@@ -313,15 +313,27 @@ class _ReturnPalletAndProductScreenState
                 InkWell(
                   onTap: () {
                     // if (idTracking == 0) {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ReturnAddProductScreen(
-                          idTracking: idTracking,
-                          isEdit: true,
+                    if (isDamage) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ReturnAddProductScreen(
+                            idTracking: idTracking,
+                            isEditDamage: true,
+                          ),
                         ),
-                      ),
-                    );
+                      );
+                    } else {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ReturnAddProductScreen(
+                            idTracking: idTracking,
+                            isEdit: true,
+                          ),
+                        ),
+                      );
+                    }
                     // }
                   },
                   child: SizedBox(

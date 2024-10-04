@@ -80,6 +80,7 @@ class _ReturnAddProductScreenState extends State<ReturnAddProductScreen> {
 
   bool isDamagePalletIncSn = false;
   bool isDamagePalletIncLots = false;
+  bool isDamagePalletIncNoTracking = false;
   var _damageProduct;
 
   List<String> listSerialNumber = [
@@ -173,7 +174,14 @@ class _ReturnAddProductScreenState extends State<ReturnAddProductScreen> {
         BlocProvider.of<DamageCubit>(context).state.isDamagePalletIncLots ??
             false;
 
-    if (isDamagePalletIncSn || isDamagePalletIncLots) {
+    isDamagePalletIncNoTracking = BlocProvider.of<DamageCubit>(context)
+            .state
+            .isDamagePalletIncNoTracking ??
+        false;
+
+    if (isDamagePalletIncSn ||
+        isDamagePalletIncLots ||
+        isDamagePalletIncNoTracking) {
       // listReason.clear();
       listReason = listDamageReason;
       debugPrint(listReason.map((e) => e).toList().toString());
@@ -715,6 +723,20 @@ class _ReturnAddProductScreenState extends State<ReturnAddProductScreen> {
                           name: selectedObjectProduct!.productName,
                           sku: selectedObjectProduct!.code,
                           lotsNumber: selectedLots,
+                          quantity: quantity,
+                          reason: selectedReason,
+                          location: selectedLocation,
+                        );
+
+                        BlocProvider.of<DamageCubit>(context)
+                            .addDamage(damageProduct);
+                      } else if (isDamagePalletIncNoTracking) {
+                        var quantity =
+                            BlocProvider.of<CountCubit>(context).state.quantity;
+                        Product damageProduct = Product(
+                          id: selectedObjectProduct!.id,
+                          name: selectedObjectProduct!.productName,
+                          sku: selectedObjectProduct!.code,
                           quantity: quantity,
                           reason: selectedReason,
                           location: selectedLocation,

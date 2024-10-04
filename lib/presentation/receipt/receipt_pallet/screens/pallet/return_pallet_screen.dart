@@ -11,10 +11,13 @@ import '../../../../../common/components/reusable_dropdown_menu.dart';
 import '../../../../../common/components/reusable_widget.dart';
 import '../../../../../common/theme/color/color_name.dart';
 import '../../../../../common/theme/text/base_text.dart';
+import '../../../../../data/model/reason.dart';
 import '../../../../../data/model/return_pallet.dart';
 
 class ReturnPalletScreen extends StatefulWidget {
-  const ReturnPalletScreen({super.key});
+  final bool? isDamage;
+
+  const ReturnPalletScreen({super.key, this.isDamage});
 
   @override
   State<ReturnPalletScreen> createState() => _ReturnPalletScreenState();
@@ -39,9 +42,24 @@ class _ReturnPalletScreenState extends State<ReturnPalletScreen> {
   ];
   List<String> listLocation = ["Warehouse A-342-3-4", "Warehouse B-342-3-4"];
 
+  bool isDamage = false;
+
+  String appbarTitle = "";
+
   @override
   void initState() {
     super.initState();
+
+    isDamage = widget.isDamage ?? false;
+
+    if (isDamage) {
+      appbarTitle = "Damage: Pallet";
+      listReason = listDamageReason;
+    } else {
+      appbarTitle = "Return: Pallet";
+    }
+
+    debugPrint(appbarTitle);
 
     listPalletTemp = listPallets.map((e) {
       return e.copyWith(palletCode: "Pallet ${e.palletCode}");
@@ -54,7 +72,7 @@ class _ReturnPalletScreenState extends State<ReturnPalletScreen> {
       child: Scaffold(
         appBar: CustomAppBar(
           onTap: () => Navigator.pop(context),
-          title: "Return: Pallet",
+          title: appbarTitle,
         ),
         body: Padding(
           padding: EdgeInsets.all(16.w),
@@ -137,7 +155,7 @@ class _ReturnPalletScreenState extends State<ReturnPalletScreen> {
                 listOfItemsValue: listLocation.map((e) => e).toList(),
                 selectedValue: selectedLocation,
                 isExpand: hasLocationFocus,
-                hintText: "   Select Location",
+                hintText: "   Select Return Location",
                 borderColor: (hasLocationFocus)
                     ? ColorName.mainColor
                     : ColorName.borderColor,

@@ -1,12 +1,15 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:inventory_v3/common/components/custom_app_bar.dart';
 import 'package:inventory_v3/common/components/custom_divider.dart';
 import 'package:inventory_v3/common/components/primary_button.dart';
 import 'package:inventory_v3/common/components/reusable_confirm_dialog.dart';
 import 'package:inventory_v3/data/model/pallet.dart';
+import 'package:inventory_v3/data/model/product.dart';
+import 'package:inventory_v3/presentation/receipt/receipt_pallet/cubit/damage_cubit/damage_cubit.dart';
 import 'package:inventory_v3/presentation/receipt/receipt_pallet/screens/pallet/return_pallet_product/return_add_product_screen.dart';
 
 import '../../../../../common/components/reusable_dropdown_menu.dart';
@@ -14,13 +17,15 @@ import '../../../../../common/components/reusable_widget.dart';
 import '../../../../../common/theme/color/color_name.dart';
 import '../../../../../common/theme/text/base_text.dart';
 import '../../../../../data/model/return_pallet.dart';
+import '../../cubit/damage_cubit/damage_state.dart';
 
 class ReturnPalletAndProductScreen extends StatefulWidget {
   final int idTracking;
   final bool? isBothLots;
+  final bool? isDamage;
 
   const ReturnPalletAndProductScreen(
-      {super.key, this.idTracking = 0, this.isBothLots});
+      {super.key, this.idTracking = 0, this.isBothLots, this.isDamage});
 
   @override
   State<ReturnPalletAndProductScreen> createState() =>
@@ -35,6 +40,11 @@ class _ReturnPalletAndProductScreenState
   bool isShowNoTrackingResult = false;
 
   bool isBothLots = false;
+  bool isDamage = false;
+
+  Product? _damageProduct;
+
+  String appBarTitle = "Return";
 
   @override
   void initState() {
@@ -43,6 +53,22 @@ class _ReturnPalletAndProductScreenState
     idTracking = widget.idTracking;
     debugPrint("idTracking: $idTracking");
     isBothLots = widget.isBothLots ?? false;
+    // isDamage = widget.isDamage ?? false;
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    isDamage =
+        BlocProvider.of<DamageCubit>(context).state.isDamagePalletIncSn ??
+            false;
+
+    if (isDamage) {
+      appBarTitle = "Damage";
+    }
+
+    debugPrint("ReturnPalletAndProductScreen isDamage: $isDamage");
   }
 
   @override
@@ -51,122 +77,132 @@ class _ReturnPalletAndProductScreenState
       child: Scaffold(
         appBar: CustomAppBar(
           onTap: () => Navigator.pop(context),
-          title: "Return: Pallet and Product",
+          title: "$appBarTitle: Pallet and Product",
         ),
-        body: Padding(
-          padding: EdgeInsets.all(16.w),
-          child: ListView.separated(
-              itemCount: 2,
-              separatorBuilder: (context, index) => Padding(
-                    padding: EdgeInsets.symmetric(vertical: 8.h),
-                    child: const CustomDivider(
-                      color: ColorName.grey9Color,
-                    ),
-                  ),
-              itemBuilder: (context, index) {
-                if (isShowResult && index == 0 ||
-                    isShowLotsResult && index == 0 ||
-                    isShowNoTrackingResult && index == 0) {
-                  return Theme(
-                    data: Theme.of(context).copyWith(
-                      listTileTheme: ListTileTheme.of(context).copyWith(
-                        dense: true,
-                        contentPadding: EdgeInsets.zero,
-                        visualDensity: VisualDensity.compact,
+        body: BlocListener<DamageCubit, DamageState>(
+          listener: (context, state) {
+            _damageProduct = state.damageProduct;
+          },
+          child: Padding(
+            padding: EdgeInsets.all(16.w),
+            child: ListView.separated(
+                itemCount: 2,
+                separatorBuilder: (context, index) => Padding(
+                      padding: EdgeInsets.symmetric(vertical: 8.h),
+                      child: const CustomDivider(
+                        color: ColorName.grey9Color,
                       ),
                     ),
-                    child: ExpansionTile(
-                      collapsedShape: const RoundedRectangleBorder(
-                        side: BorderSide.none,
+                itemBuilder: (context, index) {
+                  if (isShowResult && index == 0 ||
+                      isShowLotsResult && index == 0 ||
+                      isShowNoTrackingResult && index == 0) {
+                    return Theme(
+                      data: Theme.of(context).copyWith(
+                        listTileTheme: ListTileTheme.of(context).copyWith(
+                          dense: true,
+                          contentPadding: EdgeInsets.zero,
+                          visualDensity: VisualDensity.compact,
+                        ),
                       ),
-                      shape: const RoundedRectangleBorder(
-                        side: BorderSide.none,
+                      child: ExpansionTile(
+                        collapsedShape: const RoundedRectangleBorder(
+                          side: BorderSide.none,
+                        ),
+                        shape: const RoundedRectangleBorder(
+                          side: BorderSide.none,
+                        ),
+                        tilePadding: EdgeInsets.zero,
+                        title: Text(
+                          "Pallet A14$index",
+                          style: BaseText.grey10Text14,
+                        ),
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              buildProductItemCard(
+                                name: (isShowResult)
+                                    ? "Nebulizer Machine"
+                                    : (isShowNoTrackingResult)
+                                        ? "Surgical Instruments"
+                                        : "Syringes",
+                                code: (isShowResult)
+                                    ? "NM928321"
+                                    : (isShowNoTrackingResult)
+                                        ? "SUR_12942"
+                                        : (isBothLots == true)
+                                            ? "SYR-LOTS-2842"
+                                            : "SY_12937",
+                                reason: _damageProduct?.reason,
+                              ),
+                              SizedBox(height: 8.h),
+                              SizedBox(
+                                height: 30.h,
+                                child: Row(
+                                  children: [
+                                    _buildAddProductButton(
+                                      onTap: () {},
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              SizedBox(height: 8.h),
+                            ],
+                          )
+                        ],
                       ),
-                      tilePadding: EdgeInsets.zero,
-                      title: Text(
-                        "Pallet A14$index",
-                        style: BaseText.grey10Text14,
-                      ),
+                    );
+                  }
+
+                  return SizedBox(
+                    height: 30.h,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            buildProductItemCard(
-                              name: (isShowResult)
-                                  ? "Nebulizer Machine"
-                                  : (isShowNoTrackingResult)
-                                      ? "Surgical Instruments"
-                                      : "Syringes",
-                              code: (isShowResult)
-                                  ? "NM928321"
-                                  : (isShowNoTrackingResult)
-                                      ? "SUR_12942"
-                                      : (isBothLots == true)
-                                          ? "SYR-LOTS-2842"
-                                          : "SY_12937",
-                            ),
-                            SizedBox(height: 8.h),
-                            SizedBox(
-                              height: 30.h,
-                              child: Row(
-                                children: [
-                                  _buildAddProductButton(
-                                    onTap: () {},
-                                  ),
-                                ],
+                        Text(
+                          "Pallet A14$index",
+                          style: BaseText.grey10Text14,
+                        ),
+                        _buildAddProductButton(onTap: () {
+                          final addProduct = Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ReturnAddProductScreen(
+                                idTracking: idTracking,
                               ),
                             ),
-                            SizedBox(height: 8.h),
-                          ],
-                        )
+                          );
+
+                          addProduct.then((value) {
+                            if (idTracking == 0) {
+                              setState(() {
+                                isShowResult = true;
+                              });
+                            } else if (idTracking == 1) {
+                              setState(() {
+                                isShowLotsResult = true;
+                              });
+                            } else if (idTracking == 2) {
+                              setState(() {
+                                isShowNoTrackingResult = true;
+                              });
+                            }
+                          });
+                        })
                       ],
                     ),
                   );
-                }
-
-                return SizedBox(
-                  height: 30.h,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        "Pallet A14$index",
-                        style: BaseText.grey10Text14,
-                      ),
-                      _buildAddProductButton(onTap: () {
-                        final addProduct = Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => ReturnAddProductScreen(
-                              idTracking: idTracking,
-                            ),
-                          ),
-                        );
-
-                        addProduct.then((value) {
-                          if (idTracking == 0) {
-                            setState(() {
-                              isShowResult = true;
-                            });
-                          } else if (idTracking == 1) {
-                            setState(() {
-                              isShowLotsResult = true;
-                            });
-                          } else if (idTracking == 2) {
-                            setState(() {
-                              isShowNoTrackingResult = true;
-                            });
-                          }
-                        });
-                      })
-                    ],
-                  ),
-                );
-              }),
+                }),
+          ),
         ),
         bottomNavigationBar: buildBottomNavbar(
           child: PrimaryButton(
             onPressed: () {
+              String confirmTitle = "Confirm Return";
+              String confirmMessage =
+                  "Are you sure you want to return this\nPallet & Product?";
+
               ReturnPallet returnPallet;
               if (isShowLotsResult) {
                 returnPallet = ReturnPallet(
@@ -192,11 +228,15 @@ class _ReturnPalletAndProductScreenState
               }
 
               Future.delayed(const Duration(milliseconds: 500), () {
+                if (isDamage) {
+                  confirmTitle = "Confirm Damage";
+                  confirmMessage =
+                      "Are you sure you want to damage this\nPallet and Product?";
+                }
                 reusableConfirmDialog(
                   context,
-                  title: "Confirm Return",
-                  message:
-                      "Are you sure you want to return this\nPallet & Product?",
+                  title: confirmTitle,
+                  message: confirmMessage,
                   maxLines: 2,
                   onPressed: () {
                     Navigator.pop(context);
@@ -247,6 +287,7 @@ class _ReturnPalletAndProductScreenState
       {
     required String name,
     required String code,
+    String? reason,
   }) {
     return Container(
         // width: 328,
@@ -272,15 +313,27 @@ class _ReturnPalletAndProductScreenState
                 InkWell(
                   onTap: () {
                     // if (idTracking == 0) {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ReturnAddProductScreen(
-                          idTracking: idTracking,
-                          isEdit: true,
+                    if (isDamage) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ReturnAddProductScreen(
+                            idTracking: idTracking,
+                            isEditDamage: true,
+                          ),
                         ),
-                      ),
-                    );
+                      );
+                    } else {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ReturnAddProductScreen(
+                            idTracking: idTracking,
+                            isEdit: true,
+                          ),
+                        ),
+                      );
+                    }
                     // }
                   },
                   child: SizedBox(
@@ -307,7 +360,7 @@ class _ReturnPalletAndProductScreenState
             SizedBox(height: 2.h),
             _buildProductDescPerRow(
               label: "Reason: ",
-              value: "Overstock",
+              value: reason ?? "Overstock",
             ),
             SizedBox(height: 2.h),
             _buildProductDescPerRow(

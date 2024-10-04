@@ -176,6 +176,7 @@ onShowSuccessDialog(
     String? scannedItem,
     bool? isOnUpdate,
     bool? isOnReturn,
+    bool? isDamage,
     bool? isBoth}) {
   return AwesomeDialog(
     context: context,
@@ -198,7 +199,9 @@ onShowSuccessDialog(
                 ? "Return Successful!"
                 : (isOnUpdate == true)
                     ? 'Update Successful!'
-                    : 'Scan Successful!',
+                    : (isDamage == true)
+                        ? "Damage Successful!"
+                        : 'Scan Successful!',
             style: BaseText.black2TextStyle.copyWith(
               fontSize: 16.sp,
               fontWeight: BaseText.semiBold,
@@ -206,7 +209,7 @@ onShowSuccessDialog(
           ),
           Container(height: 4.h),
           Text(
-              'Great job! You successfully ${(isOnReturn == true) ? 'returned' : (isOnUpdate == true) ? 'updated' : 'scanned'}',
+              'Great job! You successfully ${(isOnReturn == true) ? 'returned' : (isOnUpdate == true) ? 'updated' : (isDamage == true) ? "damaged" : 'scanned'}',
               style: BaseText.grey2Text14.copyWith(fontWeight: BaseText.light)),
           Container(height: 1.h),
           Text(scannedItem ?? "",
@@ -315,6 +318,37 @@ Container buildBadgeReturn() {
           SizedBox(width: 4.w),
           Text(
             "Return",
+            style: BaseText.whiteTextStyle.copyWith(
+              fontSize: 10.sp,
+              fontWeight: BaseText.medium,
+            ),
+          ),
+        ],
+      ));
+}
+
+Container buildBadgeDamage() {
+  return Container(
+      // width: 60.w,
+      // height: 21.h,
+      padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 7.h),
+      decoration: ShapeDecoration(
+        color: ColorName.damageColor,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(24.r),
+        ),
+      ),
+      clipBehavior: Clip.antiAliasWithSaveLayer,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.fiber_manual_record,
+              color: ColorName.whiteColor, size: 8.w),
+          SizedBox(width: 4.w),
+          Text(
+            "Damage",
             style: BaseText.whiteTextStyle.copyWith(
               fontSize: 10.sp,
               fontWeight: BaseText.medium,

@@ -1,9 +1,12 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:inventory_v3/common/components/button_dialog.dart';
 import 'package:inventory_v3/common/components/custom_app_bar.dart';
 import 'package:inventory_v3/data/model/pallet.dart';
+import 'package:inventory_v3/data/model/product.dart';
 
 import '../../../../../../common/components/custom_form.dart';
 import '../../../../../../common/components/custom_quantity_button.dart';
@@ -15,17 +18,21 @@ import '../../../../../../common/components/reusable_scan_button.dart';
 import '../../../../../../common/components/reusable_widget.dart';
 import '../../../../../../common/theme/color/color_name.dart';
 import '../../../../../../common/theme/text/base_text.dart';
+import '../../../../../../data/model/reason.dart';
 import '../../../cubit/count_cubit.dart';
 import '../../../cubit/count_state.dart';
+import '../../../cubit/damage_cubit/damage_cubit.dart';
 
 class ReturnAddProductScreen extends StatefulWidget {
   final int idTracking;
   final bool? isEdit;
+  final bool? isEditDamage;
 
   const ReturnAddProductScreen({
     super.key,
     required this.idTracking,
     this.isEdit,
+    this.isEditDamage,
   });
 
   @override
@@ -67,8 +74,12 @@ class _ReturnAddProductScreenState extends State<ReturnAddProductScreen> {
 
   String titleAppBar = "";
   bool isEdit = false;
+  bool isEditDamage = false;
 
   bool isQtyButtonEnabled = false;
+
+  bool isDamagePalletIncSn = false;
+  var _damageProduct;
 
   List<String> listSerialNumber = [
     "SN-NM1234567845",
@@ -115,9 +126,12 @@ class _ReturnAddProductScreenState extends State<ReturnAddProductScreen> {
     listProduct = listPallets;
 
     isEdit = widget.isEdit ?? false;
+    isEditDamage = widget.isEditDamage ?? false;
     idTracking = widget.idTracking;
 
-    titleAppBar = isEdit == true ? "Edit Product: Pallet A493" : "Add Product";
+    titleAppBar = (isEdit == true || isEditDamage == true)
+        ? "Edit Product: Pallet A493"
+        : "Add Product";
 
     if (isEdit == true) {
       selectedProduct = listProduct.first.productName;
@@ -128,6 +142,34 @@ class _ReturnAddProductScreenState extends State<ReturnAddProductScreen> {
       selectedSerialNumber = listSerialNumber.first;
       selectedReason = listReason.first;
       selectedLocation = listLocation.first;
+    }
+
+    if (isEditDamage == true) {
+      _damageProduct =
+          BlocProvider.of<DamageCubit>(context).state.damageProduct;
+
+      selectedProduct = _damageProduct.name;
+      selectedObjectProduct = listProduct.firstWhere(
+        (element) => element.productName == selectedProduct,
+        orElse: () => listProduct.first,
+      );
+      selectedSerialNumber = _damageProduct.serialNumbers.first.label;
+      selectedReason = _damageProduct.reason;
+      selectedLocation = _damageProduct.location;
+    }
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    isDamagePalletIncSn =
+        BlocProvider.of<DamageCubit>(context).state.isDamagePalletIncSn ??
+            false;
+
+    if (isDamagePalletIncSn) {
+      listReason = listDamageReason;
+      debugPrint(listReason.map((e) => e).toList().toString());
     }
   }
 
@@ -508,7 +550,7 @@ class _ReturnAddProductScreenState extends State<ReturnAddProductScreen> {
                 offset: const Offset(0, -15),
                 hasSearch: false,
                 label: "",
-                listOfItemsValue: listReason.map((e) => e).toList(),
+                listOfItemsValue: listReason,
                 selectedValue: selectedReason,
                 isExpand: hasReasonFocus,
                 hintText: "   Select Reason",
@@ -565,18 +607,26 @@ class _ReturnAddProductScreenState extends State<ReturnAddProductScreen> {
           ),
         ),
         bottomNavigationBar: buildBottomNavbar(
-          child: (isEdit)
+          child: (isEdit || isEditDamage)
               ? Row(
                   children: [
                     Flexible(
                       child: SecondaryButtonDialog(
                         onPressed: () {
+                          String confirmDeleteTitle = "Confirm Delete";
+                          String confirmDeleteMessage =
+                              "Are you sure you want to delete this\nreturned product?";
+
+                          if (isEditDamage) {
+                            confirmDeleteMessage =
+                                "Are you sure you want to delete this\nDamaged product?";
+                          }
+
                           Future.delayed(const Duration(milliseconds: 500), () {
                             reusableConfirmDialog(
                               context,
-                              title: "Confirm Return",
-                              message:
-                                  "Are you sure you want to delete this\nreturned product?",
+                              title: confirmDeleteTitle,
+                              message: confirmDeleteMessage,
                               maxLines: 2,
                               onPressed: () {
                                 Navigator.pop(context);
@@ -594,12 +644,20 @@ class _ReturnAddProductScreenState extends State<ReturnAddProductScreen> {
                     Flexible(
                       child: PrimaryButtonDialog(
                         onPressed: () {
+                          String confirmUpdateTitle = "Confirm Update";
+                          String confirmUpdateMessage =
+                              "Are you sure you want to update this\nreturned product?";
+
+                          if (isEditDamage) {
+                            confirmUpdateMessage =
+                                "Are you sure you want to update this\nDamaged product?";
+                          }
+
                           Future.delayed(const Duration(milliseconds: 500), () {
                             reusableConfirmDialog(
                               context,
-                              title: "Confirm Return",
-                              message:
-                                  "Are you sure you want to update this\nreturned product?",
+                              title: confirmUpdateTitle,
+                              message: confirmUpdateMessage,
                               maxLines: 2,
                               onPressed: () {
                                 Navigator.pop(context);
@@ -619,7 +677,33 @@ class _ReturnAddProductScreenState extends State<ReturnAddProductScreen> {
                     if (selectedProduct != null &&
                         selectedReason != null &&
                         selectedLocation != null) {
-                      Navigator.pop(context, true);
+                      if (isDamagePalletIncSn) {
+                        List<SerialNumber> serialNumbers = [];
+                        listSnSelected.map((e) {
+                          serialNumbers.add(SerialNumber(
+                            id: Random().nextInt(20),
+                            label: e,
+                            expiredDateTime: "Exp. Date: 02/07/2024 - 14:00",
+                            quantity: 1,
+                          ));
+                        }).toList(growable: false);
+
+                        Product damageProduct = Product(
+                          id: selectedObjectProduct!.id,
+                          name: selectedObjectProduct!.productName,
+                          sku: selectedObjectProduct!.sku,
+                          serialNumbers: serialNumbers,
+                          reason: selectedReason,
+                          location: selectedLocation,
+                        );
+
+                        BlocProvider.of<DamageCubit>(context)
+                            .addDamage(damageProduct);
+                      }
+
+                      Future.delayed(const Duration(milliseconds: 500), () {
+                        Navigator.pop(context, true);
+                      });
                     }
                   },
                   height: 40.h,

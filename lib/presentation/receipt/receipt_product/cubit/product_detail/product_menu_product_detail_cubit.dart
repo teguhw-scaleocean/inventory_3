@@ -171,28 +171,45 @@ class ProductMenuProductDetailCubit
     log("getReturnProduct: ${lastPallets.map((e) => e.returnQty.toString()).toList()}");
   }
 
-  getReturnPallet(ReturnPallet returnPallet) {
+  getReturnPallet(ReturnPallet returnPallet, {bool? isPalletDamage}) {
+    Pallet itemReturn;
     List<Pallet> lastPallets = state.pallets;
     var currentPallet = getCurrentPallet(returnPallet);
     var indexPallet = getCurrentPalletIndex(returnPallet);
 
-    var itemReturn = currentPallet.copyWith(isReturn: true);
+    if (isPalletDamage == true) {
+      itemReturn = currentPallet.copyWith(isDamage: true);
+    } else {
+      itemReturn = currentPallet.copyWith(isReturn: true);
+    }
+
     lastPallets[indexPallet] = itemReturn;
     emit(state.copyWith(pallets: lastPallets));
 
     log("getReturnPallet: ${lastPallets.map((e) => e.isReturn.toString()).toList()}");
+    log("getReturnPallet->Damage: ${lastPallets.map((e) => e.isDamage.toString()).toList()}");
   }
 
-  getReturnPalletAndProduct(ReturnPallet returnPallet) {
+  getReturnPalletAndProduct(ReturnPallet returnPallet,
+      {bool? isPalletAndProductDamage}) {
+    Pallet itemReturn;
     List<Pallet> lastPallets = state.pallets;
     var currentPallet = getCurrentPallet(returnPallet);
     var indexPallet = getCurrentPalletIndex(returnPallet);
 
-    var itemReturn = currentPallet.copyWith(isReturnPalletAndProduct: true);
+    if (isPalletAndProductDamage == true) {
+      itemReturn = currentPallet.copyWith(
+        isDamagePalletAndProduct: true,
+        damagedQty: returnPallet.damageQty,
+      );
+    } else {
+      itemReturn = currentPallet.copyWith(isReturnPalletAndProduct: true);
+    }
     lastPallets[indexPallet] = itemReturn;
     emit(state.copyWith(pallets: lastPallets));
 
-    log("getReturnPallet: ${lastPallets.map((e) => e.isReturnPalletAndProduct.toString()).toList()}");
+    log("getReturnPalletAndProduct: ${lastPallets.map((e) => e.isReturnPalletAndProduct.toString()).toList()}");
+    log("getReturnPalletAndProduct->isDamagePalletAndProduct: ${lastPallets.map((e) => e.damagedQty.toString()).toList()}");
   }
 
   Pallet getCurrentPallet(ReturnPallet returnPallet) {

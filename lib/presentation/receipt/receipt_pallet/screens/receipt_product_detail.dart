@@ -699,13 +699,13 @@ class _ReceiptProductDetailScreenState extends State<ReceiptProductDetailScreen>
                 ),
                 SizedBox(height: 9.h),
                 Text(
-                  "Reason: Does not meet standarts",
+                  "Reason: ${itemProduct.damageProducts?.reason}",
                   style:
                       BaseText.grey1Text12.copyWith(fontWeight: BaseText.light),
                 ),
                 SizedBox(height: 8.h),
                 Text(
-                  "Location: Storage Area B, IN01",
+                  "Location: ${itemProduct.damageProducts?.location}",
                   style:
                       BaseText.grey1Text12.copyWith(fontWeight: BaseText.light),
                 ),

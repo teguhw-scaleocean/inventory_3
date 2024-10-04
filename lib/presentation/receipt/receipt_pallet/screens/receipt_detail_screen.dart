@@ -371,9 +371,20 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
                         }
                       },
                       onTapDamage: () {
-                        if (receipt.id == 6 || receipt.id == 1) {
-                          BlocProvider.of<DamageCubit>(context)
-                              .setDamage(isDamagePalletIncSn: true);
+                        if (receipt.id == 6 ||
+                            receipt.id == 1 ||
+                            receipt.id == 7) {
+                          if (idTracking == 0) {
+                            BlocProvider.of<DamageCubit>(context)
+                                .setDamage(isDamagePalletIncSn: true);
+                          } else if (idTracking == 1) {
+                            BlocProvider.of<DamageCubit>(context)
+                                .setDamage(isDamagePalletIncLots: true);
+                          } else if (idTracking == 2) {
+                            BlocProvider.of<DamageCubit>(context)
+                                .setDamage(isDamagePalletIncNoTracking: true);
+                          }
+
                           final damagePalletAndProductResult = Navigator.push(
                               context,
                               MaterialPageRoute(

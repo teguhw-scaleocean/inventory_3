@@ -9,6 +9,7 @@ import 'package:inventory_v3/common/components/primary_button.dart';
 import 'package:inventory_v3/common/components/reusable_confirm_dialog.dart';
 import 'package:inventory_v3/data/model/pallet.dart';
 import 'package:inventory_v3/data/model/product.dart';
+import 'package:inventory_v3/data/model/return_product.dart';
 import 'package:inventory_v3/presentation/receipt/receipt_pallet/cubit/damage_cubit/damage_cubit.dart';
 import 'package:inventory_v3/presentation/receipt/receipt_pallet/screens/pallet/return_pallet_product/return_add_product_screen.dart';
 
@@ -34,13 +35,17 @@ class ReturnPalletAndProductScreen extends StatefulWidget {
 
 class _ReturnPalletAndProductScreenState
     extends State<ReturnPalletAndProductScreen> {
+  late DamageCubit damageCubit;
+
   int idTracking = 0;
   bool isShowResult = false; // Serial Number Result
   bool isShowLotsResult = false; // Lots Result
   bool isShowNoTrackingResult = false;
 
   bool isBothLots = false;
-  bool isDamage = false;
+  bool isDamage = false; // Serial Number
+  bool isDamagePalletIncLots = false;
+  bool isDamagePalletIncNoTracking = false;
 
   Product? _damageProduct;
 
@@ -59,16 +64,16 @@ class _ReturnPalletAndProductScreenState
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    damageCubit = BlocProvider.of<DamageCubit>(context);
 
-    isDamage =
-        BlocProvider.of<DamageCubit>(context).state.isDamagePalletIncSn ??
-            false;
+    isDamage = damageCubit.state.isDamagePalletIncSn ?? false;
+    isDamagePalletIncLots = damageCubit.state.isDamagePalletIncLots ?? false;
+    isDamagePalletIncNoTracking =
+        damageCubit.state.isDamagePalletIncNoTracking ?? false;
 
-    if (isDamage) {
+    if (isDamage || isDamagePalletIncLots || isDamagePalletIncNoTracking) {
       appBarTitle = "Damage";
     }
-
-    debugPrint("ReturnPalletAndProductScreen isDamage: $isDamage");
   }
 
   @override
@@ -228,11 +233,35 @@ class _ReturnPalletAndProductScreenState
               }
 
               Future.delayed(const Duration(milliseconds: 500), () {
-                if (isDamage) {
+                if (isDamage ||
+                    isDamagePalletIncLots ||
+                    isDamagePalletIncNoTracking) {
+                  // ReturnProduct returnProduct = ReturnProduct(
+                  //   id: returnPallet.id,
+                  //   code: returnPallet.palletCode,
+                  //   reason: _damageProduct!.reason,
+                  //   location: _damageProduct!.location,
+                  //   lotsNumber: _damageProduct!.lotsNumber,
+                  //   quantity: _damageProduct!.quantity?.toInt(),
+                  // );
+
+                  returnPallet = ReturnPallet(
+                    id: returnPallet.id,
+                    palletCode: returnPallet.palletCode,
+                    reason: _damageProduct!.reason,
+                    location: _damageProduct!.location,
+                    damageProducts: _damageProduct,
+                    damageQty: _damageProduct!.quantity,
+                  );
+
+                  debugPrint(
+                      "ReturnPalletAndProductScreen=>Damage - Lots:  $returnPallet");
+
                   confirmTitle = "Confirm Damage";
                   confirmMessage =
                       "Are you sure you want to damage this\nPallet and Product?";
                 }
+
                 reusableConfirmDialog(
                   context,
                   title: confirmTitle,
@@ -313,7 +342,9 @@ class _ReturnPalletAndProductScreenState
                 InkWell(
                   onTap: () {
                     // if (idTracking == 0) {
-                    if (isDamage) {
+                    if (isDamage ||
+                        isDamagePalletIncLots ||
+                        isDamagePalletIncNoTracking) {
                       Navigator.push(
                         context,
                         MaterialPageRoute(

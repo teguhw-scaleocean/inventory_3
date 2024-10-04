@@ -79,6 +79,8 @@ class _ReturnAddProductScreenState extends State<ReturnAddProductScreen> {
   bool isQtyButtonEnabled = false;
 
   bool isDamagePalletIncSn = false;
+  bool isDamagePalletIncLots = false;
+  bool isDamagePalletIncNoTracking = false;
   var _damageProduct;
 
   List<String> listSerialNumber = [
@@ -153,8 +155,10 @@ class _ReturnAddProductScreenState extends State<ReturnAddProductScreen> {
         (element) => element.productName == selectedProduct,
         orElse: () => listProduct.first,
       );
-      selectedSerialNumber = _damageProduct.serialNumbers.first.label;
-      selectedReason = _damageProduct.reason;
+      selectedSerialNumber = listSerialNumber.first;
+      selectedLots = _damageProduct.lotsNumber;
+      qtyController.text = _damageProduct.quantity.toString();
+      // selectedReason = _damageProduct.reason;
       selectedLocation = _damageProduct.location;
     }
   }
@@ -166,8 +170,19 @@ class _ReturnAddProductScreenState extends State<ReturnAddProductScreen> {
     isDamagePalletIncSn =
         BlocProvider.of<DamageCubit>(context).state.isDamagePalletIncSn ??
             false;
+    isDamagePalletIncLots =
+        BlocProvider.of<DamageCubit>(context).state.isDamagePalletIncLots ??
+            false;
 
-    if (isDamagePalletIncSn) {
+    isDamagePalletIncNoTracking = BlocProvider.of<DamageCubit>(context)
+            .state
+            .isDamagePalletIncNoTracking ??
+        false;
+
+    if (isDamagePalletIncSn ||
+        isDamagePalletIncLots ||
+        isDamagePalletIncNoTracking) {
+      // listReason.clear();
       listReason = listDamageReason;
       debugPrint(listReason.map((e) => e).toList().toString());
     }
@@ -381,8 +396,7 @@ class _ReturnAddProductScreenState extends State<ReturnAddProductScreen> {
                                       offset: const Offset(0, -15),
                                       hasSearch: false,
                                       label: "",
-                                      listOfItemsValue:
-                                          listLots.map((e) => e).toList(),
+                                      listOfItemsValue: listLots,
                                       selectedValue: selectedLots,
                                       hintText: "   Select Lots Number",
                                       hintTextStyle:
@@ -677,6 +691,7 @@ class _ReturnAddProductScreenState extends State<ReturnAddProductScreen> {
                     if (selectedProduct != null &&
                         selectedReason != null &&
                         selectedLocation != null) {
+                      // Damage: state in cubit
                       if (isDamagePalletIncSn) {
                         List<SerialNumber> serialNumbers = [];
                         listSnSelected.map((e) {
@@ -693,6 +708,36 @@ class _ReturnAddProductScreenState extends State<ReturnAddProductScreen> {
                           name: selectedObjectProduct!.productName,
                           sku: selectedObjectProduct!.sku,
                           serialNumbers: serialNumbers,
+                          reason: selectedReason,
+                          location: selectedLocation,
+                          quantity: serialNumbers.length.toDouble(),
+                        );
+
+                        BlocProvider.of<DamageCubit>(context)
+                            .addDamage(damageProduct);
+                      } else if (isDamagePalletIncLots) {
+                        var quantity =
+                            BlocProvider.of<CountCubit>(context).state.quantity;
+                        Product damageProduct = Product(
+                          id: selectedObjectProduct!.id,
+                          name: selectedObjectProduct!.productName,
+                          sku: selectedObjectProduct!.code,
+                          lotsNumber: selectedLots,
+                          quantity: quantity,
+                          reason: selectedReason,
+                          location: selectedLocation,
+                        );
+
+                        BlocProvider.of<DamageCubit>(context)
+                            .addDamage(damageProduct);
+                      } else if (isDamagePalletIncNoTracking) {
+                        var quantity =
+                            BlocProvider.of<CountCubit>(context).state.quantity;
+                        Product damageProduct = Product(
+                          id: selectedObjectProduct!.id,
+                          name: selectedObjectProduct!.productName,
+                          sku: selectedObjectProduct!.code,
+                          quantity: quantity,
                           reason: selectedReason,
                           location: selectedLocation,
                         );

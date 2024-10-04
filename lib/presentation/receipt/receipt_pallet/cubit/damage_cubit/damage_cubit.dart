@@ -8,9 +8,17 @@ import 'damage_state.dart';
 class DamageCubit extends Cubit<DamageState> {
   DamageCubit() : super(DamageState());
 
-  void setDamage({bool isDamagePalletIncSn = false}) {
-    emit(state.copyWith(isDamagePalletIncSn: isDamagePalletIncSn));
-    log("setDamage: ${state.isDamagePalletIncSn}");
+  void setDamage({
+    bool isDamagePalletIncSn = false,
+    bool isDamagePalletIncLots = false,
+  }) {
+    if (isDamagePalletIncSn) {
+      emit(state.copyWith(isDamagePalletIncSn: isDamagePalletIncSn));
+      log("setDamage: ${state.isDamagePalletIncSn}");
+    } else if (isDamagePalletIncLots) {
+      emit(state.copyWith(isDamagePalletIncLots: isDamagePalletIncLots));
+      log("setDamage: ${state.isDamagePalletIncLots}");
+    }
   }
 
   void addDamage(Product damageProduct) {

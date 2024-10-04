@@ -79,6 +79,7 @@ class _ReturnAddProductScreenState extends State<ReturnAddProductScreen> {
   bool isQtyButtonEnabled = false;
 
   bool isDamagePalletIncSn = false;
+  bool isDamagePalletIncLots = false;
   var _damageProduct;
 
   List<String> listSerialNumber = [
@@ -166,8 +167,11 @@ class _ReturnAddProductScreenState extends State<ReturnAddProductScreen> {
     isDamagePalletIncSn =
         BlocProvider.of<DamageCubit>(context).state.isDamagePalletIncSn ??
             false;
+    isDamagePalletIncLots =
+        BlocProvider.of<DamageCubit>(context).state.isDamagePalletIncLots ??
+            false;
 
-    if (isDamagePalletIncSn) {
+    if (isDamagePalletIncSn || isDamagePalletIncLots) {
       listReason = listDamageReason;
       debugPrint(listReason.map((e) => e).toList().toString());
     }
@@ -677,6 +681,7 @@ class _ReturnAddProductScreenState extends State<ReturnAddProductScreen> {
                     if (selectedProduct != null &&
                         selectedReason != null &&
                         selectedLocation != null) {
+                      // Damage: state in cubit
                       if (isDamagePalletIncSn) {
                         List<SerialNumber> serialNumbers = [];
                         listSnSelected.map((e) {
@@ -693,6 +698,21 @@ class _ReturnAddProductScreenState extends State<ReturnAddProductScreen> {
                           name: selectedObjectProduct!.productName,
                           sku: selectedObjectProduct!.sku,
                           serialNumbers: serialNumbers,
+                          reason: selectedReason,
+                          location: selectedLocation,
+                        );
+
+                        BlocProvider.of<DamageCubit>(context)
+                            .addDamage(damageProduct);
+                      } else if (isDamagePalletIncLots) {
+                        var quantity =
+                            BlocProvider.of<CountCubit>(context).state.quantity;
+                        Product damageProduct = Product(
+                          id: selectedObjectProduct!.id,
+                          name: selectedObjectProduct!.productName,
+                          sku: selectedObjectProduct!.code,
+                          lotsNumber: selectedLots,
+                          quantity: quantity,
                           reason: selectedReason,
                           location: selectedLocation,
                         );

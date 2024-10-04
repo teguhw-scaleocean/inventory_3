@@ -10,6 +10,8 @@ class Product {
   String name;
   String sku;
   List<SerialNumber>? serialNumbers;
+  String? lotsNumber;
+  double? quantity;
   String reason;
   String location;
 
@@ -18,6 +20,8 @@ class Product {
     required this.name,
     required this.sku,
     this.serialNumbers,
+    this.lotsNumber,
+    this.quantity,
     required this.reason,
     required this.location,
   });
@@ -27,6 +31,8 @@ class Product {
     String? name,
     String? sku,
     List<SerialNumber>? serialNumbers,
+    String? lotsNumber,
+    double? quantity,
     String? reason,
     String? location,
   }) {
@@ -35,6 +41,8 @@ class Product {
       name: name ?? this.name,
       sku: sku ?? this.sku,
       serialNumbers: serialNumbers ?? this.serialNumbers,
+      lotsNumber: lotsNumber ?? this.lotsNumber,
+      quantity: quantity ?? this.quantity,
       reason: reason ?? this.reason,
       location: location ?? this.location,
     );
@@ -46,6 +54,8 @@ class Product {
       'name': name,
       'sku': sku,
       'serialNumbers': serialNumbers?.map((x) => x.toMap()).toList(),
+      'lotsNumber': lotsNumber,
+      'quantity': quantity,
       'reason': reason,
       'location': location,
     };
@@ -63,6 +73,9 @@ class Product {
               ),
             )
           : null,
+      lotsNumber:
+          map['lotsNumber'] != null ? map['lotsNumber'] as String : null,
+      quantity: map['quantity'] != null ? map['quantity'] as double : null,
       reason: map['reason'] as String,
       location: map['location'] as String,
     );
@@ -75,7 +88,7 @@ class Product {
 
   @override
   String toString() {
-    return 'Product(id: $id, name: $name, sku: $sku, serialNumbers: $serialNumbers, reason: $reason, location: $location)';
+    return 'Product(id: $id, name: $name, sku: $sku, serialNumbers: $serialNumbers, lotsNumber: $lotsNumber, quantity: $quantity, reason: $reason, location: $location)';
   }
 
   @override
@@ -86,6 +99,8 @@ class Product {
         other.name == name &&
         other.sku == sku &&
         listEquals(other.serialNumbers, serialNumbers) &&
+        other.lotsNumber == lotsNumber &&
+        other.quantity == quantity &&
         other.reason == reason &&
         other.location == location;
   }
@@ -96,6 +111,8 @@ class Product {
         name.hashCode ^
         sku.hashCode ^
         serialNumbers.hashCode ^
+        lotsNumber.hashCode ^
+        quantity.hashCode ^
         reason.hashCode ^
         location.hashCode;
   }

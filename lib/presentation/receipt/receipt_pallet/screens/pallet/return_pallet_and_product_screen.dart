@@ -9,6 +9,7 @@ import 'package:inventory_v3/common/components/primary_button.dart';
 import 'package:inventory_v3/common/components/reusable_confirm_dialog.dart';
 import 'package:inventory_v3/data/model/pallet.dart';
 import 'package:inventory_v3/data/model/product.dart';
+import 'package:inventory_v3/data/model/return_product.dart';
 import 'package:inventory_v3/presentation/receipt/receipt_pallet/cubit/damage_cubit/damage_cubit.dart';
 import 'package:inventory_v3/presentation/receipt/receipt_pallet/screens/pallet/return_pallet_product/return_add_product_screen.dart';
 
@@ -41,6 +42,7 @@ class _ReturnPalletAndProductScreenState
 
   bool isBothLots = false;
   bool isDamage = false;
+  bool isDamagePalletIncLots = false;
 
   Product? _damageProduct;
 
@@ -63,8 +65,11 @@ class _ReturnPalletAndProductScreenState
     isDamage =
         BlocProvider.of<DamageCubit>(context).state.isDamagePalletIncSn ??
             false;
+    isDamagePalletIncLots =
+        BlocProvider.of<DamageCubit>(context).state.isDamagePalletIncLots ??
+            false;
 
-    if (isDamage) {
+    if (isDamage || isDamagePalletIncLots) {
       appBarTitle = "Damage";
     }
 
@@ -232,7 +237,33 @@ class _ReturnPalletAndProductScreenState
                   confirmTitle = "Confirm Damage";
                   confirmMessage =
                       "Are you sure you want to damage this\nPallet and Product?";
+                } else if (isDamagePalletIncLots) {
+                  ReturnProduct returnProduct = ReturnProduct(
+                    id: returnPallet.id,
+                    code: returnPallet.palletCode,
+                    reason: _damageProduct!.reason,
+                    location: _damageProduct!.location,
+                    lotsNumber: _damageProduct!.lotsNumber,
+                    quantity: _damageProduct!.quantity?.toInt(),
+                  );
+
+                  returnPallet = ReturnPallet(
+                    id: returnPallet.id,
+                    palletCode: returnPallet.palletCode,
+                    reason: _damageProduct!.reason,
+                    location: _damageProduct!.location,
+                    returnProducts: [returnProduct],
+                    damageQty: _damageProduct!.quantity,
+                  );
+
+                  debugPrint(
+                      "ReturnPalletAndProductScreen=>Damage - Lots:  $returnPallet");
+
+                  confirmTitle = "Confirm Damage";
+                  confirmMessage =
+                      "Are you sure you want to damage this\nPallet and Product?";
                 }
+
                 reusableConfirmDialog(
                   context,
                   title: confirmTitle,

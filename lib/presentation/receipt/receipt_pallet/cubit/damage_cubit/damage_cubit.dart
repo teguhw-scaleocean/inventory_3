@@ -11,6 +11,7 @@ class DamageCubit extends Cubit<DamageState> {
   void setDamage({
     bool isDamagePalletIncSn = false,
     bool isDamagePalletIncLots = false,
+    bool isDamagePalletIncNoTracking = false,
   }) {
     if (isDamagePalletIncSn) {
       emit(state.copyWith(isDamagePalletIncSn: isDamagePalletIncSn));
@@ -18,6 +19,10 @@ class DamageCubit extends Cubit<DamageState> {
     } else if (isDamagePalletIncLots) {
       emit(state.copyWith(isDamagePalletIncLots: isDamagePalletIncLots));
       log("setDamage: ${state.isDamagePalletIncLots}");
+    } else if (isDamagePalletIncNoTracking) {
+      emit(state.copyWith(
+          isDamagePalletIncNoTracking: isDamagePalletIncNoTracking));
+      log("setDamage: ${state.isDamagePalletIncNoTracking}");
     }
   }
 

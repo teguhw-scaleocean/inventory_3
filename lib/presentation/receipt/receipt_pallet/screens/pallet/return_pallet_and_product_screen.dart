@@ -35,14 +35,17 @@ class ReturnPalletAndProductScreen extends StatefulWidget {
 
 class _ReturnPalletAndProductScreenState
     extends State<ReturnPalletAndProductScreen> {
+  late DamageCubit damageCubit;
+
   int idTracking = 0;
   bool isShowResult = false; // Serial Number Result
   bool isShowLotsResult = false; // Lots Result
   bool isShowNoTrackingResult = false;
 
   bool isBothLots = false;
-  bool isDamage = false;
+  bool isDamage = false; // Serial Number
   bool isDamagePalletIncLots = false;
+  bool isDamagePalletIncNoTracking = false;
 
   Product? _damageProduct;
 
@@ -61,19 +64,16 @@ class _ReturnPalletAndProductScreenState
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    damageCubit = BlocProvider.of<DamageCubit>(context);
 
-    isDamage =
-        BlocProvider.of<DamageCubit>(context).state.isDamagePalletIncSn ??
-            false;
-    isDamagePalletIncLots =
-        BlocProvider.of<DamageCubit>(context).state.isDamagePalletIncLots ??
-            false;
+    isDamage = damageCubit.state.isDamagePalletIncSn ?? false;
+    isDamagePalletIncLots = damageCubit.state.isDamagePalletIncLots ?? false;
+    isDamagePalletIncNoTracking =
+        damageCubit.state.isDamagePalletIncNoTracking ?? false;
 
-    if (isDamage || isDamagePalletIncLots) {
+    if (isDamage || isDamagePalletIncLots || isDamagePalletIncNoTracking) {
       appBarTitle = "Damage";
     }
-
-    debugPrint("ReturnPalletAndProductScreen isDamage: $isDamage");
   }
 
   @override
@@ -233,7 +233,9 @@ class _ReturnPalletAndProductScreenState
               }
 
               Future.delayed(const Duration(milliseconds: 500), () {
-                if (isDamage || isDamagePalletIncLots) {
+                if (isDamage ||
+                    isDamagePalletIncLots ||
+                    isDamagePalletIncNoTracking) {
                   // ReturnProduct returnProduct = ReturnProduct(
                   //   id: returnPallet.id,
                   //   code: returnPallet.palletCode,
@@ -340,7 +342,9 @@ class _ReturnPalletAndProductScreenState
                 InkWell(
                   onTap: () {
                     // if (idTracking == 0) {
-                    if (isDamage || isDamagePalletIncLots) {
+                    if (isDamage ||
+                        isDamagePalletIncLots ||
+                        isDamagePalletIncNoTracking) {
                       Navigator.push(
                         context,
                         MaterialPageRoute(

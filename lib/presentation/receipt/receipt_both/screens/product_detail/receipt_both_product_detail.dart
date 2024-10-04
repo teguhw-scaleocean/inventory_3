@@ -467,7 +467,9 @@ class _ReceiptBothProductDetailScreenState
                             ? "($total)"
                             : (_tabs[1] == e)
                                 ? "($totalDone)"
-                                : "($totalReturn)",
+                                : (_tabs[2] == "Damage")
+                                    ? "($totalDamageQty)"
+                                    : "($totalReturn)",
                         isSelected: isSelectedTab,
                       );
                     }).toList(),

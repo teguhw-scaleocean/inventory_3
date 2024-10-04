@@ -1376,37 +1376,44 @@ class _ReceiptBothProductDetailScreenState
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  code,
-                  style: BaseText.black2Text14
-                      .copyWith(fontWeight: BaseText.regular),
-                ),
-                SizedBox(height: 9.h),
-                Text(
-                  "Reason: ${itemProduct.damageProducts?.reason}",
-                  style:
-                      BaseText.grey1Text12.copyWith(fontWeight: BaseText.light),
-                ),
-                SizedBox(height: 8.h),
-                Text(
-                  "Location: ${itemProduct.damageProducts?.location}",
-                  style:
-                      BaseText.grey1Text12.copyWith(fontWeight: BaseText.light),
-                ),
-                SizedBox(height: 9.h),
-                Text(
-                  "Exp. Date: 12/07/2024 - 15:00",
-                  style: BaseText.baseTextStyle.copyWith(
-                    color: ColorName.dateTimeColor,
-                    fontSize: 12.sp,
-                    fontWeight: BaseText.light,
+            Flexible(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    code,
+                    style: BaseText.black2Text14
+                        .copyWith(fontWeight: BaseText.regular),
                   ),
-                )
-              ],
+                  SizedBox(height: 9.h),
+                  LimitedBox(
+                    maxWidth: 232.w,
+                    child: Text(
+                      "Reason: ${itemProduct.damageProducts?.reason}",
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: BaseText.grey1Text12
+                          .copyWith(fontWeight: BaseText.light),
+                    ),
+                  ),
+                  SizedBox(height: 8.h),
+                  Text(
+                    "Location: ${itemProduct.damageProducts?.location}",
+                    style: BaseText.grey1Text12
+                        .copyWith(fontWeight: BaseText.light),
+                  ),
+                  SizedBox(height: 9.h),
+                  Text(
+                    "Exp. Date: 12/07/2024 - 15:00",
+                    style: BaseText.baseTextStyle.copyWith(
+                      color: ColorName.dateTimeColor,
+                      fontSize: 12.sp,
+                      fontWeight: BaseText.light,
+                    ),
+                  )
+                ],
+              ),
             ),
             IntrinsicHeight(
               child: Row(

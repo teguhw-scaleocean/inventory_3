@@ -31,6 +31,7 @@ class Pallet {
   List<SerialNumber>? scannedSerialNumber;
   List<Product>? productReturn;
   List<ReturnProduct>? returnProductNoTracking;
+  Product? damageProducts;
 
   Pallet({
     required this.id,
@@ -56,6 +57,7 @@ class Pallet {
     this.scannedSerialNumber,
     this.productReturn,
     this.returnProductNoTracking,
+    this.damageProducts,
   });
 
   Pallet copyWith({
@@ -82,6 +84,7 @@ class Pallet {
     List<SerialNumber>? scannedSerialNumber,
     List<Product>? productReturn,
     List<ReturnProduct>? returnProductNoTracking,
+    Product? damageProducts,
   }) {
     return Pallet(
       id: id ?? this.id,
@@ -110,6 +113,7 @@ class Pallet {
       productReturn: productReturn ?? this.productReturn,
       returnProductNoTracking:
           returnProductNoTracking ?? this.returnProductNoTracking,
+      damageProducts: damageProducts ?? this.damageProducts,
     );
   }
 
@@ -140,6 +144,7 @@ class Pallet {
       'productReturn': productReturn?.map((x) => x.toMap()).toList(),
       'returnProductNoTracking':
           returnProductNoTracking?.map((x) => x.toMap()).toList(),
+      'damageProducts': damageProducts?.toMap(),
     };
   }
 
@@ -202,6 +207,9 @@ class Pallet {
               ),
             )
           : null,
+      damageProducts: map['damageProducts'] != null
+          ? Product.fromMap(map['damageProducts'] as Map<String, dynamic>)
+          : null,
     );
   }
 
@@ -212,7 +220,7 @@ class Pallet {
 
   @override
   String toString() {
-    return 'Pallet(id: $id, palletCode: $palletCode, productName: $productName, code: $code, dateTime: $dateTime, hasActualDateTime: $hasActualDateTime, actualDateTime: $actualDateTime, sku: $sku, lotsCode: $lotsCode, productQty: $productQty, doneQty: $doneQty, returnQty: $returnQty, damagedQty: $damagedQty, isDoneQty: $isDoneQty, hasBeenScanned: $hasBeenScanned, isReturn: $isReturn, isDamage: $isDamage, isDamagePalletAndProduct: $isDamagePalletAndProduct, isReturnPalletAndProduct: $isReturnPalletAndProduct, serialNumber: $serialNumber, scannedSerialNumber: $scannedSerialNumber, productReturn: $productReturn, returnProductNoTracking: $returnProductNoTracking)';
+    return 'Pallet(id: $id, palletCode: $palletCode, productName: $productName, code: $code, dateTime: $dateTime, hasActualDateTime: $hasActualDateTime, actualDateTime: $actualDateTime, sku: $sku, lotsCode: $lotsCode, productQty: $productQty, doneQty: $doneQty, returnQty: $returnQty, damagedQty: $damagedQty, isDoneQty: $isDoneQty, hasBeenScanned: $hasBeenScanned, isReturn: $isReturn, isDamage: $isDamage, isDamagePalletAndProduct: $isDamagePalletAndProduct, isReturnPalletAndProduct: $isReturnPalletAndProduct, serialNumber: $serialNumber, scannedSerialNumber: $scannedSerialNumber, productReturn: $productReturn, returnProductNoTracking: $returnProductNoTracking, damageProducts: $damageProducts)';
   }
 
   @override
@@ -241,7 +249,8 @@ class Pallet {
         listEquals(other.serialNumber, serialNumber) &&
         listEquals(other.scannedSerialNumber, scannedSerialNumber) &&
         listEquals(other.productReturn, productReturn) &&
-        listEquals(other.returnProductNoTracking, returnProductNoTracking);
+        listEquals(other.returnProductNoTracking, returnProductNoTracking) &&
+        other.damageProducts == damageProducts;
   }
 
   @override
@@ -268,7 +277,8 @@ class Pallet {
         serialNumber.hashCode ^
         scannedSerialNumber.hashCode ^
         productReturn.hashCode ^
-        returnProductNoTracking.hashCode;
+        returnProductNoTracking.hashCode ^
+        damageProducts.hashCode;
   }
 }
 

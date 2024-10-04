@@ -233,26 +233,22 @@ class _ReturnPalletAndProductScreenState
               }
 
               Future.delayed(const Duration(milliseconds: 500), () {
-                if (isDamage) {
-                  confirmTitle = "Confirm Damage";
-                  confirmMessage =
-                      "Are you sure you want to damage this\nPallet and Product?";
-                } else if (isDamagePalletIncLots) {
-                  ReturnProduct returnProduct = ReturnProduct(
-                    id: returnPallet.id,
-                    code: returnPallet.palletCode,
-                    reason: _damageProduct!.reason,
-                    location: _damageProduct!.location,
-                    lotsNumber: _damageProduct!.lotsNumber,
-                    quantity: _damageProduct!.quantity?.toInt(),
-                  );
+                if (isDamage || isDamagePalletIncLots) {
+                  // ReturnProduct returnProduct = ReturnProduct(
+                  //   id: returnPallet.id,
+                  //   code: returnPallet.palletCode,
+                  //   reason: _damageProduct!.reason,
+                  //   location: _damageProduct!.location,
+                  //   lotsNumber: _damageProduct!.lotsNumber,
+                  //   quantity: _damageProduct!.quantity?.toInt(),
+                  // );
 
                   returnPallet = ReturnPallet(
                     id: returnPallet.id,
                     palletCode: returnPallet.palletCode,
                     reason: _damageProduct!.reason,
                     location: _damageProduct!.location,
-                    returnProducts: [returnProduct],
+                    damageProducts: _damageProduct,
                     damageQty: _damageProduct!.quantity,
                   );
 
@@ -344,7 +340,7 @@ class _ReturnPalletAndProductScreenState
                 InkWell(
                   onTap: () {
                     // if (idTracking == 0) {
-                    if (isDamage) {
+                    if (isDamage || isDamagePalletIncLots) {
                       Navigator.push(
                         context,
                         MaterialPageRoute(

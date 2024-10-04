@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 
+import 'product.dart';
 import 'return_product.dart';
 
 class ReturnPallet {
@@ -12,6 +13,7 @@ class ReturnPallet {
   String location;
   // Sementara
   List<ReturnProduct>? returnProducts = [];
+  Product? damageProducts;
   double? damageQty = 0.0;
 
   ReturnPallet({
@@ -20,6 +22,7 @@ class ReturnPallet {
     required this.reason,
     required this.location,
     this.returnProducts,
+    this.damageProducts,
     this.damageQty,
   });
 
@@ -29,6 +32,7 @@ class ReturnPallet {
     String? reason,
     String? location,
     List<ReturnProduct>? returnProducts,
+    Product? damageProducts,
     double? damageQty,
   }) {
     return ReturnPallet(
@@ -37,6 +41,7 @@ class ReturnPallet {
       reason: reason ?? this.reason,
       location: location ?? this.location,
       returnProducts: returnProducts ?? this.returnProducts,
+      damageProducts: damageProducts ?? this.damageProducts,
       damageQty: damageQty ?? this.damageQty,
     );
   }
@@ -48,6 +53,7 @@ class ReturnPallet {
       'reason': reason,
       'location': location,
       'returnProducts': returnProducts?.map((x) => x.toMap()).toList(),
+      'damageProducts': damageProducts?.toMap(),
       'damageQty': damageQty,
     };
   }
@@ -65,6 +71,9 @@ class ReturnPallet {
               ),
             )
           : null,
+      damageProducts: map['damageProducts'] != null
+          ? Product.fromMap(map['damageProducts'] as Map<String, dynamic>)
+          : null,
       damageQty: map['damageQty'] != null ? map['damageQty'] as double : null,
     );
   }
@@ -76,7 +85,7 @@ class ReturnPallet {
 
   @override
   String toString() {
-    return 'ReturnPallet(id: $id, palletCode: $palletCode, reason: $reason, location: $location, returnProducts: $returnProducts, damageQty: $damageQty)';
+    return 'ReturnPallet(id: $id, palletCode: $palletCode, reason: $reason, location: $location, returnProducts: $returnProducts, damageProducts: $damageProducts, damageQty: $damageQty)';
   }
 
   @override
@@ -88,6 +97,7 @@ class ReturnPallet {
         other.reason == reason &&
         other.location == location &&
         listEquals(other.returnProducts, returnProducts) &&
+        other.damageProducts == damageProducts &&
         other.damageQty == damageQty;
   }
 
@@ -98,6 +108,7 @@ class ReturnPallet {
         reason.hashCode ^
         location.hashCode ^
         returnProducts.hashCode ^
+        damageProducts.hashCode ^
         damageQty.hashCode;
   }
 }

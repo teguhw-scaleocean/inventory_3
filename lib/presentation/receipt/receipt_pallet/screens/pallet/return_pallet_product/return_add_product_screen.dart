@@ -154,8 +154,10 @@ class _ReturnAddProductScreenState extends State<ReturnAddProductScreen> {
         (element) => element.productName == selectedProduct,
         orElse: () => listProduct.first,
       );
-      selectedSerialNumber = _damageProduct.serialNumbers.first.label;
-      selectedReason = _damageProduct.reason;
+      selectedSerialNumber = listSerialNumber.first;
+      selectedLots = _damageProduct.lotsNumber;
+      qtyController.text = _damageProduct.quantity.toString();
+      // selectedReason = _damageProduct.reason;
       selectedLocation = _damageProduct.location;
     }
   }
@@ -172,6 +174,7 @@ class _ReturnAddProductScreenState extends State<ReturnAddProductScreen> {
             false;
 
     if (isDamagePalletIncSn || isDamagePalletIncLots) {
+      // listReason.clear();
       listReason = listDamageReason;
       debugPrint(listReason.map((e) => e).toList().toString());
     }
@@ -385,8 +388,7 @@ class _ReturnAddProductScreenState extends State<ReturnAddProductScreen> {
                                       offset: const Offset(0, -15),
                                       hasSearch: false,
                                       label: "",
-                                      listOfItemsValue:
-                                          listLots.map((e) => e).toList(),
+                                      listOfItemsValue: listLots,
                                       selectedValue: selectedLots,
                                       hintText: "   Select Lots Number",
                                       hintTextStyle:
@@ -700,6 +702,7 @@ class _ReturnAddProductScreenState extends State<ReturnAddProductScreen> {
                           serialNumbers: serialNumbers,
                           reason: selectedReason,
                           location: selectedLocation,
+                          quantity: serialNumbers.length.toDouble(),
                         );
 
                         BlocProvider.of<DamageCubit>(context)

@@ -528,10 +528,7 @@ class _ReceiptProductMenuDetailScreenState
   }
 
   void _onReturnProduct(value, BuildContext context) {
-    if (idTracking == 0) {
-      var result = value as ReturnPallet;
-      cubit.getReturnPallet(result);
-    } else if (idTracking == 1) {
+    if (idTracking != 2) {
       var result = value as ReturnProduct;
       ReturnPallet returnPallet = ReturnPallet(
         id: result.id,
@@ -979,13 +976,16 @@ class _ReceiptProductMenuDetailScreenState
                         style: BaseText.black2Text15
                             .copyWith(fontWeight: BaseText.medium),
                       ),
-                      (product0.isReturn == true ||
+                      Row(
+                        children: [
+                          if (product0.isDamageProduct == true)
+                            buildBadgeDamage(),
+                          SizedBox(width: 4.w),
+                          if (product0.isReturn == true ||
                               product0.isReturnPalletAndProduct == true)
-                          ? buildBadgeReturn()
-                          : const SizedBox(),
-                      (product0.isDamageProduct == true)
-                          ? buildBadgeDamage()
-                          : const SizedBox()
+                            buildBadgeReturn(),
+                        ],
+                      ),
                     ],
                   ),
                   Text(

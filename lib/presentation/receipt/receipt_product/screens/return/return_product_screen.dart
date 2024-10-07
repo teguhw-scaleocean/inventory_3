@@ -98,6 +98,7 @@ class _ReturnProductScreenState extends State<ReturnProductScreen> {
 
   bool isDamageSerialNumber = false;
   bool isDamageLotsNumber = false;
+  bool isDamageNoTracking = false;
 
   int idTracking = 0;
 
@@ -140,7 +141,9 @@ class _ReturnProductScreenState extends State<ReturnProductScreen> {
     damageCubit = context.read<DamageCubit>();
     isDamageSerialNumber = damageCubit.state.isDamageProductSn ?? false;
     isDamageLotsNumber = damageCubit.state.isDamageProductLots ?? false;
-    if (isDamageSerialNumber || isDamageLotsNumber) {
+    isDamageNoTracking = damageCubit.state.isDamageProductNoTracking ?? false;
+
+    if (isDamageSerialNumber || isDamageLotsNumber || isDamageNoTracking) {
       appBarTitle = "Damage";
     }
   }
@@ -493,10 +496,28 @@ class _ReturnProductScreenState extends State<ReturnProductScreen> {
                 location: "",
                 returnProducts: _listNoTracking,
               );
+
+              if (isDamageNoTracking) {
+                var damagedQty = 0.0;
+                _listNoTracking.map((e) => damagedQty += e.quantity!).toList();
+                returnOfProducts = ReturnPallet(
+                  id: selectedObjectProduct.id,
+                  palletCode: selectedObjectProduct.palletCode,
+                  reason: "",
+                  location: "",
+                  damagedProducts: _listNoTracking,
+                  damageQty: damagedQty,
+                );
+
+                debugPrint(
+                    "result no-tracking damage: ${returnOfProducts.toJson()}");
+              }
               // var returnOfProducts;
 
               Future.delayed(const Duration(milliseconds: 500), () {
-                if (isDamageSerialNumber || isDamageLotsNumber) {
+                if (isDamageSerialNumber ||
+                    isDamageLotsNumber ||
+                    isDamageNoTracking) {
                   confirmTitle = "Confirm Damage";
                   confirmMessage =
                       "Are you sure you want to damage this\nProduct?";

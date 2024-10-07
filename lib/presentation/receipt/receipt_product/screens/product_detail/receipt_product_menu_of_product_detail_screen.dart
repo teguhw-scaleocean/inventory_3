@@ -697,19 +697,33 @@ class _ReceiptProductMenuOfProductDetailScreenState
                                 ),
                               );
                             }),
-                      if (isDamageProduct)
+                      if (isDamageProduct && idTracking != 2)
                         Container(
                           padding: EdgeInsets.symmetric(
                               vertical: 12.h, horizontal: 16.w),
                           child: Column(
                             children: [
-                              buildItemQuantityDamage(
-                                code,
-                                itemProduct: product,
-                              ),
+                              buildItemQuantityDamage(code),
                             ],
                           ),
-                        )
+                        ),
+                      if (isDamageProduct && idTracking == 2)
+                        ListView.builder(
+                            padding: EdgeInsets.symmetric(horizontal: 16.w),
+                            shrinkWrap: true,
+                            itemCount: product.damagedProducts?.length,
+                            itemBuilder: (context, index) {
+                              var item = product.damagedProducts![index];
+
+                              return Padding(
+                                padding: EdgeInsets.only(
+                                    top: (index == 0) ? 12.h : 8.h),
+                                child: buildItemQuantityDamage(
+                                  code,
+                                  itemProduct: item,
+                                ),
+                              );
+                            })
                     ],
                   ),
                 )
@@ -929,10 +943,15 @@ class _ReceiptProductMenuOfProductDetailScreenState
   }
 
   Widget buildItemQuantityDamage(String code,
-      {Pallet? itemProduct, bool isHighlighted = false}) {
+      {ReturnProduct? itemProduct, bool isHighlighted = false}) {
     String damageQuantity = "";
-    var damageTemp = itemProduct!.damagedQty ?? 0.0;
-    damageQuantity = damageTemp.toInt().toString();
+    int? damageTemp = 0;
+    if (itemProduct != null) {
+      damageTemp = itemProduct.quantity;
+    } else {
+      damageTemp = totalDamage;
+    }
+    damageQuantity = damageTemp!.toInt().toString();
 
     return SmoothHighlight(
       color: ColorName.highlightColor,

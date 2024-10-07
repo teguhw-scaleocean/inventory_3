@@ -29,12 +29,14 @@ class DamageCubit extends Cubit<DamageState> {
   void setDamageByProduct({
     bool isDamageProductSn = false,
     bool isDamageProductLots = false,
+    bool isDamageProductNoTracking = false,
   }) {
     emit(state.copyWith(
       isDamageProductSn: isDamageProductSn,
       isDamageProductLots: isDamageProductLots,
+      isDamageProductNoTracking: isDamageProductNoTracking,
     ));
-    log("isDamageProductSn: ${state.isDamageProductSn}, isDamageProductLots: ${state.isDamageProductLots}");
+    log("isDamageProductSn: ${state.isDamageProductSn}, isDamageProductLots: ${state.isDamageProductLots}, isDamageProductNoTracking: ${state.isDamageProductNoTracking}");
   }
 
   void addDamage(Product damageProduct) {

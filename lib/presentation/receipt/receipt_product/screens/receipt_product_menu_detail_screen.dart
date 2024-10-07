@@ -409,10 +409,14 @@ class _ReceiptProductMenuDetailScreenState
                       }
                     },
                     onTapDamage: () {
-                      if (receipt.id == 9 || receipt.id == 1) {
+                      if (receipt.id == 9 ||
+                          receipt.id == 1 ||
+                          receipt.id == 10) {
                         damageCubit.setDamageByProduct(
-                            isDamageProductSn: idTracking == 0,
-                            isDamageProductLots: idTracking == 1);
+                          isDamageProductSn: idTracking == 0,
+                          isDamageProductLots: idTracking == 1,
+                          isDamageProductNoTracking: idTracking == 2,
+                        );
                         final damageResult = Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -590,18 +594,21 @@ class _ReceiptProductMenuDetailScreenState
 
   void _onDamageProduct(value, BuildContext context) {
     // final damageProductTemp = damageCubit.state.damageProduct;
-    // if (idTracking == 0) {
-    var result = value as ReturnProduct;
-    ReturnPallet damageInPalletObject = ReturnPallet(
-      id: result.id,
-      palletCode: result.code,
-      reason: result.reason,
-      location: result.location,
-      // damageProducts: damageProductTemp,
-      damageQty: result.quantity?.toDouble() ?? 0.0,
-    );
-    cubit.getReturnProduct(damageInPalletObject, 0, isProductDamage: true);
-    // }
+    if (idTracking == 2) {
+      var result = value as ReturnPallet;
+
+      cubit.getReturnProduct(result, 0, isProductDamage: true);
+    } else {
+      var result = value as ReturnProduct;
+      ReturnPallet damageInPalletObject = ReturnPallet(
+        id: result.id,
+        palletCode: result.code,
+        reason: result.reason,
+        location: result.location,
+        damageQty: result.quantity?.toDouble() ?? 0.0,
+      );
+      cubit.getReturnProduct(damageInPalletObject, 0, isProductDamage: true);
+    }
 
     Future.delayed(const Duration(milliseconds: 600), () {
       onShowSuccessNewDialog(

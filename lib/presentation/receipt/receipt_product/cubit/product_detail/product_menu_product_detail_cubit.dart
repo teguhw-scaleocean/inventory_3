@@ -166,7 +166,7 @@ class ProductMenuProductDetailCubit
       itemReturn = currentPallet.copyWith(
         isDamageProduct: true,
         damagedQty: returnPallet.damageQty,
-        damageProducts: returnPallet.damageProducts,
+        damagedProducts: returnPallet.damagedProducts,
       );
     } else {
       itemReturn = currentPallet.copyWith(

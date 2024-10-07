@@ -13,6 +13,7 @@ class ReturnPallet {
   String location;
   // Sementara
   List<ReturnProduct>? returnProducts = [];
+  List<ReturnProduct>? damagedProducts = [];
   Product? damageProducts;
   double? damageQty = 0.0;
 
@@ -22,6 +23,7 @@ class ReturnPallet {
     required this.reason,
     required this.location,
     this.returnProducts,
+    this.damagedProducts,
     this.damageProducts,
     this.damageQty,
   });
@@ -32,6 +34,7 @@ class ReturnPallet {
     String? reason,
     String? location,
     List<ReturnProduct>? returnProducts,
+    List<ReturnProduct>? damagedProducts,
     Product? damageProducts,
     double? damageQty,
   }) {
@@ -41,6 +44,7 @@ class ReturnPallet {
       reason: reason ?? this.reason,
       location: location ?? this.location,
       returnProducts: returnProducts ?? this.returnProducts,
+      damagedProducts: damagedProducts ?? this.damagedProducts,
       damageProducts: damageProducts ?? this.damageProducts,
       damageQty: damageQty ?? this.damageQty,
     );
@@ -53,6 +57,7 @@ class ReturnPallet {
       'reason': reason,
       'location': location,
       'returnProducts': returnProducts?.map((x) => x.toMap()).toList(),
+      'damagedProducts': damagedProducts?.map((x) => x.toMap()).toList(),
       'damageProducts': damageProducts?.toMap(),
       'damageQty': damageQty,
     };
@@ -71,6 +76,13 @@ class ReturnPallet {
               ),
             )
           : null,
+      damagedProducts: map['damagedProducts'] != null
+          ? List<ReturnProduct>.from(
+              (map['damagedProducts'] as List<int>).map<ReturnProduct?>(
+                (x) => ReturnProduct.fromMap(x as Map<String, dynamic>),
+              ),
+            )
+          : null,
       damageProducts: map['damageProducts'] != null
           ? Product.fromMap(map['damageProducts'] as Map<String, dynamic>)
           : null,
@@ -85,7 +97,7 @@ class ReturnPallet {
 
   @override
   String toString() {
-    return 'ReturnPallet(id: $id, palletCode: $palletCode, reason: $reason, location: $location, returnProducts: $returnProducts, damageProducts: $damageProducts, damageQty: $damageQty)';
+    return 'ReturnPallet(id: $id, palletCode: $palletCode, reason: $reason, location: $location, returnProducts: $returnProducts, damagedProducts: $damagedProducts, damageProducts: $damageProducts, damageQty: $damageQty)';
   }
 
   @override
@@ -97,6 +109,7 @@ class ReturnPallet {
         other.reason == reason &&
         other.location == location &&
         listEquals(other.returnProducts, returnProducts) &&
+        listEquals(other.damagedProducts, damagedProducts) &&
         other.damageProducts == damageProducts &&
         other.damageQty == damageQty;
   }
@@ -108,6 +121,7 @@ class ReturnPallet {
         reason.hashCode ^
         location.hashCode ^
         returnProducts.hashCode ^
+        damagedProducts.hashCode ^
         damageProducts.hashCode ^
         damageQty.hashCode;
   }

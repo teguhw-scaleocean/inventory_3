@@ -459,10 +459,11 @@ class _ReturnProductScreenState extends State<ReturnProductScreen> {
                                       builder: (context) {
                                         return reusableProductBottomSheet(
                                           context,
-                                          titleNoTrackingMenu,
+                                          "Add Qty",
                                           noTrackingQuantity: initQty,
                                           selectedReason: selectedReason,
                                           selectedLocation: selectedLocation,
+                                          isEdit: false,
                                         );
                                       },
                                     ));
@@ -581,9 +582,9 @@ class _ReturnProductScreenState extends State<ReturnProductScreen> {
         deleteMessage = "Are you sure you want to delete this\nLots Number?";
         updateMessage = "Are you sure you want to update this\nLots Number?";
       } else if (idTracking == 2) {
-        qtyController.value = TextEditingValue(
-          text: "$noTrackingQuantity",
-        );
+        // qtyController.value = TextEditingValue(
+        //   text: "$noTrackingQuantity",
+        // );
         deleteMessage = "Are you sure you want to delete this\nquantity?";
         updateMessage = "Are you sure you want to update this\nquantity?";
       }
@@ -716,9 +717,11 @@ class _ReturnProductScreenState extends State<ReturnProductScreen> {
                     SizedBox(height: 4.h),
                     BlocConsumer<CountCubit, CountState>(
                         listener: (context, state) {
-                      qtyController.value = TextEditingValue(
-                        text: state.quantity.toString(),
-                      );
+                      if (isEdit) {
+                        qtyController.value = TextEditingValue(
+                          text: state.quantity.toString(),
+                        );
+                      }
                       debugPrint("qtyController listen: ${qtyController.text}");
 
                       isQtyButtonEnabled = state.quantity > 0;

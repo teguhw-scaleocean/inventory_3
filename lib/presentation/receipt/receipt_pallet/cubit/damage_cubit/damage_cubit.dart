@@ -26,11 +26,15 @@ class DamageCubit extends Cubit<DamageState> {
     }
   }
 
-  void setDamageByProduct({bool isDamageProductSn = false}) {
-    if (isDamageProductSn) {
-      emit(state.copyWith(isDamageProductSn: isDamageProductSn));
-      log("isDamageProductSn: ${state.isDamageProductSn}");
-    }
+  void setDamageByProduct({
+    bool isDamageProductSn = false,
+    bool isDamageProductLots = false,
+  }) {
+    emit(state.copyWith(
+      isDamageProductSn: isDamageProductSn,
+      isDamageProductLots: isDamageProductLots,
+    ));
+    log("isDamageProductSn: ${state.isDamageProductSn}, isDamageProductLots: ${state.isDamageProductLots}");
   }
 
   void addDamage(Product damageProduct) {

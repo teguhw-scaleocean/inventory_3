@@ -97,6 +97,7 @@ class _ReturnProductScreenState extends State<ReturnProductScreen> {
   bool isEdit = false;
 
   bool isDamageSerialNumber = false;
+  bool isDamageLotsNumber = false;
 
   int idTracking = 0;
 
@@ -138,7 +139,8 @@ class _ReturnProductScreenState extends State<ReturnProductScreen> {
     countCubit = context.read<CountCubit>();
     damageCubit = context.read<DamageCubit>();
     isDamageSerialNumber = damageCubit.state.isDamageProductSn ?? false;
-    if (isDamageSerialNumber) {
+    isDamageLotsNumber = damageCubit.state.isDamageProductLots ?? false;
+    if (isDamageSerialNumber || isDamageLotsNumber) {
       appBarTitle = "Damage";
     }
   }
@@ -494,7 +496,7 @@ class _ReturnProductScreenState extends State<ReturnProductScreen> {
               // var returnOfProducts;
 
               Future.delayed(const Duration(milliseconds: 500), () {
-                if (isDamageSerialNumber) {
+                if (isDamageSerialNumber || isDamageLotsNumber) {
                   confirmTitle = "Confirm Damage";
                   confirmMessage =
                       "Are you sure you want to damage this\nProduct?";

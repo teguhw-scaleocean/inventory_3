@@ -409,11 +409,10 @@ class _ReceiptProductMenuDetailScreenState
                       }
                     },
                     onTapDamage: () {
-                      if (receipt.id == 9) {
-                        if (idTracking == 0) {
-                          damageCubit.setDamageByProduct(
-                              isDamageProductSn: true);
-                        }
+                      if (receipt.id == 9 || receipt.id == 1) {
+                        damageCubit.setDamageByProduct(
+                            isDamageProductSn: idTracking == 0,
+                            isDamageProductLots: idTracking == 1);
                         final damageResult = Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -591,18 +590,18 @@ class _ReceiptProductMenuDetailScreenState
 
   void _onDamageProduct(value, BuildContext context) {
     // final damageProductTemp = damageCubit.state.damageProduct;
-    if (idTracking == 0) {
-      var result = value as ReturnProduct;
-      ReturnPallet damageSerialNumber = ReturnPallet(
-        id: result.id,
-        palletCode: result.code,
-        reason: result.reason,
-        location: result.location,
-        // damageProducts: damageProductTemp,
-        damageQty: result.quantity?.toDouble() ?? 0.0,
-      );
-      cubit.getReturnProduct(damageSerialNumber, 0, isProductDamage: true);
-    }
+    // if (idTracking == 0) {
+    var result = value as ReturnProduct;
+    ReturnPallet damageInPalletObject = ReturnPallet(
+      id: result.id,
+      palletCode: result.code,
+      reason: result.reason,
+      location: result.location,
+      // damageProducts: damageProductTemp,
+      damageQty: result.quantity?.toDouble() ?? 0.0,
+    );
+    cubit.getReturnProduct(damageInPalletObject, 0, isProductDamage: true);
+    // }
 
     Future.delayed(const Duration(milliseconds: 600), () {
       onShowSuccessNewDialog(

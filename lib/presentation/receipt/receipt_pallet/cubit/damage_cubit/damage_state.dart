@@ -5,6 +5,7 @@ class DamageState {
   bool? isDamagePalletIncLots;
   bool? isDamagePalletIncNoTracking;
   bool? isDamageProductSn;
+  bool? isDamageProductLots;
   Product? damageProduct;
 
   DamageState({
@@ -12,6 +13,7 @@ class DamageState {
     this.isDamagePalletIncLots,
     this.isDamagePalletIncNoTracking,
     this.isDamageProductSn,
+    this.isDamageProductLots,
     this.damageProduct,
   });
 
@@ -20,6 +22,7 @@ class DamageState {
       bool? isDamagePalletIncLots,
       bool? isDamagePalletIncNoTracking,
       bool? isDamageProductSn,
+      bool? isDamageProductLots,
       Product? damageProduct}) {
     return DamageState(
       isDamagePalletIncSn: isDamagePalletIncSn ?? this.isDamagePalletIncSn,
@@ -28,6 +31,7 @@ class DamageState {
       isDamagePalletIncNoTracking:
           isDamagePalletIncNoTracking ?? this.isDamagePalletIncNoTracking,
       isDamageProductSn: isDamageProductSn ?? this.isDamageProductSn,
+      isDamageProductLots: isDamageProductLots ?? this.isDamageProductLots,
       damageProduct: damageProduct ?? this.damageProduct,
     );
   }

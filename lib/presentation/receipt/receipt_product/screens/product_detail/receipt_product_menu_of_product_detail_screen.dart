@@ -471,13 +471,6 @@ class _ReceiptProductMenuOfProductDetailScreenState
                             ? serialNumberResult.length
                             : 0;
                         totalDone = totalDoneInt.toString();
-
-                        if (isDamageProduct) {
-                          int totalDamageQtyToInt = product.damagedQty!.toInt();
-                          totalDamage = totalDamageQtyToInt;
-                          totalInt = (totalInt - totalDamage).toInt();
-                          total = totalInt.toString();
-                        }
                       } else {
                         totalInt =
                             _tabs[0] == e ? product.productQty.toInt() : 0;
@@ -503,13 +496,22 @@ class _ReceiptProductMenuOfProductDetailScreenState
                         }
                       }
 
+                      if (isDamageProduct) {
+                        int totalDamageQtyToInt = product.damagedQty!.toInt();
+                        totalDamage = totalDamageQtyToInt;
+                        totalInt = (totalInt - totalDamage).toInt();
+                        total = totalInt.toString();
+                      }
+
                       return buildTabLabel(
                         label: e,
-                        total: (_tabs[0] == e)
+                        total: e == _tabs[0]
                             ? "($total)"
-                            : (_tabs[1] == e)
+                            : e == _tabs[1]
                                 ? "($totalDone)"
-                                : "($totalReturn)",
+                                : e.contains("Damage")
+                                    ? "($totalDamage)"
+                                    : "($totalReturn)",
                         isSelected: isSelectedTab,
                       );
                     }).toList(),

@@ -590,6 +590,7 @@ class _ReceiptProductMenuDetailScreenState
   }
 
   void _onDamageProduct(value, BuildContext context) {
+    // final damageProductTemp = damageCubit.state.damageProduct;
     if (idTracking == 0) {
       var result = value as ReturnProduct;
       ReturnPallet damageSerialNumber = ReturnPallet(
@@ -597,6 +598,7 @@ class _ReceiptProductMenuDetailScreenState
         palletCode: result.code,
         reason: result.reason,
         location: result.location,
+        // damageProducts: damageProductTemp,
         damageQty: result.quantity?.toDouble() ?? 0.0,
       );
       cubit.getReturnProduct(damageSerialNumber, 0, isProductDamage: true);

@@ -18,6 +18,7 @@ import '../../../../../common/components/reusable_widget.dart';
 import '../../../../../common/theme/color/color_name.dart';
 import '../../../../../common/theme/text/base_text.dart';
 import '../../../../../data/model/pallet.dart';
+import '../../../../../data/model/product.dart';
 import '../../../../../data/model/return_pallet.dart';
 import '../../../../../data/model/return_product.dart';
 import '../../../receipt_pallet/cubit/count_cubit.dart';
@@ -509,6 +510,18 @@ class _ReturnProductScreenState extends State<ReturnProductScreen> {
                     if (idTracking == 2) {
                       Navigator.pop(context, returnOfProducts);
                     } else {
+                      //  Product damageProduct = Product(
+                      //     id: selectedObjectProduct!.id,
+                      //     name: selectedObjectProduct!.productName,
+                      //     sku: selectedObjectProduct!.sku,
+                      //     serialNumbers: serialNumbers,
+                      //     reason: selectedReason,
+                      //     location: selectedLocation,
+                      //     quantity: serialNumbers.length.toDouble(),
+                      //   );
+
+                      //   BlocProvider.of<DamageCubit>(context)
+                      //       .addDamage(damageProduct);
                       Navigator.pop(context, returnObject);
                     }
                   },

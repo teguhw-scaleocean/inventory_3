@@ -180,7 +180,7 @@ class ProductMenuProductDetailCubit
     emit(state.copyWith(pallets: lastPallets));
 
     log("getReturnProduct: ${lastPallets.map((e) => e.returnQty.toString()).toList()}");
-    log("getReturnProduct->Damage: ${lastPallets.map((e) => e.damagedQty.toString()).toList()}");
+    log("getReturnProduct->Damage: ${state.pallets.map((e) => e.damagedQty.toString()).toList()}");
   }
 
   getReturnPallet(ReturnPallet returnPallet, {bool? isPalletDamage}) {

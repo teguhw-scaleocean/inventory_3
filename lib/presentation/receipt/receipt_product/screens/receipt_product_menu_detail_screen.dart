@@ -22,6 +22,7 @@ import 'package:inventory_v3/data/model/pallet.dart';
 import 'package:inventory_v3/data/model/receipt.dart';
 import 'package:inventory_v3/data/model/return_product.dart';
 import 'package:inventory_v3/presentation/receipt/receipt_pallet/cubit/add_pallet_cubit/add_pallet_state.dart';
+import 'package:inventory_v3/presentation/receipt/receipt_pallet/cubit/damage_cubit/damage_cubit.dart';
 import 'package:inventory_v3/presentation/receipt/receipt_pallet/screens/pallet/add_pallet_screen.dart';
 import 'package:inventory_v3/presentation/receipt/receipt_pallet/screens/receipt_product_detail.dart';
 import 'package:inventory_v3/presentation/receipt/receipt_pallet/widget/scan_view_widget.dart';
@@ -52,6 +53,7 @@ class ReceiptProductMenuDetailScreen extends StatefulWidget {
 class _ReceiptProductMenuDetailScreenState
     extends State<ReceiptProductMenuDetailScreen> {
   late ProductMenuProductDetailCubit cubit;
+  late DamageCubit damageCubit;
   final TextEditingController _searchController = TextEditingController();
   late Receipt receipt;
 
@@ -68,9 +70,15 @@ class _ReceiptProductMenuDetailScreenState
   int idTracking = 0;
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+  }
+
+  @override
   void initState() {
     super.initState();
     cubit = BlocProvider.of<ProductMenuProductDetailCubit>(context);
+    damageCubit = BlocProvider.of<DamageCubit>(context);
 
     if (widget.receipt != null) {
       receipt = widget.receipt!;
@@ -400,6 +408,28 @@ class _ReceiptProductMenuDetailScreenState
                         });
                       }
                     },
+                    onTapDamage: () {
+                      if (receipt.id == 9) {
+                        if (idTracking == 0) {
+                          damageCubit.setDamageByProduct(
+                              isDamageProductSn: true);
+                        }
+                        final damageResult = Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => ReturnProductScreen(
+                                      idTracking: idTracking,
+                                    )));
+
+                        damageResult.then((value) {
+                          debugPrint("damageResultvalue: $value");
+                          //  type 'ReturnProduct' is not a subtype of type 'ReturnPallet' in type cast
+                          if (value != null) {
+                            _onDamageProduct(value, context);
+                          }
+                        });
+                      }
+                    },
                   ),
                   SizedBox(height: 14.h),
                   BlocConsumer<ProductMenuProductDetailCubit,
@@ -523,30 +553,64 @@ class _ReceiptProductMenuDetailScreenState
         onPressed: () {
           Navigator.of(context).pop();
         },
-        body: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(height: 10.h),
-            Text(
-              "Return Successful!",
-              style: BaseText.black2TextStyle.copyWith(
-                fontSize: 16.sp,
-                fontWeight: BaseText.semiBold,
-              ),
-            ),
-            Container(height: 4.h),
-            Text(
-              'Great job! You successfully returned product.',
-              textAlign: TextAlign.center,
-              maxLines: 2,
-              style: BaseText.grey2Text14.copyWith(
-                fontWeight: BaseText.light,
-              ),
-            ),
-            SizedBox(height: 24.h),
-          ],
+        body: buildBodyOnSuccess(
+          title: "Return Successful!",
+          content: 'Great job! You successfully returned product.',
+        ),
+      );
+    });
+  }
+
+  Column buildBodyOnSuccess({required String title, required String content}) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(height: 10.h),
+        Text(
+          title,
+          style: BaseText.black2TextStyle.copyWith(
+            fontSize: 16.sp,
+            fontWeight: BaseText.semiBold,
+          ),
+        ),
+        Container(height: 4.h),
+        Text(
+          content,
+          textAlign: TextAlign.center,
+          maxLines: 2,
+          style: BaseText.grey2Text14.copyWith(
+            fontWeight: BaseText.light,
+          ),
+        ),
+        SizedBox(height: 24.h),
+      ],
+    );
+  }
+
+  void _onDamageProduct(value, BuildContext context) {
+    if (idTracking == 0) {
+      var result = value as ReturnProduct;
+      ReturnPallet damageSerialNumber = ReturnPallet(
+        id: result.id,
+        palletCode: result.code,
+        reason: result.reason,
+        location: result.location,
+        damageQty: result.quantity?.toDouble() ?? 0.0,
+      );
+      cubit.getReturnProduct(damageSerialNumber, 0, isProductDamage: true);
+    }
+
+    Future.delayed(const Duration(milliseconds: 600), () {
+      onShowSuccessNewDialog(
+        context: context,
+        onPressed: () {
+          Navigator.of(context).pop();
+        },
+        body: buildBodyOnSuccess(
+          title: "Damage Successful!",
+          content: 'Great job! You successfully damaged product.',
         ),
       );
     });
@@ -907,8 +971,12 @@ class _ReceiptProductMenuDetailScreenState
                         style: BaseText.black2Text15
                             .copyWith(fontWeight: BaseText.medium),
                       ),
-                      (product0.isReturn == true)
+                      (product0.isReturn == true ||
+                              product0.isReturnPalletAndProduct == true)
                           ? buildBadgeReturn()
+                          : const SizedBox(),
+                      (product0.isDamageProduct == true)
+                          ? buildBadgeDamage()
                           : const SizedBox()
                     ],
                   ),
@@ -1109,6 +1177,7 @@ class _ReceiptProductMenuDetailScreenState
   Widget buildPalletButtonSection({
     required String status,
     void Function()? onTapReturn,
+    void Function()? onTapDamage,
   }) {
     TextStyle? labelTextStyle;
     switch (status) {
@@ -1126,8 +1195,11 @@ class _ReceiptProductMenuDetailScreenState
     return Row(
       children: [
         Flexible(
-            child: buildOutlineButton(context,
-                label: "Damage", labelTextStyle: labelTextStyle)),
+            child: GestureDetector(
+          onTap: onTapDamage,
+          child: buildOutlineButton(context,
+              label: "Damage", labelTextStyle: labelTextStyle),
+        )),
         SizedBox(width: 12.w),
         Flexible(
             child: GestureDetector(

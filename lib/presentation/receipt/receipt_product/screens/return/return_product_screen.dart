@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:inventory_v3/presentation/receipt/receipt_pallet/cubit/damage_cubit/damage_cubit.dart';
 
 import '../../../../../common/components/button_dialog.dart';
 import '../../../../../common/components/custom_app_bar.dart';
@@ -94,6 +95,8 @@ class _ReturnProductScreenState extends State<ReturnProductScreen> {
   bool isShowResult = false;
   bool isEdit = false;
 
+  bool isDamageSerialNumber = false;
+
   int idTracking = 0;
 
   late ReturnProduct returnProduct;
@@ -106,6 +109,8 @@ class _ReturnProductScreenState extends State<ReturnProductScreen> {
   var noTrackingBottomSheet;
   String titleNoTrackingMenu = "Add Qty";
 
+  String appBarTitle = "Return";
+
   bool isAddLotsButtonEnable = false;
   bool isQtyButtonEnabled = false;
 
@@ -114,6 +119,7 @@ class _ReturnProductScreenState extends State<ReturnProductScreen> {
   Color borderColor = ColorName.borderColor;
 
   late CountCubit countCubit;
+  late DamageCubit damageCubit;
   ReturnProduct? returnObject;
 
   @override
@@ -122,8 +128,18 @@ class _ReturnProductScreenState extends State<ReturnProductScreen> {
     idTracking = widget.idTracking;
 
     _listProduct = listPallets;
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
 
     countCubit = context.read<CountCubit>();
+    damageCubit = context.read<DamageCubit>();
+    isDamageSerialNumber = damageCubit.state.isDamageProductSn ?? false;
+    if (isDamageSerialNumber) {
+      appBarTitle = "Damage";
+    }
   }
 
   @override
@@ -132,7 +148,7 @@ class _ReturnProductScreenState extends State<ReturnProductScreen> {
       child: Scaffold(
         appBar: CustomAppBar(
           onTap: () => Navigator.pop(context),
-          title: "Return: Product",
+          title: "$appBarTitle: Product",
         ),
         body: Padding(
           padding: EdgeInsets.all(16.w),
@@ -458,6 +474,11 @@ class _ReturnProductScreenState extends State<ReturnProductScreen> {
         bottomNavigationBar: buildBottomNavbar(
           child: PrimaryButton(
             onPressed: () {
+              String confirmTitle = "Confirm Return";
+              String confirmMessage =
+                  "Are you sure you want to return this\nProduct?";
+              ReturnPallet returnPallet;
+
               if (selectedObjectProduct == null || _listProduct.isEmpty) {
                 return;
               }
@@ -472,10 +493,15 @@ class _ReturnProductScreenState extends State<ReturnProductScreen> {
               // var returnOfProducts;
 
               Future.delayed(const Duration(milliseconds: 500), () {
+                if (isDamageSerialNumber) {
+                  confirmTitle = "Confirm Damage";
+                  confirmMessage =
+                      "Are you sure you want to damage this\nProduct?";
+                }
                 reusableConfirmDialog(
                   context,
-                  title: "Confirm Return",
-                  message: "Are you sure you want to return this\nProduct?",
+                  title: confirmTitle,
+                  message: confirmMessage,
                   maxLines: 2,
                   onPressed: () {
                     Navigator.pop(context);
@@ -905,6 +931,7 @@ class _ReturnProductScreenState extends State<ReturnProductScreen> {
                               code: _listSnSelected.first,
                               reason: selectedReason,
                               location: selectedLocation,
+                              quantity: 1,
                             );
 
                             Navigator.pop(context, returnObject);

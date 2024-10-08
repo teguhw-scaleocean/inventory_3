@@ -50,7 +50,7 @@ class _ReceiptProductDetailScreenState extends State<ReceiptProductDetailScreen>
   bool isDamagePalletAndProduct = false;
 
   late TabController _tabController;
-  final List<String> _tabs = ["Not Done", "Done"];
+  List<String> tabs = ["Not Done", "Done"];
 
   var totalDamageQty = 1;
 
@@ -69,13 +69,23 @@ class _ReceiptProductDetailScreenState extends State<ReceiptProductDetailScreen>
     isDamage = product.isDamage ?? false;
     isDamagePalletAndProduct = product.isDamagePalletAndProduct ?? false;
 
-    if (isReturn || isReturnPalletAndProduct) {
-      _tabs.insert(2, "Return");
+    if (isDamage || isDamagePalletAndProduct) {
+      tabs.add("Damage");
     }
 
-    if (isDamage || isDamagePalletAndProduct) {
-      _tabs.insert(2, "Damage");
+    if (isReturn || isReturnPalletAndProduct) {
+      tabs.add("Return");
     }
+
+    debugPrint("tabs: ${tabs.map((e) => e).toList()}");
+
+    // if (isReturn || isReturnPalletAndProduct) {
+    //   tabs.insert(tabs.lastIndexOf(tabs.last), "Return");
+    // }
+
+    // if (isDamage || isDamagePalletAndProduct) {
+    //   tabs.insert(tabs.lastIndexOf(tabs.last), "Damage");
+    // }
 
     // Serial Number
     serialNumberList = widget.product.serialNumber ?? <SerialNumber>[];
@@ -85,7 +95,7 @@ class _ReceiptProductDetailScreenState extends State<ReceiptProductDetailScreen>
       code = product.lotsCode ?? product.code;
     }
 
-    _tabController = TabController(length: _tabs.length, vsync: this);
+    _tabController = TabController(length: tabs.length, vsync: this);
   }
 
   _onSearch() {}
@@ -95,7 +105,7 @@ class _ReceiptProductDetailScreenState extends State<ReceiptProductDetailScreen>
   Widget build(BuildContext context) {
     return SafeArea(
       child: DefaultTabController(
-        length: _tabs.length,
+        length: tabs.length,
         child: Scaffold(
           appBar: CustomAppBar(
             onTap: () => Navigator.of(context).pop(product),
@@ -223,9 +233,9 @@ class _ReceiptProductDetailScreenState extends State<ReceiptProductDetailScreen>
                 height: 38.h,
                 padding: EdgeInsets.symmetric(horizontal: 16.w),
                 child: reusableTabBar(
-                  tabs: _tabs.map((e) {
+                  tabs: tabs.map((e) {
                     bool isSelectedTab = false;
-                    isSelectedTab = _tabController.index == _tabs.indexOf(e);
+                    isSelectedTab = _tabController.index == tabs.indexOf(e);
 
                     var total = 0;
                     var totalDone = 0;
@@ -246,11 +256,11 @@ class _ReceiptProductDetailScreenState extends State<ReceiptProductDetailScreen>
 
                     return buildTabLabel(
                       label: e,
-                      total: (_tabs[0] == e)
+                      total: (tabs[0] == e)
                           ? "($total)"
-                          : (_tabs[1] == e)
+                          : (tabs[1] == e)
                               ? "($totalDone)"
-                              : (_tabs[2] == "Damage")
+                              : (tabs[2] == "Damage")
                                   ? "($totalDamageQty)"
                                   : "($totalReturn)",
                       isSelected: isSelectedTab,
@@ -581,9 +591,10 @@ class _ReceiptProductDetailScreenState extends State<ReceiptProductDetailScreen>
 
   Widget buildItemQuantityReturn(String code,
       {Pallet? itemProduct, bool isHighlighted = false}) {
+    String returnQuantity = "0";
     if (itemProduct != null) {
-      int? quantityInt = itemProduct.productQty.toInt();
-      quantity = quantityInt.toString();
+      int? quantityInt = itemProduct.returnQty?.toInt() ?? 0;
+      returnQuantity = quantityInt.toString();
     }
 
     return SmoothHighlight(
@@ -650,7 +661,7 @@ class _ReceiptProductDetailScreenState extends State<ReceiptProductDetailScreen>
                       child: Text(
                         (tracking.toLowerCase().contains("serial"))
                             ? "1"
-                            : quantity,
+                            : returnQuantity,
                         textAlign: TextAlign.center,
                         style: BaseText.black2Text14.copyWith(
                           fontWeight: BaseText.regular,
@@ -698,10 +709,14 @@ class _ReceiptProductDetailScreenState extends State<ReceiptProductDetailScreen>
                       .copyWith(fontWeight: BaseText.regular),
                 ),
                 SizedBox(height: 9.h),
-                Text(
-                  "Reason: ${itemProduct.damageProducts?.reason}",
-                  style:
-                      BaseText.grey1Text12.copyWith(fontWeight: BaseText.light),
+                Flexible(
+                  child: Text(
+                    "Reason: ${itemProduct.damageProducts?.reason}",
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: BaseText.grey1Text12
+                        .copyWith(fontWeight: BaseText.light),
+                  ),
                 ),
                 SizedBox(height: 8.h),
                 Text(
@@ -732,10 +747,11 @@ class _ReceiptProductDetailScreenState extends State<ReceiptProductDetailScreen>
                   ),
                   SizedBox(
                     height: 86.h,
-                    width: 60.w,
+                    width: 58.w,
                     child: Center(
                       child: Text(
                         damageQuantity,
+                        overflow: TextOverflow.ellipsis,
                         textAlign: TextAlign.center,
                         style: BaseText.black2Text14.copyWith(
                           fontWeight: BaseText.regular,

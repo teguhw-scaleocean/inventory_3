@@ -130,12 +130,12 @@ class _ReceiptBothProductDetailScreenState
     isReturnPalletAndProduct = widget.isReturnPalletAndProduct ?? false;
     isDamagePalletAndProduct = product.isDamagePalletAndProduct ?? false;
 
-    if (isReturnPalletAndProduct == true) {
-      _tabs.insert(2, "Return");
+    if (isDamagePalletAndProduct) {
+      _tabs.add("Damage");
     }
 
-    if (isDamagePalletAndProduct == true) {
-      _tabs.insert(2, "Damage");
+    if (isReturnPalletAndProduct) {
+      _tabs.add("Return");
     }
 
     tabController = TabController(length: _tabs.length, vsync: this);

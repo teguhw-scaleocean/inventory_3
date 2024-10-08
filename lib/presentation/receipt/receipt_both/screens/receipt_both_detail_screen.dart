@@ -653,14 +653,17 @@ class _ReceiptBothDetailScreenState extends State<ReceiptBothDetailScreen> {
                     style: BaseText.black2Text15
                         .copyWith(fontWeight: BaseText.medium),
                   ),
-                  (product0.isReturn == true ||
-                          product0.isReturnPalletAndProduct == true)
-                      ? buildBadgeReturn()
-                      : const SizedBox(),
-                  (product0.isDamage == true ||
+                  Row(
+                    children: [
+                      if (product0.isDamage == true ||
                           product0.isDamagePalletAndProduct == true)
-                      ? buildBadgeDamage()
-                      : const SizedBox()
+                        buildBadgeDamage(),
+                      SizedBox(width: 4.w),
+                      if (product0.isReturn == true ||
+                          product0.isReturnPalletAndProduct == true)
+                        buildBadgeReturn(),
+                    ],
+                  )
                 ],
               ),
             ),

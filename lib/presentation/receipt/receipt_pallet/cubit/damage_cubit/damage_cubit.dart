@@ -30,4 +30,12 @@ class DamageCubit extends Cubit<DamageState> {
     emit(state.copyWith(damageProduct: damageProduct));
     log("damageProduct: ${state.damageProduct?.toJson()}");
   }
+
+  void resetDamage() {
+    emit(state.copyWith(
+        damageProduct: null,
+        isDamagePalletIncSn: false,
+        isDamagePalletIncLots: false,
+        isDamagePalletIncNoTracking: false));
+  }
 }

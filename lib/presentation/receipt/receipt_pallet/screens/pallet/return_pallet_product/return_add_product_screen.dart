@@ -186,6 +186,10 @@ class _ReturnAddProductScreenState extends State<ReturnAddProductScreen> {
       listReason = listDamageReason;
       debugPrint(listReason.map((e) => e).toList().toString());
     }
+
+    qtyController.value = const TextEditingValue(
+      text: "0.0",
+    );
   }
 
   @override
@@ -398,13 +402,21 @@ class _ReturnAddProductScreenState extends State<ReturnAddProductScreen> {
                                       label: "",
                                       listOfItemsValue: listLots,
                                       selectedValue: selectedLots,
+                                      isExpand: hasLotsFocus,
+                                      borderColor: (hasLotsFocus)
+                                          ? ColorName.mainColor
+                                          : ColorName.borderColor,
                                       hintText: "   Select Lots Number",
                                       hintTextStyle:
                                           BaseText.grey1Text14.copyWith(
                                         fontWeight: BaseText.regular,
                                         color: ColorName.grey12Color,
                                       ),
-                                      onTap: (focus) {},
+                                      onTap: (focus) {
+                                        setState(() {
+                                          hasLotsFocus = !hasLotsFocus;
+                                        });
+                                      },
                                       onChange: (value) {
                                         setState(() {
                                           selectedLots = value;

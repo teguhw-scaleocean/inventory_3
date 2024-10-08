@@ -107,7 +107,6 @@ class _ReturnProductScreenState extends State<ReturnProductScreen> {
   String titleMenu = "Add Serial Number";
 
   var lotsBottomSheet;
-  String titleLotsMenu = "Add Lots Number";
 
   var noTrackingBottomSheet;
   String titleNoTrackingMenu = "Add Qty";
@@ -264,7 +263,6 @@ class _ReturnProductScreenState extends State<ReturnProductScreen> {
                               item: returnProduct,
                               onTapEdit: () {
                                 isEdit = true;
-                                titleLotsMenu = "Edit Lots Number";
                                 //BottomSheet
                                 var selectedLotsNumber = returnProduct.code;
                                 var selectedReason = returnProduct.reason;
@@ -275,9 +273,10 @@ class _ReturnProductScreenState extends State<ReturnProductScreen> {
                                     Builder(builder: (context) {
                                   return reusableProductBottomSheet(
                                     context,
-                                    titleLotsMenu,
+                                    "Edit Lots Number",
                                     isEdit: true,
                                     selectedLotsNumber: selectedLotsNumber,
+                                    lotsQuantity: returnProduct.quantity,
                                     selectedReason: selectedReason,
                                     selectedLocation: selectedLocation,
                                   );
@@ -346,7 +345,7 @@ class _ReturnProductScreenState extends State<ReturnProductScreen> {
                                     onTap: () {},
                                     maxwidth: ScreenUtil().screenWidth - 32.w,
                                     isCenterTitle: true,
-                                    title: titleLotsMenu,
+                                    title: "Add Lots Number",
                                     isDisable: true,
                                     color: ColorName.borderColor,
                                   )
@@ -355,6 +354,7 @@ class _ReturnProductScreenState extends State<ReturnProductScreen> {
                                       var selectedLots;
                                       var selectedReason;
                                       var selectedLocation;
+                                      var initLotsQty = 0.0;
 
                                       lotsBottomSheet = reusableBottomSheet(
                                           context,
@@ -362,9 +362,12 @@ class _ReturnProductScreenState extends State<ReturnProductScreen> {
                                         builder: (context) {
                                           return reusableProductBottomSheet(
                                             context,
-                                            titleLotsMenu,
+                                            "Add Lots Number",
+                                            noTrackingQuantity: initLotsQty,
                                             selectedLotsNumber: selectedLots,
                                             selectedReason: selectedReason,
+                                            selectedLocation: selectedLocation,
+                                            isEdit: false,
                                           );
                                         },
                                       ));
@@ -380,7 +383,7 @@ class _ReturnProductScreenState extends State<ReturnProductScreen> {
                                     },
                                     maxwidth: ScreenUtil().screenWidth - 32.w,
                                     isCenterTitle: true,
-                                    title: titleLotsMenu,
+                                    title: "Add Lots Number",
                                   )
                           ],
                         )
@@ -565,11 +568,19 @@ class _ReturnProductScreenState extends State<ReturnProductScreen> {
     String titleMenu, {
     selectedSerialNumber,
     selectedLotsNumber,
+    lotsQuantity,
     noTrackingQuantity,
     selectedReason,
     selectedLocation,
     bool isEdit = false,
   }) {
+    var initQuantity = countCubit.state.quantity = 0.0;
+    debugPrint("initQuantity: $initQuantity");
+
+    qtyController.value = TextEditingValue(
+      text: initQuantity.toString(),
+    );
+
     return StatefulBuilder(builder: (context, addSetState) {
       double value = 0.0;
       String deleteMessage = "";
@@ -579,12 +590,19 @@ class _ReturnProductScreenState extends State<ReturnProductScreen> {
         deleteMessage = "Are you sure you want to delete this\nSerial Number?";
         updateMessage = "Are you sure you want to update this\nSerial Number?";
       } else if (idTracking == 1) {
+        if (isEdit) {
+          qtyController.value = TextEditingValue(
+            text: "$lotsQuantity",
+          );
+        }
         deleteMessage = "Are you sure you want to delete this\nLots Number?";
         updateMessage = "Are you sure you want to update this\nLots Number?";
       } else if (idTracking == 2) {
-        // qtyController.value = TextEditingValue(
-        //   text: "$noTrackingQuantity",
-        // );
+        if (isEdit) {
+          qtyController.value = TextEditingValue(
+            text: "$noTrackingQuantity",
+          );
+        }
         deleteMessage = "Are you sure you want to delete this\nquantity?";
         updateMessage = "Are you sure you want to update this\nquantity?";
       }
@@ -717,11 +735,9 @@ class _ReturnProductScreenState extends State<ReturnProductScreen> {
                     SizedBox(height: 4.h),
                     BlocConsumer<CountCubit, CountState>(
                         listener: (context, state) {
-                      if (isEdit) {
-                        qtyController.value = TextEditingValue(
-                          text: state.quantity.toString(),
-                        );
-                      }
+                      qtyController.value = TextEditingValue(
+                        text: state.quantity.toString(),
+                      );
                       debugPrint("qtyController listen: ${qtyController.text}");
 
                       isQtyButtonEnabled = state.quantity > 0;

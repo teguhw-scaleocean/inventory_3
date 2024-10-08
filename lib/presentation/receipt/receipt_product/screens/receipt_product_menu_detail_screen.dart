@@ -971,10 +971,14 @@ class _ReceiptProductMenuDetailScreenState
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        product0.productName,
-                        style: BaseText.black2Text15
-                            .copyWith(fontWeight: BaseText.medium),
+                      Flexible(
+                        child: Text(
+                          product0.productName,
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
+                          style: BaseText.black2Text15
+                              .copyWith(fontWeight: BaseText.medium),
+                        ),
                       ),
                       Row(
                         children: [

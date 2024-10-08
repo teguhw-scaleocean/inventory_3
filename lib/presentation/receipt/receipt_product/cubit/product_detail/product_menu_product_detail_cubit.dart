@@ -155,20 +155,32 @@ class ProductMenuProductDetailCubit
     log("scannedPallet: ${lastProducts.map((e) => e.hasBeenScanned.toString()).toList()}");
   }
 
-  getReturnProduct(ReturnPallet returnPallet, double returnQty) {
+  getReturnProduct(ReturnPallet returnPallet, double returnQty,
+      {bool? isProductDamage}) {
+    Pallet itemReturn;
     List<Pallet> lastPallets = state.pallets;
     var currentPallet = getCurrentPallet(returnPallet);
     var indexPallet = getCurrentPalletIndex(returnPallet);
 
-    var itemReturn = currentPallet.copyWith(
-      isReturn: true,
-      returnQty: returnQty,
-      returnProductNoTracking: returnPallet.returnProducts,
-    );
+    if (isProductDamage == true) {
+      itemReturn = currentPallet.copyWith(
+        isDamageProduct: true,
+        damagedQty: returnPallet.damageQty,
+        damagedProducts: returnPallet.damagedProducts,
+      );
+    } else {
+      itemReturn = currentPallet.copyWith(
+        isReturn: true,
+        returnQty: returnQty,
+        returnProductNoTracking: returnPallet.returnProducts,
+      );
+    }
+
     lastPallets[indexPallet] = itemReturn;
     emit(state.copyWith(pallets: lastPallets));
 
     log("getReturnProduct: ${lastPallets.map((e) => e.returnQty.toString()).toList()}");
+    log("getReturnProduct->Damage: ${state.pallets.map((e) => e.damagedQty.toString()).toList()}");
   }
 
   getReturnPallet(ReturnPallet returnPallet, {bool? isPalletDamage}) {

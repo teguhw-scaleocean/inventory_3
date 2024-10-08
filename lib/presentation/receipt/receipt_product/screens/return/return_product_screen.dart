@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:inventory_v3/presentation/receipt/receipt_pallet/cubit/damage_cubit/damage_cubit.dart';
 
 import '../../../../../common/components/button_dialog.dart';
 import '../../../../../common/components/custom_app_bar.dart';
@@ -17,6 +18,7 @@ import '../../../../../common/components/reusable_widget.dart';
 import '../../../../../common/theme/color/color_name.dart';
 import '../../../../../common/theme/text/base_text.dart';
 import '../../../../../data/model/pallet.dart';
+import '../../../../../data/model/product.dart';
 import '../../../../../data/model/return_pallet.dart';
 import '../../../../../data/model/return_product.dart';
 import '../../../receipt_pallet/cubit/count_cubit.dart';
@@ -94,6 +96,10 @@ class _ReturnProductScreenState extends State<ReturnProductScreen> {
   bool isShowResult = false;
   bool isEdit = false;
 
+  bool isDamageSerialNumber = false;
+  bool isDamageLotsNumber = false;
+  bool isDamageNoTracking = false;
+
   int idTracking = 0;
 
   late ReturnProduct returnProduct;
@@ -106,6 +112,8 @@ class _ReturnProductScreenState extends State<ReturnProductScreen> {
   var noTrackingBottomSheet;
   String titleNoTrackingMenu = "Add Qty";
 
+  String appBarTitle = "Return";
+
   bool isAddLotsButtonEnable = false;
   bool isQtyButtonEnabled = false;
 
@@ -114,6 +122,7 @@ class _ReturnProductScreenState extends State<ReturnProductScreen> {
   Color borderColor = ColorName.borderColor;
 
   late CountCubit countCubit;
+  late DamageCubit damageCubit;
   ReturnProduct? returnObject;
 
   @override
@@ -122,8 +131,21 @@ class _ReturnProductScreenState extends State<ReturnProductScreen> {
     idTracking = widget.idTracking;
 
     _listProduct = listPallets;
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
 
     countCubit = context.read<CountCubit>();
+    damageCubit = context.read<DamageCubit>();
+    isDamageSerialNumber = damageCubit.state.isDamageProductSn ?? false;
+    isDamageLotsNumber = damageCubit.state.isDamageProductLots ?? false;
+    isDamageNoTracking = damageCubit.state.isDamageProductNoTracking ?? false;
+
+    if (isDamageSerialNumber || isDamageLotsNumber || isDamageNoTracking) {
+      appBarTitle = "Damage";
+    }
   }
 
   @override
@@ -132,7 +154,7 @@ class _ReturnProductScreenState extends State<ReturnProductScreen> {
       child: Scaffold(
         appBar: CustomAppBar(
           onTap: () => Navigator.pop(context),
-          title: "Return: Product",
+          title: "$appBarTitle: Product",
         ),
         body: Padding(
           padding: EdgeInsets.all(16.w),
@@ -437,10 +459,11 @@ class _ReturnProductScreenState extends State<ReturnProductScreen> {
                                       builder: (context) {
                                         return reusableProductBottomSheet(
                                           context,
-                                          titleNoTrackingMenu,
+                                          "Add Qty",
                                           noTrackingQuantity: initQty,
                                           selectedReason: selectedReason,
                                           selectedLocation: selectedLocation,
+                                          isEdit: false,
                                         );
                                       },
                                     ));
@@ -458,6 +481,11 @@ class _ReturnProductScreenState extends State<ReturnProductScreen> {
         bottomNavigationBar: buildBottomNavbar(
           child: PrimaryButton(
             onPressed: () {
+              String confirmTitle = "Confirm Return";
+              String confirmMessage =
+                  "Are you sure you want to return this\nProduct?";
+              ReturnPallet returnPallet;
+
               if (selectedObjectProduct == null || _listProduct.isEmpty) {
                 return;
               }
@@ -469,13 +497,36 @@ class _ReturnProductScreenState extends State<ReturnProductScreen> {
                 location: "",
                 returnProducts: _listNoTracking,
               );
+
+              if (isDamageNoTracking) {
+                var damagedQty = 0.0;
+                _listNoTracking.map((e) => damagedQty += e.quantity!).toList();
+                returnOfProducts = ReturnPallet(
+                  id: selectedObjectProduct.id,
+                  palletCode: selectedObjectProduct.palletCode,
+                  reason: "",
+                  location: "",
+                  damagedProducts: _listNoTracking,
+                  damageQty: damagedQty,
+                );
+
+                debugPrint(
+                    "result no-tracking damage: ${returnOfProducts.toJson()}");
+              }
               // var returnOfProducts;
 
               Future.delayed(const Duration(milliseconds: 500), () {
+                if (isDamageSerialNumber ||
+                    isDamageLotsNumber ||
+                    isDamageNoTracking) {
+                  confirmTitle = "Confirm Damage";
+                  confirmMessage =
+                      "Are you sure you want to damage this\nProduct?";
+                }
                 reusableConfirmDialog(
                   context,
-                  title: "Confirm Return",
-                  message: "Are you sure you want to return this\nProduct?",
+                  title: confirmTitle,
+                  message: confirmMessage,
                   maxLines: 2,
                   onPressed: () {
                     Navigator.pop(context);
@@ -483,6 +534,18 @@ class _ReturnProductScreenState extends State<ReturnProductScreen> {
                     if (idTracking == 2) {
                       Navigator.pop(context, returnOfProducts);
                     } else {
+                      //  Product damageProduct = Product(
+                      //     id: selectedObjectProduct!.id,
+                      //     name: selectedObjectProduct!.productName,
+                      //     sku: selectedObjectProduct!.sku,
+                      //     serialNumbers: serialNumbers,
+                      //     reason: selectedReason,
+                      //     location: selectedLocation,
+                      //     quantity: serialNumbers.length.toDouble(),
+                      //   );
+
+                      //   BlocProvider.of<DamageCubit>(context)
+                      //       .addDamage(damageProduct);
                       Navigator.pop(context, returnObject);
                     }
                   },
@@ -519,9 +582,9 @@ class _ReturnProductScreenState extends State<ReturnProductScreen> {
         deleteMessage = "Are you sure you want to delete this\nLots Number?";
         updateMessage = "Are you sure you want to update this\nLots Number?";
       } else if (idTracking == 2) {
-        qtyController.value = TextEditingValue(
-          text: "$noTrackingQuantity",
-        );
+        // qtyController.value = TextEditingValue(
+        //   text: "$noTrackingQuantity",
+        // );
         deleteMessage = "Are you sure you want to delete this\nquantity?";
         updateMessage = "Are you sure you want to update this\nquantity?";
       }
@@ -654,9 +717,11 @@ class _ReturnProductScreenState extends State<ReturnProductScreen> {
                     SizedBox(height: 4.h),
                     BlocConsumer<CountCubit, CountState>(
                         listener: (context, state) {
-                      qtyController.value = TextEditingValue(
-                        text: state.quantity.toString(),
-                      );
+                      if (isEdit) {
+                        qtyController.value = TextEditingValue(
+                          text: state.quantity.toString(),
+                        );
+                      }
                       debugPrint("qtyController listen: ${qtyController.text}");
 
                       isQtyButtonEnabled = state.quantity > 0;
@@ -905,6 +970,7 @@ class _ReturnProductScreenState extends State<ReturnProductScreen> {
                               code: _listSnSelected.first,
                               reason: selectedReason,
                               location: selectedLocation,
+                              quantity: 1,
                             );
 
                             Navigator.pop(context, returnObject);

@@ -101,6 +101,10 @@ class _ReceiptProductMenuOfProductDetailScreenState
   bool isReturnProduct = false;
   var totalReturn = 1;
 
+  // Damage Product
+  bool isDamageProduct = false;
+  var totalDamage = 1;
+
   @override
   void initState() {
     super.initState();
@@ -114,6 +118,11 @@ class _ReceiptProductMenuOfProductDetailScreenState
     isReturnProduct = product.isReturn ?? false;
     if (isReturnProduct) {
       _tabs.insert(2, "Return");
+    }
+
+    isDamageProduct = product.isDamageProduct ?? false;
+    if (isDamageProduct) {
+      _tabs.insert(2, "Damage");
     }
 
     tabController = TabController(length: _tabs.length, vsync: this);
@@ -487,13 +496,22 @@ class _ReceiptProductMenuOfProductDetailScreenState
                         }
                       }
 
+                      if (isDamageProduct) {
+                        int totalDamageQtyToInt = product.damagedQty!.toInt();
+                        totalDamage = totalDamageQtyToInt;
+                        totalInt = (totalInt - totalDamage).toInt();
+                        total = totalInt.toString();
+                      }
+
                       return buildTabLabel(
                         label: e,
-                        total: (_tabs[0] == e)
+                        total: e == _tabs[0]
                             ? "($total)"
-                            : (_tabs[1] == e)
+                            : e == _tabs[1]
                                 ? "($totalDone)"
-                                : "($totalReturn)",
+                                : e.contains("Damage")
+                                    ? "($totalDamage)"
+                                    : "($totalReturn)",
                         isSelected: isSelectedTab,
                       );
                     }).toList(),
@@ -676,6 +694,33 @@ class _ReceiptProductMenuOfProductDetailScreenState
                                 child: buildItemQuantityReturn(
                                   code,
                                   product: item,
+                                ),
+                              );
+                            }),
+                      if (isDamageProduct && idTracking != 2)
+                        Container(
+                          padding: EdgeInsets.symmetric(
+                              vertical: 12.h, horizontal: 16.w),
+                          child: Column(
+                            children: [
+                              buildItemQuantityDamage(code),
+                            ],
+                          ),
+                        ),
+                      if (isDamageProduct && idTracking == 2)
+                        ListView.builder(
+                            padding: EdgeInsets.symmetric(horizontal: 16.w),
+                            shrinkWrap: true,
+                            itemCount: product.damagedProducts?.length,
+                            itemBuilder: (context, index) {
+                              var item = product.damagedProducts![index];
+
+                              return Padding(
+                                padding: EdgeInsets.only(
+                                    top: (index == 0) ? 12.h : 8.h),
+                                child: buildItemQuantityDamage(
+                                  code,
+                                  itemProduct: item,
                                 ),
                               );
                             })
@@ -895,6 +940,96 @@ class _ReceiptProductMenuOfProductDetailScreenState
             )
           ])),
         ));
+  }
+
+  Widget buildItemQuantityDamage(String code,
+      {ReturnProduct? itemProduct, bool isHighlighted = false}) {
+    String damageQuantity = "";
+    int? damageTemp = 0;
+    if (itemProduct != null) {
+      damageTemp = itemProduct.quantity;
+    } else {
+      damageTemp = totalDamage;
+    }
+    damageQuantity = damageTemp!.toInt().toString();
+
+    return SmoothHighlight(
+      color: ColorName.highlightColor,
+      duration: const Duration(seconds: 3),
+      enabled: isHighlighted,
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 12.h, vertical: 10.h),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(6.r),
+          border: Border.all(
+            color: ColorName.grey9Color,
+          ),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  code,
+                  style: BaseText.black2Text14
+                      .copyWith(fontWeight: BaseText.regular),
+                ),
+                SizedBox(height: 9.h),
+                Text(
+                  "Reason: Cracked housing",
+                  style:
+                      BaseText.grey1Text12.copyWith(fontWeight: BaseText.light),
+                ),
+                SizedBox(height: 8.h),
+                Text(
+                  "Location: Warehouse A-342-3-4",
+                  style:
+                      BaseText.grey1Text12.copyWith(fontWeight: BaseText.light),
+                ),
+                SizedBox(height: 9.h),
+                Text(
+                  "Exp. Date: 12/07/2024 - 15:00",
+                  style: BaseText.baseTextStyle.copyWith(
+                    color: ColorName.dateTimeColor,
+                    fontSize: 12.sp,
+                    fontWeight: BaseText.light,
+                  ),
+                )
+              ],
+            ),
+            IntrinsicHeight(
+              child: Row(
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 0),
+                    child: VerticalDivider(
+                      color: ColorName.grey9Color,
+                      thickness: 1.0,
+                    ),
+                  ),
+                  SizedBox(
+                    height: 86.h,
+                    width: 60.w,
+                    child: Center(
+                      child: Text(
+                        damageQuantity,
+                        textAlign: TextAlign.center,
+                        style: BaseText.black2Text14.copyWith(
+                          fontWeight: BaseText.regular,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            )
+          ],
+        ),
+      ),
+    );
   }
 
   Widget buildItemQuantity(

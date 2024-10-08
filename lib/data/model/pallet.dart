@@ -26,11 +26,13 @@ class Pallet {
   bool? isReturn;
   bool? isDamage;
   bool? isDamagePalletAndProduct;
+  bool? isDamageProduct;
   bool? isReturnPalletAndProduct;
   List<SerialNumber>? serialNumber;
   List<SerialNumber>? scannedSerialNumber;
   List<Product>? productReturn;
   List<ReturnProduct>? returnProductNoTracking;
+  List<ReturnProduct>? damagedProducts;
   Product? damageProducts;
 
   Pallet({
@@ -52,11 +54,13 @@ class Pallet {
     this.isReturn,
     this.isDamage,
     this.isDamagePalletAndProduct,
+    this.isDamageProduct,
     this.isReturnPalletAndProduct,
     this.serialNumber,
     this.scannedSerialNumber,
     this.productReturn,
     this.returnProductNoTracking,
+    this.damagedProducts,
     this.damageProducts,
   });
 
@@ -79,11 +83,13 @@ class Pallet {
     bool? isReturn,
     bool? isDamage,
     bool? isDamagePalletAndProduct,
+    bool? isDamageProduct,
     bool? isReturnPalletAndProduct,
     List<SerialNumber>? serialNumber,
     List<SerialNumber>? scannedSerialNumber,
     List<Product>? productReturn,
     List<ReturnProduct>? returnProductNoTracking,
+    List<ReturnProduct>? damagedProducts,
     Product? damageProducts,
   }) {
     return Pallet(
@@ -106,6 +112,7 @@ class Pallet {
       isDamage: isDamage ?? this.isDamage,
       isDamagePalletAndProduct:
           isDamagePalletAndProduct ?? this.isDamagePalletAndProduct,
+      isDamageProduct: isDamageProduct ?? this.isDamageProduct,
       isReturnPalletAndProduct:
           isReturnPalletAndProduct ?? this.isReturnPalletAndProduct,
       serialNumber: serialNumber ?? this.serialNumber,
@@ -113,6 +120,7 @@ class Pallet {
       productReturn: productReturn ?? this.productReturn,
       returnProductNoTracking:
           returnProductNoTracking ?? this.returnProductNoTracking,
+      damagedProducts: damagedProducts ?? this.damagedProducts,
       damageProducts: damageProducts ?? this.damageProducts,
     );
   }
@@ -137,6 +145,7 @@ class Pallet {
       'isReturn': isReturn,
       'isDamage': isDamage,
       'isDamagePalletAndProduct': isDamagePalletAndProduct,
+      'isDamageProduct': isDamageProduct,
       'isReturnPalletAndProduct': isReturnPalletAndProduct,
       'serialNumber': serialNumber?.map((x) => x.toMap()).toList(),
       'scannedSerialNumber':
@@ -144,6 +153,7 @@ class Pallet {
       'productReturn': productReturn?.map((x) => x.toMap()).toList(),
       'returnProductNoTracking':
           returnProductNoTracking?.map((x) => x.toMap()).toList(),
+      'damagedProducts': damagedProducts?.map((x) => x.toMap()).toList(),
       'damageProducts': damageProducts?.toMap(),
     };
   }
@@ -176,6 +186,9 @@ class Pallet {
       isDamagePalletAndProduct: map['isDamagePalletAndProduct'] != null
           ? map['isDamagePalletAndProduct'] as bool
           : null,
+      isDamageProduct: map['isDamageProduct'] != null
+          ? map['isDamageProduct'] as bool
+          : null,
       isReturnPalletAndProduct: map['isReturnPalletAndProduct'] != null
           ? map['isReturnPalletAndProduct'] as bool
           : null,
@@ -207,6 +220,13 @@ class Pallet {
               ),
             )
           : null,
+      damagedProducts: map['damagedProducts'] != null
+          ? List<ReturnProduct>.from(
+              (map['damagedProducts'] as List<int>).map<ReturnProduct?>(
+                (x) => ReturnProduct.fromMap(x as Map<String, dynamic>),
+              ),
+            )
+          : null,
       damageProducts: map['damageProducts'] != null
           ? Product.fromMap(map['damageProducts'] as Map<String, dynamic>)
           : null,
@@ -220,7 +240,7 @@ class Pallet {
 
   @override
   String toString() {
-    return 'Pallet(id: $id, palletCode: $palletCode, productName: $productName, code: $code, dateTime: $dateTime, hasActualDateTime: $hasActualDateTime, actualDateTime: $actualDateTime, sku: $sku, lotsCode: $lotsCode, productQty: $productQty, doneQty: $doneQty, returnQty: $returnQty, damagedQty: $damagedQty, isDoneQty: $isDoneQty, hasBeenScanned: $hasBeenScanned, isReturn: $isReturn, isDamage: $isDamage, isDamagePalletAndProduct: $isDamagePalletAndProduct, isReturnPalletAndProduct: $isReturnPalletAndProduct, serialNumber: $serialNumber, scannedSerialNumber: $scannedSerialNumber, productReturn: $productReturn, returnProductNoTracking: $returnProductNoTracking, damageProducts: $damageProducts)';
+    return 'Pallet(id: $id, palletCode: $palletCode, productName: $productName, code: $code, dateTime: $dateTime, hasActualDateTime: $hasActualDateTime, actualDateTime: $actualDateTime, sku: $sku, lotsCode: $lotsCode, productQty: $productQty, doneQty: $doneQty, returnQty: $returnQty, damagedQty: $damagedQty, isDoneQty: $isDoneQty, hasBeenScanned: $hasBeenScanned, isReturn: $isReturn, isDamage: $isDamage, isDamagePalletAndProduct: $isDamagePalletAndProduct, isDamageProduct: $isDamageProduct, isReturnPalletAndProduct: $isReturnPalletAndProduct, serialNumber: $serialNumber, scannedSerialNumber: $scannedSerialNumber, productReturn: $productReturn, returnProductNoTracking: $returnProductNoTracking, damagedProducts: $damagedProducts, damageProducts: $damageProducts)';
   }
 
   @override
@@ -245,11 +265,13 @@ class Pallet {
         other.isReturn == isReturn &&
         other.isDamage == isDamage &&
         other.isDamagePalletAndProduct == isDamagePalletAndProduct &&
+        other.isDamageProduct == isDamageProduct &&
         other.isReturnPalletAndProduct == isReturnPalletAndProduct &&
         listEquals(other.serialNumber, serialNumber) &&
         listEquals(other.scannedSerialNumber, scannedSerialNumber) &&
         listEquals(other.productReturn, productReturn) &&
         listEquals(other.returnProductNoTracking, returnProductNoTracking) &&
+        listEquals(other.damagedProducts, damagedProducts) &&
         other.damageProducts == damageProducts;
   }
 
@@ -273,11 +295,13 @@ class Pallet {
         isReturn.hashCode ^
         isDamage.hashCode ^
         isDamagePalletAndProduct.hashCode ^
+        isDamageProduct.hashCode ^
         isReturnPalletAndProduct.hashCode ^
         serialNumber.hashCode ^
         scannedSerialNumber.hashCode ^
         productReturn.hashCode ^
         returnProductNoTracking.hashCode ^
+        damagedProducts.hashCode ^
         damageProducts.hashCode;
   }
 }

@@ -260,6 +260,8 @@ class _ReturnPalletAndProductScreenState
                   confirmTitle = "Confirm Damage";
                   confirmMessage =
                       "Are you sure you want to damage this\nPallet and Product?";
+
+                  damageCubit.resetDamage();
                 }
 
                 reusableConfirmDialog(

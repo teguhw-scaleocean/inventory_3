@@ -10,6 +10,7 @@ import 'package:inventory_v3/common/components/custom_app_bar.dart';
 import 'package:inventory_v3/common/components/reusable_field_required.dart';
 import 'package:inventory_v3/presentation/receipt/receipt_pallet/cubit/count_cubit.dart';
 import 'package:inventory_v3/presentation/receipt/receipt_pallet/cubit/count_state.dart';
+import 'package:inventory_v3/presentation/receipt/receipt_pallet/widget/scan_view_widget.dart';
 
 import '../../../../../common/components/custom_form.dart';
 import '../../../../../common/components/custom_quantity_button.dart';
@@ -20,6 +21,7 @@ import '../../../../../common/components/reusable_widget.dart';
 import '../../../../../common/theme/color/color_name.dart';
 import '../../../../../common/theme/text/base_text.dart';
 import '../../../../../data/model/pallet.dart';
+import '../../../../../data/model/scan_view.dart';
 
 class AddProductScreen extends StatefulWidget {
   final int addType;
@@ -291,7 +293,33 @@ class _AddProductScreenState extends State<AddProductScreen> {
                       ),
                     ),
                     SizedBox(width: 8.w),
-                    reusableScanButton()
+                    reusableScanButton(onTap: () {
+                      final scanAddQtySnResult = Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const ScanView(
+                            expectedValue: "add-qty-sn",
+                            scanType: ScanViewType.addSerialNumberQty,
+                          ),
+                        ),
+                      );
+
+                      scanAddQtySnResult.then((value) {
+                        if (value != null) {
+                          var scanAddQtySnValue = value as List<SerialNumber>;
+
+                          setState(() {
+                            scanAddQtySnValue.map((e) {
+                              listSnController.add(TextEditingController(
+                                text: e.label,
+                              ));
+                            }).toList();
+
+                            hasScanButton = false;
+                          });
+                        }
+                      });
+                    })
                   ],
                 )
               : ListView.builder(

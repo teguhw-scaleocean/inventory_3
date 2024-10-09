@@ -1,1 +1,7 @@
-enum ScanViewType { listProduct, pallet, product, listPalletQC }
+enum ScanViewType {
+  listProduct,
+  pallet,
+  product,
+  listPalletQC,
+  addSerialNumberQty
+}

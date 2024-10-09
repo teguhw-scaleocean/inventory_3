@@ -1,5 +1,6 @@
 import 'dart:developer';
 import 'dart:io';
+import 'dart:math' as m;
 
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
@@ -53,6 +54,7 @@ class _ScanViewState extends State<ScanView> {
   String appBarTitle = "";
   String labelOfScan = "";
 
+  List<SerialNumber> scannedQtySerialNumberList = [];
   List<SerialNumber> serialNumberList = [];
   SerialNumber? serialNumber;
   bool isItemInputDate = false;
@@ -93,6 +95,28 @@ class _ScanViewState extends State<ScanView> {
       case ScanViewType.listPalletQC:
         appBarTitle = "Scan Pallet";
         labelOfScan = TextConstants.scanFromListPalletTitle;
+        break;
+      case ScanViewType.addSerialNumberQty:
+        appBarTitle = "Scan Serial Number";
+        labelOfScan = TextConstants.scanToAddQtySerialNumber;
+
+        var serialNumberTemp = SerialNumber(
+          id: m.Random().nextInt(100),
+          label: "NBZ-20230901-008",
+          expiredDateTime: "Exp. Date: 12/07/2024 - 16.00",
+          quantity: 1,
+        );
+        var serialNumberTemp2 = SerialNumber(
+          id: m.Random().nextInt(100),
+          label: "NBZ-20230901-009",
+          expiredDateTime: "Exp. Date: 12/07/2024 - 16.00",
+          quantity: 1,
+        );
+        var dummySerialNumbers = <SerialNumber>[];
+        dummySerialNumbers = [serialNumberTemp, serialNumberTemp2];
+
+        scannedQtySerialNumberList.addAll(dummySerialNumbers);
+        break;
       default:
     }
 
@@ -457,6 +481,10 @@ class _ScanViewState extends State<ScanView> {
             ),
           ),
         );
+      });
+    } else if (scanViewType == ScanViewType.addSerialNumberQty) {
+      Future.delayed(const Duration(seconds: 8), () {
+        Navigator.pop(context, scannedQtySerialNumberList);
       });
     } else {
       Future.delayed(const Duration(seconds: 3), () {

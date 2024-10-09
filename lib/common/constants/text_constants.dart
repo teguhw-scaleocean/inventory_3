@@ -31,4 +31,7 @@ class TextConstants {
 
   static String get scanFromListPalletTitle =>
       "Scan the pallet to instantly\nchoose it from the list";
+
+  static String get scanToAddQtySerialNumber =>
+      "Scan now to enter the\nSerial Number.";
 }

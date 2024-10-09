@@ -21,6 +21,7 @@ import 'package:inventory_v3/data/model/pallet.dart';
 import 'package:inventory_v3/data/model/quality_control.dart';
 import 'package:inventory_v3/data/model/receipt.dart';
 import 'package:inventory_v3/data/model/scan_view.dart';
+import 'package:inventory_v3/presentation/quality-control/pallet/screens/quality_control_product_detail.dart';
 import 'package:inventory_v3/presentation/receipt/receipt_pallet/cubit/add_pallet_cubit/add_pallet_state.dart';
 import 'package:inventory_v3/presentation/receipt/receipt_pallet/screens/pallet/add_pallet_screen.dart';
 import 'package:inventory_v3/presentation/receipt/receipt_pallet/screens/pallet/return_pallet_and_product_screen.dart';
@@ -643,10 +644,14 @@ class _QualityControlDetailScreenState
     return InkWell(
       onTap: () {
         final resultOfProduct = Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => ReceiptProductDetailScreen(
-                    product: product0, tracking: tracking)));
+          context,
+          MaterialPageRoute(
+            builder: (context) => QualityControlProductDetailScreen(
+              product: product0,
+              tracking: tracking,
+            ),
+          ),
+        );
 
         resultOfProduct.then((value) {
           if (value != null) {

@@ -205,6 +205,38 @@ List<QualityControl> _qualityControls = [
         ),
       ]),
   QualityControl(
+      id: 6,
+      name: "WH/QC/00140",
+      status: "Waiting",
+      statusColor: ColorName.waitingColor,
+      packageName: "Package: Pallet",
+      packageStatus: "Tracking: No Tracking",
+      dateTime: "16/06/2024 - 15:36",
+      destination: "To: Medical Storage",
+      products: [
+        Product(
+          id: 1,
+          name: "Surgical Masks",
+          sku: "",
+          reason: "",
+          location: "",
+        ),
+        Product(
+          id: 2,
+          name: "Surgical Instruments",
+          sku: "",
+          reason: "",
+          location: "",
+        ),
+        Product(
+          id: 3,
+          name: "Latex",
+          sku: "",
+          reason: "",
+          location: "",
+        ),
+      ]),
+  QualityControl(
       id: 3,
       name: "WH/QC/00137",
       status: "Late",

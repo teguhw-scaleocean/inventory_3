@@ -139,6 +139,7 @@ class _QualityControlProductDetailScreenState
                   builder: (context) => AddProductScreen(
                     addType: indexToAddProduct,
                     code: code,
+                    isFromBoth: false,
                   ),
                 ),
               );
@@ -157,7 +158,6 @@ class _QualityControlProductDetailScreenState
                     serialNumberResult = value as List<SerialNumber>;
                     serialNumberList.insertAll(0, serialNumberResult);
                     product.serialNumber = serialNumberList;
-                    isHighlightedAddSn = true;
                   });
 
                   debugPrint(
@@ -463,7 +463,7 @@ class _QualityControlProductDetailScreenState
                                     )
                                   : buildItemQuantity(
                                       code,
-                                      isHighlighted: isHighlightedAddSn,
+                                      isHighlighted: isHighlighted,
                                     ));
                         }),
                   )

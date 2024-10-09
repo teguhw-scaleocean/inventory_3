@@ -47,10 +47,15 @@ class _AddProductScreenState extends State<AddProductScreen> {
 
   var qtyController = TextEditingController();
   final serialNumberConhtroller = TextEditingController();
+  final scannedFieldController = TextEditingController();
+
   List<TextEditingController> listSnController = [];
   List<SerialNumber> listSerialNumber = [];
 
   bool hasScanButton = true;
+  bool hasScanDynamicButton = true;
+
+  bool hasScannedField = false;
 
   String label = "";
   String code = "";
@@ -127,6 +132,8 @@ class _AddProductScreenState extends State<AddProductScreen> {
               } else if (addType == 0 && widget.isFromBoth == false) {
                 if (formSnKey.currentState!.validate()) {
                   if (listSnController.isNotEmpty) {
+                    listSerialNumber.insert(0, serialNumber);
+
                     _mapListSerialNumberController();
                   } else {
                     listSerialNumber.add(serialNumber);
@@ -266,114 +273,167 @@ class _AddProductScreenState extends State<AddProductScreen> {
         children: [
           buildRequiredLabel("Serial Number"),
           SizedBox(height: 4.h),
-          (hasScanButton)
-              ? Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Flexible(
-                      child: LimitedBox(
-                        maxWidth: 280.w,
-                        child: CustomFormField(
-                          title: "",
-                          hintText: "Input Serial Number",
-                          isShowTitle: false,
-                          isRequired: true,
-                          controller: serialNumberConhtroller,
-                          validator: (v) {
-                            if (v == null || v.isEmpty) {
-                              return "This field is required. Please fill it in.";
-                            }
-                            return null;
-                          },
-                          // onChanged: (v) {
-                          //   hasScanButton = v.isEmpty;
-                          //   setState(() {});
-                          // },
-                        ),
+          if (hasScanButton)
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Flexible(
+                  child: LimitedBox(
+                    maxWidth: 280.w,
+                    child: CustomFormField(
+                      title: "",
+                      hintText: "Input Serial Number",
+                      isShowTitle: false,
+                      isRequired: true,
+                      controller: serialNumberConhtroller,
+                      validator: (v) {
+                        if (v == null || v.isEmpty) {
+                          return "This field is required. Please fill it in.";
+                        }
+                        return null;
+                      },
+                      // onChanged: (v) {
+                      //   hasScanButton = v.isEmpty;
+                      //   setState(() {});
+                      // },
+                    ),
+                  ),
+                ),
+                SizedBox(width: 8.w),
+                reusableScanButton(onTap: () {
+                  final scanAddQtySnResult = Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const ScanView(
+                        expectedValue: "add-qty-sn",
+                        scanType: ScanViewType.addSerialNumberQty,
                       ),
                     ),
-                    SizedBox(width: 8.w),
-                    reusableScanButton(onTap: () {
-                      final scanAddQtySnResult = Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const ScanView(
-                            expectedValue: "add-qty-sn",
-                            scanType: ScanViewType.addSerialNumberQty,
+                  );
+
+                  scanAddQtySnResult.then((value) {
+                    if (value != null) {
+                      debugPrint("scanAddQtySnResult value: $value");
+                      var scanAddQtySnValue = value as List<SerialNumber>;
+
+                      setState(() {
+                        scannedFieldController.text =
+                            scanAddQtySnValue.first.label;
+
+                        hasScanButton = false;
+                        hasScannedField = true;
+                      });
+                    }
+                  });
+                })
+              ],
+            ),
+          if (hasScannedField)
+            CustomFormField(
+              title: "",
+              hintText: "Input Serial Number",
+              contentPadding: EdgeInsets.symmetric(horizontal: 16.w),
+              isShowTitle: false,
+              isRequired: true,
+              controller: scannedFieldController,
+              validator: (v) {
+                if (v == null || v.isEmpty) {
+                  return "This field is required. Please fill it in.";
+                }
+                return null;
+              },
+            ),
+          SizedBox(height: 6.h),
+          ListView.builder(
+              shrinkWrap: true,
+              itemCount: listSnController.length,
+              itemBuilder: (context, index) {
+                return Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Row(
+                      children: [
+                        LimitedBox(
+                          maxWidth: 280.w,
+                          child: CustomFormField(
+                            title: "",
+                            hintText: "Input Serial Number",
+                            contentPadding:
+                                EdgeInsets.symmetric(horizontal: 16.w),
+                            controller: listSnController[index],
+                            isShowTitle: false,
+                            onChanged: (v) {
+                              setState(() {
+                                debugPrint("onChanged: $v");
+                              });
+                            },
+                            onSubmit: (p0) {
+                              if (p0.isNotEmpty) {
+                                setState(() {
+                                  hasScanDynamicButton = false;
+                                });
+                              }
+                              debugPrint("onSubmit: $hasScanDynamicButton");
+                            },
                           ),
                         ),
-                      );
+                        SizedBox(width: 8.w),
+                        (listSnController[index].text.isEmpty)
+                            ? reusableScanButton(onTap: () {
+                                final scanAddQtySnResult = Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const ScanView(
+                                      expectedValue: "add-qty-sn",
+                                      scanType: ScanViewType.addSerialNumberQty,
+                                    ),
+                                  ),
+                                );
 
-                      scanAddQtySnResult.then((value) {
-                        if (value != null) {
-                          var scanAddQtySnValue = value as List<SerialNumber>;
+                                scanAddQtySnResult.then((value) {
+                                  if (value != null) {
+                                    debugPrint(
+                                        "scanAddQtySnResult value: $value");
+                                    var scanAddQtySnValue =
+                                        value as List<SerialNumber>;
 
-                          setState(() {
-                            scanAddQtySnValue.map((e) {
-                              listSnController.add(TextEditingController(
-                                text: e.label,
-                              ));
-                            }).toList();
+                                    setState(() {
+                                      scannedFieldController.text =
+                                          scanAddQtySnValue.first.label;
 
-                            hasScanButton = false;
-                          });
-                        }
-                      });
-                    })
-                  ],
-                )
-              : ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: listSnController.length,
-                  itemBuilder: (context, index) {
-                    return Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Row(
-                          children: [
-                            LimitedBox(
-                              maxWidth: 280.w,
-                              child: CustomFormField(
-                                title: "",
-                                hintText: "Input Serial Number",
-                                contentPadding:
-                                    EdgeInsets.symmetric(horizontal: 16.w),
-                                controller: listSnController[index],
-                                isShowTitle: false,
-                                onChanged: (v) {
-                                  setState(() {
-                                    debugPrint("onChanged: $v");
-                                  });
-                                },
-                              ),
-                            ),
-                            SizedBox(width: 8.w),
-                            reusableDeleteButton(() {
-                              setState(() {
-                                listSnController[index].clear();
-                                listSnController[index].dispose();
-                                listSnController.removeAt(index);
-                              });
+                                      hasScanButton = false;
+                                      hasScannedField = true;
+                                    });
+                                  }
+                                });
+                              })
+                            : reusableDeleteButton(() {
+                                setState(() {
+                                  listSnController[index].clear();
+                                  listSnController[index].dispose();
+                                  listSnController.removeAt(index);
+                                });
 
-                              debugPrint(
-                                  "listSnController: ${listSnController.length}");
+                                debugPrint(
+                                    "listSnController: ${listSnController.length}");
 
-                              if (listSnController.isEmpty) {
-                                setState(() => hasScanButton = true);
-                              }
-                            })
-                          ],
-                        ),
-                        SizedBox(height: 6.h),
+                                if (listSnController.isEmpty) {
+                                  setState(() => hasScanButton = true);
+                                }
+                              })
                       ],
-                    );
-                  }),
+                    ),
+                    SizedBox(height: 6.h),
+                  ],
+                );
+              }),
           SizedBox(height: 6.h),
           reusableAddSerialNumberButton(
             onTap: () {
               setState(() {
                 listSnController.add(TextEditingController());
-                hasScanButton = false;
+                // hasScanButton = false;
+                // hasScanDynamicButton = true;
               });
 
               debugPrint("listSnController: ${listSnController.length}");

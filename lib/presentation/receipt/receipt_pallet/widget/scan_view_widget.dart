@@ -108,14 +108,14 @@ class _ScanViewState extends State<ScanView> {
           expiredDateTime: "Exp. Date: 12/07/2024 - 16.00",
           quantity: 1,
         );
-        var serialNumberTemp2 = SerialNumber(
-          id: m.Random().nextInt(100),
-          label: "NBZ-20230901-009",
-          expiredDateTime: "Exp. Date: 12/07/2024 - 16.00",
-          quantity: 1,
-        );
+        // var serialNumberTemp2 = SerialNumber(
+        //   id: m.Random().nextInt(100),
+        //   label: "NBZ-20230901-009",
+        //   expiredDateTime: "Exp. Date: 12/07/2024 - 16.00",
+        //   quantity: 1,
+        // );
         var dummySerialNumbers = <SerialNumber>[];
-        dummySerialNumbers = [serialNumberTemp, serialNumberTemp2];
+        dummySerialNumbers = [serialNumberTemp];
 
         scannedQtySerialNumberList.addAll(dummySerialNumbers);
         break;
@@ -136,7 +136,7 @@ class _ScanViewState extends State<ScanView> {
     super.didChangeDependencies();
 
     //TODO: Check if scan serial number or lots
-    if (idTracking == 0) {
+    if (idTracking == 0 && scanViewType != ScanViewType.addSerialNumberQty) {
       checkScanSerialNumber();
     } else if (idTracking == 1) {
       checkScanErrorLots();

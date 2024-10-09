@@ -136,6 +136,7 @@ class _ReceiptProductDetailScreenState extends State<ReceiptProductDetailScreen>
                   builder: (context) => AddProductScreen(
                     addType: indexToAddProduct,
                     code: code,
+                    isFromBoth: false,
                   ),
                 ),
               );

@@ -20,8 +20,10 @@ import '../../../../../common/components/reusable_widget.dart';
 import '../../../../../common/constants/local_images.dart';
 import '../../../../../common/theme/color/color_name.dart';
 import '../../../../../common/theme/text/base_text.dart';
+import '../../../../../data/model/scan_view.dart';
 import '../../cubit/count_cubit.dart';
 import '../../cubit/count_state.dart';
+import '../../widget/scan_view_widget.dart';
 
 class AddPalletScreen extends StatefulWidget {
   final int index;
@@ -448,7 +450,35 @@ class _AddPalletScreenState extends State<AddPalletScreen> {
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
                                         SizedBox(width: 8.w),
-                                        reusableScanButton(),
+                                        reusableScanButton(onTap: () {
+                                          final scanAddQtySnResult =
+                                              Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  const ScanView(
+                                                expectedValue:
+                                                    "LOTS-20230248-648",
+                                                scanType: ScanViewType
+                                                    .addSerialNumberQty,
+                                              ),
+                                            ),
+                                          );
+
+                                          scanAddQtySnResult.then((value) {
+                                            if (value != null) {
+                                              var scanLotsNumberValue =
+                                                  value as String;
+
+                                              setState(() {
+                                                lotsController.text =
+                                                    scanLotsNumberValue;
+
+                                                hasLotShow = false;
+                                              });
+                                            }
+                                          });
+                                        }),
                                       ],
                                     ))
                               ],

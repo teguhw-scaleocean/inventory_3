@@ -60,6 +60,8 @@ class _ScanViewState extends State<ScanView> {
   bool isItemInputDate = false;
   bool isError = false;
 
+  String scanDummyLotsNumber = "";
+
   // In order to get hot reload to work we need to pause the camera if the platform
   // is android, or resume the camera if the platform is iOS.
   @override
@@ -117,6 +119,12 @@ class _ScanViewState extends State<ScanView> {
 
         scannedQtySerialNumberList.addAll(dummySerialNumbers);
         break;
+      case ScanViewType.addLotsNumber:
+        appBarTitle = "Scan Lots Number";
+        labelOfScan = TextConstants.scanToAddLotsNumber;
+        scanDummyLotsNumber = "LOTS-20230248-648";
+        break;
+
       default:
     }
 
@@ -485,6 +493,10 @@ class _ScanViewState extends State<ScanView> {
     } else if (scanViewType == ScanViewType.addSerialNumberQty) {
       Future.delayed(const Duration(seconds: 8), () {
         Navigator.pop(context, scannedQtySerialNumberList);
+      });
+    } else if (scanViewType == ScanViewType.addLotsNumber) {
+      Future.delayed(const Duration(seconds: 8), () {
+        Navigator.pop(context, scanDummyLotsNumber);
       });
     } else {
       Future.delayed(const Duration(seconds: 3), () {

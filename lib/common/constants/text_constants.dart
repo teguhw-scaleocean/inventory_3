@@ -34,4 +34,7 @@ class TextConstants {
 
   static String get scanToAddQtySerialNumber =>
       "Scan now to enter the\nSerial Number.";
+
+  static String get scanToAddLotsNumber =>
+      "Scan now to enter the\nLots Number.";
 }

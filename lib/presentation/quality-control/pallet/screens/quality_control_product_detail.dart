@@ -49,6 +49,8 @@ class _QualityControlProductDetailScreenState
   bool isDamage = false;
   bool isDamagePalletAndProduct = false;
 
+  bool isHighlightedAddQty = false;
+
   late TabController _tabController;
   List<String> tabs = ["Not Done", "Done"];
 
@@ -144,7 +146,8 @@ class _QualityControlProductDetailScreenState
                   debugPrint("resultOfAddProduct: $value");
                   setState(() {
                     var quantityDouble = value;
-                    product.productQty = quantityDouble;
+                    product.productQty = product.productQty + quantityDouble;
+                    isHighlightedAddQty = true;
                     // quantity = quantityDouble.toString();
                     debugPrint("quantityDouble: ${product.productQty}");
                   });
@@ -465,6 +468,7 @@ class _QualityControlProductDetailScreenState
                 : buildItemQuantity(
                     code,
                     itemProduct: product,
+                    isHighlighted: isHighlightedAddQty,
                   ),
           )
         ],

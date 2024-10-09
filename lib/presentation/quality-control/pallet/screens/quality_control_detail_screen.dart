@@ -365,20 +365,20 @@ class _QualityControlDetailScreenState
               default:
             }
 
-            // final addPalletResult = Navigator.push(
-            //   context,
-            //   MaterialPageRoute(
-            //     builder: (context) => AddPalletScreen(index: indexToAddPallet),
-            //   ),
-            // ).then((value) {
-            //   debugPrint("addPalletResult: ${value.toString()}");
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => AddPalletScreen(index: indexToAddPallet),
+              ),
+            ).then((value) {
+              debugPrint("addPalletResult: ${value.toString()}");
 
-            //   if (value != null) {
-            //     setState(() {
-            //       listPallets = value as List<Pallet>;
-            //     });
-            //   }
-            // });
+              if (value != null) {
+                setState(() {
+                  listPallets = value as List<Pallet>;
+                });
+              }
+            });
           },
           icon: Icons.add,
         ),

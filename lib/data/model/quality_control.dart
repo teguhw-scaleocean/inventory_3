@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
+import '../../common/theme/color/color_name.dart';
 import 'product.dart';
 
 class QualityControl {
@@ -123,3 +124,182 @@ class QualityControl {
         products.hashCode;
   }
 }
+
+List<QualityControl> _qualityControls = [
+  QualityControl(
+      id: 1,
+      name: "WH/QC/00139",
+      status: "Ready",
+      statusColor: ColorName.readyColor,
+      packageName: "Package: Pallet",
+      packageStatus: "Tracking: Lots",
+      dateTime: "07/07/2024 - 15:37",
+      destination: "To: Medical Storage",
+      products: [
+        Product(
+          id: 1,
+          name: "Surgical Masks",
+          sku: "",
+          reason: "",
+          location: "",
+        ),
+        Product(
+          id: 2,
+          name: "Medical Gloves",
+          sku: "",
+          reason: "",
+          location: "",
+        ),
+        Product(
+          id: 3,
+          name: "Latex",
+          sku: "",
+          reason: "",
+          location: "",
+        ),
+        Product(
+          id: 4,
+          name: "Surgical Instruments",
+          sku: "",
+          reason: "",
+          location: "",
+        ),
+        Product(
+          id: 5,
+          name: "N95 Mask",
+          sku: "",
+          reason: "",
+          location: "",
+        ),
+      ]),
+  QualityControl(
+      id: 2,
+      name: "WH/QC/00138",
+      status: "Waiting",
+      statusColor: ColorName.waitingColor,
+      packageName: "Package: Pallet",
+      packageStatus: "Tracking: No Tracking",
+      dateTime: "16/06/2024 - 15:36",
+      destination: "To: Medical Storage",
+      products: [
+        Product(
+          id: 1,
+          name: "Surgical Masks",
+          sku: "",
+          reason: "",
+          location: "",
+        ),
+        Product(
+          id: 2,
+          name: "Surgical Instruments",
+          sku: "",
+          reason: "",
+          location: "",
+        ),
+        Product(
+          id: 3,
+          name: "Latex",
+          sku: "",
+          reason: "",
+          location: "",
+        ),
+      ]),
+  QualityControl(
+      id: 3,
+      name: "WH/QC/00137",
+      status: "Late",
+      statusColor: ColorName.lateColor,
+      packageName: "Package: Pallet",
+      packageStatus: "Tracking: Serial Number",
+      dateTime: "16/06/2024 - 15:36",
+      destination: "To: Medical Storage",
+      products: [
+        Product(
+          id: 1,
+          name: "Surgical Masks",
+          sku: "",
+          reason: "",
+          location: "",
+        ),
+        Product(
+          id: 2,
+          name: "Surgical Instruments",
+          sku: "",
+          reason: "",
+          location: "",
+        ),
+        Product(
+          id: 3,
+          name: "Latex",
+          sku: "",
+          reason: "",
+          location: "",
+        ),
+      ]),
+  QualityControl(
+      id: 4,
+      name: "WH/QC/00136",
+      status: "Ready",
+      statusColor: ColorName.readyColor,
+      packageName: "Package: Pallet",
+      packageStatus: "Tracking: Lots",
+      dateTime: "16/06/2024 - 15:36",
+      destination: "To: Medical Storage",
+      products: [
+        Product(
+          id: 1,
+          name: "Surgical Masks",
+          sku: "",
+          reason: "",
+          location: "",
+        ),
+        Product(
+          id: 2,
+          name: "Surgical Instruments",
+          sku: "",
+          reason: "",
+          location: "",
+        ),
+        Product(
+          id: 3,
+          name: "Latex",
+          sku: "",
+          reason: "",
+          location: "",
+        ),
+      ]),
+  QualityControl(
+      id: 5,
+      name: "WH/QC/00135",
+      status: "Waiting",
+      statusColor: ColorName.waitingColor,
+      packageName: "Package: Pallet",
+      packageStatus: "Tracking: Serial Number",
+      dateTime: "16/06/2024 - 15:36",
+      destination: "To: Medical Storage",
+      products: [
+        Product(
+          id: 1,
+          name: "Surgical Masks",
+          sku: "",
+          reason: "",
+          location: "",
+        ),
+        Product(
+          id: 2,
+          name: "Medical Gloves",
+          sku: "",
+          reason: "",
+          location: "",
+        ),
+        Product(
+          id: 3,
+          name: "Latex",
+          sku: "",
+          reason: "",
+          location: "",
+        ),
+      ]),
+];
+
+List<QualityControl> get qualityControls => _qualityControls;

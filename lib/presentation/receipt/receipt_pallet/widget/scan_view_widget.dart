@@ -8,7 +8,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:inventory_v3/common/constants/text_constants.dart';
 import 'package:inventory_v3/data/model/pallet.dart';
+import 'package:inventory_v3/data/model/quality_control.dart';
 import 'package:inventory_v3/data/model/scan_view.dart';
+import 'package:inventory_v3/presentation/quality-control/pallet/screens/quality_control_detail_screen.dart';
 import 'package:inventory_v3/presentation/receipt/receipt_product/cubit/scan/scan_cubit.dart';
 import 'package:inventory_v3/presentation/receipt/receipt_product/cubit/scan/scan_state.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
@@ -88,6 +90,9 @@ class _ScanViewState extends State<ScanView> {
         appBarTitle = "Scan Product";
         labelOfScan = TextConstants.scanProductTittle;
         break;
+      case ScanViewType.listPalletQC:
+        appBarTitle = "Scan Pallet";
+        labelOfScan = TextConstants.scanFromListPalletTitle;
       default:
     }
 
@@ -439,6 +444,15 @@ class _ScanViewState extends State<ScanView> {
 
         log("expectedValue: $expectedValue");
       });
+    } else if (scanViewType == ScanViewType.listPalletQC) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => QualityControlDetailScreen(
+            qualityControl: qualityControls.first,
+          ),
+        ),
+      );
     } else {
       Future.delayed(const Duration(seconds: 3), () {
         Navigator.of(context).pop(expectedValue);

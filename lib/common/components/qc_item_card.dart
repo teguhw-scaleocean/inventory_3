@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:inventory_v3/presentation/quality-control/pallet/screens/quality_control_detail_screen.dart';
 
 import '../../data/model/product.dart';
 import '../../data/model/quality_control.dart';
@@ -19,12 +20,13 @@ class QcItemCard extends StatelessWidget {
 
     return GestureDetector(
       onTap: () {
-        // Navigator.push(
-        //   context,
-        //   MaterialPageRoute(
-        //     builder: (context) => qualityControlDetailScreen(qualityControl: qualityControl),
-        //   ),
-        // );
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) =>
+                QualityControlDetailScreen(qualityControl: qualityControl),
+          ),
+        );
       },
       child: Container(
         margin: EdgeInsets.only(

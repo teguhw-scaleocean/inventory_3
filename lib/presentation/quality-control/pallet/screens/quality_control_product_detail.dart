@@ -50,6 +50,7 @@ class _QualityControlProductDetailScreenState
   bool isDamagePalletAndProduct = false;
 
   bool isHighlightedAddQty = false;
+  bool isHighlightedAddSn = false;
 
   late TabController _tabController;
   List<String> tabs = ["Not Done", "Done"];
@@ -156,6 +157,7 @@ class _QualityControlProductDetailScreenState
                     serialNumberResult = value as List<SerialNumber>;
                     serialNumberList.insertAll(0, serialNumberResult);
                     product.serialNumber = serialNumberList;
+                    isHighlightedAddSn = true;
                   });
 
                   debugPrint(
@@ -461,7 +463,7 @@ class _QualityControlProductDetailScreenState
                                     )
                                   : buildItemQuantity(
                                       code,
-                                      isHighlighted: isHighlighted,
+                                      isHighlighted: isHighlightedAddSn,
                                     ));
                         }),
                   )

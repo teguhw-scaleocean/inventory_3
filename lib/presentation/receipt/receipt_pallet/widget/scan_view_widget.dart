@@ -445,14 +445,19 @@ class _ScanViewState extends State<ScanView> {
         log("expectedValue: $expectedValue");
       });
     } else if (scanViewType == ScanViewType.listPalletQC) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => QualityControlDetailScreen(
-            qualityControl: qualityControls.first,
+      Future.delayed(const Duration(seconds: 10), () {
+        controller.stopCamera();
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => QualityControlDetailScreen(
+              qualityControl: qualityControls[1],
+              scanBarcode: expectedValue,
+            ),
           ),
-        ),
-      );
+        );
+      });
     } else {
       Future.delayed(const Duration(seconds: 3), () {
         Navigator.of(context).pop(expectedValue);

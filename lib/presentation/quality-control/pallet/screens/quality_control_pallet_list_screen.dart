@@ -5,6 +5,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:inventory_v3/common/components/custom_app_bar.dart';
 import 'package:inventory_v3/common/components/qc_item_card.dart';
 import 'package:inventory_v3/data/model/quality_control.dart';
+import 'package:inventory_v3/data/model/scan_view.dart';
+import 'package:inventory_v3/presentation/receipt/receipt_pallet/widget/scan_view_widget.dart';
 
 import '../../../../common/components/reusable_search_bar_border.dart';
 import '../../../../common/components/reusable_tab_bar.dart';
@@ -80,7 +82,16 @@ class _QualityControlPalletListScreenState
                       ),
                     ),
                     SizedBox(width: 8.w),
-                    buildScanButton(onTap: () {}),
+                    buildScanButton(onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const ScanView(
+                                    expectedValue: "11.0",
+                                    scanType: ScanViewType.listPalletQC,
+                                    idTracking: 2,
+                                  )));
+                    }),
                   ],
                 ),
               ),

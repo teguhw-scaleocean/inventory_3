@@ -23,8 +23,10 @@ class QcItemCard extends StatelessWidget {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) =>
-                QualityControlDetailScreen(qualityControl: qualityControl),
+            builder: (context) => QualityControlDetailScreen(
+              qualityControl: qualityControl,
+              scanBarcode: null,
+            ),
           ),
         );
       },

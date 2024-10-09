@@ -175,8 +175,8 @@ List<QualityControl> _qualityControls = [
   QualityControl(
       id: 2,
       name: "WH/QC/00138",
-      status: "Waiting",
-      statusColor: ColorName.waitingColor,
+      status: "Ready",
+      statusColor: ColorName.readyColor,
       packageName: "Package: Pallet",
       packageStatus: "Tracking: No Tracking",
       dateTime: "16/06/2024 - 15:36",

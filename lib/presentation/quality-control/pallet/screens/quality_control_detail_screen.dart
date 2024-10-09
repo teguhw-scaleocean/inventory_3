@@ -62,6 +62,8 @@ class _QualityControlDetailScreenState
 
   List<dynamic> palletUpdates = [];
 
+  List<Pallet> listScannedQc = [];
+
   var selectedUpdatePallet;
 
   int idTracking = 0;
@@ -77,17 +79,25 @@ class _QualityControlDetailScreenState
       debugPrint(qualityControl.toJson());
     }
 
-    // if (widget.scanBarcode != null) {
-    //   _scanBarcode = widget.scanBarcode!;
-    //   debugPrint("_scanBarcode: $_scanBarcode");
-    // }
-
     if (qualityControl.packageStatus
         .toString()
         .toLowerCase()
         .contains("no tracking")) {
       cubit.getInitNoTrackingListProduct();
       idTracking = 2;
+      if (widget.scanBarcode != null) {
+        _scanBarcode = widget.scanBarcode!;
+        debugPrint("_scanBarcode: $_scanBarcode");
+        cubit.scanFromList(_scanBarcode);
+
+        Future.delayed(const Duration(seconds: 2), () async {
+          String scannedItem = "Pallet ${cubit.state.pallets.first.palletCode}";
+          onShowSuccessDialog(
+            context: context,
+            scannedItem: scannedItem,
+          );
+        });
+      }
     } else if (qualityControl.packageStatus
         .toString()
         .toLowerCase()

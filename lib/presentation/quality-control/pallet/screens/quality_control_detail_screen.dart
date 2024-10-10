@@ -1,8 +1,6 @@
 import 'dart:developer';
 
-import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 // import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:flutter_dash/flutter_dash.dart';
@@ -13,26 +11,18 @@ import 'package:inventory_v3/common/components/custom_divider.dart';
 import 'package:inventory_v3/common/components/primary_button.dart';
 import 'package:inventory_v3/common/components/reusable_bottom_sheet.dart';
 import 'package:inventory_v3/common/components/reusable_dropdown_menu.dart';
-import 'package:inventory_v3/common/components/reusable_dropdown_search.dart';
 import 'package:inventory_v3/common/components/reusable_floating_action_button.dart';
 import 'package:inventory_v3/common/constants/local_images.dart';
-import 'package:inventory_v3/data/model/pallet_value.dart';
 import 'package:inventory_v3/data/model/pallet.dart';
+import 'package:inventory_v3/data/model/pallet_value.dart';
 import 'package:inventory_v3/data/model/quality_control.dart';
-import 'package:inventory_v3/data/model/receipt.dart';
-import 'package:inventory_v3/data/model/scan_view.dart';
 import 'package:inventory_v3/presentation/quality-control/pallet/screens/quality_control_product_detail.dart';
-import 'package:inventory_v3/presentation/receipt/receipt_pallet/cubit/add_pallet_cubit/add_pallet_state.dart';
 import 'package:inventory_v3/presentation/receipt/receipt_pallet/screens/pallet/add_pallet_screen.dart';
-import 'package:inventory_v3/presentation/receipt/receipt_pallet/screens/pallet/return_pallet_and_product_screen.dart';
-import 'package:inventory_v3/presentation/receipt/receipt_pallet/screens/receipt_product_detail.dart';
-import 'package:inventory_v3/presentation/receipt/receipt_pallet/widget/scan_view_widget.dart';
 import 'package:inventory_v3/presentation/receipt/receipt_product/cubit/product_detail/product_menu_product_detail_cubit.dart';
 import 'package:inventory_v3/presentation/receipt/receipt_product/cubit/product_detail/product_menu_product_detail_state.dart';
 
 import '../../../../common/components/reusable_widget.dart';
 import '../../../../common/components/status_badge.dart';
-import '../../../../common/extensions/empty_space_extension.dart';
 import '../../../../common/theme/color/color_name.dart';
 import '../../../../common/theme/text/base_text.dart';
 import '../../../../data/model/return_pallet.dart';
@@ -704,7 +694,9 @@ class _QualityControlDetailScreenState
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    "Pallet ${product0.palletCode}",
+                    (product0.palletCode.toLowerCase().contains("pallet"))
+                        ? product0.palletCode
+                        : "Pallet ${product0.palletCode}",
                     style: BaseText.black2Text15
                         .copyWith(fontWeight: BaseText.medium),
                   ),

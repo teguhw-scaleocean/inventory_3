@@ -26,6 +26,8 @@ import '../../../../common/components/status_badge.dart';
 import '../../../../common/theme/color/color_name.dart';
 import '../../../../common/theme/text/base_text.dart';
 import '../../../../data/model/return_pallet.dart';
+import '../../../../data/model/scan_view.dart';
+import '../../../receipt/receipt_pallet/widget/scan_view_widget.dart';
 
 class QualityControlDetailScreen extends StatefulWidget {
   final QualityControl? qualityControl;
@@ -167,29 +169,35 @@ class _QualityControlDetailScreenState
               child: buildScanAndUpdateSection(
                   status: qualityControl.status,
                   onScan: () async {
-                    // final scanResult = await Navigator.push(
-                    //   context,
-                    //   MaterialPageRoute(
-                    //     builder: (context) => const ScanView(
-                    //       expectedValue: "18.00",
-                    //       scanType: ScanViewType.pallet,
-                    //     ),
-                    //   ),
-                    // ).then((value) {
-                    //   if (value != null) {
-                    //     setState(() {
-                    //       _scanBarcode = value;
-                    //     });
-                    //     debugPrint("scanResultValue: $value");
+                    String qty;
+                    if (qualityControl.id == 4) {
+                      qty = "15.0";
+                      await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ScanView(
+                            expectedValue: qty,
+                            scanType: ScanViewType.palletQc,
+                            idTracking: idTracking,
+                            isShowErrorPalletLots: true,
+                          ),
+                        ),
+                      ).then((value) {
+                        if (value != null) {
+                          setState(() {
+                            _scanBarcode = value;
+                          });
+                          debugPrint("scanResultValue: $value");
 
-                    //     Future.delayed(const Duration(seconds: 2), () {
-                    //       onShowSuccessDialog(
-                    //         context: context,
-                    //         scannedItem: listPallets.first.palletCode,
-                    //       );
-                    //     });
-                    //   }
-                    // });
+                          Future.delayed(const Duration(seconds: 2), () {
+                            onShowSuccessDialog(
+                              context: context,
+                              scannedItem: listPallets.first.palletCode,
+                            );
+                          });
+                        }
+                      });
+                    }
                   },
                   onUpdate: () {
                     // bool hasUpdateFocus = false;

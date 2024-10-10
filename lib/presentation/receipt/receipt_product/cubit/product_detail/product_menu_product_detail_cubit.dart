@@ -238,4 +238,14 @@ class ProductMenuProductDetailCubit
         lastPallets.indexWhere((element) => element.id == returnPallet.id);
     return index;
   }
+
+  scanFromList(String resultQty) {
+    double resultQtyDouble = double.tryParse(resultQty) ?? 0.0;
+    List<Pallet> lastPallets = state.pallets;
+    lastPallets.first.doneQty = resultQtyDouble;
+
+    emit(state.copyWith(pallets: lastPallets));
+
+    log("scanFromList: ${lastPallets.map((e) => e.doneQty.toString()).toList()}");
+  }
 }

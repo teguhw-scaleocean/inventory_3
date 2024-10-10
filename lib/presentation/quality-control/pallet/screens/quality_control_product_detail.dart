@@ -15,21 +15,21 @@ import '../../../../common/components/reusable_search_bar_border.dart';
 import '../../../../common/components/reusable_tab_bar.dart';
 import '../../../../common/theme/color/color_name.dart';
 import '../../../../common/theme/text/base_text.dart';
-import '../cubit/damage_cubit/damage_cubit.dart';
 
-class ReceiptProductDetailScreen extends StatefulWidget {
+class QualityControlProductDetailScreen extends StatefulWidget {
   final Pallet product;
   final String tracking;
 
-  const ReceiptProductDetailScreen(
+  const QualityControlProductDetailScreen(
       {super.key, required this.product, required this.tracking});
 
   @override
-  State<ReceiptProductDetailScreen> createState() =>
-      _ReceiptProductDetailScreenState();
+  State<QualityControlProductDetailScreen> createState() =>
+      _QualityControlProductDetailScreenState();
 }
 
-class _ReceiptProductDetailScreenState extends State<ReceiptProductDetailScreen>
+class _QualityControlProductDetailScreenState
+    extends State<QualityControlProductDetailScreen>
     with TickerProviderStateMixin {
   late Pallet product;
   String tracking = "";
@@ -48,6 +48,9 @@ class _ReceiptProductDetailScreenState extends State<ReceiptProductDetailScreen>
 
   bool isDamage = false;
   bool isDamagePalletAndProduct = false;
+
+  bool isHighlightedAddQty = false;
+  bool isHighlightedAddSn = false;
 
   late TabController _tabController;
   List<String> tabs = ["Not Done", "Done"];
@@ -145,7 +148,8 @@ class _ReceiptProductDetailScreenState extends State<ReceiptProductDetailScreen>
                   debugPrint("resultOfAddProduct: $value");
                   setState(() {
                     var quantityDouble = value;
-                    product.productQty = quantityDouble;
+                    product.productQty = product.productQty + quantityDouble;
+                    isHighlightedAddQty = true;
                     // quantity = quantityDouble.toString();
                     debugPrint("quantityDouble: ${product.productQty}");
                   });
@@ -466,6 +470,7 @@ class _ReceiptProductDetailScreenState extends State<ReceiptProductDetailScreen>
                 : buildItemQuantity(
                     code,
                     itemProduct: product,
+                    isHighlighted: isHighlightedAddQty,
                   ),
           )
         ],

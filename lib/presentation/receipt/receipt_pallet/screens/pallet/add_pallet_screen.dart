@@ -535,8 +535,10 @@ class _AddPalletScreenState extends State<AddPalletScreen> {
                                                   const ScanView(
                                                 expectedValue:
                                                     "LOTS-20230248-648",
-                                                scanType: ScanViewType
-                                                    .addSerialNumberQty,
+                                                scanType:
+                                                    ScanViewType.addLotsNumber,
+                                                idTracking: 1,
+                                                isShowErrorPalletLots: true,
                                               ),
                                             ),
                                           );

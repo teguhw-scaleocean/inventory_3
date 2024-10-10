@@ -21,6 +21,7 @@ import 'package:inventory_v3/presentation/receipt/receipt_pallet/screens/pallet/
 import 'package:inventory_v3/presentation/receipt/receipt_product/cubit/product_detail/product_menu_product_detail_cubit.dart';
 import 'package:inventory_v3/presentation/receipt/receipt_product/cubit/product_detail/product_menu_product_detail_state.dart';
 
+import '../../../../common/components/reusable_field_required.dart';
 import '../../../../common/components/reusable_widget.dart';
 import '../../../../common/components/status_badge.dart';
 import '../../../../common/theme/color/color_name.dart';
@@ -54,10 +55,11 @@ class _QualityControlDetailScreenState
   String tracking = "";
 
   List<dynamic> palletUpdates = [];
+  List<Pallet> palletList = [];
 
   List<Pallet> listScannedQc = [];
 
-  var selectedUpdatePallet;
+  var selectedUpdatePallet = "";
 
   int idTracking = 0;
 
@@ -106,15 +108,6 @@ class _QualityControlDetailScreenState
 
     date = qualityControl.dateTime.substring(0, 10);
     time = qualityControl.dateTime.substring(13, 18);
-
-    pallets.map((e) {
-      if (e.id < 5) {
-        palletUpdates.add(e.code);
-      }
-    }).toList();
-
-    // palletUpdates.sublist(0, 1);
-    log("palletUpdates: ${palletUpdates.length}");
   }
 
   @override
@@ -171,7 +164,7 @@ class _QualityControlDetailScreenState
                   onScan: () async {
                     String qty;
                     if (qualityControl.id == 4) {
-                      qty = "15.0";
+                      qty = "11.0";
                       await Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -200,17 +193,28 @@ class _QualityControlDetailScreenState
                     }
                   },
                   onUpdate: () {
-                    // bool hasUpdateFocus = false;
-                    // reusableBottomSheet(
-                    //     context,
-                    //     isShowDragHandle: false,
-                    //     Padding(
-                    //       padding: EdgeInsets.symmetric(horizontal: 16.w),
-                    //       child: SingleChildScrollView(
-                    //           child: (palletUpdates.length < 5)
-                    //               ? buildDropdownMinHeight(hasUpdateFocus)
-                    //               : buildDropdownMaxHeight(hasUpdateFocus)),
-                    //     ));
+                    bool hasUpdateFocus = false;
+
+                    if (palletUpdates.isEmpty) {
+                      palletList = cubit.state.pallets;
+                      palletList.map((e) {
+                        if (e.isDoneQty == false) {
+                          palletUpdates.add(e.palletCode);
+                        }
+                      }).toList();
+
+                      debugPrint("pallet updates: ${palletUpdates.toString()}");
+                    }
+
+                    reusableBottomSheet(
+                        context,
+                        isShowDragHandle: false,
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 16.w),
+                          child: SingleChildScrollView(
+                            child: buildDropdownMinHeight(hasUpdateFocus),
+                          ),
+                        ));
                   }),
             ),
             SizedBox(height: 16.h),
@@ -491,6 +495,10 @@ class _QualityControlDetailScreenState
   }
 
   buildDropdownMinHeight(bool hasUpdateFocus) {
+    bool hasShowErrorRequired = false;
+    String selectedUpdatePalletValue = "";
+    selectedUpdatePallet = palletUpdates.first;
+
     return StatefulBuilder(builder: (context, updateSetState) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -514,7 +522,14 @@ class _QualityControlDetailScreenState
             listOfItemsValue: palletUpdates,
             selectedValue: selectedUpdatePallet,
             isExpand: hasUpdateFocus,
-            onChange: (v) {},
+            onChange: (v) {
+              updateSetState(() {
+                selectedUpdatePallet =
+                    palletUpdates.firstWhere((element) => element == v);
+                selectedUpdatePalletValue = v;
+                hasShowErrorRequired = false;
+              });
+            },
             onTap: (onTapValue) {
               updateSetState(() {
                 // selectedUpdatePallet = onTapValue;
@@ -530,11 +545,19 @@ class _QualityControlDetailScreenState
                   height: 110.h,
                 )
               : Container(height: 0),
+          if (hasShowErrorRequired) reusableFieldRequired(),
           Padding(
             padding: EdgeInsets.only(
                 top: (hasUpdateFocus) ? 36.h : 24.h, bottom: 24.h),
             child: PrimaryButton(
               onPressed: () {
+                if (selectedUpdatePalletValue.isEmpty) {
+                  updateSetState(() {
+                    hasShowErrorRequired = true;
+                  });
+
+                  return;
+                }
                 Navigator.pop(context);
 
                 updateSetState(() {
@@ -632,6 +655,7 @@ class _QualityControlDetailScreenState
       case "Lots":
         _receive = product0.productQty.toString();
         code = product0.lotsCode.toString();
+        // product0.isDoneQty = _receive == _scanBarcode;
         break;
       default:
     }

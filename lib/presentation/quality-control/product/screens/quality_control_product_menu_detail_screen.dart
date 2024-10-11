@@ -27,7 +27,9 @@ import '../../../../common/components/reusable_widget.dart';
 import '../../../../common/components/status_badge.dart';
 import '../../../../common/theme/color/color_name.dart';
 import '../../../../common/theme/text/base_text.dart';
+import '../../../../data/model/product.dart';
 import '../../../../data/model/return_pallet.dart';
+import '../../../receipt/receipt_pallet/screens/pallet/add_pallet_screen.dart';
 import '../../../receipt/receipt_product/screens/product_detail/receipt_product_menu_of_product_detail_screen.dart';
 import 'quality_control_product_screen.dart';
 
@@ -520,20 +522,20 @@ class _QualityControlProductMenuDetailScreenState
               default:
             }
 
-            // final addPalletResult = Navigator.push(
-            //   context,
-            //   MaterialPageRoute(
-            //     builder: (context) => AddPalletScreen(index: indexToAddPallet),
-            //   ),
-            // ).then((value) {
-            //   debugPrint("addPalletResult: ${value.toString()}");
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => AddPalletScreen(index: indexToAddPallet),
+              ),
+            ).then((value) {
+              debugPrint("addPalletResult: ${value.toString()}");
 
-            //   if (value != null) {
-            //     setState(() {
-            //       listProducts = value as List<Product>;
-            //     });
-            //   }
-            // });
+              if (value != null) {
+                setState(() {
+                  listPallets = value as List<Pallet>;
+                });
+              }
+            });
           },
           icon: Icons.add,
         ),

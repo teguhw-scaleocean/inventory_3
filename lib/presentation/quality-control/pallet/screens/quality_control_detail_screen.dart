@@ -78,25 +78,14 @@ class _QualityControlDetailScreenState
         .contains("no tracking")) {
       cubit.getInitNoTrackingListProduct();
       idTracking = 2;
-      if (widget.scanBarcode != null) {
-        _scanBarcode = widget.scanBarcode!;
-        debugPrint("_scanBarcode: $_scanBarcode");
-        cubit.scanFromList(_scanBarcode);
-
-        Future.delayed(const Duration(seconds: 2), () async {
-          String scannedItem = "Pallet ${cubit.state.pallets.first.palletCode}";
-          onShowSuccessDialog(
-            context: context,
-            scannedItem: scannedItem,
-          );
-        });
-      }
+      _scannedFromList();
     } else if (qualityControl.packageStatus
         .toString()
         .toLowerCase()
         .contains("lots")) {
       cubit.getInitLotsListProduct();
       idTracking = 1;
+      _scannedFromList();
     } else if (qualityControl.packageStatus
         .toString()
         .toLowerCase()
@@ -106,6 +95,22 @@ class _QualityControlDetailScreenState
 
     date = qualityControl.dateTime.substring(0, 10);
     time = qualityControl.dateTime.substring(13, 18);
+  }
+
+  void _scannedFromList() {
+    if (widget.scanBarcode != null) {
+      _scanBarcode = widget.scanBarcode!;
+      debugPrint("_scanBarcode: $_scanBarcode");
+      cubit.scanFromList(_scanBarcode);
+
+      Future.delayed(const Duration(seconds: 2), () async {
+        String scannedItem = "Pallet ${cubit.state.pallets.first.palletCode}";
+        onShowSuccessDialog(
+          context: context,
+          scannedItem: scannedItem,
+        );
+      });
+    }
   }
 
   @override

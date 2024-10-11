@@ -487,7 +487,11 @@ class _ScanViewState extends State<ScanView> {
           context,
           MaterialPageRoute(
             builder: (context) => QualityControlDetailScreen(
-              qualityControl: qualityControls[1],
+              qualityControl: (idTracking == 1)
+                  ? qualityControls.first
+                  : (idTracking == 2)
+                      ? qualityControls[1]
+                      : qualityControls[2],
               scanBarcode: expectedValue,
             ),
           ),

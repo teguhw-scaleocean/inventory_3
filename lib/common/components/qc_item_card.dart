@@ -93,7 +93,7 @@ class QcItemCard extends StatelessWidget {
                 ? Row(
                     children: [
                       Text(
-                        qualityControl.packageName,
+                        qualityControl.packageStatus,
                         style: BaseText.grey1Text13
                             .copyWith(fontWeight: BaseText.light),
                       ),

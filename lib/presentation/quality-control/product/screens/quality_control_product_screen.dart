@@ -596,6 +596,7 @@ class _QualityControlProductScreenState
                                             code,
                                             itemProduct: product,
                                             tabIndex: 0,
+                                            isHighlighted: isCardHighlighted,
                                           ),
                                         ],
                                       ),

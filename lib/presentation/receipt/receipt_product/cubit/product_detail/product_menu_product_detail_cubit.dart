@@ -248,4 +248,22 @@ class ProductMenuProductDetailCubit
 
     log("scanFromList: ${lastPallets.map((e) => e.doneQty.toString()).toList()}");
   }
+
+  getDoneQuantity(Pallet pallet, double doneQty) {
+    Pallet itemPallet;
+    List<Pallet> lastPallets = state.pallets;
+
+    var currentPallet = pallet;
+    var indexPallet =
+        lastPallets.indexWhere((element) => element.id == pallet.id);
+
+    bool isDone = false;
+    isDone = (doneQty == pallet.productQty) ? true : false;
+
+    itemPallet = currentPallet.copyWith(doneQty: doneQty, isDoneQty: isDone);
+    lastPallets[indexPallet] = itemPallet;
+    emit(state.copyWith(pallets: lastPallets));
+
+    log("getDoneQuantity: ${lastPallets.map((e) => e.doneQty.toString()).toList()}");
+  }
 }

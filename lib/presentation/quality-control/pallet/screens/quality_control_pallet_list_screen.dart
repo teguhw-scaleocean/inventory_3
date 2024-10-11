@@ -87,9 +87,9 @@ class _QualityControlPalletListScreenState
                           context,
                           MaterialPageRoute(
                               builder: (context) => const ScanView(
-                                    expectedValue: "11.0",
+                                    expectedValue: "1.0",
                                     scanType: ScanViewType.listPalletQC,
-                                    idTracking: 2,
+                                    idTracking: 1,
                                   )));
                     }),
                   ],

@@ -59,8 +59,6 @@ class _QualityControlDetailScreenState
 
   List<Pallet> listScannedQc = [];
 
-  var selectedUpdatePallet = "";
-
   int idTracking = 0;
 
   @override
@@ -80,25 +78,14 @@ class _QualityControlDetailScreenState
         .contains("no tracking")) {
       cubit.getInitNoTrackingListProduct();
       idTracking = 2;
-      if (widget.scanBarcode != null) {
-        _scanBarcode = widget.scanBarcode!;
-        debugPrint("_scanBarcode: $_scanBarcode");
-        cubit.scanFromList(_scanBarcode);
-
-        Future.delayed(const Duration(seconds: 2), () async {
-          String scannedItem = "Pallet ${cubit.state.pallets.first.palletCode}";
-          onShowSuccessDialog(
-            context: context,
-            scannedItem: scannedItem,
-          );
-        });
-      }
+      _scannedFromList();
     } else if (qualityControl.packageStatus
         .toString()
         .toLowerCase()
         .contains("lots")) {
       cubit.getInitLotsListProduct();
       idTracking = 1;
+      _scannedFromList();
     } else if (qualityControl.packageStatus
         .toString()
         .toLowerCase()
@@ -108,6 +95,22 @@ class _QualityControlDetailScreenState
 
     date = qualityControl.dateTime.substring(0, 10);
     time = qualityControl.dateTime.substring(13, 18);
+  }
+
+  void _scannedFromList() {
+    if (widget.scanBarcode != null) {
+      _scanBarcode = widget.scanBarcode!;
+      debugPrint("_scanBarcode: $_scanBarcode");
+      cubit.scanFromList(_scanBarcode);
+
+      Future.delayed(const Duration(seconds: 2), () async {
+        String scannedItem = "Pallet ${cubit.state.pallets.first.palletCode}";
+        onShowSuccessDialog(
+          context: context,
+          scannedItem: scannedItem,
+        );
+      });
+    }
   }
 
   @override
@@ -180,7 +183,10 @@ class _QualityControlDetailScreenState
                           setState(() {
                             _scanBarcode = value;
                           });
-                          debugPrint("scanResultValue: $value");
+                          // debugPrint("scanResultValue: $value");
+                          double updateDoneQty = double.parse(_scanBarcode);
+                          cubit.getDoneQuantity(
+                              listPallets.first, updateDoneQty);
 
                           Future.delayed(const Duration(seconds: 2), () {
                             onShowSuccessDialog(
@@ -194,17 +200,18 @@ class _QualityControlDetailScreenState
                   },
                   onUpdate: () {
                     bool hasUpdateFocus = false;
+                    var palletTemp = [];
 
-                    if (palletUpdates.isEmpty) {
-                      palletList = cubit.state.pallets;
-                      palletList.map((e) {
-                        if (e.isDoneQty == false) {
-                          palletUpdates.add(e.palletCode);
-                        }
-                      }).toList();
+                    palletList = cubit.state.pallets;
+                    palletList.map((e) {
+                      if (e.isDoneQty == false || e.isDoneQty == null) {
+                        palletTemp.add(e.palletCode);
+                      }
+                    }).toList();
 
-                      debugPrint("pallet updates: ${palletUpdates.toString()}");
-                    }
+                    palletUpdates = palletTemp;
+
+                    debugPrint("pallet updates: ${palletUpdates.toString()}");
 
                     reusableBottomSheet(
                         context,
@@ -212,7 +219,10 @@ class _QualityControlDetailScreenState
                         Padding(
                           padding: EdgeInsets.symmetric(horizontal: 16.w),
                           child: SingleChildScrollView(
-                            child: buildDropdownMinHeight(hasUpdateFocus),
+                            child: buildDropdownMinHeight(
+                              hasUpdateFocus,
+                              palletUpdates,
+                            ),
                           ),
                         ));
                   }),
@@ -340,7 +350,7 @@ class _QualityControlDetailScreenState
                           Pallet item = list[index];
 
                           tracking = qualityControl.packageStatus.substring(10);
-                          debugPrint("tracking: $tracking");
+                          debugPrint("done: ${item.isDoneQty}");
 
                           return buildPalleteItemCard(item, tracking);
                         });
@@ -427,6 +437,7 @@ class _QualityControlDetailScreenState
   }
 
   buildDropdownMaxHeight(bool hasUpdateFocus) {
+    var selectedUpdatePallet;
     return StatefulBuilder(builder: (context, updateSetState) {
       log("hasUpdateFocus: $hasUpdateFocus ");
 
@@ -444,6 +455,7 @@ class _QualityControlDetailScreenState
           SizedBox(height: 6.h),
           ReusableDropdownMenu(
             label: "",
+            hintText: "  Select Pallet",
             maxHeight: 500.h,
             offset: const Offset(0, 560),
             hasSearch: true,
@@ -494,10 +506,12 @@ class _QualityControlDetailScreenState
     });
   }
 
-  buildDropdownMinHeight(bool hasUpdateFocus) {
+  buildDropdownMinHeight(bool hasUpdateFocus, list) {
     bool hasShowErrorRequired = false;
-    String selectedUpdatePalletValue = "";
-    selectedUpdatePallet = palletUpdates.first;
+
+    var selectedUpdatePallet;
+    selectedUpdatePallet = null;
+    Pallet? selectedUpdatePalletValue;
 
     return StatefulBuilder(builder: (context, updateSetState) {
       return Column(
@@ -514,19 +528,22 @@ class _QualityControlDetailScreenState
           SizedBox(height: 6.h),
           ReusableDropdownMenu(
             label: "",
+            hintText: "  Select Pallet",
             hasSearch: false,
             maxHeight: 120.h,
             offset: const Offset(0, 121),
             controller: _searchController,
-            borderColor: ColorName.grey9Color,
-            listOfItemsValue: palletUpdates,
+            borderColor:
+                (hasUpdateFocus) ? ColorName.mainColor : ColorName.grey9Color,
+            listOfItemsValue: list,
             selectedValue: selectedUpdatePallet,
             isExpand: hasUpdateFocus,
             onChange: (v) {
               updateSetState(() {
                 selectedUpdatePallet =
-                    palletUpdates.firstWhere((element) => element == v);
-                selectedUpdatePalletValue = v;
+                    list.firstWhere((element) => element == v);
+                selectedUpdatePalletValue = listPallets
+                    .firstWhere((element) => element.palletCode == v);
                 hasShowErrorRequired = false;
               });
             },
@@ -551,24 +568,32 @@ class _QualityControlDetailScreenState
                 top: (hasUpdateFocus) ? 36.h : 24.h, bottom: 24.h),
             child: PrimaryButton(
               onPressed: () {
-                if (selectedUpdatePalletValue.isEmpty) {
+                if (selectedUpdatePalletValue == null) {
                   updateSetState(() {
                     hasShowErrorRequired = true;
                   });
 
                   return;
                 }
-                Navigator.pop(context);
+                if (selectedUpdatePalletValue != null) {
+                  double updateDoneQty =
+                      selectedUpdatePalletValue?.productQty ?? 0;
+                  cubit.getDoneQuantity(
+                      selectedUpdatePalletValue!, updateDoneQty);
+                }
 
-                updateSetState(() {
-                  _scanBarcode = "18.00";
-                  log("scanbarcode: $_scanBarcode");
+                // Navigator.pop(context);
 
-                  onShowSuccessDialog(
-                    context: context,
-                    scannedItem: listPallets.first.palletCode,
-                  );
-                });
+                // updateSetState(() {
+                // _scanBarcode = "12.00";
+                // log("scanbarcode: $_scanBarcode");
+
+                onShowSuccessDialog(
+                  context: context,
+                  scannedItem: selectedUpdatePalletValue?.palletCode,
+                  isOnUpdate: true,
+                );
+                // });
               },
               height: 40.h,
               title: "Submit",
@@ -817,7 +842,9 @@ class _QualityControlDetailScreenState
                 ),
                 _buildBottomCardSection(
                   label: "Done",
-                  value: "$_scanBarcode Unit",
+                  value: (product0.doneQty == null)
+                      ? "0.0 Unit"
+                      : "${product0.doneQty} Unit",
                 )
               ],
             ),

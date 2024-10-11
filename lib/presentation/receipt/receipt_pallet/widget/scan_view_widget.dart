@@ -98,6 +98,10 @@ class _ScanViewState extends State<ScanView> {
         appBarTitle = "Scan Pallet";
         labelOfScan = TextConstants.scanFromListPalletTitle;
         break;
+      case ScanViewType.listProductQc:
+        appBarTitle = "Scan Product";
+        labelOfScan = TextConstants.scanFromListProductTitle;
+        break;
       case ScanViewType.addSerialNumberQty:
         appBarTitle = "Scan Serial Number";
         labelOfScan = TextConstants.scanToAddQtySerialNumber;
@@ -492,6 +496,22 @@ class _ScanViewState extends State<ScanView> {
                   : (idTracking == 2)
                       ? qualityControls[1]
                       : qualityControls[2],
+              scanBarcode: expectedValue,
+            ),
+          ),
+        );
+      });
+    } else if (scanViewType == ScanViewType.listProductQc) {
+      Future.delayed(const Duration(seconds: 8), () {
+        controller.stopCamera();
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => QualityControlDetailScreen(
+              qualityControl: (idTracking == 1)
+                  ? qualityControls.first
+                  : qualityControls[2],
               scanBarcode: expectedValue,
             ),
           ),

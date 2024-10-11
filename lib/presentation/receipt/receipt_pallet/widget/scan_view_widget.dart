@@ -124,7 +124,10 @@ class _ScanViewState extends State<ScanView> {
         labelOfScan = TextConstants.scanToAddLotsNumber;
         scanDummyLotsNumber = "LOTS-20230248-648";
         break;
-
+      case ScanViewType.palletQc:
+        appBarTitle = "Scan Pallet";
+        labelOfScan = TextConstants.scanPalletQcTittle;
+        break;
       default:
     }
 

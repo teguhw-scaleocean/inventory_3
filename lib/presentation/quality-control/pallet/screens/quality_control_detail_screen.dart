@@ -1,8 +1,6 @@
 import 'dart:developer';
 
-import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 // import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:flutter_dash/flutter_dash.dart';
@@ -13,29 +11,24 @@ import 'package:inventory_v3/common/components/custom_divider.dart';
 import 'package:inventory_v3/common/components/primary_button.dart';
 import 'package:inventory_v3/common/components/reusable_bottom_sheet.dart';
 import 'package:inventory_v3/common/components/reusable_dropdown_menu.dart';
-import 'package:inventory_v3/common/components/reusable_dropdown_search.dart';
 import 'package:inventory_v3/common/components/reusable_floating_action_button.dart';
 import 'package:inventory_v3/common/constants/local_images.dart';
-import 'package:inventory_v3/data/model/pallet_value.dart';
 import 'package:inventory_v3/data/model/pallet.dart';
+import 'package:inventory_v3/data/model/pallet_value.dart';
 import 'package:inventory_v3/data/model/quality_control.dart';
-import 'package:inventory_v3/data/model/receipt.dart';
-import 'package:inventory_v3/data/model/scan_view.dart';
 import 'package:inventory_v3/presentation/quality-control/pallet/screens/quality_control_product_detail.dart';
-import 'package:inventory_v3/presentation/receipt/receipt_pallet/cubit/add_pallet_cubit/add_pallet_state.dart';
 import 'package:inventory_v3/presentation/receipt/receipt_pallet/screens/pallet/add_pallet_screen.dart';
-import 'package:inventory_v3/presentation/receipt/receipt_pallet/screens/pallet/return_pallet_and_product_screen.dart';
-import 'package:inventory_v3/presentation/receipt/receipt_pallet/screens/receipt_product_detail.dart';
-import 'package:inventory_v3/presentation/receipt/receipt_pallet/widget/scan_view_widget.dart';
 import 'package:inventory_v3/presentation/receipt/receipt_product/cubit/product_detail/product_menu_product_detail_cubit.dart';
 import 'package:inventory_v3/presentation/receipt/receipt_product/cubit/product_detail/product_menu_product_detail_state.dart';
 
+import '../../../../common/components/reusable_field_required.dart';
 import '../../../../common/components/reusable_widget.dart';
 import '../../../../common/components/status_badge.dart';
-import '../../../../common/extensions/empty_space_extension.dart';
 import '../../../../common/theme/color/color_name.dart';
 import '../../../../common/theme/text/base_text.dart';
 import '../../../../data/model/return_pallet.dart';
+import '../../../../data/model/scan_view.dart';
+import '../../../receipt/receipt_pallet/widget/scan_view_widget.dart';
 
 class QualityControlDetailScreen extends StatefulWidget {
   final QualityControl? qualityControl;
@@ -62,10 +55,11 @@ class _QualityControlDetailScreenState
   String tracking = "";
 
   List<dynamic> palletUpdates = [];
+  List<Pallet> palletList = [];
 
   List<Pallet> listScannedQc = [];
 
-  var selectedUpdatePallet;
+  var selectedUpdatePallet = "";
 
   int idTracking = 0;
 
@@ -114,15 +108,6 @@ class _QualityControlDetailScreenState
 
     date = qualityControl.dateTime.substring(0, 10);
     time = qualityControl.dateTime.substring(13, 18);
-
-    pallets.map((e) {
-      if (e.id < 5) {
-        palletUpdates.add(e.code);
-      }
-    }).toList();
-
-    // palletUpdates.sublist(0, 1);
-    log("palletUpdates: ${palletUpdates.length}");
   }
 
   @override
@@ -177,42 +162,59 @@ class _QualityControlDetailScreenState
               child: buildScanAndUpdateSection(
                   status: qualityControl.status,
                   onScan: () async {
-                    // final scanResult = await Navigator.push(
-                    //   context,
-                    //   MaterialPageRoute(
-                    //     builder: (context) => const ScanView(
-                    //       expectedValue: "18.00",
-                    //       scanType: ScanViewType.pallet,
-                    //     ),
-                    //   ),
-                    // ).then((value) {
-                    //   if (value != null) {
-                    //     setState(() {
-                    //       _scanBarcode = value;
-                    //     });
-                    //     debugPrint("scanResultValue: $value");
+                    String qty;
+                    if (qualityControl.id == 4) {
+                      qty = "11.0";
+                      await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ScanView(
+                            expectedValue: qty,
+                            scanType: ScanViewType.palletQc,
+                            idTracking: idTracking,
+                            isShowErrorPalletLots: true,
+                          ),
+                        ),
+                      ).then((value) {
+                        if (value != null) {
+                          setState(() {
+                            _scanBarcode = value;
+                          });
+                          debugPrint("scanResultValue: $value");
 
-                    //     Future.delayed(const Duration(seconds: 2), () {
-                    //       onShowSuccessDialog(
-                    //         context: context,
-                    //         scannedItem: listPallets.first.palletCode,
-                    //       );
-                    //     });
-                    //   }
-                    // });
+                          Future.delayed(const Duration(seconds: 2), () {
+                            onShowSuccessDialog(
+                              context: context,
+                              scannedItem: listPallets.first.palletCode,
+                            );
+                          });
+                        }
+                      });
+                    }
                   },
                   onUpdate: () {
-                    // bool hasUpdateFocus = false;
-                    // reusableBottomSheet(
-                    //     context,
-                    //     isShowDragHandle: false,
-                    //     Padding(
-                    //       padding: EdgeInsets.symmetric(horizontal: 16.w),
-                    //       child: SingleChildScrollView(
-                    //           child: (palletUpdates.length < 5)
-                    //               ? buildDropdownMinHeight(hasUpdateFocus)
-                    //               : buildDropdownMaxHeight(hasUpdateFocus)),
-                    //     ));
+                    bool hasUpdateFocus = false;
+
+                    if (palletUpdates.isEmpty) {
+                      palletList = cubit.state.pallets;
+                      palletList.map((e) {
+                        if (e.isDoneQty == false) {
+                          palletUpdates.add(e.palletCode);
+                        }
+                      }).toList();
+
+                      debugPrint("pallet updates: ${palletUpdates.toString()}");
+                    }
+
+                    reusableBottomSheet(
+                        context,
+                        isShowDragHandle: false,
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 16.w),
+                          child: SingleChildScrollView(
+                            child: buildDropdownMinHeight(hasUpdateFocus),
+                          ),
+                        ));
                   }),
             ),
             SizedBox(height: 16.h),
@@ -493,6 +495,10 @@ class _QualityControlDetailScreenState
   }
 
   buildDropdownMinHeight(bool hasUpdateFocus) {
+    bool hasShowErrorRequired = false;
+    String selectedUpdatePalletValue = "";
+    selectedUpdatePallet = palletUpdates.first;
+
     return StatefulBuilder(builder: (context, updateSetState) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -516,7 +522,14 @@ class _QualityControlDetailScreenState
             listOfItemsValue: palletUpdates,
             selectedValue: selectedUpdatePallet,
             isExpand: hasUpdateFocus,
-            onChange: (v) {},
+            onChange: (v) {
+              updateSetState(() {
+                selectedUpdatePallet =
+                    palletUpdates.firstWhere((element) => element == v);
+                selectedUpdatePalletValue = v;
+                hasShowErrorRequired = false;
+              });
+            },
             onTap: (onTapValue) {
               updateSetState(() {
                 // selectedUpdatePallet = onTapValue;
@@ -532,11 +545,19 @@ class _QualityControlDetailScreenState
                   height: 110.h,
                 )
               : Container(height: 0),
+          if (hasShowErrorRequired) reusableFieldRequired(),
           Padding(
             padding: EdgeInsets.only(
                 top: (hasUpdateFocus) ? 36.h : 24.h, bottom: 24.h),
             child: PrimaryButton(
               onPressed: () {
+                if (selectedUpdatePalletValue.isEmpty) {
+                  updateSetState(() {
+                    hasShowErrorRequired = true;
+                  });
+
+                  return;
+                }
                 Navigator.pop(context);
 
                 updateSetState(() {
@@ -634,6 +655,7 @@ class _QualityControlDetailScreenState
       case "Lots":
         _receive = product0.productQty.toString();
         code = product0.lotsCode.toString();
+        // product0.isDoneQty = _receive == _scanBarcode;
         break;
       default:
     }
@@ -704,7 +726,9 @@ class _QualityControlDetailScreenState
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    "Pallet ${product0.palletCode}",
+                    (product0.palletCode.toLowerCase().contains("pallet"))
+                        ? product0.palletCode
+                        : "Pallet ${product0.palletCode}",
                     style: BaseText.black2Text15
                         .copyWith(fontWeight: BaseText.medium),
                   ),

@@ -132,9 +132,10 @@ class _AddProductScreenState extends State<AddProductScreen> {
               } else if (addType == 0 && widget.isFromBoth == false) {
                 if (formSnKey.currentState!.validate()) {
                   if (listSnController.isNotEmpty) {
-                    listSerialNumber.insert(0, serialNumber);
-
+                    debugPrint(
+                        "listSnController: ${listSnController.map((e) => e.text).toList()}");
                     _mapListSerialNumberController();
+                    listSerialNumber.insert(0, serialNumber);
                   } else {
                     listSerialNumber.add(serialNumber);
                   }
@@ -172,6 +173,8 @@ class _AddProductScreenState extends State<AddProductScreen> {
       );
       listSerialNumber.add(serialNumber);
     }).toList();
+
+    listSerialNumber.removeWhere((element) => element.label.isEmpty);
   }
 
   Widget _buildLotsSection() {
@@ -273,76 +276,79 @@ class _AddProductScreenState extends State<AddProductScreen> {
         children: [
           buildRequiredLabel("Serial Number"),
           SizedBox(height: 4.h),
-          if (hasScanButton)
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Flexible(
-                  child: LimitedBox(
-                    maxWidth: 280.w,
-                    child: CustomFormField(
-                      title: "",
-                      hintText: "Input Serial Number",
-                      isShowTitle: false,
-                      isRequired: true,
-                      controller: serialNumberConhtroller,
-                      validator: (v) {
-                        if (v == null || v.isEmpty) {
-                          return "This field is required. Please fill it in.";
-                        }
-                        return null;
-                      },
-                      // onChanged: (v) {
-                      //   hasScanButton = v.isEmpty;
-                      //   setState(() {});
-                      // },
-                    ),
+
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Flexible(
+                child: LimitedBox(
+                  maxWidth: 280.w,
+                  child: CustomFormField(
+                    title: "",
+                    hintText: "Input Serial Number",
+                    isShowTitle: false,
+                    isRequired: true,
+                    controller: serialNumberConhtroller,
+                    validator: (v) {
+                      if (v == null || v.isEmpty) {
+                        return "This field is required. Please fill it in.";
+                      }
+                      return null;
+                    },
+                    // onChanged: (v) {
+                    //   hasScanButton = v.isEmpty;
+                    //   setState(() {});
+                    // },
                   ),
                 ),
-                SizedBox(width: 8.w),
-                reusableScanButton(onTap: () {
-                  final scanAddQtySnResult = Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const ScanView(
-                        expectedValue: "add-qty-sn",
-                        scanType: ScanViewType.addSerialNumberQty,
+              ),
+              if (hasScanButton)
+                Padding(
+                  padding: EdgeInsets.only(left: 8.w),
+                  child: reusableScanButton(onTap: () {
+                    final scanAddQtySnResult = Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const ScanView(
+                          expectedValue: "add-qty-sn",
+                          scanType: ScanViewType.addSerialNumberQty,
+                        ),
                       ),
-                    ),
-                  );
+                    );
 
-                  scanAddQtySnResult.then((value) {
-                    if (value != null) {
-                      debugPrint("scanAddQtySnResult value: $value");
-                      var scanAddQtySnValue = value as List<SerialNumber>;
+                    scanAddQtySnResult.then((value) {
+                      if (value != null) {
+                        debugPrint("scanAddQtySnResult value: $value");
+                        var scanAddQtySnValue = value as List<SerialNumber>;
 
-                      setState(() {
-                        scannedFieldController.text =
-                            scanAddQtySnValue.first.label;
+                        setState(() {
+                          serialNumberConhtroller.text =
+                              scanAddQtySnValue.first.label;
 
-                        hasScanButton = false;
-                        hasScannedField = true;
-                      });
-                    }
-                  });
-                })
-              ],
-            ),
-          if (hasScannedField)
-            CustomFormField(
-              title: "",
-              hintText: "Input Serial Number",
-              contentPadding: EdgeInsets.symmetric(horizontal: 16.w),
-              isShowTitle: false,
-              isRequired: true,
-              controller: scannedFieldController,
-              validator: (v) {
-                if (v == null || v.isEmpty) {
-                  return "This field is required. Please fill it in.";
-                }
-                return null;
-              },
-            ),
+                          hasScanButton = false;
+                          hasScannedField = true;
+                        });
+                      }
+                    });
+                  }),
+                )
+            ],
+          ),
+          // if (hasScannedField)
+          //   CustomFormField(
+          //     title: "",
+          //     hintText: "Input Serial Number",
+          //     contentPadding: EdgeInsets.symmetric(horizontal: 16.w),
+          //     isShowTitle: false,
+          //     isRequired: true,
+          //     controller: scannedFieldController,
+          //     validator: (v) {
+          //       if (v == null || v.isEmpty) {
+          //         return "This field is required. Please fill it in.";
+          //       }
+          //       return null;
+          //     },
+          //   ),
           SizedBox(height: 6.h),
           ListView.builder(
               shrinkWrap: true,
@@ -369,9 +375,9 @@ class _AddProductScreenState extends State<AddProductScreen> {
                             },
                             onSubmit: (p0) {
                               if (p0.isNotEmpty) {
-                                setState(() {
-                                  hasScanDynamicButton = false;
-                                });
+                                // setState(() {
+                                hasScanDynamicButton = false;
+                                // });
                               }
                               debugPrint("onSubmit: $hasScanDynamicButton");
                             },
@@ -415,7 +421,9 @@ class _AddProductScreenState extends State<AddProductScreen> {
                                 });
 
                                 debugPrint(
-                                    "listSnController: ${listSnController.length}");
+                                    "listSnController: ${listSnController.map((e) => e).toList()}");
+                                debugPrint(
+                                    "listSnController: ${listSnController.map((e) => e.text).toList()}");
 
                                 if (listSnController.isEmpty) {
                                   setState(() => hasScanButton = true);
@@ -437,6 +445,8 @@ class _AddProductScreenState extends State<AddProductScreen> {
               });
 
               debugPrint("listSnController: ${listSnController.length}");
+              debugPrint(
+                  "listSnController: ${listSnController.map((e) => e.text).toList()}");
             },
             maxwidth: MediaQuery.sizeOf(context).width - 32.w,
             isCenterTitle: true,

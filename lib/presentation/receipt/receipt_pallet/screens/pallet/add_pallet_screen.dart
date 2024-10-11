@@ -247,7 +247,8 @@ class _AddPalletScreenState extends State<AddPalletScreen> {
                                   hintText: "Input Serial Number",
                                   isShowTitle: false,
                                   isRequired: true,
-
+                                  contentPadding:
+                                      EdgeInsets.symmetric(horizontal: 16.w),
                                   controller: snController,
                                   validator: (v) {
                                     if (v == null || v.isEmpty) {
@@ -266,8 +267,36 @@ class _AddPalletScreenState extends State<AddPalletScreen> {
                                 ),
                               ),
                             ),
-                            SizedBox(width: 8.w),
-                            reusableScanButton()
+                            if (snController.text.isEmpty)
+                              Padding(
+                                padding: EdgeInsets.only(left: 8.w),
+                                child: reusableScanButton(onTap: () {
+                                  final scanAddQtySnResult = Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => const ScanView(
+                                        expectedValue: "add-qty-sn",
+                                        scanType:
+                                            ScanViewType.addSerialNumberQty,
+                                      ),
+                                    ),
+                                  );
+
+                                  scanAddQtySnResult.then((value) {
+                                    if (value != null) {
+                                      debugPrint(
+                                          "scanAddQtySnResult value: $value");
+                                      var scanAddQtySnValue =
+                                          value as List<SerialNumber>;
+
+                                      setState(() {
+                                        snController.text =
+                                            scanAddQtySnValue.first.label;
+                                      });
+                                    }
+                                  });
+                                }),
+                              )
                           ],
                         ),
                       if (index == 0) SizedBox(height: 6.h),
@@ -296,17 +325,56 @@ class _AddPalletScreenState extends State<AddPalletScreen> {
                                           },
                                         ),
                                       ),
-                                      SizedBox(width: 8.w),
-                                      reusableDeleteButton(() {
-                                        setState(() {
-                                          listSnController[index].clear();
-                                          listSnController[index].dispose();
-                                          listSnController.removeAt(index);
-                                        });
+                                      Padding(
+                                          padding: EdgeInsets.only(left: 8.w),
+                                          child: (listSnController[index]
+                                                  .text
+                                                  .isEmpty)
+                                              ? reusableScanButton(onTap: () {
+                                                  final scanAddQtySnResult =
+                                                      Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          const ScanView(
+                                                        expectedValue:
+                                                            "add-qty-sn",
+                                                        scanType: ScanViewType
+                                                            .addSerialNumberQty,
+                                                      ),
+                                                    ),
+                                                  );
 
-                                        debugPrint(
-                                            "listSnController: ${listSnController.length}");
-                                      })
+                                                  scanAddQtySnResult
+                                                      .then((value) {
+                                                    if (value != null) {
+                                                      debugPrint(
+                                                          "scanAddQtySnResult value: $value");
+                                                      var scanAddQtySnValue =
+                                                          value as List<
+                                                              SerialNumber>;
+
+                                                      setState(() {
+                                                        snController.text =
+                                                            scanAddQtySnValue
+                                                                .first.label;
+                                                      });
+                                                    }
+                                                  });
+                                                })
+                                              : reusableDeleteButton(() {
+                                                  setState(() {
+                                                    listSnController[index]
+                                                        .clear();
+                                                    listSnController[index]
+                                                        .dispose();
+                                                    listSnController
+                                                        .removeAt(index);
+                                                  });
+
+                                                  debugPrint(
+                                                      "listSnController: ${listSnController.length}");
+                                                }))
                                     ],
                                   ),
                                   SizedBox(height: 6.h),
@@ -315,14 +383,22 @@ class _AddPalletScreenState extends State<AddPalletScreen> {
                             }),
                       if (index == 0) SizedBox(height: 6.h),
                       if (index == 0)
-                        reusableAddSerialNumberButton(onTap: () {
-                          setState(() {
-                            listSnController.add(TextEditingController());
+                        reusableAddSerialNumberButton(
+                          onTap: () {
+                            setState(
+                              () {
+                                listSnController.add(TextEditingController());
 
-                            debugPrint(
-                                "listSnController.length: ${listSnController.length}");
-                          });
-                        }),
+                                debugPrint(
+                                    "listSnController.length: ${listSnController.length}");
+                                debugPrint(
+                                    "listSnController.length: ${listSnController.map((e) => e.text).toList()}");
+                              },
+                            );
+                          },
+                          isCenterTitle: true,
+                          maxwidth: ScreenUtil().screenWidth - 32.w,
+                        ),
                       if (index == 1 || index == 2)
                         StatefulBuilder(builder: (context, otherSetState) {
                           double value = 0.0;
@@ -459,8 +535,10 @@ class _AddPalletScreenState extends State<AddPalletScreen> {
                                                   const ScanView(
                                                 expectedValue:
                                                     "LOTS-20230248-648",
-                                                scanType: ScanViewType
-                                                    .addSerialNumberQty,
+                                                scanType:
+                                                    ScanViewType.addLotsNumber,
+                                                idTracking: 1,
+                                                isShowErrorPalletLots: true,
                                               ),
                                             ),
                                           );
@@ -564,34 +642,50 @@ class _AddPalletScreenState extends State<AddPalletScreen> {
   }
 
   void onSubmitSerialNumber() {
-    // TextField to SerialNumber 1
-    debugPrint("serialNumber: -----");
     SerialNumber serialNumber = SerialNumber(
       id: Random().nextInt(100),
       label: snController.text,
       expiredDateTime: "Exp. Date: 02/07/2024 - 14:00",
       quantity: 1,
     );
-    selectedObjectProduct.serialNumber = [serialNumber];
 
-    // TextField to SerialNumber Other
     if (listSnController.isNotEmpty) {
-      debugPrint("serialNumber: -----not empty");
-      var listSerialNumber = listSnController.map((ted) {
-        SerialNumber serialNumber = SerialNumber(
+      var list = <SerialNumber>[];
+      // debugPrint("serialNumber: -----not empty");
+      listSnController.map((ted) {
+        SerialNumber elementSn = SerialNumber(
           id: Random().nextInt(100),
           label: ted.text,
           expiredDateTime: "Exp. Date: 02/07/2024 - 14:00",
           quantity: 1,
         );
-        selectedObjectProduct.serialNumber?.add(serialNumber);
+
+        list.add(elementSn);
+        selectedObjectProduct.serialNumber = list;
       }).toList();
+      debugPrint(
+          "serialNumber-1: ${selectedObjectProduct.serialNumber?.map((e) => e.toJson()).toList()}");
+      selectedObjectProduct.serialNumber?.insert(0, serialNumber);
+      selectedObjectProduct.serialNumber
+          ?.removeWhere((element) => element.label.isEmpty);
+      onInsertToListPallet();
+      debugPrint(
+          "serialNumber: ${selectedObjectProduct.serialNumber?.map((e) => e.toJson()).toList()}");
+    } else {
+      selectedObjectProduct.serialNumber = [serialNumber];
+      onInsertToListPallet();
     }
 
     debugPrint(
         "serialNumber: ${selectedObjectProduct.serialNumber?.map((e) => e.toString()).toList()}");
+  }
 
-    selectedObjectProduct.palletCode = palletIdController.text;
+  void onInsertToListPallet() {
+    if (selectedObjectProduct.serialNumber != null) {
+      selectedObjectProduct.productQty =
+          selectedObjectProduct.serialNumber!.length.toDouble();
+      selectedObjectProduct.palletCode = palletIdController.text;
+    }
     listPallets.insert(0, selectedObjectProduct);
   }
 

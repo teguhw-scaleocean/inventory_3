@@ -89,7 +89,7 @@ class _QualityControlProductMenuListScreenState
                           MaterialPageRoute(
                               builder: (context) => const ScanView(
                                     expectedValue: "1.0",
-                                    scanType: ScanViewType.listPalletQC,
+                                    scanType: ScanViewType.listProductQc,
                                     idTracking: 1,
                                   )));
                     }),

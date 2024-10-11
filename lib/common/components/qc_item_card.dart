@@ -4,6 +4,7 @@ import 'package:inventory_v3/presentation/quality-control/pallet/screens/quality
 
 import '../../data/model/product.dart';
 import '../../data/model/quality_control.dart';
+import '../../presentation/quality-control/product/screens/quality_control_product_menu_detail_screen.dart';
 import '../theme/color/color_name.dart';
 import '../theme/text/base_text.dart';
 import 'status_badge.dart';
@@ -22,8 +23,12 @@ class QcItemCard extends StatelessWidget {
 
     return GestureDetector(
       onTap: () {
-        late QualityControlDetailScreen page;
+        StatefulWidget page;
         if (isProductMenu == true) {
+          page = QualityControlProductMenuDetailScreen(
+            qualityControl: qualityControl,
+            scanBarcode: null,
+          );
           // page = const QualityControlProductMenuListScreen();
         } else {
           page = QualityControlDetailScreen(

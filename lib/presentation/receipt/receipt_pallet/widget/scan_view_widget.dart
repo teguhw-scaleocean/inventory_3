@@ -7,19 +7,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:inventory_v3/common/constants/text_constants.dart';
-import 'package:inventory_v3/data/model/pallet.dart';
-import 'package:inventory_v3/data/model/quality_control.dart';
-import 'package:inventory_v3/data/model/scan_view.dart';
-import 'package:inventory_v3/presentation/quality-control/pallet/screens/quality_control_detail_screen.dart';
-import 'package:inventory_v3/presentation/receipt/receipt_product/cubit/scan/scan_cubit.dart';
-import 'package:inventory_v3/presentation/receipt/receipt_product/cubit/scan/scan_state.dart';
+import '../../../../common/constants/text_constants.dart';
+import '../../../../data/model/pallet.dart';
+import '../../../../data/model/quality_control.dart';
+import '../../../../data/model/scan_view.dart';
+import '../../../quality-control/pallet/screens/quality_control_detail_screen.dart';
+import '../../../quality-control/pallet/screens/quality_control_product_detail.dart';
+import '../../receipt_product/cubit/scan/scan_cubit.dart';
+import '../../receipt_product/cubit/scan/scan_state.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 
 import '../../../../common/components/primary_button.dart';
 import '../../../../common/constants/local_images.dart';
 import '../../../../common/theme/color/color_name.dart';
 import '../../../../common/theme/text/base_text.dart';
+import '../../../quality-control/product/screens/quality_control_product_menu_detail_screen.dart';
 
 class ScanView extends StatefulWidget {
   final String expectedValue;
@@ -487,7 +489,7 @@ class _ScanViewState extends State<ScanView> {
       Future.delayed(const Duration(seconds: 10), () {
         controller.stopCamera();
 
-        Navigator.push(
+        Navigator.pushReplacement(
           context,
           MaterialPageRoute(
             builder: (context) => QualityControlDetailScreen(
@@ -505,10 +507,10 @@ class _ScanViewState extends State<ScanView> {
       Future.delayed(const Duration(seconds: 8), () {
         controller.stopCamera();
 
-        Navigator.push(
+        Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) => QualityControlDetailScreen(
+            builder: (context) => QualityControlProductMenuDetailScreen(
               qualityControl: (idTracking == 1)
                   ? qualityControls.first
                   : qualityControls[2],

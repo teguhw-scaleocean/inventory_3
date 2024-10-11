@@ -29,6 +29,7 @@ import '../../../../common/theme/color/color_name.dart';
 import '../../../../common/theme/text/base_text.dart';
 import '../../../../data/model/return_pallet.dart';
 import '../../../receipt/receipt_product/screens/product_detail/receipt_product_menu_of_product_detail_screen.dart';
+import 'quality_control_product_screen.dart';
 
 class QualityControlProductMenuDetailScreen extends StatefulWidget {
   final QualityControl? qualityControl;
@@ -124,7 +125,7 @@ class _QualityControlProductMenuDetailScreenState
       Future.delayed(const Duration(seconds: 2), () async {
         String scannedItem = "";
         if (idTracking == 1) {
-          "1 Lots: ${cubit.state.pallets.first.palletCode}";
+          scannedItem = "1 Lots: ${cubit.state.pallets.first.lotsCode}";
         }
 
         onShowSuccessDialog(
@@ -922,7 +923,7 @@ class _QualityControlProductMenuDetailScreenState
         final resultOfProduct = Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => ReceiptProductMenuOfProductDetailScreen(
+            builder: (context) => QualityControlProductScreen(
               product: product0,
               tracking: tracking,
               status: qualityControl.status,

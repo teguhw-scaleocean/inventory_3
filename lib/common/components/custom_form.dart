@@ -20,6 +20,7 @@ class CustomFormField extends StatefulWidget {
   final bool isRequired;
   final bool? isTextArea;
   void Function(String)? onChanged;
+  void Function(String)? onSubmit;
   String? Function(String?)? validator;
   final EdgeInsets? contentPadding;
   final Color? borderColor;
@@ -37,6 +38,7 @@ class CustomFormField extends StatefulWidget {
     this.isRequired = false,
     this.isTextArea = false,
     this.onChanged,
+    this.onSubmit,
     this.validator,
     this.contentPadding,
     this.borderColor,
@@ -89,6 +91,7 @@ class _CustomFormFieldState extends State<CustomFormField> {
             onTapOutside: (event) =>
                 FocusManager.instance.primaryFocus!.unfocus(),
             onChanged: widget.onChanged,
+            onFieldSubmitted: widget.onSubmit,
             keyboardType:
                 (widget.isTextArea == true) ? TextInputType.multiline : null,
             minLines: (widget.isTextArea == true) ? 3 : 1,

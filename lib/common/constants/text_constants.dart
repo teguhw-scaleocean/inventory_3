@@ -20,10 +20,24 @@ class TextConstants {
   static String get chooseSubTitle =>
       "Choose to scan a Pallet, Product, or Both";
 
+  static String get qcMenuTitle => "Ready for quality check?";
+
   static String get scanPalletTittle =>
       "Scan your pallet barcode\nto confirm receipt.";
   static String get scanProductTittle =>
       "Scan your product barcode\nto confirm receipt.";
   static String get scanFromListTitle =>
       "Scan the product to instantly\nchoose it from the list.";
+
+  static String get scanFromListPalletTitle =>
+      "Scan the pallet to instantly\nchoose it from the list";
+
+  static String get scanToAddQtySerialNumber =>
+      "Scan now to enter the\nSerial Number.";
+
+  static String get scanToAddLotsNumber =>
+      "Scan now to enter the\nLots Number.";
+
+  static String get scanPalletQcTittle =>
+      "Scan the pallet for QC\nCondition: Good.";
 }

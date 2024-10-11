@@ -752,6 +752,7 @@ class _ReceiptProductMenuOfProductDetailScreenState
                   builder: (context) => AddProductScreen(
                     addType: indexToAddProduct,
                     code: code,
+                    isFromBoth: false,
                   ),
                 ),
               );

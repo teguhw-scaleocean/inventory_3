@@ -1,5 +1,6 @@
 import 'dart:developer';
 import 'dart:io';
+import 'dart:math' as m;
 
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
@@ -8,7 +9,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:inventory_v3/common/constants/text_constants.dart';
 import 'package:inventory_v3/data/model/pallet.dart';
+import 'package:inventory_v3/data/model/quality_control.dart';
 import 'package:inventory_v3/data/model/scan_view.dart';
+import 'package:inventory_v3/presentation/quality-control/pallet/screens/quality_control_detail_screen.dart';
 import 'package:inventory_v3/presentation/receipt/receipt_product/cubit/scan/scan_cubit.dart';
 import 'package:inventory_v3/presentation/receipt/receipt_product/cubit/scan/scan_state.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
@@ -51,10 +54,13 @@ class _ScanViewState extends State<ScanView> {
   String appBarTitle = "";
   String labelOfScan = "";
 
+  List<SerialNumber> scannedQtySerialNumberList = [];
   List<SerialNumber> serialNumberList = [];
   SerialNumber? serialNumber;
   bool isItemInputDate = false;
   bool isError = false;
+
+  String scanDummyLotsNumber = "";
 
   // In order to get hot reload to work we need to pause the camera if the platform
   // is android, or resume the camera if the platform is iOS.
@@ -88,6 +94,40 @@ class _ScanViewState extends State<ScanView> {
         appBarTitle = "Scan Product";
         labelOfScan = TextConstants.scanProductTittle;
         break;
+      case ScanViewType.listPalletQC:
+        appBarTitle = "Scan Pallet";
+        labelOfScan = TextConstants.scanFromListPalletTitle;
+        break;
+      case ScanViewType.addSerialNumberQty:
+        appBarTitle = "Scan Serial Number";
+        labelOfScan = TextConstants.scanToAddQtySerialNumber;
+
+        var serialNumberTemp = SerialNumber(
+          id: m.Random().nextInt(100),
+          label: "NBZ-20230901-008",
+          expiredDateTime: "Exp. Date: 12/07/2024 - 16.00",
+          quantity: 1,
+        );
+        // var serialNumberTemp2 = SerialNumber(
+        //   id: m.Random().nextInt(100),
+        //   label: "NBZ-20230901-009",
+        //   expiredDateTime: "Exp. Date: 12/07/2024 - 16.00",
+        //   quantity: 1,
+        // );
+        var dummySerialNumbers = <SerialNumber>[];
+        dummySerialNumbers = [serialNumberTemp];
+
+        scannedQtySerialNumberList.addAll(dummySerialNumbers);
+        break;
+      case ScanViewType.addLotsNumber:
+        appBarTitle = "Scan Lots Number";
+        labelOfScan = TextConstants.scanToAddLotsNumber;
+        scanDummyLotsNumber = "LOTS-20230248-648";
+        break;
+      case ScanViewType.palletQc:
+        appBarTitle = "Scan Pallet";
+        labelOfScan = TextConstants.scanPalletQcTittle;
+        break;
       default:
     }
 
@@ -99,7 +139,7 @@ class _ScanViewState extends State<ScanView> {
     super.didChangeDependencies();
 
     //TODO: Check if scan serial number or lots
-    if (idTracking == 0) {
+    if (idTracking == 0 && scanViewType != ScanViewType.addSerialNumberQty) {
       checkScanSerialNumber();
     } else if (idTracking == 1) {
       checkScanErrorLots();
@@ -438,6 +478,32 @@ class _ScanViewState extends State<ScanView> {
         Navigator.of(context).pop(expectedValue);
 
         log("expectedValue: $expectedValue");
+      });
+    } else if (scanViewType == ScanViewType.listPalletQC) {
+      Future.delayed(const Duration(seconds: 10), () {
+        controller.stopCamera();
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => QualityControlDetailScreen(
+              qualityControl: (idTracking == 1)
+                  ? qualityControls.first
+                  : (idTracking == 2)
+                      ? qualityControls[1]
+                      : qualityControls[2],
+              scanBarcode: expectedValue,
+            ),
+          ),
+        );
+      });
+    } else if (scanViewType == ScanViewType.addSerialNumberQty) {
+      Future.delayed(const Duration(seconds: 8), () {
+        Navigator.pop(context, scannedQtySerialNumberList);
+      });
+    } else if (scanViewType == ScanViewType.addLotsNumber) {
+      Future.delayed(const Duration(seconds: 8), () {
+        Navigator.pop(context, scanDummyLotsNumber);
       });
     } else {
       Future.delayed(const Duration(seconds: 3), () {

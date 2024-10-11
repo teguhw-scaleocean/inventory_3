@@ -15,6 +15,11 @@ class LocalImages {
   static String get receiptProductImage => "assets/receipt/product.svg";
   static String get receiptBothImage => "assets/receipt/both.svg";
 
+  // Scan Quality Control
+  static String get qcPalletImage => "assets/quality-control/pallet-scan.svg";
+  static String get qcProductImage => "assets/quality-control/product.svg";
+  static String get qcBothImage => "assets/quality-control/both.svg";
+
   static String get scanIcons => "assets/receipt/scan.svg";
 
   // Receipt Detail

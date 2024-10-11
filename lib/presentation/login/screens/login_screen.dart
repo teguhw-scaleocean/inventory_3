@@ -7,6 +7,7 @@ import 'package:inventory_v3/common/components/top_logo_section.dart';
 import 'package:inventory_v3/common/constants/local_images.dart';
 import 'package:inventory_v3/common/constants/text_constants.dart';
 import 'package:inventory_v3/common/extensions/empty_space_extension.dart';
+import 'package:inventory_v3/presentation/quality-control/quality_control_screen.dart';
 import 'package:inventory_v3/presentation/receipt/receipt_screen.dart';
 
 import '../../../common/theme/text/base_text.dart';
@@ -90,8 +91,10 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               40.height,
               PrimaryButton(
-                onPressed: () => Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => ReceiptScreen())),
+                onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => QualityControlScreen())),
                 height: 40,
                 title: "Login",
                 width: double.infinity,

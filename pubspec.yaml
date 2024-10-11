@@ -53,5 +53,6 @@ flutter:
     - assets/onboarding/
     - assets/login/
     - assets/receipt/
+    - assets/quality-control/
     - assets/receipt/stepper/
     - assets/receipt/icon/

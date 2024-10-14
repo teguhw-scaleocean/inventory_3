@@ -941,9 +941,6 @@ class _QualityControlProductMenuDetailScreenState
       default:
     }
 
-    // No Tracking
-    _receive = product0.productQty.toString();
-
     return InkWell(
       onTap: () {
         final resultOfProduct = Navigator.push(
@@ -959,7 +956,7 @@ class _QualityControlProductMenuDetailScreenState
 
         resultOfProduct.then((value) {
           if (value != null) {
-            debugPrint("value: $value");
+            debugPrint("value 0000: $value");
             setState(() {
               // product0 = value as Product;
               assignToReceive(product0);

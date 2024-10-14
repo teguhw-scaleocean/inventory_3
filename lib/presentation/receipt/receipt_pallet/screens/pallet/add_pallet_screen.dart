@@ -28,7 +28,14 @@ import '../../widget/scan_view_widget.dart';
 class AddPalletScreen extends StatefulWidget {
   final int index;
   final bool? isFromBoth;
-  const AddPalletScreen({super.key, required this.index, this.isFromBoth});
+  final bool? isAddOfProductMenu;
+
+  const AddPalletScreen({
+    super.key,
+    required this.index,
+    this.isFromBoth,
+    this.isAddOfProductMenu,
+  });
 
   @override
   State<AddPalletScreen> createState() => _AddPalletScreenState();
@@ -55,6 +62,8 @@ class _AddPalletScreenState extends State<AddPalletScreen> {
   bool hasLotShow = true;
 
   bool isFromBoth = false;
+  bool isAddOfProductMenu = false;
+
   bool isShowRequiredMessage = true;
   bool isQtyButtonEnabled = false;
 
@@ -73,6 +82,7 @@ class _AddPalletScreenState extends State<AddPalletScreen> {
     }
 
     isFromBoth = widget.isFromBoth ?? false;
+    isAddOfProductMenu = widget.isAddOfProductMenu ?? false;
   }
 
   List<Pallet> listProduct = [
@@ -154,7 +164,9 @@ class _AddPalletScreenState extends State<AddPalletScreen> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        appBar: const CustomAppBar(title: "Add Pallet"),
+        appBar: CustomAppBar(
+          title: (isAddOfProductMenu) ? "Add Product" : "Add Pallet",
+        ),
         body: Column(
           children: [
             Expanded(
@@ -165,35 +177,42 @@ class _AddPalletScreenState extends State<AddPalletScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      StatefulBuilder(builder: (context, palletIdSetState) {
-                        return CustomFormField(
-                          title: "Pallet ID",
-                          isShowTitle: true,
-                          isRequired: true,
-                          contentPadding:
-                              EdgeInsets.symmetric(horizontal: 16.w),
-                          borderColor: (isShowRequiredMessage)
-                              ? ColorName.badgeRedColor
-                              : palletIdBorderColor,
-                          fillTextStyle: BaseText.grey10Text14,
-                          controller: palletIdController,
-                          hintText: "Input Pallet ID",
-                          validator: (v) {
-                            if (v == null || v.isEmpty) {
-                              // return "This field is required. Please fill it in.";
-                            }
-                            return null;
-                          },
-                          onChanged: (v) {
-                            isShowRequiredMessage = v.isEmpty;
-                            setState(() {});
-                          },
-                        );
-                      }),
-                      (isShowRequiredMessage)
-                          ? reusableFieldRequired()
-                          : const SizedBox(),
-                      SizedBox(height: 14.h),
+                      if (!isAddOfProductMenu)
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            StatefulBuilder(
+                                builder: (context, palletIdSetState) {
+                              return CustomFormField(
+                                title: "Pallet ID",
+                                isShowTitle: true,
+                                isRequired: true,
+                                contentPadding:
+                                    EdgeInsets.symmetric(horizontal: 16.w),
+                                borderColor: (isShowRequiredMessage)
+                                    ? ColorName.badgeRedColor
+                                    : palletIdBorderColor,
+                                fillTextStyle: BaseText.grey10Text14,
+                                controller: palletIdController,
+                                hintText: "Input Pallet ID",
+                                validator: (v) {
+                                  if (v == null || v.isEmpty) {
+                                    // return "This field is required. Please fill it in.";
+                                  }
+                                  return null;
+                                },
+                                onChanged: (v) {
+                                  isShowRequiredMessage = v.isEmpty;
+                                  setState(() {});
+                                },
+                              );
+                            }),
+                            (isShowRequiredMessage)
+                                ? reusableFieldRequired()
+                                : const SizedBox(),
+                            SizedBox(height: 14.h),
+                          ],
+                        ),
                       buildRequiredLabel("Product"),
                       SizedBox(height: 4.h),
                       ReusableDropdownMenu(

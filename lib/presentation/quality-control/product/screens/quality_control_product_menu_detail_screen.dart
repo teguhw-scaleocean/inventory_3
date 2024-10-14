@@ -31,6 +31,7 @@ import '../../../../data/model/product.dart';
 import '../../../../data/model/return_pallet.dart';
 import '../../../receipt/receipt_pallet/screens/pallet/add_pallet_screen.dart';
 import '../../../receipt/receipt_product/screens/product_detail/receipt_product_menu_of_product_detail_screen.dart';
+import '../cubit/quality_control_product_cubit.dart';
 import 'quality_control_product_screen.dart';
 
 class QualityControlProductMenuDetailScreen extends StatefulWidget {
@@ -49,6 +50,8 @@ class _QualityControlProductMenuDetailScreenState
     extends State<QualityControlProductMenuDetailScreen> {
   late ProductMenuProductDetailCubit cubit;
   late DamageCubit damageCubit;
+  late QualityControlProductCubit qCcubit;
+
   final TextEditingController _searchController = TextEditingController();
   late QualityControl qualityControl;
 
@@ -74,6 +77,7 @@ class _QualityControlProductMenuDetailScreenState
     super.initState();
     cubit = BlocProvider.of<ProductMenuProductDetailCubit>(context);
     damageCubit = BlocProvider.of<DamageCubit>(context);
+    qCcubit = BlocProvider.of<QualityControlProductCubit>(context);
 
     if (widget.qualityControl != null) {
       qualityControl = widget.qualityControl!;
@@ -525,7 +529,10 @@ class _QualityControlProductMenuDetailScreenState
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => AddPalletScreen(index: indexToAddPallet),
+                builder: (context) => AddPalletScreen(
+                  index: indexToAddPallet,
+                  isAddOfProductMenu: true,
+                ),
               ),
             ).then((value) {
               debugPrint("addPalletResult: ${value.toString()}");
@@ -534,6 +541,23 @@ class _QualityControlProductMenuDetailScreenState
                 setState(() {
                   listPallets = value as List<Pallet>;
                 });
+
+                List<Product> products = [];
+                for (var e in listPallets) {
+                  var itemProduct = Product(
+                    id: e.id,
+                    name: e.productName,
+                    sku: e.sku ?? "",
+                    reason: "",
+                    location: "",
+                  );
+                  products.add(itemProduct);
+                }
+
+                qCcubit.updateListQualityControl(
+                  idQc: qualityControl.id,
+                  products: products,
+                );
               }
             });
           },

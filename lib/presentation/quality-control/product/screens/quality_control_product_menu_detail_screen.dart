@@ -959,12 +959,12 @@ class _QualityControlProductMenuDetailScreenState
 
         resultOfProduct.then((value) {
           if (value != null) {
-            // debugPrint("value: $value");
-            // setState(() {
-            //   product0 = value as Product;
-            //   assignToReceive(product0);
-            //   assignToDone(product0);
-            // });
+            debugPrint("value: $value");
+            setState(() {
+              // product0 = value as Product;
+              assignToReceive(product0);
+              assignToDone(product0);
+            });
             if (qualityControl.packageStatus
                 .toString()
                 .toLowerCase()

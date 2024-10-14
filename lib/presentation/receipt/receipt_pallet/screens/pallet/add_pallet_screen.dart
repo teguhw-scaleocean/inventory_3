@@ -650,6 +650,9 @@ class _AddPalletScreenState extends State<AddPalletScreen> {
   void onSubmitLots(total) {
     selectedObjectProduct.palletCode = palletIdController.text;
     selectedObjectProduct.productQty = total;
+    selectedObjectProduct.notDoneQty = total;
+    selectedObjectProduct.doneQty = 0;
+
     selectedObjectProduct.lotsCode = lotsController.text;
     listPallets.insert(0, selectedObjectProduct);
   }
@@ -657,6 +660,8 @@ class _AddPalletScreenState extends State<AddPalletScreen> {
   void onSubmitNoTracking(total) {
     selectedObjectProduct.palletCode = palletIdController.text;
     selectedObjectProduct.productQty = total;
+    selectedObjectProduct.notDoneQty = total;
+    selectedObjectProduct.doneQty = 0;
     listPallets.insert(0, selectedObjectProduct);
   }
 
@@ -703,6 +708,9 @@ class _AddPalletScreenState extends State<AddPalletScreen> {
     if (selectedObjectProduct.serialNumber != null) {
       selectedObjectProduct.productQty =
           selectedObjectProduct.serialNumber!.length.toDouble();
+      selectedObjectProduct.notDoneQty =
+          selectedObjectProduct.serialNumber!.length.toDouble();
+      selectedObjectProduct.doneQty = 0;
       selectedObjectProduct.palletCode = palletIdController.text;
     }
     listPallets.insert(0, selectedObjectProduct);

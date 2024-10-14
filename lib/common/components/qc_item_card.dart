@@ -4,14 +4,17 @@ import 'package:inventory_v3/presentation/quality-control/pallet/screens/quality
 
 import '../../data/model/product.dart';
 import '../../data/model/quality_control.dart';
+import '../../presentation/quality-control/product/screens/quality_control_product_menu_detail_screen.dart';
 import '../theme/color/color_name.dart';
 import '../theme/text/base_text.dart';
 import 'status_badge.dart';
 
 class QcItemCard extends StatelessWidget {
   final QualityControl qualityControl;
+  final bool? isProductMenu;
 
-  const QcItemCard({super.key, required this.qualityControl});
+  const QcItemCard(
+      {super.key, required this.qualityControl, this.isProductMenu});
 
   @override
   Widget build(BuildContext context) {
@@ -20,13 +23,24 @@ class QcItemCard extends StatelessWidget {
 
     return GestureDetector(
       onTap: () {
+        StatefulWidget page;
+        if (isProductMenu == true) {
+          page = QualityControlProductMenuDetailScreen(
+            qualityControl: qualityControl,
+            scanBarcode: null,
+          );
+          // page = const QualityControlProductMenuListScreen();
+        } else {
+          page = QualityControlDetailScreen(
+            qualityControl: qualityControl,
+            scanBarcode: null,
+          );
+        }
+
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => QualityControlDetailScreen(
-              qualityControl: qualityControl,
-              scanBarcode: null,
-            ),
+            builder: (context) => page,
           ),
         );
       },
@@ -75,21 +89,32 @@ class QcItemCard extends StatelessWidget {
               ],
             ),
             SizedBox(height: 8.h),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  qualityControl.packageName,
-                  style:
-                      BaseText.grey1Text13.copyWith(fontWeight: BaseText.light),
-                ),
-                Text(
-                  qualityControl.packageStatus,
-                  style:
-                      BaseText.grey1Text13.copyWith(fontWeight: BaseText.light),
-                )
-              ],
-            ),
+            (isProductMenu == true)
+                ? Row(
+                    children: [
+                      Text(
+                        qualityControl.packageStatus,
+                        style: BaseText.grey1Text13
+                            .copyWith(fontWeight: BaseText.light),
+                      ),
+                    ],
+                  )
+                : Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        qualityControl.packageName,
+                        style: BaseText.grey1Text13
+                            .copyWith(fontWeight: BaseText.light),
+                      ),
+                      Text(
+                        qualityControl.packageStatus,
+                        style: BaseText.grey1Text13
+                            .copyWith(fontWeight: BaseText.light),
+                      )
+                    ],
+                  ),
+            SizedBox(height: 4.h),
             // 4.height,
             Row(
               children: [

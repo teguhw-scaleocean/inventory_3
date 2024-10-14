@@ -321,7 +321,10 @@ class _ReceiptProductMenuOfProductDetailScreenState
                                     BlocProvider.of<
                                                 ProductMenuProductDetailCubit>(
                                             context)
-                                        .getLotsScannedTotalDone(totalDoneInt);
+                                        .getLotsScannedTotalDone(
+                                      totalDoneInt,
+                                      product: product,
+                                    );
 
                                     Future.delayed(const Duration(seconds: 2),
                                         () {

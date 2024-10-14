@@ -100,11 +100,20 @@ class ProductMenuProductDetailCubit
     getIsDoneQty(isDone);
   }
 
-  getLotsScannedTotalDone(int total) {
-    int resTotal = total += 1;
+  getLotsScannedTotalDone(int total, {required Pallet product}) {
+    var doneQty = state.product?.doneQty ?? 0;
+    double? resTotal = doneQty += 1;
+    var notDoneQty = product.notDoneQty ?? 0;
+    var notDoneQuantity = notDoneQty - 1;
 
-    emit(state.copyWith(lotsTotalDone: resTotal));
-    log("getLotsScannedTotalDone: ${state.lotsTotalDone.toString()}");
+    // emit(state.copyWith(lotsTotalDone: resTotal));
+    Pallet productUpdate = product.copyWith(
+      doneQty: resTotal.toDouble(),
+      notDoneQty: notDoneQuantity,
+    );
+
+    emit(state.copyWith(product: productUpdate));
+    log("getLotsScannedTotalDone: ${state.product?.toJson()}");
   }
 
   // getLotsUpdateTotalDone(int total, int doneTotal) {

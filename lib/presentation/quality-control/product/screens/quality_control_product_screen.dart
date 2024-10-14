@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -204,7 +206,8 @@ class _QualityControlProductScreenState
                     product.doneQty = state.snTotalDone?.toDouble() ?? 0.00;
                   }
                   if (idTracking != 0) {
-                    product.doneQty = state.lotsTotalDone?.toDouble() ?? 0.00;
+                    // product.doneQty = state.lotsTotalDone?.toDouble() ?? 0.00;
+                    product = state.product ?? product;
                   }
                 },
               ),
@@ -276,7 +279,7 @@ class _QualityControlProductScreenState
                                 MaterialPageRoute(
                                   builder: (context) => ScanView(
                                     expectedValue: firstExpectedValue,
-                                    scanType: ScanViewType.product,
+                                    scanType: ScanViewType.productQc,
                                     idTracking: idTracking,
                                   ),
                                 ),
@@ -321,13 +324,18 @@ class _QualityControlProductScreenState
                                     BlocProvider.of<
                                                 ProductMenuProductDetailCubit>(
                                             context)
-                                        .getLotsScannedTotalDone(totalDoneInt);
+                                        .getLotsScannedTotalDone(
+                                      totalDoneInt,
+                                      product: product,
+                                    );
+
+                                    setState(() {});
 
                                     Future.delayed(const Duration(seconds: 2),
                                         () {
                                       _scanBarcode = value;
                                       String scannedItem =
-                                          "Lots: $_scanBarcode";
+                                          "1 Lots: $_scanBarcode";
 
                                       onShowSuccessDialog(
                                         context: context,
@@ -472,9 +480,12 @@ class _QualityControlProductScreenState
                             : 0;
                         totalDone = totalDoneInt.toString();
                       } else {
+                        // log(product.toJson());
+
                         totalInt =
-                            _tabs[0] == e ? product.productQty.toInt() : 0;
+                            _tabs[0] == e ? product.notDoneQty!.toInt() : 0;
                         total = totalInt.toString();
+
                         if (product.returnQty != null) {
                           total = (totalInt - product.returnQty!)
                               .toInt()
@@ -485,9 +496,9 @@ class _QualityControlProductScreenState
                         // totalDoneInt = context
                         //         .watch<ProductMenuProductDetailCubit>()
                         //         .state
-                        //         .lotsTotalDone ??
+                        //         .product?.doneQty?.toInt() ??
                         //     totalDoneInt;
-                        totalDone = totalDoneInt.toString();
+                        totalDone = product.doneQty?.toInt().toString() ?? "0";
 
                         if (totalDoneInt == totalInt) {
                           total = "0";
@@ -1042,7 +1053,7 @@ class _QualityControlProductScreenState
     int tabIndex = 0,
   }) {
     if (itemProduct != null) {
-      int? quantityInt = itemProduct.productQty.toInt();
+      int? quantityInt = itemProduct.notDoneQty?.toInt();
       quantity = quantityInt.toString();
     }
 

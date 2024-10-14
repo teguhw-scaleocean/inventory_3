@@ -19,6 +19,7 @@ class Pallet {
   String? lotsCode;
   double productQty;
   double? doneQty;
+  double? notDoneQty;
   double? returnQty;
   double? damagedQty;
   bool? isDoneQty;
@@ -47,6 +48,7 @@ class Pallet {
     this.lotsCode,
     required this.productQty,
     this.doneQty,
+    this.notDoneQty,
     this.returnQty,
     this.damagedQty,
     this.isDoneQty,
@@ -76,6 +78,7 @@ class Pallet {
     String? lotsCode,
     double? productQty,
     double? doneQty,
+    double? notDoneQty,
     double? returnQty,
     double? damagedQty,
     bool? isDoneQty,
@@ -104,6 +107,7 @@ class Pallet {
       lotsCode: lotsCode ?? this.lotsCode,
       productQty: productQty ?? this.productQty,
       doneQty: doneQty ?? this.doneQty,
+      notDoneQty: notDoneQty ?? this.notDoneQty,
       returnQty: returnQty ?? this.returnQty,
       damagedQty: damagedQty ?? this.damagedQty,
       isDoneQty: isDoneQty ?? this.isDoneQty,
@@ -138,6 +142,7 @@ class Pallet {
       'lotsCode': lotsCode,
       'productQty': productQty,
       'doneQty': doneQty,
+      'notDoneQty': notDoneQty,
       'returnQty': returnQty,
       'damagedQty': damagedQty,
       'isDoneQty': isDoneQty,
@@ -175,6 +180,8 @@ class Pallet {
       lotsCode: map['lotsCode'] != null ? map['lotsCode'] as String : null,
       productQty: map['productQty'] as double,
       doneQty: map['doneQty'] != null ? map['doneQty'] as double : null,
+      notDoneQty:
+          map['notDoneQty'] != null ? map['notDoneQty'] as double : null,
       returnQty: map['returnQty'] != null ? map['returnQty'] as double : null,
       damagedQty:
           map['damagedQty'] != null ? map['damagedQty'] as double : null,
@@ -240,7 +247,7 @@ class Pallet {
 
   @override
   String toString() {
-    return 'Pallet(id: $id, palletCode: $palletCode, productName: $productName, code: $code, dateTime: $dateTime, hasActualDateTime: $hasActualDateTime, actualDateTime: $actualDateTime, sku: $sku, lotsCode: $lotsCode, productQty: $productQty, doneQty: $doneQty, returnQty: $returnQty, damagedQty: $damagedQty, isDoneQty: $isDoneQty, hasBeenScanned: $hasBeenScanned, isReturn: $isReturn, isDamage: $isDamage, isDamagePalletAndProduct: $isDamagePalletAndProduct, isDamageProduct: $isDamageProduct, isReturnPalletAndProduct: $isReturnPalletAndProduct, serialNumber: $serialNumber, scannedSerialNumber: $scannedSerialNumber, productReturn: $productReturn, returnProductNoTracking: $returnProductNoTracking, damagedProducts: $damagedProducts, damageProducts: $damageProducts)';
+    return 'Pallet(id: $id, palletCode: $palletCode, productName: $productName, code: $code, dateTime: $dateTime, hasActualDateTime: $hasActualDateTime, actualDateTime: $actualDateTime, sku: $sku, lotsCode: $lotsCode, productQty: $productQty, doneQty: $doneQty, notDoneQty: $notDoneQty, returnQty: $returnQty, damagedQty: $damagedQty, isDoneQty: $isDoneQty, hasBeenScanned: $hasBeenScanned, isReturn: $isReturn, isDamage: $isDamage, isDamagePalletAndProduct: $isDamagePalletAndProduct, isDamageProduct: $isDamageProduct, isReturnPalletAndProduct: $isReturnPalletAndProduct, serialNumber: $serialNumber, scannedSerialNumber: $scannedSerialNumber, productReturn: $productReturn, returnProductNoTracking: $returnProductNoTracking, damagedProducts: $damagedProducts, damageProducts: $damageProducts)';
   }
 
   @override
@@ -258,6 +265,7 @@ class Pallet {
         other.lotsCode == lotsCode &&
         other.productQty == productQty &&
         other.doneQty == doneQty &&
+        other.notDoneQty == notDoneQty &&
         other.returnQty == returnQty &&
         other.damagedQty == damagedQty &&
         other.isDoneQty == isDoneQty &&
@@ -288,6 +296,7 @@ class Pallet {
         lotsCode.hashCode ^
         productQty.hashCode ^
         doneQty.hashCode ^
+        notDoneQty.hashCode ^
         returnQty.hashCode ^
         damagedQty.hashCode ^
         isDoneQty.hashCode ^
@@ -433,6 +442,8 @@ List<Pallet> products2 = [
     lotsCode: "SYR-LOTS-2842",
     dateTime: "Sch. Date: 12/07/2024 - 15:30",
     productQty: 11,
+    notDoneQty: 11,
+    doneQty: 0,
   ),
   Pallet(
     id: 2,
@@ -442,6 +453,8 @@ List<Pallet> products2 = [
     lotsCode: "LOTS-2024-002B",
     dateTime: "Sch. Date: 28/07/2024 - 14:00",
     productQty: 12,
+    notDoneQty: 12,
+    doneQty: 0,
   ),
   Pallet(
     id: 3,
@@ -451,6 +464,8 @@ List<Pallet> products2 = [
     lotsCode: "LOTS-2024-003B",
     dateTime: "Sch. Date: 02/07/2024 - 14:00",
     productQty: 14,
+    notDoneQty: 14,
+    doneQty: 0,
   ),
 ];
 

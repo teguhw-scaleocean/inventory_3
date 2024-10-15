@@ -917,9 +917,13 @@ class _QualityControlProductMenuDetailScreenState
     switch (tracking) {
       case "Serial Number":
         // Serial Number
-        assignToReceive(product0);
-        assignToDone(product0);
+        // assignToReceive(product0);
+        // assignToDone(product0);
         code = product0.code;
+        _receive = product0.productQty.toString();
+        double doneLotsQty = product0.doneQty ?? 0.00;
+        _scanBarcode = doneLotsQty.toString();
+
         if (product0.hasActualDateTime == true) {
           actualDate = product0.actualDateTime.toString().substring(0, 9);
           actualTime = product0.actualDateTime.toString().substring(12, 17);

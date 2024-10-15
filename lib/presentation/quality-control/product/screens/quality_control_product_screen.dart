@@ -61,6 +61,7 @@ class _QualityControlProductScreenState
 
   List<SerialNumber> serialNumberList = [];
   List<SerialNumber> serialNumberResult = [];
+  List<SerialNumber> serialNumberAddQtyResult = [];
 
   var selectedSerialNumber;
 
@@ -472,12 +473,10 @@ class _QualityControlProductScreenState
                       isSelectedTab = tabController.index == _tabs.indexOf(e);
 
                       if (tracking.toLowerCase().contains("serial number")) {
-                        totalInt = serialNumberList.length;
+                        totalInt = product.notDoneQty!.toInt();
                         total = totalInt.toString();
 
-                        totalDoneInt = (serialNumberResult.isNotEmpty)
-                            ? serialNumberResult.length
-                            : 0;
+                        totalDoneInt = product.doneQty!.toInt();
                         totalDone = totalDoneInt.toString();
                       } else {
                         // log(product.toJson());
@@ -560,17 +559,17 @@ class _QualityControlProductScreenState
                                           var item = serialNumberList[index];
                                           code = item.label;
 
-                                          bool isHighlighted = false;
-                                          isHighlighted =
-                                              serialNumberResult.contains(item);
-                                          debugPrint("isHighlighted: QTL");
+                                          isCardHighlighted =
+                                              serialNumberAddQtyResult
+                                                  .contains(item);
 
                                           return Padding(
                                               padding:
                                                   EdgeInsets.only(bottom: 8.h),
                                               child: buildItemQuantity(
                                                 code,
-                                                isHighlighted: isHighlighted,
+                                                isHighlighted:
+                                                    isCardHighlighted,
                                                 itemSerialNumber: item,
                                                 tabIndex: 0,
                                               ));
@@ -781,13 +780,24 @@ class _QualityControlProductScreenState
                   });
                 } else if (value != null) {
                   setState(() {
-                    serialNumberResult = value as List<SerialNumber>;
-                    serialNumberList.insertAll(0, serialNumberResult);
+                    // var snResult = value as List<SerialNumber>;
+                    serialNumberAddQtyResult = value as List<SerialNumber>;
+                    serialNumberList.insertAll(0, serialNumberAddQtyResult);
                     product.serialNumber = serialNumberList;
+
+                    var totalSerialNumber = serialNumberAddQtyResult.length;
+                    product.productQty = product.productQty + totalSerialNumber;
+                    product.notDoneQty =
+                        product.notDoneQty! + totalSerialNumber;
+                    isCardHighlighted = true;
                   });
 
-                  debugPrint(
-                      "serialNumberResult: $serialNumberResult.map((e) => e.toJson())");
+                  debugPrint("notDoneQty: ${product.notDoneQty}");
+                  // setState(() {
+                  // });
+
+                  // debugPrint(
+                  //     "serialNumberResult: $serialNumberResult.map((e) => e.toJson())");
                 }
               });
             },
@@ -918,19 +928,8 @@ class _QualityControlProductScreenState
   Container buildTrackingLabel(String tracking) {
     String receive = "0";
 
-    switch (tracking) {
-      case "Serial Number":
-        if (serialNumberList.isNotEmpty) {
-          // int receiveDouble = serialNumberList.length.toInt() +
-          //     serialNumberResult.length.toInt();
-          int receiveDouble = product.serialNumber?.length.toInt() ?? 0;
-          receive = receiveDouble.toString();
-        }
-        break;
-      default:
-        int receiveInt = product.productQty.toInt();
-        receive = receiveInt.toString();
-    }
+    int receiveInt = product.productQty.toInt();
+    receive = receiveInt.toString();
 
     return Container(
         padding: EdgeInsets.symmetric(horizontal: 16.w),

@@ -135,6 +135,8 @@ class _AddProductScreenState extends State<AddProductScreen> {
                     debugPrint(
                         "listSnController: ${listSnController.map((e) => e.text).toList()}");
                     _mapListSerialNumberController();
+                    listSerialNumber
+                        .removeWhere((element) => element.label.isEmpty);
                     listSerialNumber.insert(0, serialNumber);
                   } else {
                     listSerialNumber.add(serialNumber);

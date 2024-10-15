@@ -86,9 +86,11 @@ class ProductMenuProductDetailCubit
   }
 
   getBothLotsTotalDone(int total, int doneTotal) {
-    int statePrevTotal = state.lotsTotalDone ?? 0;
+    int statePrevTotal = state.product?.doneQty?.toInt() ?? 0;
+    int statePrevTotalNotDone = state.product?.notDoneQty?.toInt() ?? 0;
+
     int resTotal = statePrevTotal + doneTotal;
-    var notDoneQty = total - doneTotal;
+    var notDoneQty = statePrevTotalNotDone - doneTotal;
 
     emit(state.copyWith(
       lotsTotalDone: resTotal,

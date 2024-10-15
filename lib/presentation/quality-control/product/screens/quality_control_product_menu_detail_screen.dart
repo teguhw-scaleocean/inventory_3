@@ -961,11 +961,11 @@ class _QualityControlProductMenuDetailScreenState
         resultOfProduct.then((value) {
           if (value != null) {
             // debugPrint("value 0000: $value");
-            // setState(() {
-            //   product0 = value as Pallet;
-            //   // assignToReceive(product0);
-            //   // assignToDone(product0);
-            // });
+            setState(() {
+              product0 = value as Pallet;
+              //   // assignToReceive(product0);
+              //   // assignToDone(product0);
+            });
             if (qualityControl.packageStatus
                 .toString()
                 .toLowerCase()

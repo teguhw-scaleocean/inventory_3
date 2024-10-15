@@ -49,6 +49,7 @@ class QualityControlProductScreen extends StatefulWidget {
 class _QualityControlProductScreenState
     extends State<QualityControlProductScreen>
     with SingleTickerProviderStateMixin {
+  late ProductMenuProductDetailCubit productDetailCubit;
   late Pallet product;
   String tracking = "";
   String status = "";
@@ -167,6 +168,14 @@ class _QualityControlProductScreenState
 
     tabController.dispose();
     searchSerialNumberController.dispose();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    productDetailCubit =
+        BlocProvider.of<ProductMenuProductDetailCubit>(context);
   }
 
   _onSearch() {}
@@ -409,9 +418,20 @@ class _QualityControlProductScreenState
                                   ),
                                 ).then((value) {
                                   if (value != null) {
+                                    var updateTotal =
+                                        productDetailCubit.state.updateTotal;
+                                    setState(() {
+                                      product =
+                                          productDetailCubit.state.product ??
+                                              product;
+                                    });
+
+                                    debugPrint("product success: $product");
+
                                     Future.delayed(const Duration(seconds: 2),
                                         () {
-                                      String scannedItem = "Lots: $value";
+                                      String scannedItem =
+                                          "$updateTotal Lots: $value";
                                       onShowSuccessDialog(
                                         context: context,
                                         scannedItem: scannedItem,

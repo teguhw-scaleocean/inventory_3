@@ -346,7 +346,9 @@ class _QualityControlProductScreenState
                                       product: product,
                                     );
 
-                                    setState(() {});
+                                    setState(() {
+                                      isHighlightedLots = true;
+                                    });
 
                                     Future.delayed(const Duration(seconds: 2),
                                         () {
@@ -424,6 +426,7 @@ class _QualityControlProductScreenState
                                       product =
                                           productDetailCubit.state.product ??
                                               product;
+                                      isHighlightedLots = true;
                                     });
 
                                     debugPrint("product success: $product");
@@ -524,7 +527,8 @@ class _QualityControlProductScreenState
                         //         .state
                         //         .product?.doneQty?.toInt() ??
                         //     totalDoneInt;
-                        totalDone = product.doneQty?.toInt().toString() ?? "0";
+                        totalDoneInt = product.doneQty?.toInt() ?? totalDoneInt;
+                        totalDone = totalDoneInt.toString();
 
                         if (totalDoneInt == totalInt) {
                           total = "0";
@@ -671,7 +675,7 @@ class _QualityControlProductScreenState
                             )
                           : (idTracking != 0)
                               ? Builder(builder: (context) {
-                                  isHighlightedLots = totalDoneInt > 0;
+                                  // isHighlightedLots = totalDoneInt > 0;
 
                                   debugPrint("isHighlightedLots: qtl");
                                   return Container(

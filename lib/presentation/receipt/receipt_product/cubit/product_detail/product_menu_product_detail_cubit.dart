@@ -281,4 +281,14 @@ class ProductMenuProductDetailCubit
 
     log("getDoneQuantity: ${lastPallets.map((e) => e.doneQty.toString()).toList()}");
   }
+
+  updateProducts(product) {
+    List<Pallet> lastProducts = state.pallets;
+
+    int index = lastProducts.indexWhere((element) => element.id == product.id);
+    lastProducts[index] = product;
+    emit(state.copyWith(pallets: lastProducts));
+
+    log("updateProducts: ${lastProducts.map((e) => e.toString()).toList()}");
+  }
 }

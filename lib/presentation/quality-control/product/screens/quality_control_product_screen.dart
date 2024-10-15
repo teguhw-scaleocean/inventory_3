@@ -195,7 +195,16 @@ class _QualityControlProductScreenState
         length: _tabs.length,
         child: Scaffold(
           appBar: CustomAppBar(
-            onTap: () => Navigator.of(context).pop(product),
+            onTap: () {
+              if (widget.product != product) {
+                BlocProvider.of<ProductMenuProductDetailCubit>(context)
+                    .updateProducts(product);
+              }
+
+              Future.delayed(const Duration(milliseconds: 600), () {
+                Navigator.of(context).pop(product);
+              });
+            },
             title: "Product Detail",
           ),
           body: MultiBlocListener(

@@ -414,6 +414,8 @@ List<Pallet> products = [
     code: "SUR_12942",
     dateTime: "Sch. Date: 12/07/2024 - 15:30",
     productQty: 11,
+    notDoneQty: 11,
+    doneQty: 0,
   ),
   Pallet(
     id: 2,
@@ -422,6 +424,8 @@ List<Pallet> products = [
     code: "MASK_12942 ",
     dateTime: "Sch. Date: 28/07/2024 - 14:00",
     productQty: 12,
+    notDoneQty: 12,
+    doneQty: 0,
   ),
   Pallet(
     id: 3,
@@ -430,6 +434,8 @@ List<Pallet> products = [
     code: "EM_12942",
     dateTime: "Sch. Date: 02/07/2024 - 14:00",
     productQty: 14,
+    notDoneQty: 14,
+    doneQty: 0,
   ),
 ];
 
@@ -480,6 +486,8 @@ List<Pallet> products3 = [
     // lotsCode: "LOTS-2024-001A",
     dateTime: "Sch. Date: 12/07/2024 - 15:30",
     productQty: 12,
+    notDoneQty: 12,
+    doneQty: 0,
   ),
   Pallet(
     id: 2,
@@ -490,6 +498,8 @@ List<Pallet> products3 = [
     // lotsCode: "LOTS-2024-002A",
     dateTime: "Sch. Date: 28/07/2024 - 14:00",
     productQty: 11,
+    notDoneQty: 11,
+    doneQty: 0,
   ),
   Pallet(
     id: 3,
@@ -500,6 +510,8 @@ List<Pallet> products3 = [
     // lotsCode: "LOTS-2024-003A",
     dateTime: "Sch. Date: 02/07/2024 - 14:00",
     productQty: 14,
+    notDoneQty: 14,
+    doneQty: 0,
   ),
 ];
 

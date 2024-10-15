@@ -774,9 +774,10 @@ class _QualityControlProductScreenState
                   setState(() {
                     var quantityDouble = value;
                     product.productQty = product.productQty + quantityDouble;
+                    product.notDoneQty = product.notDoneQty! + quantityDouble;
                     isCardHighlighted = true;
                     debugPrint(
-                        "quantityDouble: ${product.productQty}, isCardHighlighted: $isCardHighlighted");
+                        "quantityDouble: ${product.notDoneQty}, isCardHighlighted: $isCardHighlighted");
                   });
                 } else if (value != null) {
                   setState(() {

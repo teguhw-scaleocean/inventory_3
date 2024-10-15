@@ -262,26 +262,33 @@ class _QualityControlProductScreenState
                           return buildScanAndUpdateSection(
                             status: status,
                             onScan: () async {
-                              int idTracking = 0;
+                              // int idTracking = 0;
                               String firstExpectedValue = "";
+                              bool isShowErrorPalletLots = false;
 
                               if (tracking
                                   .toLowerCase()
                                   .contains("serial number")) {
                                 firstExpectedValue =
                                     serialNumberList.first.label;
-                              } else {
-                                idTracking = 1;
+                              } else if (idTracking == 1) {
+                                // idTracking = 1;
                                 firstExpectedValue = code;
+                                isShowErrorPalletLots = true;
+
+                                debugPrint(
+                                    "isShowError: $isShowErrorPalletLots, idTracking: $idTracking");
                               }
 
-                              final scanResult = await Navigator.push(
+                              Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) => ScanView(
                                     expectedValue: firstExpectedValue,
                                     scanType: ScanViewType.productQc,
                                     idTracking: idTracking,
+                                    isShowErrorPalletLots:
+                                        isShowErrorPalletLots,
                                   ),
                                 ),
                               ).then((value) {

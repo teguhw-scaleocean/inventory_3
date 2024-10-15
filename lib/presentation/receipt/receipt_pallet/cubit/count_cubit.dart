@@ -7,12 +7,12 @@ import 'count_state.dart';
 class CountCubit extends Cubit<CountState> {
   CountCubit() : super(CountState(quantity: 0.0));
   void increment(double qty) {
-    if (qty > 0) {
-      emit(state.copyWith(quantity: qty + 1));
-    } else {
-      emit(state.copyWith(quantity: state.quantity + 1));
-      log(state.quantity.toString());
-    }
+    // if (qty > 0) {
+    emit(state.copyWith(quantity: qty + 1));
+    // } else {
+    //   emit(state.copyWith(quantity: state.quantity + 1));
+    log(state.quantity.toString());
+    // }
   }
 
   void decrement(double qty) {

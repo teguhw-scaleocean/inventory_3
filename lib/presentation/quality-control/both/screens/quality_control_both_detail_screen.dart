@@ -28,6 +28,7 @@ import '../../../../common/theme/text/base_text.dart';
 import '../../../../data/model/return_pallet.dart';
 import '../../../../data/model/scan_view.dart';
 import '../../../receipt/receipt_pallet/widget/scan_view_widget.dart';
+import 'quality_control_both_product_screen.dart';
 
 class QualityControlBothDetailScreen extends StatefulWidget {
   final QualityControl? qualityControl;
@@ -632,17 +633,18 @@ class _QualityControlBothDetailScreenState
 
     return InkWell(
       onTap: () {
-        final resultOfProduct = Navigator.push(
+        final resultOfBothProduct = Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => QualityControlProductDetailScreen(
+            builder: (context) => QualityControlBothProductScreen(
               product: product0,
               tracking: tracking,
+              status: qualityControl.status,
             ),
           ),
         );
 
-        resultOfProduct.then((value) {
+        resultOfBothProduct.then((value) {
           if (value != null) {
             debugPrint("value: $value");
             setState(() {

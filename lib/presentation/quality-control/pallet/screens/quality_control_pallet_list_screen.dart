@@ -16,6 +16,8 @@ import '../../../../common/components/reusable_widget.dart';
 import '../../../../common/theme/color/color_name.dart';
 import '../../../../data/model/pallet.dart';
 import '../../../../data/model/product.dart';
+import '../../product/cubit/quality_control_product_cubit.dart';
+import '../../product/cubit/quality_control_product_state.dart';
 
 class QualityControlPalletListScreen extends StatefulWidget {
   final String appBarTitle;
@@ -31,6 +33,8 @@ class _QualityControlPalletListScreenState
     extends State<QualityControlPalletListScreen>
     with SingleTickerProviderStateMixin {
   late QualityControlBothCubit qcBothCubit;
+  late QualityControlProductCubit qCcubit;
+
   String appBarTitle = "";
 
   final searchKey = GlobalKey();
@@ -55,15 +59,19 @@ class _QualityControlPalletListScreenState
 
     _tabController = TabController(length: 4, vsync: this);
 
-    listQualityControl = qualityControls;
+    // listQualityControl = qualityControls;
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
 
+    qCcubit = BlocProvider.of<QualityControlProductCubit>(context);
     qcBothCubit = BlocProvider.of<QualityControlBothCubit>(context);
+
     isBothListScreen = qcBothCubit.state.isBothListScreen ?? isBothListScreen;
+
+    qCcubit.setInitialQualityControl();
   }
 
   @override
@@ -163,22 +171,28 @@ class _QualityControlPalletListScreenState
     );
   }
 
-  Container _buildListSection() {
-    return Container(
-      padding: EdgeInsets.fromLTRB(16.w, 0, 16.w, 8.h),
-      color: ColorName.backgroundColor,
-      child: ListView.builder(
-          padding: EdgeInsets.zero,
-          shrinkWrap: true,
-          itemCount: listQualityControl.length,
-          itemBuilder: (context, index) {
-            var item = listQualityControl[index];
+  Widget _buildListSection() {
+    return BlocBuilder<QualityControlProductCubit, QualityControlProductState>(
+      builder: (context, state) {
+        listQualityControl = state.qualityControl ?? [];
 
-            return QcItemCard(
-              qualityControl: item,
-              isBothMenu: (isBothListScreen) ? true : null,
-            );
-          }),
+        return Container(
+          padding: EdgeInsets.fromLTRB(16.w, 0, 16.w, 8.h),
+          color: ColorName.backgroundColor,
+          child: ListView.builder(
+              padding: EdgeInsets.zero,
+              shrinkWrap: true,
+              itemCount: listQualityControl.length,
+              itemBuilder: (context, index) {
+                var item = listQualityControl[index];
+
+                return QcItemCard(
+                  qualityControl: item,
+                  isBothMenu: (isBothListScreen) ? true : null,
+                );
+              }),
+        );
+      },
     );
   }
 }

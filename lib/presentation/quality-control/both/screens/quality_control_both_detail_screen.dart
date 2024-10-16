@@ -16,6 +16,7 @@ import 'package:inventory_v3/common/constants/local_images.dart';
 import 'package:inventory_v3/data/model/pallet.dart';
 import 'package:inventory_v3/data/model/quality_control.dart';
 import 'package:inventory_v3/presentation/quality-control/pallet/screens/quality_control_product_detail.dart';
+import 'package:inventory_v3/presentation/quality-control/product/cubit/quality_control_product_cubit.dart';
 import 'package:inventory_v3/presentation/receipt/receipt_pallet/screens/pallet/add_pallet_screen.dart';
 import 'package:inventory_v3/presentation/receipt/receipt_product/cubit/product_detail/product_menu_product_detail_cubit.dart';
 import 'package:inventory_v3/presentation/receipt/receipt_product/cubit/product_detail/product_menu_product_detail_state.dart';
@@ -25,6 +26,7 @@ import '../../../../common/components/reusable_widget.dart';
 import '../../../../common/components/status_badge.dart';
 import '../../../../common/theme/color/color_name.dart';
 import '../../../../common/theme/text/base_text.dart';
+import '../../../../data/model/product.dart';
 import '../../../../data/model/return_pallet.dart';
 import '../../../../data/model/scan_view.dart';
 import '../../../receipt/receipt_pallet/widget/scan_view_widget.dart';
@@ -45,6 +47,8 @@ class QualityControlBothDetailScreen extends StatefulWidget {
 class _QualityControlBothDetailScreenState
     extends State<QualityControlBothDetailScreen> {
   late ProductMenuProductDetailCubit cubit;
+  late QualityControlProductCubit qCcubit;
+
   final TextEditingController _searchController = TextEditingController();
   late QualityControl qualityControl;
 
@@ -66,6 +70,7 @@ class _QualityControlBothDetailScreenState
     super.initState();
 
     cubit = BlocProvider.of<ProductMenuProductDetailCubit>(context);
+    qCcubit = BlocProvider.of<QualityControlProductCubit>(context);
 
     if (widget.qualityControl != null) {
       qualityControl = widget.qualityControl!;
@@ -402,6 +407,23 @@ class _QualityControlBothDetailScreenState
                 setState(() {
                   listPallets = value as List<Pallet>;
                 });
+
+                List<Product> products = [];
+                for (var e in listPallets) {
+                  var itemProduct = Product(
+                    id: e.id,
+                    name: e.productName,
+                    sku: e.sku ?? "",
+                    reason: "",
+                    location: "",
+                  );
+                  products.add(itemProduct);
+                }
+
+                qCcubit.updateListQualityControl(
+                  idQc: qualityControl.id,
+                  products: products,
+                );
               }
             });
           },

@@ -11,6 +11,7 @@ import '../../../../common/constants/text_constants.dart';
 import '../../../../data/model/pallet.dart';
 import '../../../../data/model/quality_control.dart';
 import '../../../../data/model/scan_view.dart';
+import '../../../quality-control/both/screens/quality_control_both_detail_screen.dart';
 import '../../../quality-control/pallet/screens/quality_control_detail_screen.dart';
 import '../../../quality-control/pallet/screens/quality_control_product_detail.dart';
 import '../../receipt_product/cubit/scan/scan_cubit.dart';
@@ -527,6 +528,19 @@ class _ScanViewState extends State<ScanView> {
           ),
         );
       });
+    } else if (scanViewType == ScanViewType.listBothQc) {
+      controller.stopCamera();
+
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => QualityControlBothDetailScreen(
+            qualityControl:
+                (idTracking == 1) ? qualityControls.first : qualityControls[2],
+            scanBarcode: expectedValue,
+          ),
+        ),
+      );
     } else if (scanViewType == ScanViewType.addSerialNumberQty) {
       Future.delayed(const Duration(seconds: 8), () {
         Navigator.pop(context, scannedQtySerialNumberList);

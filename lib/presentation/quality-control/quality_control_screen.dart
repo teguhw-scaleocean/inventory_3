@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:inventory_v3/common/extensions/empty_space_extension.dart';
+import 'package:inventory_v3/presentation/quality-control/both/cubit/quality_control_both_cubit.dart';
 import 'package:inventory_v3/presentation/quality-control/product/screens/quality_control_product_menu_list_screen.dart';
 
 import '../../common/components/custom_app_bar.dart';
@@ -83,38 +85,33 @@ class QualityControlScreen extends StatelessWidget {
 
     return InkWell(
       onTap: () {
+        late StatefulWidget screen;
+
         switch (index) {
           case 0:
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const QualityControlPalletListScreen(
-                  appBarTitle: "Quality Control: Pallet",
-                ),
-              ),
+            screen = const QualityControlPalletListScreen(
+              appBarTitle: "Quality Control: Pallet",
             );
             break;
           case 1:
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const QualityControlProductMenuListScreen(
-                  appBarTitle: "Quality Control: Product",
-                ),
-              ),
+            screen = const QualityControlProductMenuListScreen(
+              appBarTitle: "Quality Control: Product",
             );
             break;
           case 2:
-          // Navigator.push(
-          //   context,
-          //   MaterialPageRoute(
-          //     builder: (context) => const ReceiptBothMenuListScreen(
-          //       title: "Receipt: Pallet and Product",
-          //     ),
-          //   ),
-          // );
+            BlocProvider.of<QualityControlBothCubit>(context)
+                .setBothListScreen(true);
+            screen = const QualityControlPalletListScreen(
+              appBarTitle: "Quality Control: Pallet and Product",
+            );
+            break;
           default:
         }
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => screen),
+        );
       },
       child: Container(
         height: 160,

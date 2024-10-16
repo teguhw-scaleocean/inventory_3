@@ -1,17 +1,20 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:inventory_v3/common/components/custom_app_bar.dart';
 import 'package:inventory_v3/common/components/qc_item_card.dart';
 import 'package:inventory_v3/data/model/quality_control.dart';
 import 'package:inventory_v3/data/model/scan_view.dart';
+import 'package:inventory_v3/presentation/quality-control/both/cubit/quality_control_both_cubit.dart';
 import 'package:inventory_v3/presentation/receipt/receipt_pallet/widget/scan_view_widget.dart';
 
 import '../../../../common/components/reusable_search_bar_border.dart';
 import '../../../../common/components/reusable_tab_bar.dart';
 import '../../../../common/components/reusable_widget.dart';
 import '../../../../common/theme/color/color_name.dart';
+import '../../../../data/model/pallet.dart';
 import '../../../../data/model/product.dart';
 
 class QualityControlPalletListScreen extends StatefulWidget {
@@ -27,6 +30,7 @@ class QualityControlPalletListScreen extends StatefulWidget {
 class _QualityControlPalletListScreenState
     extends State<QualityControlPalletListScreen>
     with SingleTickerProviderStateMixin {
+  late QualityControlBothCubit qcBothCubit;
   String appBarTitle = "";
 
   final searchKey = GlobalKey();
@@ -36,6 +40,8 @@ class _QualityControlPalletListScreenState
 
   List<String> tabs = [];
   List<QualityControl> listQualityControl = [];
+
+  bool isBothListScreen = false;
 
   onSearch() {}
   onSearchClear() {}
@@ -50,6 +56,14 @@ class _QualityControlPalletListScreenState
     _tabController = TabController(length: 4, vsync: this);
 
     listQualityControl = qualityControls;
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    qcBothCubit = BlocProvider.of<QualityControlBothCubit>(context);
+    isBothListScreen = qcBothCubit.state.isBothListScreen ?? isBothListScreen;
   }
 
   @override
@@ -83,14 +97,26 @@ class _QualityControlPalletListScreenState
                     ),
                     SizedBox(width: 8.w),
                     buildScanButton(onTap: () {
+                      ScanView screen;
+                      if (isBothListScreen) {
+                        var expectedValue = listPallets.first.palletCode;
+                        screen = ScanView(
+                          expectedValue: expectedValue,
+                          scanType: ScanViewType.listBothQc,
+                          idTracking: 1,
+                        );
+                      } else {
+                        screen = const ScanView(
+                          expectedValue: "1.0",
+                          scanType: ScanViewType.listPalletQC,
+                          idTracking: 1,
+                        );
+                      }
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => const ScanView(
-                                    expectedValue: "1.0",
-                                    scanType: ScanViewType.listPalletQC,
-                                    idTracking: 1,
-                                  )));
+                            builder: (context) => screen,
+                          ));
                     }),
                   ],
                 ),
@@ -148,7 +174,10 @@ class _QualityControlPalletListScreenState
           itemBuilder: (context, index) {
             var item = listQualityControl[index];
 
-            return QcItemCard(qualityControl: item);
+            return QcItemCard(
+              qualityControl: item,
+              isBothMenu: (isBothListScreen) ? true : null,
+            );
           }),
     );
   }

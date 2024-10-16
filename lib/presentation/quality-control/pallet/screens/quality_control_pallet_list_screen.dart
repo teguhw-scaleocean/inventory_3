@@ -99,7 +99,7 @@ class _QualityControlPalletListScreenState
                     buildScanButton(onTap: () {
                       ScanView screen;
                       if (isBothListScreen) {
-                        var expectedValue = listPallets.first.palletCode;
+                        var expectedValue = "A494";
                         screen = ScanView(
                           expectedValue: expectedValue,
                           scanType: ScanViewType.listBothQc,

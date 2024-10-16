@@ -55,25 +55,29 @@ class _UpdateProductQuantityScreenState
     super.initState();
 
     _getTrackingId();
-    if (idTracking != 0) {
-      generateUpdateList();
-    }
+    // if (idTracking != 0) {
 
-    cubit = BlocProvider.of<ProductMenuProductDetailCubit>(context);
+    // }
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
 
+    cubit = BlocProvider.of<ProductMenuProductDetailCubit>(context);
+
     if (idTracking == 0) {
       generateUpdateListSerialNumber();
       _product = context.read<ProductMenuProductDetailCubit>().state.product;
-      totalNotDone = snList.length.toInt();
+      if (_product != null) {
+        totalNotDone = _product!.notDoneQty!.toInt();
+      }
     }
     if (idTracking != 0) {
       _product = context.read<ProductMenuProductDetailCubit>().state.product;
-      totalNotDone = _product!.productQty.toInt();
+      totalNotDone = _product!.notDoneQty!.toInt();
+
+      generateUpdateList(totalNotDone);
     }
   }
 
@@ -83,9 +87,9 @@ class _UpdateProductQuantityScreenState
     debugPrint("idTracking: $idTracking");
   }
 
-  void generateUpdateList() {
+  void generateUpdateList(int lengthListUpdate) {
     updateListItems = List.generate(
-      11,
+      lengthListUpdate,
       (index) => ItemCard(
         id: index + 1,
         code: "SYR-LOTS-2842",

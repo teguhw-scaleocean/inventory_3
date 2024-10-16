@@ -14,6 +14,7 @@ import 'package:inventory_v3/presentation/receipt/receipt_screen.dart';
 import '../common/theme/color/color_name.dart';
 import '../common/theme/color/colors.dart';
 import '../presentation/onboarding/screens/onboarding_screen.dart';
+import '../presentation/quality-control/product/cubit/quality_control_product_cubit.dart';
 import '../presentation/receipt/receipt_pallet/screens/receipt_detail_screen.dart';
 import '../presentation/receipt/receipt_pallet/screens/receipt_list_screen.dart';
 import '../presentation/receipt/receipt_pallet/screens/receipt_product_detail.dart';
@@ -46,6 +47,9 @@ class MainApp extends StatelessWidget {
             ),
             BlocProvider<DamageCubit>(
               create: (context) => DamageCubit(),
+            ),
+            BlocProvider<QualityControlProductCubit>(
+              create: (context) => QualityControlProductCubit(),
             )
           ],
           child: MaterialApp(

@@ -6,4 +6,6 @@ enum ScanViewType {
   addSerialNumberQty,
   addLotsNumber,
   palletQc,
+  listProductQc,
+  productQc,
 }

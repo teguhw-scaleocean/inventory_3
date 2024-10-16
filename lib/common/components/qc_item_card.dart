@@ -4,14 +4,17 @@ import 'package:inventory_v3/presentation/quality-control/pallet/screens/quality
 
 import '../../data/model/product.dart';
 import '../../data/model/quality_control.dart';
+import '../../presentation/quality-control/product/screens/quality_control_product_menu_detail_screen.dart';
 import '../theme/color/color_name.dart';
 import '../theme/text/base_text.dart';
 import 'status_badge.dart';
 
 class QcItemCard extends StatelessWidget {
   final QualityControl qualityControl;
+  final bool? isProductMenu;
 
-  const QcItemCard({super.key, required this.qualityControl});
+  const QcItemCard(
+      {super.key, required this.qualityControl, this.isProductMenu});
 
   @override
   Widget build(BuildContext context) {
@@ -20,13 +23,24 @@ class QcItemCard extends StatelessWidget {
 
     return GestureDetector(
       onTap: () {
+        StatefulWidget page;
+        if (isProductMenu == true) {
+          page = QualityControlProductMenuDetailScreen(
+            qualityControl: qualityControl,
+            scanBarcode: null,
+          );
+          // page = const QualityControlProductMenuListScreen();
+        } else {
+          page = QualityControlDetailScreen(
+            qualityControl: qualityControl,
+            scanBarcode: null,
+          );
+        }
+
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => QualityControlDetailScreen(
-              qualityControl: qualityControl,
-              scanBarcode: null,
-            ),
+            builder: (context) => page,
           ),
         );
       },
@@ -75,21 +89,32 @@ class QcItemCard extends StatelessWidget {
               ],
             ),
             SizedBox(height: 8.h),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  qualityControl.packageName,
-                  style:
-                      BaseText.grey1Text13.copyWith(fontWeight: BaseText.light),
-                ),
-                Text(
-                  qualityControl.packageStatus,
-                  style:
-                      BaseText.grey1Text13.copyWith(fontWeight: BaseText.light),
-                )
-              ],
-            ),
+            (isProductMenu == true)
+                ? Row(
+                    children: [
+                      Text(
+                        qualityControl.packageStatus,
+                        style: BaseText.grey1Text13
+                            .copyWith(fontWeight: BaseText.light),
+                      ),
+                    ],
+                  )
+                : Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        qualityControl.packageName,
+                        style: BaseText.grey1Text13
+                            .copyWith(fontWeight: BaseText.light),
+                      ),
+                      Text(
+                        qualityControl.packageStatus,
+                        style: BaseText.grey1Text13
+                            .copyWith(fontWeight: BaseText.light),
+                      )
+                    ],
+                  ),
+            SizedBox(height: 4.h),
             // 4.height,
             Row(
               children: [
@@ -136,26 +161,25 @@ class QcItemCard extends StatelessWidget {
             ),
             SizedBox(
               height: 16.h,
-              child: Row(
-                children: [
-                  ListView.builder(
-                      shrinkWrap: true,
-                      scrollDirection: Axis.horizontal,
-                      itemCount: qualityControl.products.length,
-                      itemBuilder: (context, index) {
-                        var item = qualityControl.products[index];
-                        var others = qualityControl.products.length - 3;
+              width: double.infinity,
+              child: ListView.builder(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  shrinkWrap: true,
+                  scrollDirection: Axis.horizontal,
+                  itemCount: qualityControl.products.length,
+                  itemBuilder: (context, index) {
+                    var item = qualityControl.products[index];
+                    var others = qualityControl.products.length - 3;
 
-                        if (index < 3) {
-                          return _buildItemProduct(item);
-                        } else if (index == 3) {
-                          return _buildOthersLength(others);
-                        } else {
-                          return const SizedBox();
-                        }
-                      })
-                ],
-              ),
+                    // return _buildItemProduct(item);
+                    if (index < 3) {
+                      return _buildItemProduct(item);
+                    } else if (index == 3) {
+                      return _buildOthersLength(others);
+                    } else {
+                      return const SizedBox();
+                    }
+                  }),
             )
           ],
         ),

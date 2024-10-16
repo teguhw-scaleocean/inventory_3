@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -18,36 +20,36 @@ import '../../../../../common/theme/color/color_name.dart';
 import '../../../../../common/theme/text/base_text.dart';
 import '../../../../../data/model/date_time_button.dart';
 import '../../../../../data/model/pallet.dart';
-import '../../../../../data/model/product.dart';
 import '../../../../../data/model/return_product.dart';
 import '../../../../../data/model/scan_view.dart';
-import '../../../receipt_pallet/screens/product_detail/add_product_screen.dart';
-import '../../../receipt_pallet/widget/scan_view_widget.dart';
-import '../../cubit/product_detail/product_menu_product_detail_cubit.dart';
-import '../../cubit/product_detail/product_menu_product_detail_state.dart';
-import '../../cubit/scan/scan_cubit.dart';
-import '../../cubit/scan/scan_state.dart';
-import 'update_product_quantity_screen.dart';
+import '../../../receipt/receipt_pallet/screens/product_detail/add_product_screen.dart';
+import '../../../receipt/receipt_pallet/widget/scan_view_widget.dart';
+import '../../../receipt/receipt_product/cubit/product_detail/product_menu_product_detail_cubit.dart';
+import '../../../receipt/receipt_product/cubit/product_detail/product_menu_product_detail_state.dart';
+import '../../../receipt/receipt_product/cubit/scan/scan_cubit.dart';
+import '../../../receipt/receipt_product/cubit/scan/scan_state.dart';
+import '../../../receipt/receipt_product/screens/product_detail/update_product_quantity_screen.dart';
 
-class ReceiptProductMenuOfProductDetailScreen extends StatefulWidget {
+class QualityControlProductScreen extends StatefulWidget {
   final Pallet product;
   final String tracking;
   final String status;
 
-  const ReceiptProductMenuOfProductDetailScreen(
+  const QualityControlProductScreen(
       {super.key,
       required this.product,
       required this.tracking,
       required this.status});
 
   @override
-  State<ReceiptProductMenuOfProductDetailScreen> createState() =>
-      _ReceiptProductMenuOfProductDetailScreenState();
+  State<QualityControlProductScreen> createState() =>
+      _QualityControlProductScreenState();
 }
 
-class _ReceiptProductMenuOfProductDetailScreenState
-    extends State<ReceiptProductMenuOfProductDetailScreen>
+class _QualityControlProductScreenState
+    extends State<QualityControlProductScreen>
     with SingleTickerProviderStateMixin {
+  late ProductMenuProductDetailCubit productDetailCubit;
   late Pallet product;
   String tracking = "";
   String status = "";
@@ -60,6 +62,7 @@ class _ReceiptProductMenuOfProductDetailScreenState
 
   List<SerialNumber> serialNumberList = [];
   List<SerialNumber> serialNumberResult = [];
+  List<SerialNumber> serialNumberAddQtyResult = [];
 
   var selectedSerialNumber;
 
@@ -117,12 +120,13 @@ class _ReceiptProductMenuOfProductDetailScreenState
 
     isReturnProduct = product.isReturn ?? false;
     if (isReturnProduct) {
-      _tabs.insert(2, "Return");
+      // _tabs.insert(2, "Return");
+      _tabs.add("Return");
     }
 
     isDamageProduct = product.isDamageProduct ?? false;
     if (isDamageProduct) {
-      _tabs.insert(2, "Damage");
+      _tabs.add("Damage");
     }
 
     tabController = TabController(length: _tabs.length, vsync: this);
@@ -166,6 +170,14 @@ class _ReceiptProductMenuOfProductDetailScreenState
     searchSerialNumberController.dispose();
   }
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    productDetailCubit =
+        BlocProvider.of<ProductMenuProductDetailCubit>(context);
+  }
+
   _onSearch() {}
   _onClearData() {}
 
@@ -183,7 +195,16 @@ class _ReceiptProductMenuOfProductDetailScreenState
         length: _tabs.length,
         child: Scaffold(
           appBar: CustomAppBar(
-            onTap: () => Navigator.of(context).pop(product),
+            onTap: () {
+              if (widget.product != product) {
+                BlocProvider.of<ProductMenuProductDetailCubit>(context)
+                    .updateProducts(product);
+              }
+
+              Future.delayed(const Duration(milliseconds: 600), () {
+                Navigator.of(context).pop(product);
+              });
+            },
             title: "Product Detail",
           ),
           body: MultiBlocListener(
@@ -204,7 +225,8 @@ class _ReceiptProductMenuOfProductDetailScreenState
                     product.doneQty = state.snTotalDone?.toDouble() ?? 0.00;
                   }
                   if (idTracking != 0) {
-                    product.doneQty = state.lotsTotalDone?.toDouble() ?? 0.00;
+                    // product.doneQty = state.lotsTotalDone?.toDouble() ?? 0.00;
+                    product = state.product ?? product;
                   }
                 },
               ),
@@ -258,26 +280,33 @@ class _ReceiptProductMenuOfProductDetailScreenState
                           return buildScanAndUpdateSection(
                             status: status,
                             onScan: () async {
-                              int idTracking = 0;
+                              // int idTracking = 0;
                               String firstExpectedValue = "";
+                              bool isShowErrorPalletLots = false;
 
                               if (tracking
                                   .toLowerCase()
                                   .contains("serial number")) {
                                 firstExpectedValue =
                                     serialNumberList.first.label;
-                              } else {
-                                idTracking = 1;
+                              } else if (idTracking == 1) {
+                                // idTracking = 1;
                                 firstExpectedValue = code;
+                                isShowErrorPalletLots = true;
+
+                                debugPrint(
+                                    "isShowError: $isShowErrorPalletLots, idTracking: $idTracking");
                               }
 
-                              final scanResult = await Navigator.push(
+                              Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) => ScanView(
                                     expectedValue: firstExpectedValue,
-                                    scanType: ScanViewType.product,
+                                    scanType: ScanViewType.productQc,
                                     idTracking: idTracking,
+                                    isShowErrorPalletLots:
+                                        isShowErrorPalletLots,
                                   ),
                                 ),
                               ).then((value) {
@@ -326,11 +355,15 @@ class _ReceiptProductMenuOfProductDetailScreenState
                                       product: product,
                                     );
 
+                                    setState(() {
+                                      isHighlightedLots = true;
+                                    });
+
                                     Future.delayed(const Duration(seconds: 2),
                                         () {
                                       _scanBarcode = value;
                                       String scannedItem =
-                                          "Lots: $_scanBarcode";
+                                          "1 Lots: $_scanBarcode";
 
                                       onShowSuccessDialog(
                                         context: context,
@@ -396,9 +429,21 @@ class _ReceiptProductMenuOfProductDetailScreenState
                                   ),
                                 ).then((value) {
                                   if (value != null) {
+                                    var updateTotal =
+                                        productDetailCubit.state.updateTotal;
+                                    setState(() {
+                                      product =
+                                          productDetailCubit.state.product ??
+                                              product;
+                                      isHighlightedLots = true;
+                                    });
+
+                                    debugPrint("product success: $product");
+
                                     Future.delayed(const Duration(seconds: 2),
                                         () {
-                                      String scannedItem = "Lots: $value";
+                                      String scannedItem =
+                                          "$updateTotal Lots: $value";
                                       onShowSuccessDialog(
                                         context: context,
                                         scannedItem: scannedItem,
@@ -467,17 +512,18 @@ class _ReceiptProductMenuOfProductDetailScreenState
                       isSelectedTab = tabController.index == _tabs.indexOf(e);
 
                       if (tracking.toLowerCase().contains("serial number")) {
-                        totalInt = serialNumberList.length;
+                        totalInt = product.notDoneQty!.toInt();
                         total = totalInt.toString();
 
-                        totalDoneInt = (serialNumberResult.isNotEmpty)
-                            ? serialNumberResult.length
-                            : 0;
+                        totalDoneInt = product.doneQty!.toInt();
                         totalDone = totalDoneInt.toString();
                       } else {
+                        // log(product.toJson());
+
                         totalInt =
-                            _tabs[0] == e ? product.productQty.toInt() : 0;
+                            _tabs[0] == e ? product.notDoneQty!.toInt() : 0;
                         total = totalInt.toString();
+
                         if (product.returnQty != null) {
                           total = (totalInt - product.returnQty!)
                               .toInt()
@@ -485,11 +531,12 @@ class _ReceiptProductMenuOfProductDetailScreenState
                           totalReturn = (product.returnQty)?.toInt() ?? 0;
                         }
 
-                        totalDoneInt = context
-                                .watch<ProductMenuProductDetailCubit>()
-                                .state
-                                .lotsTotalDone ??
-                            totalDoneInt;
+                        // totalDoneInt = context
+                        //         .watch<ProductMenuProductDetailCubit>()
+                        //         .state
+                        //         .product?.doneQty?.toInt() ??
+                        //     totalDoneInt;
+                        totalDoneInt = product.doneQty?.toInt() ?? totalDoneInt;
                         totalDone = totalDoneInt.toString();
 
                         if (totalDoneInt == totalInt) {
@@ -552,17 +599,17 @@ class _ReceiptProductMenuOfProductDetailScreenState
                                           var item = serialNumberList[index];
                                           code = item.label;
 
-                                          bool isHighlighted = false;
-                                          isHighlighted =
-                                              serialNumberResult.contains(item);
-                                          debugPrint("isHighlighted: QTL");
+                                          isCardHighlighted =
+                                              serialNumberAddQtyResult
+                                                  .contains(item);
 
                                           return Padding(
                                               padding:
                                                   EdgeInsets.only(bottom: 8.h),
                                               child: buildItemQuantity(
                                                 code,
-                                                isHighlighted: isHighlighted,
+                                                isHighlighted:
+                                                    isCardHighlighted,
                                                 itemSerialNumber: item,
                                                 tabIndex: 0,
                                               ));
@@ -599,6 +646,7 @@ class _ReceiptProductMenuOfProductDetailScreenState
                                             code,
                                             itemProduct: product,
                                             tabIndex: 0,
+                                            isHighlighted: isCardHighlighted,
                                           ),
                                         ],
                                       ),
@@ -636,7 +684,7 @@ class _ReceiptProductMenuOfProductDetailScreenState
                             )
                           : (idTracking != 0)
                               ? Builder(builder: (context) {
-                                  isHighlightedLots = totalDoneInt > 0;
+                                  // isHighlightedLots = totalDoneInt > 0;
 
                                   debugPrint("isHighlightedLots: qtl");
                                   return Container(
@@ -765,19 +813,31 @@ class _ReceiptProductMenuOfProductDetailScreenState
                   setState(() {
                     var quantityDouble = value;
                     product.productQty = product.productQty + quantityDouble;
+                    product.notDoneQty = product.notDoneQty! + quantityDouble;
                     isCardHighlighted = true;
                     debugPrint(
-                        "quantityDouble: ${product.productQty}, isCardHighlighted: $isCardHighlighted");
+                        "quantityDouble: ${product.notDoneQty}, isCardHighlighted: $isCardHighlighted");
                   });
                 } else if (value != null) {
                   setState(() {
-                    serialNumberResult = value as List<SerialNumber>;
-                    serialNumberList.insertAll(0, serialNumberResult);
+                    // var snResult = value as List<SerialNumber>;
+                    serialNumberAddQtyResult = value as List<SerialNumber>;
+                    serialNumberList.insertAll(0, serialNumberAddQtyResult);
                     product.serialNumber = serialNumberList;
+
+                    var totalSerialNumber = serialNumberAddQtyResult.length;
+                    product.productQty = product.productQty + totalSerialNumber;
+                    product.notDoneQty =
+                        product.notDoneQty! + totalSerialNumber;
+                    isCardHighlighted = true;
                   });
 
-                  debugPrint(
-                      "serialNumberResult: $serialNumberResult.map((e) => e.toJson())");
+                  debugPrint("notDoneQty: ${product.notDoneQty}");
+                  // setState(() {
+                  // });
+
+                  // debugPrint(
+                  //     "serialNumberResult: $serialNumberResult.map((e) => e.toJson())");
                 }
               });
             },
@@ -908,19 +968,8 @@ class _ReceiptProductMenuOfProductDetailScreenState
   Container buildTrackingLabel(String tracking) {
     String receive = "0";
 
-    switch (tracking) {
-      case "Serial Number":
-        if (serialNumberList.isNotEmpty) {
-          // int receiveDouble = serialNumberList.length.toInt() +
-          //     serialNumberResult.length.toInt();
-          int receiveDouble = product.serialNumber?.length.toInt() ?? 0;
-          receive = receiveDouble.toString();
-        }
-        break;
-      default:
-        int receiveInt = product.productQty.toInt();
-        receive = receiveInt.toString();
-    }
+    int receiveInt = product.productQty.toInt();
+    receive = receiveInt.toString();
 
     return Container(
         padding: EdgeInsets.symmetric(horizontal: 16.w),
@@ -1044,7 +1093,7 @@ class _ReceiptProductMenuOfProductDetailScreenState
     int tabIndex = 0,
   }) {
     if (itemProduct != null) {
-      int? quantityInt = itemProduct.productQty.toInt();
+      int? quantityInt = itemProduct.notDoneQty?.toInt();
       quantity = quantityInt.toString();
     }
 

@@ -149,9 +149,10 @@ class _QualityControlProductDetailScreenState
                   setState(() {
                     var quantityDouble = value;
                     product.productQty = product.productQty + quantityDouble;
+                    product.notDoneQty = product.notDoneQty! + quantityDouble;
                     isHighlightedAddQty = true;
                     // quantity = quantityDouble.toString();
-                    debugPrint("quantityDouble: ${product.productQty}");
+                    debugPrint("notDoneQty: ${product.notDoneQty}");
                   });
                 } else if (value != null) {
                   setState(() {

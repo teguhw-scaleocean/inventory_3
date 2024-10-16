@@ -135,6 +135,8 @@ class _AddProductScreenState extends State<AddProductScreen> {
                     debugPrint(
                         "listSnController: ${listSnController.map((e) => e.text).toList()}");
                     _mapListSerialNumberController();
+                    listSerialNumber
+                        .removeWhere((element) => element.label.isEmpty);
                     listSerialNumber.insert(0, serialNumber);
                   } else {
                     listSerialNumber.add(serialNumber);
@@ -187,6 +189,9 @@ class _AddProductScreenState extends State<AddProductScreen> {
 
   Widget _buildOtherSection(String labels, String code) {
     bool isQtyButtonEnabled = false;
+    qtyController.value = const TextEditingValue(
+      text: "0.0",
+    );
 
     return StatefulBuilder(builder: (context, otherSetState) {
       double value = 0.0;

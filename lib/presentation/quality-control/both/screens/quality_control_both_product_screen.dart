@@ -803,7 +803,7 @@ class _QualityControlBothProductScreenState
                   builder: (context) => AddProductScreen(
                     addType: indexToAddProduct,
                     code: code,
-                    isFromBoth: false,
+                    // isFromBoth: false,
                   ),
                 ),
               );

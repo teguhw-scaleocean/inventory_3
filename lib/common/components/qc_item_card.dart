@@ -161,26 +161,25 @@ class QcItemCard extends StatelessWidget {
             ),
             SizedBox(
               height: 16.h,
-              child: Row(
-                children: [
-                  ListView.builder(
-                      shrinkWrap: true,
-                      scrollDirection: Axis.horizontal,
-                      itemCount: qualityControl.products.length,
-                      itemBuilder: (context, index) {
-                        var item = qualityControl.products[index];
-                        var others = qualityControl.products.length - 3;
+              width: double.infinity,
+              child: ListView.builder(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  shrinkWrap: true,
+                  scrollDirection: Axis.horizontal,
+                  itemCount: qualityControl.products.length,
+                  itemBuilder: (context, index) {
+                    var item = qualityControl.products[index];
+                    var others = qualityControl.products.length - 3;
 
-                        if (index < 3) {
-                          return _buildItemProduct(item);
-                        } else if (index == 3) {
-                          return _buildOthersLength(others);
-                        } else {
-                          return const SizedBox();
-                        }
-                      })
-                ],
-              ),
+                    // return _buildItemProduct(item);
+                    if (index < 3) {
+                      return _buildItemProduct(item);
+                    } else if (index == 3) {
+                      return _buildOthersLength(others);
+                    } else {
+                      return const SizedBox();
+                    }
+                  }),
             )
           ],
         ),

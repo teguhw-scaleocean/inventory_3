@@ -31,6 +31,7 @@ import '../../../../data/model/product.dart';
 import '../../../../data/model/return_pallet.dart';
 import '../../../receipt/receipt_pallet/screens/pallet/add_pallet_screen.dart';
 import '../../../receipt/receipt_product/screens/product_detail/receipt_product_menu_of_product_detail_screen.dart';
+import '../cubit/quality_control_product_cubit.dart';
 import 'quality_control_product_screen.dart';
 
 class QualityControlProductMenuDetailScreen extends StatefulWidget {
@@ -49,6 +50,8 @@ class _QualityControlProductMenuDetailScreenState
     extends State<QualityControlProductMenuDetailScreen> {
   late ProductMenuProductDetailCubit cubit;
   late DamageCubit damageCubit;
+  late QualityControlProductCubit qCcubit;
+
   final TextEditingController _searchController = TextEditingController();
   late QualityControl qualityControl;
 
@@ -74,6 +77,7 @@ class _QualityControlProductMenuDetailScreenState
     super.initState();
     cubit = BlocProvider.of<ProductMenuProductDetailCubit>(context);
     damageCubit = BlocProvider.of<DamageCubit>(context);
+    qCcubit = BlocProvider.of<QualityControlProductCubit>(context);
 
     if (widget.qualityControl != null) {
       qualityControl = widget.qualityControl!;
@@ -525,7 +529,10 @@ class _QualityControlProductMenuDetailScreenState
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => AddPalletScreen(index: indexToAddPallet),
+                builder: (context) => AddPalletScreen(
+                  index: indexToAddPallet,
+                  isAddOfProductMenu: true,
+                ),
               ),
             ).then((value) {
               debugPrint("addPalletResult: ${value.toString()}");
@@ -534,6 +541,23 @@ class _QualityControlProductMenuDetailScreenState
                 setState(() {
                   listPallets = value as List<Pallet>;
                 });
+
+                List<Product> products = [];
+                for (var e in listPallets) {
+                  var itemProduct = Product(
+                    id: e.id,
+                    name: e.productName,
+                    sku: e.sku ?? "",
+                    reason: "",
+                    location: "",
+                  );
+                  products.add(itemProduct);
+                }
+
+                qCcubit.updateListQualityControl(
+                  idQc: qualityControl.id,
+                  products: products,
+                );
               }
             });
           },
@@ -893,9 +917,13 @@ class _QualityControlProductMenuDetailScreenState
     switch (tracking) {
       case "Serial Number":
         // Serial Number
-        assignToReceive(product0);
-        assignToDone(product0);
+        // assignToReceive(product0);
+        // assignToDone(product0);
         code = product0.code;
+        _receive = product0.productQty.toString();
+        double doneLotsQty = product0.doneQty ?? 0.00;
+        _scanBarcode = doneLotsQty.toString();
+
         if (product0.hasActualDateTime == true) {
           actualDate = product0.actualDateTime.toString().substring(0, 9);
           actualTime = product0.actualDateTime.toString().substring(12, 17);
@@ -917,9 +945,6 @@ class _QualityControlProductMenuDetailScreenState
       default:
     }
 
-    // No Tracking
-    _receive = product0.productQty.toString();
-
     return InkWell(
       onTap: () {
         final resultOfProduct = Navigator.push(
@@ -935,12 +960,12 @@ class _QualityControlProductMenuDetailScreenState
 
         resultOfProduct.then((value) {
           if (value != null) {
-            // debugPrint("value: $value");
-            // setState(() {
-            //   product0 = value as Product;
-            //   assignToReceive(product0);
-            //   assignToDone(product0);
-            // });
+            // debugPrint("value 0000: $value");
+            setState(() {
+              product0 = value as Pallet;
+              //   // assignToReceive(product0);
+              //   // assignToDone(product0);
+            });
             if (qualityControl.packageStatus
                 .toString()
                 .toLowerCase()

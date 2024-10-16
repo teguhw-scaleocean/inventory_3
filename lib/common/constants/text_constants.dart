@@ -43,4 +43,6 @@ class TextConstants {
 
   static String get scanFromListProductTitle =>
       "Scan the product to instantly\nchoose it from the list";
+  static String get scanProductQcTittle =>
+      "Scan the product for QC\nCondition: Good.";
 }

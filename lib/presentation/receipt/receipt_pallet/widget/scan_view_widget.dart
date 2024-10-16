@@ -134,6 +134,10 @@ class _ScanViewState extends State<ScanView> {
         appBarTitle = "Scan Pallet";
         labelOfScan = TextConstants.scanPalletQcTittle;
         break;
+      case ScanViewType.productQc:
+        appBarTitle = "Scan Product";
+        labelOfScan = TextConstants.scanProductQcTittle;
+        break;
       default:
     }
 

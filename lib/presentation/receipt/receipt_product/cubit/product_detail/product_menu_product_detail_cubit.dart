@@ -86,12 +86,18 @@ class ProductMenuProductDetailCubit
   }
 
   getBothLotsTotalDone(int total, int doneTotal) {
-    int statePrevTotal = state.lotsTotalDone ?? 0;
+    int statePrevTotal = state.product?.doneQty?.toInt() ?? 0;
+    int statePrevTotalNotDone = state.product?.notDoneQty?.toInt() ?? 0;
+
     int resTotal = statePrevTotal + doneTotal;
+    var notDoneQty = statePrevTotalNotDone - doneTotal;
 
     emit(state.copyWith(
       lotsTotalDone: resTotal,
-      product: state.product?.copyWith(doneQty: resTotal.toDouble()),
+      product: state.product?.copyWith(
+        doneQty: resTotal.toDouble(),
+        notDoneQty: notDoneQty.toDouble(),
+      ),
     ));
     log("product done: ${state.product.toString()}");
 
@@ -100,11 +106,20 @@ class ProductMenuProductDetailCubit
     getIsDoneQty(isDone);
   }
 
-  getLotsScannedTotalDone(int total) {
-    int resTotal = total += 1;
+  getLotsScannedTotalDone(int total, {required Pallet product}) {
+    var doneQty = state.product?.doneQty ?? 0;
+    double? resTotal = doneQty += 1;
+    var notDoneQty = product.notDoneQty ?? 0;
+    var notDoneQuantity = notDoneQty - 1;
 
-    emit(state.copyWith(lotsTotalDone: resTotal));
-    log("getLotsScannedTotalDone: ${state.lotsTotalDone.toString()}");
+    // emit(state.copyWith(lotsTotalDone: resTotal));
+    Pallet productUpdate = product.copyWith(
+      doneQty: resTotal.toDouble(),
+      notDoneQty: notDoneQuantity,
+    );
+
+    emit(state.copyWith(product: productUpdate));
+    log("getLotsScannedTotalDone: ${state.product?.toJson()}");
   }
 
   // getLotsUpdateTotalDone(int total, int doneTotal) {
@@ -265,5 +280,15 @@ class ProductMenuProductDetailCubit
     emit(state.copyWith(pallets: lastPallets));
 
     log("getDoneQuantity: ${lastPallets.map((e) => e.doneQty.toString()).toList()}");
+  }
+
+  updateProducts(product) {
+    List<Pallet> lastProducts = state.pallets;
+
+    int index = lastProducts.indexWhere((element) => element.id == product.id);
+    lastProducts[index] = product;
+    emit(state.copyWith(pallets: lastProducts));
+
+    log("updateProducts: ${lastProducts.map((e) => e.toString()).toList()}");
   }
 }

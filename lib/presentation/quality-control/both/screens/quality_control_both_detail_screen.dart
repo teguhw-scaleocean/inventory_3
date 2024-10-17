@@ -206,32 +206,8 @@ class _QualityControlBothDetailScreenState
                           );
                           cubit.scanPallet(scannedProduct);
 
-                          Future.delayed(const Duration(seconds: 2), () {
-                            onShowSuccessDialog(
-                                context: context,
-                                scannedItem: "Pallet $value",
-                                isBoth: true,
-                                onBothPressed: () {
-                                  Navigator.pop(context);
-
-                                  Future.delayed(
-                                      const Duration(
-                                        seconds: 2,
-                                      ), () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            QualityControlBothProductScreen(
-                                          product: scannedProduct,
-                                          tracking: tracking,
-                                          status: qualityControl.status,
-                                        ),
-                                      ),
-                                    );
-                                  });
-                                });
-                          });
+                          _onBothScanOrUpdatePallet(
+                              context, value, scannedProduct);
                         }
                       });
                     }
@@ -456,6 +432,35 @@ class _QualityControlBothDetailScreenState
     );
   }
 
+  void _onBothScanOrUpdatePallet(
+      BuildContext context, value, Pallet scannedProduct) {
+    Future.delayed(const Duration(seconds: 2), () {
+      onShowSuccessDialog(
+          context: context,
+          scannedItem: "Pallet $value",
+          isBoth: true,
+          onBothPressed: () {
+            Navigator.pop(context);
+
+            Future.delayed(
+                const Duration(
+                  seconds: 2,
+                ), () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => QualityControlBothProductScreen(
+                    product: scannedProduct,
+                    tracking: tracking,
+                    status: qualityControl.status,
+                  ),
+                ),
+              );
+            });
+          });
+    });
+  }
+
   void _onReturnPalletAndProduct(value, BuildContext context) {
     var result = value as ReturnPallet;
     cubit.getReturnPalletAndProduct(result);
@@ -563,12 +568,12 @@ class _QualityControlBothDetailScreenState
 
                   return;
                 }
-                if (selectedUpdatePalletValue != null) {
-                  double updateDoneQty =
-                      selectedUpdatePalletValue?.productQty ?? 0;
-                  cubit.getDoneQuantity(
-                      selectedUpdatePalletValue!, updateDoneQty);
-                }
+                // if (selectedUpdatePalletValue != null) {
+                //   double updateDoneQty =
+                //       selectedUpdatePalletValue?.productQty ?? 0;
+                //   cubit.getDoneQuantity(
+                //       selectedUpdatePalletValue!, updateDoneQty);
+                // }
 
                 // Navigator.pop(context);
 
@@ -576,11 +581,8 @@ class _QualityControlBothDetailScreenState
                 // _scanBarcode = "12.00";
                 // log("scanbarcode: $_scanBarcode");
 
-                onShowSuccessDialog(
-                  context: context,
-                  scannedItem: selectedUpdatePalletValue?.palletCode,
-                  isOnUpdate: true,
-                );
+                _onBothScanOrUpdatePallet(
+                    context, selectedUpdatePallet, selectedUpdatePalletValue!);
                 // });
               },
               height: 40.h,

@@ -280,104 +280,103 @@ class _QualityControlBothProductScreenState
                           return buildScanAndUpdateSection(
                             status: status,
                             onScan: () async {
+                              String scanBarcode = "";
                               // int idTracking = 0;
-                              // String firstExpectedValue = "";
+                              String firstExpectedValue = "";
                               // bool isShowErrorPalletLots = false;
 
-                              // if (tracking
-                              //     .toLowerCase()
-                              //     .contains("serial number")) {
-                              //   firstExpectedValue =
-                              //       serialNumberList.first.label;
-                              // } else if (idTracking == 1) {
-                              //   // idTracking = 1;
-                              //   firstExpectedValue = code;
-                              //   isShowErrorPalletLots = true;
+                              if (tracking
+                                  .toLowerCase()
+                                  .contains("serial number")) {
+                                firstExpectedValue =
+                                    serialNumberList.first.label;
+                              } else if (idTracking == 1) {
+                                // idTracking = 1;
+                                firstExpectedValue = code;
+                                // isShowErrorPalletLots = true;
 
-                              //   debugPrint(
-                              //       "isShowError: $isShowErrorPalletLots, idTracking: $idTracking");
-                              // }
+                                // debugPrint(
+                                //     "isShowError: $isShowErrorPalletLots, idTracking: $idTracking");
+                              }
 
-                              // Navigator.push(
-                              //   context,
-                              //   MaterialPageRoute(
-                              //     builder: (context) => ScanView(
-                              //       expectedValue: firstExpectedValue,
-                              //       scanType: ScanViewType.productQc,
-                              //       idTracking: idTracking,
-                              //       isShowErrorPalletLots:
-                              //           isShowErrorPalletLots,
-                              //     ),
-                              //   ),
-                              // ).then((value) {
-                              //   if (value != null) {
-                              //     if (value
-                              //         .toString()
-                              //         .contains("inputExpirationDate")) {
-                              //       BlocProvider.of<ScanCubit>(context)
-                              //           .setIsItemInputDate(true);
-                              //     } else if (tracking
-                              //         .toLowerCase()
-                              //         .contains("serial number")) {
-                              //       setState(() {
-                              //         _scanBarcode = value;
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => ScanView(
+                                    expectedValue: firstExpectedValue,
+                                    scanType: ScanViewType.productQc,
+                                    idTracking: idTracking,
+                                  ),
+                                ),
+                              ).then((value) {
+                                if (value != null) {
+                                  if (value
+                                      .toString()
+                                      .contains("inputExpirationDate")) {
+                                    BlocProvider.of<ScanCubit>(context)
+                                        .setIsItemInputDate(true);
+                                  } else if (tracking
+                                      .toLowerCase()
+                                      .contains("serial number")) {
+                                    setState(() {
+                                      scanBarcode = value;
 
-                              //         selectedSerialNumber = serialNumberList
-                              //             .firstWhere((element) =>
-                              //                 element.label == _scanBarcode);
-                              //         serialNumberList.removeWhere((element) =>
-                              //             element == selectedSerialNumber);
-                              //         serialNumberResult
-                              //             .add(selectedSerialNumber);
-                              //         product.scannedSerialNumber =
-                              //             serialNumberResult;
-                              //         product.hasActualDateTime = true;
-                              //         product.actualDateTime =
-                              //             _getScanActualDate();
-                              //       });
+                                      selectedSerialNumber = serialNumberList
+                                          .firstWhere((element) =>
+                                              element.label == scanBarcode);
+                                      serialNumberList.removeWhere((element) =>
+                                          element == selectedSerialNumber);
+                                      serialNumberResult
+                                          .add(selectedSerialNumber);
+                                      product.scannedSerialNumber =
+                                          serialNumberResult;
+                                      product.hasActualDateTime = true;
+                                      product.actualDateTime =
+                                          _getScanActualDate();
+                                    });
 
-                              //       Future.delayed(const Duration(seconds: 2),
-                              //           () {
-                              //         String scannedItem =
-                              //             "Serial Number: $_scanBarcode";
+                                    Future.delayed(const Duration(seconds: 2),
+                                        () {
+                                      String scannedItem =
+                                          "Serial Number: $scanBarcode";
 
-                              //         onShowSuccessDialog(
-                              //           context: context,
-                              //           scannedItem: scannedItem,
-                              //         );
-                              //       });
-                              //     } else if (idTracking == 1) {
-                              //       BlocProvider.of<
-                              //                   ProductMenuProductDetailCubit>(
-                              //               context)
-                              //           .getLotsScannedTotalDone(
-                              //         totalDoneInt,
-                              //         product: product,
-                              //       );
+                                      onShowSuccessDialog(
+                                        context: context,
+                                        scannedItem: scannedItem,
+                                      );
+                                    });
+                                  } else if (idTracking == 1) {
+                                    BlocProvider.of<
+                                                ProductMenuProductDetailCubit>(
+                                            context)
+                                        .getLotsScannedTotalDone(
+                                      totalDoneInt,
+                                      product: product,
+                                    );
 
-                              //       setState(() {
-                              //         isHighlightedLots = true;
-                              //       });
+                                    setState(() {
+                                      isHighlightedLots = true;
+                                    });
 
-                              //       Future.delayed(const Duration(seconds: 2),
-                              //           () {
-                              //         _scanBarcode = value;
-                              //         String scannedItem =
-                              //             "1 Lots: $_scanBarcode";
+                                    Future.delayed(const Duration(seconds: 2),
+                                        () {
+                                      scanBarcode = value;
+                                      String scannedItem =
+                                          "1 Lots: $scanBarcode";
 
-                              //         onShowSuccessDialog(
-                              //           context: context,
-                              //           scannedItem: scannedItem,
-                              //         );
-                              //       });
-                              //     }
+                                      onShowSuccessDialog(
+                                        context: context,
+                                        scannedItem: scannedItem,
+                                      );
+                                    });
+                                  }
 
-                              //     // BlocProvider.of<ProductMenuProductDetailCubit>(
-                              //     //         context)
-                              //     //     .scannedSerialNumberToProduct(product);
-                              //     // debugPrint("scanResultValue: ");
-                              //   }
-                              // });
+                                  // BlocProvider.of<ProductMenuProductDetailCubit>(
+                                  //         context)
+                                  //     .scannedSerialNumberToProduct(product);
+                                  // debugPrint("scanResultValue: ");
+                                }
+                              });
                             },
                             onUpdate: () {
                               // BlocProvider.of<ProductMenuProductDetailCubit>(

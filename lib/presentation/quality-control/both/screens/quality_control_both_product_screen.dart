@@ -472,9 +472,13 @@ class _QualityControlBothProductScreenState
                                   ),
                                 ).then((value) {
                                   if (value != null) {
+                                    var updateTotal =
+                                        productDetailCubit.state.updateTotal;
+
                                     Future.delayed(const Duration(seconds: 2),
                                         () {
-                                      String scannedItem = "SKU: $value";
+                                      String scannedItem =
+                                          "$updateTotal Items of $value";
                                       onShowSuccessDialog(
                                         context: context,
                                         scannedItem: scannedItem,

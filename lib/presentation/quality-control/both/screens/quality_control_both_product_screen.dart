@@ -379,102 +379,111 @@ class _QualityControlBothProductScreenState
                               });
                             },
                             onUpdate: () {
-                              // BlocProvider.of<ProductMenuProductDetailCubit>(
-                              //         context)
-                              //     .getCurrentProduct(product);
+                              BlocProvider.of<ProductMenuProductDetailCubit>(
+                                      context)
+                                  .getCurrentProduct(product);
 
-                              // if (idTracking == 0) {
-                              //   BlocProvider.of<ProductMenuProductDetailCubit>(
-                              //           context)
-                              //       .setListOfSerialNumber(serialNumberList);
+                              if (idTracking == 0) {
+                                BlocProvider.of<ProductMenuProductDetailCubit>(
+                                        context)
+                                    .setListOfSerialNumber(serialNumberList);
 
-                              //   Navigator.push<String>(
-                              //     context,
-                              //     MaterialPageRoute(
-                              //       builder: (context) =>
-                              //           UpdateProductQuantityScreen(
-                              //         tracking: tracking,
-                              //       ),
-                              //     ),
-                              //   ).then((value) {
-                              //     if (value != null) {
-                              //       setState(() {
-                              //         serialNumberResult = [
-                              //           ...serialNumberList
-                              //         ];
-                              //         serialNumberList.clear();
-                              //       });
+                                Navigator.push<String>(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        UpdateProductQuantityScreen(
+                                      tracking: tracking,
+                                    ),
+                                  ),
+                                ).then((value) {
+                                  if (value != null) {
+                                    int updateSnTotal = 0;
+                                    updateSnTotal = BlocProvider.of<
+                                                    ProductMenuProductDetailCubit>(
+                                                context)
+                                            .state
+                                            .snTotalDone ??
+                                        updateSnTotal;
 
-                              //       Future.delayed(const Duration(seconds: 2),
-                              //           () {
-                              //         String scannedItem = "Serial Number";
-                              //         onShowSuccessDialog(
-                              //           context: context,
-                              //           scannedItem: scannedItem,
-                              //           isOnUpdate: true,
-                              //         );
-                              //       });
-                              //     }
-                              //   });
-                              // }
-                              // if (idTracking == 1) {
-                              //   Navigator.push<String>(
-                              //     context,
-                              //     MaterialPageRoute(
-                              //       builder: (context) =>
-                              //           UpdateProductQuantityScreen(
-                              //         tracking: tracking,
-                              //       ),
-                              //     ),
-                              //   ).then((value) {
-                              //     if (value != null) {
-                              //       var updateTotal =
-                              //           productDetailCubit.state.updateTotal;
-                              //       setState(() {
-                              //         product =
-                              //             productDetailCubit.state.product ??
-                              //                 product;
-                              //         isHighlightedLots = true;
-                              //       });
+                                    setState(() {
+                                      serialNumberResult = [
+                                        ...serialNumberList
+                                      ];
+                                      serialNumberList.clear();
+                                    });
 
-                              //       debugPrint("product success: $product");
+                                    Future.delayed(const Duration(seconds: 2),
+                                        () {
+                                      String scannedItem =
+                                          "$updateSnTotal Serial Number";
+                                      onShowSuccessDialog(
+                                        context: context,
+                                        scannedItem: scannedItem,
+                                        isOnUpdate: true,
+                                      );
+                                    });
+                                  }
+                                });
+                              }
+                              if (idTracking == 1) {
+                                Navigator.push<String>(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        UpdateProductQuantityScreen(
+                                      tracking: tracking,
+                                    ),
+                                  ),
+                                ).then((value) {
+                                  if (value != null) {
+                                    var updateTotal =
+                                        productDetailCubit.state.updateTotal;
+                                    setState(() {
+                                      product =
+                                          productDetailCubit.state.product ??
+                                              product;
+                                      isHighlightedLots = true;
+                                    });
 
-                              //       Future.delayed(const Duration(seconds: 2),
-                              //           () {
-                              //         String scannedItem =
-                              //             "$updateTotal Lots: $value";
-                              //         onShowSuccessDialog(
-                              //           context: context,
-                              //           scannedItem: scannedItem,
-                              //           isOnUpdate: true,
-                              //         );
-                              //       });
-                              //     }
-                              //   });
-                              // }
-                              // if (idTracking == 2) {
-                              //   Navigator.push<String>(
-                              //     context,
-                              //     MaterialPageRoute(
-                              //       builder: (context) =>
-                              //           UpdateProductQuantityScreen(
-                              //         tracking: tracking,
-                              //       ),
-                              //     ),
-                              //   ).then((value) {
-                              //     if (value != null) {
-                              //       Future.delayed(const Duration(seconds: 2),
-                              //           () {
-                              //         String scannedItem = "SKU: $value";
-                              //         onShowSuccessDialog(
-                              //           context: context,
-                              //           scannedItem: scannedItem,
-                              //           isOnUpdate: true,
-                              //         );
-                              //       });
-                              //     }
-                              //   });
-                              // }
+                                    debugPrint("product success: $product");
+
+                                    Future.delayed(const Duration(seconds: 2),
+                                        () {
+                                      String scannedItem =
+                                          "$updateTotal Lots: $value";
+                                      onShowSuccessDialog(
+                                        context: context,
+                                        scannedItem: scannedItem,
+                                        isOnUpdate: true,
+                                      );
+                                    });
+                                  }
+                                });
+                              }
+                              if (idTracking == 2) {
+                                Navigator.push<String>(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        UpdateProductQuantityScreen(
+                                      tracking: tracking,
+                                    ),
+                                  ),
+                                ).then((value) {
+                                  if (value != null) {
+                                    Future.delayed(const Duration(seconds: 2),
+                                        () {
+                                      String scannedItem = "SKU: $value";
+                                      onShowSuccessDialog(
+                                        context: context,
+                                        scannedItem: scannedItem,
+                                        isOnUpdate: true,
+                                      );
+                                    });
+                                  }
+                                });
+                              }
                             },
                             updateLabel: "Update Qty",
                           );

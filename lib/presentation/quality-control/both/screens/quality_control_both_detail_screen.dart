@@ -183,34 +183,54 @@ class _QualityControlBothDetailScreenState
               child: buildScanAndUpdateSection(
                   status: qualityControl.status,
                   onScan: () async {
-                    String qty;
-                    if (qualityControl.id == 4) {
-                      qty = "11.0";
+                    if (idTracking == 1) {
+                      var expectedValue = listPallets.first.palletCode;
+                      // if (_scanAttempt == 0) {
+                      //   expectedValue = "error";
+                      // }
+
                       await Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (context) => ScanView(
-                            expectedValue: qty,
+                            expectedValue: expectedValue,
                             scanType: ScanViewType.palletQc,
-                            idTracking: idTracking,
+                            idTracking: 1,
                             isShowErrorPalletLots: true,
                           ),
                         ),
                       ).then((value) {
                         if (value != null) {
-                          setState(() {
-                            _scanBarcode = value;
-                          });
-                          // debugPrint("scanResultValue: $value");
-                          double updateDoneQty = double.parse(_scanBarcode);
-                          cubit.getDoneQuantity(
-                              listPallets.first, updateDoneQty);
+                          var scannedProduct = listPallets.firstWhere(
+                            (element) => element.palletCode == value,
+                          );
+                          cubit.scanPallet(scannedProduct);
 
                           Future.delayed(const Duration(seconds: 2), () {
                             onShowSuccessDialog(
-                              context: context,
-                              scannedItem: listPallets.first.palletCode,
-                            );
+                                context: context,
+                                scannedItem: "Pallet $value",
+                                isBoth: true,
+                                onBothPressed: () {
+                                  Navigator.pop(context);
+
+                                  Future.delayed(
+                                      const Duration(
+                                        seconds: 2,
+                                      ), () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            QualityControlBothProductScreen(
+                                          product: scannedProduct,
+                                          tracking: tracking,
+                                          status: qualityControl.status,
+                                        ),
+                                      ),
+                                    );
+                                  });
+                                });
                           });
                         }
                       });

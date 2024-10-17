@@ -48,4 +48,7 @@ class TextConstants {
 
   static String get scanFromListBothQcTittle =>
       "Quickly scan the pallet for\nselection in quality control.";
+
+  static String get loginError =>
+      "Please double-check your email and\npassword for correctness";
 }

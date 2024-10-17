@@ -380,7 +380,10 @@ class _QualityControlDetailScreenState
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => AddPalletScreen(index: indexToAddPallet),
+                builder: (context) => AddPalletScreen(
+                  index: indexToAddPallet,
+                  isFromBoth: true,
+                ),
               ),
             ).then((value) {
               debugPrint("addPalletResult: ${value.toString()}");

@@ -382,7 +382,6 @@ class _QualityControlDetailScreenState
               MaterialPageRoute(
                 builder: (context) => AddPalletScreen(
                   index: indexToAddPallet,
-                  isFromBoth: true,
                 ),
               ),
             ).then((value) {

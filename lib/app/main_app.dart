@@ -68,7 +68,7 @@ class MainApp extends StatelessWidget {
               PointerDeviceKind.touch,
               PointerDeviceKind.mouse,
             }),
-            home: const HomeScreen(),
+            home: const OnboardingScreen(),
           ),
         );
       },

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:inventory_v3/data/model/operation_model.dart';
+import 'package:inventory_v3/presentation/quality-control/quality_control_screen.dart';
+import 'package:inventory_v3/presentation/receipt/receipt_screen.dart';
 
 import '../../../common/constants/local_images.dart';
 import '../../../common/theme/color/color_name.dart';
@@ -139,6 +141,20 @@ class _HomeScreenState extends State<HomeScreen> {
                     runSpacing: 12,
                     children: listOfOperation.map((e) {
                       return _buildItemOperation(
+                        onTap: () {
+                          late Widget screen;
+
+                          if (e.id == 1) {
+                            screen = ReceiptScreen();
+                          } else if (e.id == 2) {
+                            screen = QualityControlScreen();
+                          } else {
+                            return;
+                          }
+
+                          Navigator.push(context,
+                              MaterialPageRoute(builder: (context) => screen));
+                        },
                         leadingIcon: e.imgPath,
                         bgColor: e.color,
                         label: e.name,
@@ -249,44 +265,48 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Container _buildItemOperation({
+  Widget _buildItemOperation({
+    void Function()? onTap,
     required String leadingIcon,
     required Color bgColor,
     required String label,
     required int total,
   }) {
-    return Container(
-      width: 158.w,
-      padding: EdgeInsets.all(12.r),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10.r),
-        color: bgColor,
-      ),
-      clipBehavior: Clip.antiAlias,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          SvgPicture.asset(leadingIcon),
-          SizedBox(height: 12.h),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                label,
-                style: BaseText.grey10Text15.copyWith(
-                  fontWeight: BaseText.semiBold,
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 158.w,
+        padding: EdgeInsets.all(12.r),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10.r),
+          color: bgColor,
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SvgPicture.asset(leadingIcon),
+            SizedBox(height: 12.h),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  label,
+                  style: BaseText.grey10Text15.copyWith(
+                    fontWeight: BaseText.semiBold,
+                  ),
                 ),
-              ),
-              SizedBox(height: 6.h),
-              Text(
-                "$total Item",
-                style: BaseText.grey1Text12,
-              )
-            ],
-          ),
-        ],
+                SizedBox(height: 6.h),
+                Text(
+                  "$total Item",
+                  style: BaseText.grey1Text12,
+                )
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

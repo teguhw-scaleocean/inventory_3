@@ -8,6 +8,7 @@ import 'package:inventory_v3/common/components/top_logo_section.dart';
 import 'package:inventory_v3/common/constants/local_images.dart';
 import 'package:inventory_v3/common/constants/text_constants.dart';
 import 'package:inventory_v3/common/extensions/empty_space_extension.dart';
+import 'package:inventory_v3/presentation/home/screens/home_screen.dart';
 import 'package:inventory_v3/presentation/quality-control/quality_control_screen.dart';
 import 'package:inventory_v3/presentation/receipt/receipt_screen.dart';
 
@@ -105,10 +106,12 @@ class _LoginScreenState extends State<LoginScreen> {
                           message: TextConstants.loginError);
                     });
                   } else {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => QualityControlScreen()));
+                    Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const HomeScreen()),
+                      (Route<dynamic> route) => false,
+                    );
                   }
                 },
                 height: 40,

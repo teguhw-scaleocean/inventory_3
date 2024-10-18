@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:inventory_v3/common/components/custom_form.dart';
+import 'package:inventory_v3/common/components/custom_snackbar.dart';
 import 'package:inventory_v3/common/components/primary_button.dart';
 import 'package:inventory_v3/common/components/top_logo_section.dart';
 import 'package:inventory_v3/common/constants/local_images.dart';
@@ -91,10 +92,25 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               40.height,
               PrimaryButton(
-                onPressed: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => QualityControlScreen())),
+                onPressed: () {
+                  var yourEmail = "theresia@gmail.com";
+                  if (_emailController.text.isEmpty ||
+                      _passwordController.text.isEmpty) {
+                    return;
+                  }
+
+                  if (_emailController.text.toLowerCase().contains(yourEmail)) {
+                    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+                      CustomSnackbar().showSuccessToastMessage(context,
+                          message: TextConstants.loginError);
+                    });
+                  } else {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => QualityControlScreen()));
+                  }
+                },
                 height: 40,
                 title: "Login",
                 width: double.infinity,

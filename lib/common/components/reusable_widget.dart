@@ -171,13 +171,15 @@ Row buildScanAndUpdateSection(
   );
 }
 
-onShowSuccessDialog(
-    {required BuildContext context,
-    String? scannedItem,
-    bool? isOnUpdate,
-    bool? isOnReturn,
-    bool? isDamage,
-    bool? isBoth}) {
+onShowSuccessDialog({
+  required BuildContext context,
+  String? scannedItem,
+  bool? isOnUpdate,
+  bool? isOnReturn,
+  bool? isDamage,
+  bool? isBoth,
+  Function()? onBothPressed,
+}) {
   return AwesomeDialog(
     context: context,
     animType: AnimType.bottomSlide,
@@ -231,10 +233,11 @@ onShowSuccessDialog(
     },
     // btnOkIcon: Icons.check_circle,
     btnOk: PrimaryButton(
-      onPressed: () {
-        debugPrint('OnClcik OK');
-        Navigator.of(context).pop();
-      },
+      onPressed: onBothPressed ??
+          () {
+            debugPrint('OnClcik OK');
+            Navigator.of(context).pop();
+          },
       height: 40.h,
       title: "OK",
     ),

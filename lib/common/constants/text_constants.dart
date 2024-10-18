@@ -45,4 +45,10 @@ class TextConstants {
       "Scan the product to instantly\nchoose it from the list";
   static String get scanProductQcTittle =>
       "Scan the product for QC\nCondition: Good.";
+
+  static String get scanFromListBothQcTittle =>
+      "Quickly scan the pallet for\nselection in quality control.";
+
+  static String get loginError =>
+      "Please double-check your email and\npassword for correctness";
 }

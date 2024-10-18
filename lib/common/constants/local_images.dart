@@ -33,4 +33,21 @@ class LocalImages {
   // List Receipt
   static String get backIcon => "assets/receipt/icon/arrow_left_alt.svg";
   static String get searchIcon => "assets/receipt/icon/search.svg";
+
+  // Home - Operations
+  static String get receiptIcon => "assets/home/Receipt.svg";
+  static String get qualityControlIcon => "assets/home/QualityControl.svg";
+  static String get checkInIcon => "assets/home/Check-In.svg";
+  static String get pickIcon => "assets/home/Pick.svg";
+  static String get packIcon => "assets/home/Pack.svg";
+  static String get deliveryOrderIcon => "assets/home/DeliveryOrder.svg";
+
+  // Home - Others
+  static String get masterIcon => "assets/home/MasterIcon.svg";
+  static String get itemLocatorIcon => "assets/home/ItemLocator.svg";
+
+  static String get iconLocationWHIcon =>
+      "assets/home/IconLocationWarehouse.svg";
+  static String get notifIcon => "assets/home/NotificationStockOpname.svg";
+  static String get backgroundHome => "assets/home/bgHome.png";
 }

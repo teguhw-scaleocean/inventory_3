@@ -14,9 +14,9 @@ import 'package:inventory_v3/common/components/reusable_dropdown_menu.dart';
 import 'package:inventory_v3/common/components/reusable_floating_action_button.dart';
 import 'package:inventory_v3/common/constants/local_images.dart';
 import 'package:inventory_v3/data/model/pallet.dart';
-import 'package:inventory_v3/data/model/pallet_value.dart';
 import 'package:inventory_v3/data/model/quality_control.dart';
 import 'package:inventory_v3/presentation/quality-control/pallet/screens/quality_control_product_detail.dart';
+import 'package:inventory_v3/presentation/quality-control/product/cubit/quality_control_product_cubit.dart';
 import 'package:inventory_v3/presentation/receipt/receipt_pallet/screens/pallet/add_pallet_screen.dart';
 import 'package:inventory_v3/presentation/receipt/receipt_product/cubit/product_detail/product_menu_product_detail_cubit.dart';
 import 'package:inventory_v3/presentation/receipt/receipt_product/cubit/product_detail/product_menu_product_detail_state.dart';
@@ -26,25 +26,29 @@ import '../../../../common/components/reusable_widget.dart';
 import '../../../../common/components/status_badge.dart';
 import '../../../../common/theme/color/color_name.dart';
 import '../../../../common/theme/text/base_text.dart';
+import '../../../../data/model/product.dart';
 import '../../../../data/model/return_pallet.dart';
 import '../../../../data/model/scan_view.dart';
 import '../../../receipt/receipt_pallet/widget/scan_view_widget.dart';
+import 'quality_control_both_product_screen.dart';
 
-class QualityControlDetailScreen extends StatefulWidget {
+class QualityControlBothDetailScreen extends StatefulWidget {
   final QualityControl? qualityControl;
   final String? scanBarcode;
 
-  const QualityControlDetailScreen(
+  const QualityControlBothDetailScreen(
       {super.key, this.qualityControl, this.scanBarcode = ""});
 
   @override
-  State<QualityControlDetailScreen> createState() =>
-      _QualityControlDetailScreenState();
+  State<QualityControlBothDetailScreen> createState() =>
+      _QualityControlBothDetailScreenState();
 }
 
-class _QualityControlDetailScreenState
-    extends State<QualityControlDetailScreen> {
+class _QualityControlBothDetailScreenState
+    extends State<QualityControlBothDetailScreen> {
   late ProductMenuProductDetailCubit cubit;
+  late QualityControlProductCubit qCcubit;
+
   final TextEditingController _searchController = TextEditingController();
   late QualityControl qualityControl;
 
@@ -66,6 +70,7 @@ class _QualityControlDetailScreenState
     super.initState();
 
     cubit = BlocProvider.of<ProductMenuProductDetailCubit>(context);
+    qCcubit = BlocProvider.of<QualityControlProductCubit>(context);
 
     if (widget.qualityControl != null) {
       qualityControl = widget.qualityControl!;
@@ -78,7 +83,7 @@ class _QualityControlDetailScreenState
         .contains("no tracking")) {
       cubit.getInitNoTrackingListProduct();
       idTracking = 2;
-      _scannedFromList();
+      // _scannedFromList();
     } else if (qualityControl.packageStatus
         .toString()
         .toLowerCase()
@@ -95,19 +100,32 @@ class _QualityControlDetailScreenState
 
     date = qualityControl.dateTime.substring(0, 10);
     time = qualityControl.dateTime.substring(13, 18);
+
+    debugPrint("quality_control_both_detail_screen");
   }
 
   void _scannedFromList() {
     if (widget.scanBarcode != null) {
       _scanBarcode = widget.scanBarcode!;
       debugPrint("_scanBarcode: $_scanBarcode");
-      cubit.scanFromList(_scanBarcode);
+      // cubit.scanFromList(_scanBarcode);
+      // Future.delayed(const Duration(seconds: 2), () async {
+      //   String scannedItem = "Pallet ${cubit.state.pallets.first.palletCode}";
+      //   onShowSuccessDialog(
+      //     context: context,
+      //     scannedItem: scannedItem,
+      //   );
+      // });
 
-      Future.delayed(const Duration(seconds: 2), () async {
-        String scannedItem = "Pallet ${cubit.state.pallets.first.palletCode}";
+      var scannedProduct = listPallets.firstWhere(
+        (element) => element.palletCode == _scanBarcode,
+      );
+      cubit.scanPallet(scannedProduct);
+      Future.delayed(const Duration(seconds: 2), () {
         onShowSuccessDialog(
           context: context,
-          scannedItem: scannedItem,
+          scannedItem: "Pallet $_scanBarcode",
+          isBoth: true,
         );
       });
     }
@@ -165,35 +183,31 @@ class _QualityControlDetailScreenState
               child: buildScanAndUpdateSection(
                   status: qualityControl.status,
                   onScan: () async {
-                    String qty;
-                    if (qualityControl.id == 4) {
-                      qty = "11.0";
+                    if (idTracking == 1) {
+                      var expectedValue = listPallets.first.palletCode;
+                      // if (_scanAttempt == 0) {
+                      //   expectedValue = "error";
+                      // }
+
                       await Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (context) => ScanView(
-                            expectedValue: qty,
+                            expectedValue: expectedValue,
                             scanType: ScanViewType.palletQc,
-                            idTracking: idTracking,
+                            idTracking: 1,
                             isShowErrorPalletLots: true,
                           ),
                         ),
                       ).then((value) {
                         if (value != null) {
-                          setState(() {
-                            _scanBarcode = value;
-                          });
-                          // debugPrint("scanResultValue: $value");
-                          double updateDoneQty = double.parse(_scanBarcode);
-                          cubit.getDoneQuantity(
-                              listPallets.first, updateDoneQty);
+                          var scannedProduct = listPallets.firstWhere(
+                            (element) => element.palletCode == value,
+                          );
+                          cubit.scanPallet(scannedProduct);
 
-                          Future.delayed(const Duration(seconds: 2), () {
-                            onShowSuccessDialog(
-                              context: context,
-                              scannedItem: listPallets.first.palletCode,
-                            );
-                          });
+                          _onBothScanOrUpdatePallet(
+                              context, value, scannedProduct);
                         }
                       });
                     }
@@ -382,6 +396,7 @@ class _QualityControlDetailScreenState
               MaterialPageRoute(
                 builder: (context) => AddPalletScreen(
                   index: indexToAddPallet,
+                  isFromBoth: true,
                 ),
               ),
             ).then((value) {
@@ -391,6 +406,23 @@ class _QualityControlDetailScreenState
                 setState(() {
                   listPallets = value as List<Pallet>;
                 });
+
+                List<Product> products = [];
+                for (var e in listPallets) {
+                  var itemProduct = Product(
+                    id: e.id,
+                    name: e.productName,
+                    sku: e.sku ?? "",
+                    reason: "",
+                    location: "",
+                  );
+                  products.add(itemProduct);
+                }
+
+                qCcubit.updateListQualityControl(
+                  idQc: qualityControl.id,
+                  products: products,
+                );
               }
             });
           },
@@ -398,6 +430,35 @@ class _QualityControlDetailScreenState
         ),
       ),
     );
+  }
+
+  void _onBothScanOrUpdatePallet(
+      BuildContext context, value, Pallet scannedProduct) {
+    Future.delayed(const Duration(seconds: 2), () {
+      onShowSuccessDialog(
+          context: context,
+          scannedItem: "Pallet $value",
+          isBoth: true,
+          onBothPressed: () {
+            Navigator.pop(context);
+
+            Future.delayed(
+                const Duration(
+                  seconds: 2,
+                ), () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => QualityControlBothProductScreen(
+                    product: scannedProduct,
+                    tracking: tracking,
+                    status: qualityControl.status,
+                  ),
+                ),
+              );
+            });
+          });
+    });
   }
 
   void _onReturnPalletAndProduct(value, BuildContext context) {
@@ -434,76 +495,6 @@ class _QualityControlDetailScreenState
             SizedBox(height: 24.h),
           ],
         ),
-      );
-    });
-  }
-
-  buildDropdownMaxHeight(bool hasUpdateFocus) {
-    var selectedUpdatePallet;
-    return StatefulBuilder(builder: (context, updateSetState) {
-      log("hasUpdateFocus: $hasUpdateFocus ");
-
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Center(child: reusableDragHandle()),
-          SizedBox(height: 16.h),
-          reusableTitleBottomSheet(context,
-              title: "Update Pallet", isMainColor: false),
-          SizedBox(height: 24.h),
-          // buildDropdownMinHeight(
-          //     updateSetState, hasUpdateFocus)
-          buildLabelUpdatePallet(),
-          SizedBox(height: 6.h),
-          ReusableDropdownMenu(
-            label: "",
-            hintText: "  Select Pallet",
-            maxHeight: 500.h,
-            offset: const Offset(0, 560),
-            hasSearch: true,
-            controller: _searchController,
-            borderColor: ColorName.grey9Color,
-            listOfItemsValue: palletUpdates,
-            selectedValue: selectedUpdatePallet,
-            isExpand: hasUpdateFocus,
-            onChange: (v) {},
-            onTap: (onTapValue) {
-              updateSetState(() {
-                // selectedUpdatePallet = onTapValue;
-                // dropdownGap = 142.h;
-                // submitButtonGap = 48.h;
-                hasUpdateFocus = !hasUpdateFocus;
-                log("hasUPdateFocus: $hasUpdateFocus");
-              });
-            },
-          ),
-          (hasUpdateFocus)
-              ? Container(
-                  height: 505.h,
-                )
-              : Container(height: 0),
-          Padding(
-            padding: EdgeInsets.only(
-                top: (hasUpdateFocus) ? 36.h : 24.h, bottom: 24.h),
-            child: PrimaryButton(
-              onPressed: () {
-                Navigator.pop(context);
-
-                updateSetState(() {
-                  _scanBarcode = "18.00";
-                  log("scanbarcode: $_scanBarcode");
-
-                  onShowSuccessDialog(
-                    context: context,
-                    scannedItem: listPallets.first.palletCode,
-                  );
-                });
-              },
-              height: 40.h,
-              title: "Submit",
-            ),
-          )
-        ],
       );
     });
   }
@@ -577,12 +568,12 @@ class _QualityControlDetailScreenState
 
                   return;
                 }
-                if (selectedUpdatePalletValue != null) {
-                  double updateDoneQty =
-                      selectedUpdatePalletValue?.productQty ?? 0;
-                  cubit.getDoneQuantity(
-                      selectedUpdatePalletValue!, updateDoneQty);
-                }
+                // if (selectedUpdatePalletValue != null) {
+                //   double updateDoneQty =
+                //       selectedUpdatePalletValue?.productQty ?? 0;
+                //   cubit.getDoneQuantity(
+                //       selectedUpdatePalletValue!, updateDoneQty);
+                // }
 
                 // Navigator.pop(context);
 
@@ -590,11 +581,8 @@ class _QualityControlDetailScreenState
                 // _scanBarcode = "12.00";
                 // log("scanbarcode: $_scanBarcode");
 
-                onShowSuccessDialog(
-                  context: context,
-                  scannedItem: selectedUpdatePalletValue?.palletCode,
-                  isOnUpdate: true,
-                );
+                _onBothScanOrUpdatePallet(
+                    context, selectedUpdatePallet, selectedUpdatePalletValue!);
                 // });
               },
               height: 40.h,
@@ -692,17 +680,18 @@ class _QualityControlDetailScreenState
 
     return InkWell(
       onTap: () {
-        final resultOfProduct = Navigator.push(
+        final resultOfBothProduct = Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => QualityControlProductDetailScreen(
+            builder: (context) => QualityControlBothProductScreen(
               product: product0,
               tracking: tracking,
+              status: qualityControl.status,
             ),
           ),
         );
 
-        resultOfProduct.then((value) {
+        resultOfBothProduct.then((value) {
           if (value != null) {
             debugPrint("value: $value");
             setState(() {

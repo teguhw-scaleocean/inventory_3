@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:inventory_v3/presentation/quality-control/both/screens/quality_control_both_detail_screen.dart';
 import 'package:inventory_v3/presentation/quality-control/pallet/screens/quality_control_detail_screen.dart';
 
 import '../../data/model/product.dart';
@@ -12,9 +13,14 @@ import 'status_badge.dart';
 class QcItemCard extends StatelessWidget {
   final QualityControl qualityControl;
   final bool? isProductMenu;
+  final bool? isBothMenu;
 
-  const QcItemCard(
-      {super.key, required this.qualityControl, this.isProductMenu});
+  const QcItemCard({
+    super.key,
+    required this.qualityControl,
+    this.isProductMenu,
+    this.isBothMenu,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -30,6 +36,11 @@ class QcItemCard extends StatelessWidget {
             scanBarcode: null,
           );
           // page = const QualityControlProductMenuListScreen();
+        } else if (isBothMenu == true) {
+          page = QualityControlBothDetailScreen(
+            qualityControl: qualityControl,
+            scanBarcode: null,
+          );
         } else {
           page = QualityControlDetailScreen(
             qualityControl: qualityControl,

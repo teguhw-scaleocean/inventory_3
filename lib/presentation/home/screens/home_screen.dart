@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:inventory_v3/data/model/operation_model.dart';
 
 import '../../../common/constants/local_images.dart';
 import '../../../common/theme/color/color_name.dart';
@@ -14,10 +15,13 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  // List<>
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
+        backgroundColor: ColorName.backgroundColor,
         body: Column(
           children: [
             Container(
@@ -87,7 +91,14 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ],
                       ),
-                      const Icon(Icons.logout, color: ColorName.mainColor)
+                      Transform.scale(
+                        scale: 0.75,
+                        child: const Icon(
+                          Icons.logout,
+                          color: ColorName.mainColor,
+                          // size: 14.w,
+                        ),
+                      )
                     ],
                   ),
                   SizedBox(height: 17.h),
@@ -99,15 +110,55 @@ class _HomeScreenState extends State<HomeScreen> {
               padding: EdgeInsets.all(16.w),
               child: Column(
                 children: [
-                  // _buildMenuTitle("Operations"),
-                  // SizedBox(height: 10.h),
-                  // _buildItemOperation()
-
-                  // _buildMenuTitle("INVENTORY"),
+                  _buildMenuTitle("OPERATIONS"),
                   SizedBox(height: 10.h),
+                  // GridView.builder(
+                  //   shrinkWrap: true,
+                  //   // crossAxisCount: 2,
+                  //   gridDelegate:
+                  //       const SliverGridDelegateWithFixedCrossAxisCount(
+                  //     crossAxisCount: 2,
+                  //     crossAxisSpacing: 12,
+                  //     mainAxisSpacing: 12,
+                  //     childAspectRatio: 1.25,
+                  //   ),
+                  //   scrollDirection: Axis.vertical,
+                  //   itemCount: listOfOperation.length,
+                  //   itemBuilder: (context, index) {
+                  //     var item = listOfOperation[index];
+
+                  //     return _buildItemOperation(
+                  //       leadingIcon: item.imgPath,
+                  //       label: item.name,
+                  //       total: item.total,
+                  //     );
+                  //   },
+                  // )
+                  Wrap(
+                    spacing: 12,
+                    runSpacing: 12,
+                    children: listOfOperation.map((e) {
+                      return _buildItemOperation(
+                        leadingIcon: e.imgPath,
+                        bgColor: e.color,
+                        label: e.name,
+                        total: e.total,
+                      );
+                    }).toList(),
+                  ),
+
+                  SizedBox(height: 20.h),
+                  _buildMenuTitle("INVENTORY"),
+                  SizedBox(height: 10.h),
+
                   _buildItemInventory(
                     leadingIcon: LocalImages.masterIcon,
                     label: "Master Item",
+                  ),
+                  SizedBox(height: 8.h),
+                  _buildItemInventory(
+                    leadingIcon: LocalImages.itemLocatorIcon,
+                    label: "Item Locator",
                   )
                 ],
               ),
@@ -198,31 +249,39 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Container _buildItemOperation() {
+  Container _buildItemOperation({
+    required String leadingIcon,
+    required Color bgColor,
+    required String label,
+    required int total,
+  }) {
     return Container(
       width: 158.w,
       padding: EdgeInsets.all(12.r),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10.r),
-        color: ColorName.receiptColor,
+        color: bgColor,
       ),
+      clipBehavior: Clip.antiAlias,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: [
-          SvgPicture.asset(LocalImages.receiptIcon),
+          SvgPicture.asset(leadingIcon),
           SizedBox(height: 12.h),
           Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                "Receipt",
+                label,
                 style: BaseText.grey10Text15.copyWith(
                   fontWeight: BaseText.semiBold,
                 ),
               ),
               SizedBox(height: 6.h),
               Text(
-                "16 Item",
+                "$total Item",
                 style: BaseText.grey1Text12,
               )
             ],

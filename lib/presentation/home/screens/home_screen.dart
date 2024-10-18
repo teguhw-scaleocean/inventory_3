@@ -90,14 +90,144 @@ class _HomeScreenState extends State<HomeScreen> {
                       const Icon(Icons.logout, color: ColorName.mainColor)
                     ],
                   ),
+                  SizedBox(height: 17.h),
+                  _buildNotificationSection()
                 ],
               ),
             ),
-            const Column(
-              children: [],
+            Container(
+              padding: EdgeInsets.all(16.w),
+              child: Column(
+                children: [
+                  // _buildMenuTitle("Operations"),
+                  // SizedBox(height: 10.h),
+                  // _buildItemOperation()
+
+                  // _buildMenuTitle("INVENTORY"),
+                  SizedBox(height: 10.h),
+                  _buildItemInventory(
+                    leadingIcon: LocalImages.masterIcon,
+                    label: "Master Item",
+                  )
+                ],
+              ),
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Container _buildItemInventory(
+      {required String leadingIcon, required String label}) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.h),
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(8.r),
+          border: Border.all(
+            color: ColorName.grey6Color,
+          )),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SvgPicture.asset(leadingIcon),
+              SizedBox(width: 8.w),
+              Text(
+                label,
+                style: BaseText.grey10Text15
+                    .copyWith(fontWeight: BaseText.semiBold),
+              ),
+            ],
+          ),
+          SizedBox(
+            height: 12.h,
+            child: const FittedBox(
+              child: Icon(
+                Icons.arrow_forward_ios,
+                color: ColorName.grey1Color,
+              ),
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  Row _buildMenuTitle(String title) {
+    return Row(
+      children: [
+        Text(
+          title,
+          style: BaseText.grey2Text12.copyWith(fontWeight: BaseText.semiBold),
+        ),
+      ],
+    );
+  }
+
+  Container _buildNotificationSection() {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 13.5.h),
+      decoration: BoxDecoration(
+        color: ColorName.whiteColor,
+        borderRadius: BorderRadius.all(
+          Radius.circular(8.r),
+        ),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text("Check Notification", style: BaseText.grey1Text11),
+              SizedBox(height: 4.h),
+              Text(
+                "Warehouse Stock Opname Schedule",
+                style: BaseText.grey10Text12.copyWith(
+                  fontWeight: BaseText.semiBold,
+                ),
+              )
+            ],
+          ),
+          SvgPicture.asset(LocalImages.notifIcon)
+        ],
+      ),
+    );
+  }
+
+  Container _buildItemOperation() {
+    return Container(
+      width: 158.w,
+      padding: EdgeInsets.all(12.r),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10.r),
+        color: ColorName.receiptColor,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SvgPicture.asset(LocalImages.receiptIcon),
+          SizedBox(height: 12.h),
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                "Receipt",
+                style: BaseText.grey10Text15.copyWith(
+                  fontWeight: BaseText.semiBold,
+                ),
+              ),
+              SizedBox(height: 6.h),
+              Text(
+                "16 Item",
+                style: BaseText.grey1Text12,
+              )
+            ],
+          ),
+        ],
       ),
     );
   }

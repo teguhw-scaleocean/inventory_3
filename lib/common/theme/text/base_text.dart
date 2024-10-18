@@ -74,6 +74,7 @@ class BaseText {
   static TextStyle subText14 = subTextStyle.copyWith(fontSize: 14.sp);
 
   // Grey Text 1
+  static TextStyle grey1Text11 = grey1TextStyle.copyWith(fontSize: 11.sp);
   static TextStyle grey1Text12 = grey1TextStyle.copyWith(fontSize: 12.sp);
   static TextStyle grey1Text13 = grey1TextStyle.copyWith(fontSize: 13.sp);
   static TextStyle grey1Text14 = grey1TextStyle.copyWith(fontSize: 14.sp);
@@ -87,6 +88,7 @@ class BaseText {
 
   static TextStyle grey10Text12 = grey10TextStyle.copyWith(fontSize: 12.sp);
   static TextStyle grey10Text14 = grey10TextStyle.copyWith(fontSize: 14.sp);
+  static TextStyle grey10Text15 = grey10TextStyle.copyWith(fontSize: 15.sp);
 
   static TextStyle blackText11 = blackTextStyle.copyWith(fontSize: 11);
   static TextStyle blackText12 = blackTextStyle.copyWith(fontSize: 12);

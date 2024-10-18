@@ -53,4 +53,11 @@ class ColorName {
   static const Color weekendLabelColor = Color(0xFFED2000);
   static const Color damageColor = Color(0xFF035397);
   static const Color red2Color = Color(0xFFEA383A);
+
+  static const Color receiptColor = Color(0xFFFFE2CD);
+  static const Color qualitControlColor = Color(0xFFFFCDCD);
+  static const Color checkInColor = Color(0xFFD4F2F8);
+  static const Color pickColor = Color(0xFFDCDDFB);
+  static const Color packColor = Color(0xFFEBFBDC);
+  static const Color deliveryOrderColor = Color(0xFFCFFAF1);
 }

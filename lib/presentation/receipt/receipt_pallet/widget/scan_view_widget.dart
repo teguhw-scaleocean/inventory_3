@@ -7,6 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:inventory_v3/presentation/check-in/pallet/widget/scan_widget.dart';
+import '../../../../common/components/reusable_widget.dart';
 import '../../../../common/constants/text_constants.dart';
 import '../../../../data/model/pallet.dart';
 import '../../../../data/model/quality_control.dart';
@@ -544,6 +546,56 @@ class _ScanViewState extends State<ScanView> {
           ),
         ),
       );
+    } else if (scanViewType == ScanViewType.checkInPallet) {
+      Future.delayed(const Duration(seconds: 8), () {
+        // Navigator.pop(context, scanDummyLotsNumber);
+        onShowSuccessNewDialog(
+          context: context,
+          body: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(height: 10.h),
+              Text(
+                "Scan Successful!",
+                style: BaseText.black2TextStyle.copyWith(
+                  fontSize: 16.sp,
+                  fontWeight: BaseText.semiBold,
+                ),
+              ),
+              Container(height: 4.h),
+              Text(
+                'Great job! You successfully scanned',
+                textAlign: TextAlign.center,
+                maxLines: 2,
+                style: BaseText.grey2Text14.copyWith(
+                  fontWeight: BaseText.light,
+                ),
+              ),
+              Container(height: 1.h),
+              Text("Pallet $expectedValue",
+                  textAlign: TextAlign.center,
+                  style: BaseText.mainText14
+                      .copyWith(fontWeight: BaseText.semiBold)),
+              SizedBox(height: 24.h),
+            ],
+          ),
+          button: PrimaryButton(
+            onPressed: () {
+              // Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => ScanWidget(idTracking: 0,expectedValue: ,)));
+            },
+            height: 40.h,
+            icon: SvgPicture.asset(
+              LocalImages.scanIcons,
+              width: 16.w,
+              height: 16.w,
+              color: ColorName.whiteColor,
+            ),
+            title: "Scan Location",
+          ),
+        );
+      });
     } else if (scanViewType == ScanViewType.addSerialNumberQty) {
       Future.delayed(const Duration(seconds: 8), () {
         Navigator.pop(context, scannedQtySerialNumberList);

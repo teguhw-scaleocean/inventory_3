@@ -22,13 +22,13 @@ import '../../../../common/theme/color/color_name.dart';
 import '../../../../common/theme/text/base_text.dart';
 import '../../../quality-control/product/screens/quality_control_product_menu_detail_screen.dart';
 
-class ScanView extends StatefulWidget {
+class ScanWidget extends StatefulWidget {
   final String expectedValue;
   final ScanViewType scanType;
   final int? idTracking;
   final bool? isShowErrorPalletLots;
 
-  const ScanView({
+  const ScanWidget({
     Key? key,
     required this.expectedValue,
     required this.scanType,
@@ -40,7 +40,7 @@ class ScanView extends StatefulWidget {
   State<StatefulWidget> createState() => _ScanViewState();
 }
 
-class _ScanViewState extends State<ScanView> {
+class _ScanViewState extends State<ScanWidget> {
   Barcode? result;
   QRViewController? controller;
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');

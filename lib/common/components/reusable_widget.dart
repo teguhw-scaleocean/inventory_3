@@ -251,6 +251,7 @@ onShowSuccessNewDialog({
   required BuildContext context,
   required Widget body,
   void Function()? onPressed,
+  Widget? button,
   // String? scannedItem,
   // bool? isOnUpdate,
   // bool? isOnReturn,
@@ -269,11 +270,12 @@ onShowSuccessNewDialog({
       debugPrint('OnClcik');
     },
     // btnOkIcon: Icons.check_circle,
-    btnOk: PrimaryButton(
-      onPressed: onPressed,
-      height: 40.h,
-      title: "OK",
-    ),
+    btnOk: button ??
+        PrimaryButton(
+          onPressed: onPressed,
+          height: 40.h,
+          title: "OK",
+        ),
     onDismissCallback: (type) {
       debugPrint('Dialog Dissmiss from callback $type');
     },

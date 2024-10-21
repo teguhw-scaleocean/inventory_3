@@ -159,7 +159,9 @@ class _ScanViewState extends State<ScanView> {
     super.didChangeDependencies();
 
     //TODO: Check if scan serial number or lots
-    if (idTracking == 0 && scanViewType != ScanViewType.addSerialNumberQty) {
+    if (idTracking == 0 &&
+        scanViewType != ScanViewType.addSerialNumberQty &&
+        scanViewType != ScanViewType.checkInPallet) {
       checkScanSerialNumber();
     } else if (idTracking == 1) {
       checkScanErrorLots();

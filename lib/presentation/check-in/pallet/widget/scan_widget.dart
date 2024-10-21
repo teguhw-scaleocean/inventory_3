@@ -7,6 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:inventory_v3/data/model/check-in_model.dart';
+import 'package:inventory_v3/presentation/check-in/pallet/screens/check-in_pallet_detail_screen.dart';
 import '../../../../common/constants/text_constants.dart';
 import '../../../../data/model/pallet.dart';
 import '../../../../data/model/quality_control.dart';
@@ -108,8 +110,7 @@ class _ScanViewState extends State<ScanWidget> {
       Future.delayed(const Duration(seconds: 1), () {
         onShowErrorDialog(
           context,
-          isInputDate: false,
-          body: _buildBodyErrorExceptionDialog(isShowPallet: false),
+          body: _buildBodyErrorExceptionDialog(),
         );
       });
     }
@@ -288,13 +289,17 @@ class _ScanViewState extends State<ScanWidget> {
     });
 
     Future.delayed(const Duration(seconds: 10), () {
-      Navigator.of(context).pop(expectedValue);
+      Navigator.of(context).pushReplacement(MaterialPageRoute(
+          builder: (context) => CheckInPalletDetailScreen(
+                checkInModel: listOfCheckIn.first,
+                scanBarcode: "12.0",
+              )));
 
-      log("expectedValue: $expectedValue");
+      // log("expectedValue: $expectedValue");
     });
   }
 
-  SizedBox _buildBodyErrorExceptionDialog({required bool isShowPallet}) {
+  SizedBox _buildBodyErrorExceptionDialog() {
     return SizedBox(
       // width: MediaQuery.sizeOf(context).width,
       child: Column(
@@ -314,30 +319,28 @@ class _ScanViewState extends State<ScanWidget> {
           Text('Scan the correct location barcode: ',
               style: BaseText.grey2Text14.copyWith(fontWeight: BaseText.light)),
           Container(height: 1.h),
-          (isShowPallet == true)
-              ? Text("Warehouse B456 Rack B",
-                  textAlign: TextAlign.center,
-                  style: BaseText.mainText14
-                      .copyWith(fontWeight: BaseText.semiBold))
-              : const SizedBox(),
+          Text("Warehouse B456 Rack B",
+              textAlign: TextAlign.center,
+              style:
+                  BaseText.mainText14.copyWith(fontWeight: BaseText.semiBold)),
           SizedBox(height: 24.h),
-          PrimaryButton(
-            onPressed: () {
-              // var location = "Warehouse B456 Rack B";
-              // Navigator.pushReplacement(
-              //     context,
-              //     MaterialPageRoute(
-              //         builder: (context) => ));
-            },
-            height: 40.h,
-            icon: SvgPicture.asset(
-              LocalImages.scanIcons,
-              width: 16.w,
-              height: 16.w,
-              color: ColorName.whiteColor,
-            ),
-            title: "Rescan Location",
-          ),
+          // PrimaryButton(
+          //   onPressed: () {
+          //     // var location = "Warehouse B456 Rack B";
+          //     // Navigator.pushReplacement(
+          //     //     context,
+          //     //     MaterialPageRoute(
+          //     //         builder: (context) => ));
+          //   },
+          //   height: 40.h,
+          //   icon: SvgPicture.asset(
+          //     LocalImages.scanIcons,
+          //     width: 16.w,
+          //     height: 16.w,
+          //     color: ColorName.whiteColor,
+          //   ),
+          //   title: "Rescan Location",
+          // ),
         ],
       ),
     );
@@ -352,8 +355,7 @@ class _ScanViewState extends State<ScanWidget> {
     }
   }
 
-  onShowErrorDialog(BuildContext context,
-      {required Widget body, required bool isInputDate}) {
+  onShowErrorDialog(BuildContext context, {required Widget body}) {
     return AwesomeDialog(
       context: context,
       animType: AnimType.bottomSlide,
@@ -367,29 +369,21 @@ class _ScanViewState extends State<ScanWidget> {
         debugPrint('OnClcik');
       },
       // btnOkIcon: Icons.check_circle,
-      btnOk: (isInputDate)
-          ? PrimaryButton(
-              onPressed: () async {
-                Navigator.of(context).pop();
-              },
-              height: 40.h,
-              title: "OK",
-            )
-          : PrimaryButton(
-              onPressed: () async {
-                debugPrint('OnClcik OK');
-                await controller?.resumeCamera();
-                Navigator.of(context).pop();
-              },
-              height: 40.h,
-              icon: SvgPicture.asset(
-                LocalImages.scanIcons,
-                width: 16.w,
-                height: 16.w,
-                color: ColorName.whiteColor,
-              ),
-              title: "Rescan",
-            ),
+      btnOk: PrimaryButton(
+        onPressed: () async {
+          debugPrint('OnClcik OK');
+          await controller?.resumeCamera();
+          Navigator.of(context).pop();
+        },
+        height: 40.h,
+        icon: SvgPicture.asset(
+          LocalImages.scanIcons,
+          width: 16.w,
+          height: 16.w,
+          color: ColorName.whiteColor,
+        ),
+        title: "Rescan Location",
+      ),
       onDismissCallback: (type) {
         debugPrint('Dialog Dissmiss from callback $type');
       },

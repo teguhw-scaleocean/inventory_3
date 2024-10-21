@@ -143,6 +143,9 @@ class _ScanViewState extends State<ScanView> {
         appBarTitle = "Scan Pallet";
         labelOfScan = TextConstants.scanFromListBothQcTittle;
         break;
+      case ScanViewType.checkInPallet:
+        appBarTitle = "Scan Pallet";
+        labelOfScan = TextConstants.scanCheckInPalletTittle;
       default:
     }
 

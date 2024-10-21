@@ -8,6 +8,7 @@ import 'package:inventory_v3/presentation/receipt/receipt_screen.dart';
 import '../../../common/constants/local_images.dart';
 import '../../../common/theme/color/color_name.dart';
 import '../../../common/theme/text/base_text.dart';
+import '../../check-in/check-in_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -148,6 +149,8 @@ class _HomeScreenState extends State<HomeScreen> {
                             screen = ReceiptScreen();
                           } else if (e.id == 2) {
                             screen = QualityControlScreen();
+                          } else if (e.id == 3) {
+                            screen = CheckInScreen();
                           } else {
                             return;
                           }

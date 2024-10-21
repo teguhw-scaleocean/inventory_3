@@ -22,6 +22,10 @@ class TextConstants {
 
   static String get qcMenuTitle => "Ready for quality check?";
 
+  static String get checkInMenuTitle => "Ready to Check-In Items?";
+  static String get checkInMenuSubtitle =>
+      "Start scanning your items by choosing\nPallet, Product, or Both.";
+
   static String get scanPalletTittle =>
       "Scan your pallet barcode\nto confirm receipt.";
   static String get scanProductTittle =>
@@ -48,6 +52,12 @@ class TextConstants {
 
   static String get scanFromListBothQcTittle =>
       "Quickly scan the pallet for\nselection in quality control.";
+
+  static String get scanCheckInPalletTittle =>
+      "Quickly scan the pallet\nfor check-in to keep inventory\nrecords correct";
+
+  static String get scanLocationTitle =>
+      "Next, scan the location\nto place your pallet";
 
   static String get loginError =>
       "Please double-check your email and\npassword for correctness";

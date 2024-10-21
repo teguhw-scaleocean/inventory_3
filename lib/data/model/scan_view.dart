@@ -9,4 +9,7 @@ enum ScanViewType {
   listProductQc,
   productQc,
   listBothQc,
+
+  checkInPallet,
+  location,
 }

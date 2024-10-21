@@ -91,6 +91,8 @@ class _ScanViewState extends State<ScanWidget> {
     }
 
     isError = widget.isShowErrorLocation ?? false;
+
+    checkScanError();
   }
 
   @override
@@ -98,7 +100,7 @@ class _ScanViewState extends State<ScanWidget> {
     super.didChangeDependencies();
   }
 
-  checkScanErrorLots() {
+  checkScanError() {
     if (isError) {
       controller?.pauseCamera();
       debugPrint("isError $isError");
@@ -285,7 +287,7 @@ class _ScanViewState extends State<ScanWidget> {
       // }
     });
 
-    Future.delayed(const Duration(seconds: 3), () {
+    Future.delayed(const Duration(seconds: 10), () {
       Navigator.of(context).pop(expectedValue);
 
       log("expectedValue: $expectedValue");
@@ -302,23 +304,40 @@ class _ScanViewState extends State<ScanWidget> {
         children: [
           Container(height: 10.h),
           Text(
-            'Scan Error',
+            'Wrong Location!',
             style: BaseText.black2TextStyle.copyWith(
               fontSize: 16.sp,
               fontWeight: BaseText.semiBold,
             ),
           ),
           Container(height: 4.h),
-          Text('Scan incorrect, please try again.',
+          Text('Scan the correct location barcode: ',
               style: BaseText.grey2Text14.copyWith(fontWeight: BaseText.light)),
           Container(height: 1.h),
           (isShowPallet == true)
-              ? Text("Pallet B654",
+              ? Text("Warehouse B456 Rack B",
                   textAlign: TextAlign.center,
                   style: BaseText.mainText14
                       .copyWith(fontWeight: BaseText.semiBold))
               : const SizedBox(),
           SizedBox(height: 24.h),
+          PrimaryButton(
+            onPressed: () {
+              // var location = "Warehouse B456 Rack B";
+              // Navigator.pushReplacement(
+              //     context,
+              //     MaterialPageRoute(
+              //         builder: (context) => ));
+            },
+            height: 40.h,
+            icon: SvgPicture.asset(
+              LocalImages.scanIcons,
+              width: 16.w,
+              height: 16.w,
+              color: ColorName.whiteColor,
+            ),
+            title: "Rescan Location",
+          ),
         ],
       ),
     );

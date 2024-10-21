@@ -592,6 +592,7 @@ class _ScanViewState extends State<ScanView> {
                             idTracking: 0,
                             expectedValue: location,
                             scanType: ScanViewType.location,
+                            isShowErrorLocation: true,
                           )));
             },
             height: 40.h,

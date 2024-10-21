@@ -583,7 +583,15 @@ class _ScanViewState extends State<ScanView> {
           ),
           button: PrimaryButton(
             onPressed: () {
-              // Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => ScanWidget(idTracking: 0,expectedValue: ,)));
+              var location = "Warehouse B456 Rack B";
+              Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => ScanWidget(
+                            idTracking: 0,
+                            expectedValue: location,
+                            scanType: ScanViewType.location,
+                          )));
             },
             height: 40.h,
             icon: SvgPicture.asset(

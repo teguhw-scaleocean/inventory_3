@@ -26,14 +26,14 @@ class ScanWidget extends StatefulWidget {
   final String expectedValue;
   final ScanViewType scanType;
   final int? idTracking;
-  final bool? isShowErrorPalletLots;
+  final bool? isShowErrorLocation;
 
   const ScanWidget({
     Key? key,
     required this.expectedValue,
     required this.scanType,
     this.idTracking,
-    this.isShowErrorPalletLots,
+    this.isShowErrorLocation,
   }) : super(key: key);
 
   @override
@@ -90,7 +90,7 @@ class _ScanViewState extends State<ScanWidget> {
       default:
     }
 
-    isError = widget.isShowErrorPalletLots ?? false;
+    isError = widget.isShowErrorLocation ?? false;
   }
 
   @override

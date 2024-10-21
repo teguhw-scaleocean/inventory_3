@@ -42,6 +42,8 @@ class _QualityControlPalletListScreenState extends State<CheckInPalletScreen>
 
   bool isBothListScreen = false;
 
+  int _currentScan = 0;
+
   onSearch() {}
   onSearchClear() {}
 
@@ -64,6 +66,7 @@ class _QualityControlPalletListScreenState extends State<CheckInPalletScreen>
     checkInCubit = BlocProvider.of<CheckInCubit>(context);
 
     checkInCubit.setInitialCheckIn();
+    _currentScan = checkInCubit.state.scanFromListAttempt ?? _currentScan;
   }
 
   @override
@@ -97,13 +100,22 @@ class _QualityControlPalletListScreenState extends State<CheckInPalletScreen>
                     ),
                     SizedBox(width: 8.w),
                     buildScanButton(onTap: () {
-                      ScanView screen;
+                      late ScanView screen;
                       var expectedValue = "A494";
-                      screen = ScanView(
-                        expectedValue: expectedValue,
-                        scanType: ScanViewType.checkInPallet,
-                        idTracking: 0,
-                      );
+
+                      if (_currentScan == 0) {
+                        screen = ScanView(
+                          expectedValue: expectedValue,
+                          scanType: ScanViewType.checkInPallet,
+                          idTracking: 0,
+                        );
+                      } else {
+                        screen = ScanView(
+                          expectedValue: expectedValue,
+                          scanType: ScanViewType.checkInPallet,
+                          idTracking: 1,
+                        );
+                      }
 
                       Navigator.push(
                           context,

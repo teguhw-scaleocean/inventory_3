@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:inventory_v3/data/model/check-in_model.dart';
+import 'package:inventory_v3/presentation/check-in/pallet/screens/check-in_pallet_detail_screen.dart';
 import 'package:inventory_v3/presentation/quality-control/both/screens/quality_control_both_detail_screen.dart';
 import 'package:inventory_v3/presentation/quality-control/pallet/screens/quality_control_detail_screen.dart';
 
@@ -32,10 +33,10 @@ class CheckInItemCard extends StatelessWidget {
       onTap: () {
         StatefulWidget? page;
 
-        // page = QualityControlDetailScreen(
-        //   checkInModel: checkInModel,
-        //   scanBarcode: null,
-        // );
+        page = CheckInPalletDetailScreen(
+          checkInModel: checkInModel,
+          scanBarcode: null,
+        );
 
         Navigator.push(
           context,

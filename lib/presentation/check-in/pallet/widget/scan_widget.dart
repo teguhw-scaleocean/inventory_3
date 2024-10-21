@@ -213,15 +213,12 @@ class _ScanViewState extends State<ScanWidget> {
                       ],
                     ),
                     SizedBox(height: 62.h),
-                    GestureDetector(
-                      onTap: () async => await controller!.pauseCamera(),
-                      child: Text(
-                        labelOfScan,
-                        textAlign: TextAlign.center,
-                        style: BaseText.whiteTextStyle.copyWith(
-                          fontSize: 18.sp,
-                          fontWeight: BaseText.bold,
-                        ),
+                    Text(
+                      labelOfScan,
+                      textAlign: TextAlign.center,
+                      style: BaseText.whiteTextStyle.copyWith(
+                        fontSize: 18.sp,
+                        fontWeight: BaseText.bold,
                       ),
                     )
                   ],
@@ -291,7 +288,7 @@ class _ScanViewState extends State<ScanWidget> {
     Future.delayed(const Duration(seconds: 10), () {
       Navigator.of(context).pushReplacement(MaterialPageRoute(
           builder: (context) => CheckInPalletDetailScreen(
-                checkInModel: listOfCheckIn.first,
+                checkInModel: listOfCheckIn[2],
                 scanBarcode: "12.0",
               )));
 

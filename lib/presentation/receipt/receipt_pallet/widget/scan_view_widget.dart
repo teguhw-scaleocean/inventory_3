@@ -7,12 +7,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:inventory_v3/presentation/check-in/pallet/cubit/check-in_cubit.dart';
 import 'package:inventory_v3/presentation/check-in/pallet/widget/scan_widget.dart';
 import '../../../../common/components/reusable_widget.dart';
 import '../../../../common/constants/text_constants.dart';
+import '../../../../data/model/check-in_model.dart';
 import '../../../../data/model/pallet.dart';
 import '../../../../data/model/quality_control.dart';
 import '../../../../data/model/scan_view.dart';
+import '../../../check-in/pallet/screens/check-in_pallet_detail_screen.dart';
 import '../../../quality-control/both/screens/quality_control_both_detail_screen.dart';
 import '../../../quality-control/pallet/screens/quality_control_detail_screen.dart';
 import '../../../quality-control/pallet/screens/quality_control_product_detail.dart';
@@ -64,6 +67,7 @@ class _ScanViewState extends State<ScanView> {
   SerialNumber? serialNumber;
   bool isItemInputDate = false;
   bool isError = false;
+  int checkIn = 0;
 
   String scanDummyLotsNumber = "";
 
@@ -148,6 +152,9 @@ class _ScanViewState extends State<ScanView> {
       case ScanViewType.checkInPallet:
         appBarTitle = "Scan Pallet";
         labelOfScan = TextConstants.scanCheckInPalletTittle;
+        checkIn =
+            BlocProvider.of<CheckInCubit>(context).state.scanFromListAttempt ??
+                0;
       default:
     }
 
@@ -548,9 +555,11 @@ class _ScanViewState extends State<ScanView> {
           ),
         ),
       );
-    } else if (scanViewType == ScanViewType.checkInPallet) {
+    } else if (scanViewType == ScanViewType.checkInPallet && checkIn == 0) {
       Future.delayed(const Duration(seconds: 8), () {
         controller.pauseCamera();
+
+        BlocProvider.of<CheckInCubit>(context).scanAttempt(1);
         // Navigator.pop(context, scanDummyLotsNumber);
         onShowSuccessNewDialog(
           context: context,
@@ -607,6 +616,16 @@ class _ScanViewState extends State<ScanView> {
             title: "Scan Location",
           ),
         );
+      });
+    } else if (scanViewType == ScanViewType.checkInPallet && checkIn == 1) {
+      Future.delayed(const Duration(seconds: 10), () {
+        Navigator.of(context).pushReplacement(MaterialPageRoute(
+            builder: (context) => CheckInPalletDetailScreen(
+                  checkInModel: listOfCheckIn.first,
+                  scanBarcode: "12.0",
+                )));
+
+        // log("expectedValue: $expectedValue");
       });
     } else if (scanViewType == ScanViewType.addSerialNumberQty) {
       Future.delayed(const Duration(seconds: 8), () {

@@ -76,4 +76,10 @@ class CheckInCubit extends Cubit<CheckInState> {
 
     log("scanFromList: ${lastPallets.map((e) => e.doneQty.toString()).toList()}");
   }
+
+  scanAttempt(int attempt) {
+    emit(state.copyWith(scanFromListAttempt: attempt));
+
+    log("scanAttempt: ${state.scanFromListAttempt}");
+  }
 }

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:inventory_v3/presentation/check-in/pallet/cubit/check-in_cubit.dart';
 import 'package:inventory_v3/presentation/home/screens/home_screen.dart';
 import 'package:inventory_v3/presentation/quality-control/both/cubit/quality_control_both_cubit.dart';
 import 'package:inventory_v3/presentation/receipt/receipt_both/cubit/receipt_detail/receipt_both_detail_cubit.dart';
@@ -55,6 +56,9 @@ class MainApp extends StatelessWidget {
             ),
             BlocProvider<QualityControlBothCubit>(
               create: (context) => QualityControlBothCubit(),
+            ),
+            BlocProvider<CheckInCubit>(
+              create: (context) => CheckInCubit(),
             )
           ],
           child: MaterialApp(

@@ -98,20 +98,13 @@ class _QualityControlPalletListScreenState extends State<CheckInPalletScreen>
                     SizedBox(width: 8.w),
                     buildScanButton(onTap: () {
                       ScanView screen;
-                      if (isBothListScreen) {
-                        var expectedValue = "A494";
-                        screen = ScanView(
-                          expectedValue: expectedValue,
-                          scanType: ScanViewType.listBothQc,
-                          idTracking: 1,
-                        );
-                      } else {
-                        screen = const ScanView(
-                          expectedValue: "1.0",
-                          scanType: ScanViewType.listPalletQC,
-                          idTracking: 1,
-                        );
-                      }
+                      var expectedValue = "A494";
+                      screen = ScanView(
+                        expectedValue: expectedValue,
+                        scanType: ScanViewType.checkInPallet,
+                        idTracking: 0,
+                      );
+
                       Navigator.push(
                           context,
                           MaterialPageRoute(

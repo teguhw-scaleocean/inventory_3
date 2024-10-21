@@ -39,7 +39,8 @@ class CheckInScreen extends StatelessWidget {
                       ),
                       4.height,
                       Text(
-                        TextConstants.chooseSubTitle,
+                        TextConstants.checkInMenuSubtitle,
+                        textAlign: TextAlign.center,
                         style: BaseText.grey1Text14,
                       )
                     ],

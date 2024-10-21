@@ -548,6 +548,7 @@ class _ScanViewState extends State<ScanView> {
       );
     } else if (scanViewType == ScanViewType.checkInPallet) {
       Future.delayed(const Duration(seconds: 8), () {
+        controller.pauseCamera();
         // Navigator.pop(context, scanDummyLotsNumber);
         onShowSuccessNewDialog(
           context: context,

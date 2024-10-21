@@ -128,7 +128,7 @@ class CheckInModel {
 List<CheckInModel> _checkInList = [
   CheckInModel(
       id: 1,
-      name: "WH/QC/00139",
+      name: "WH/INT/00139",
       status: "Ready",
       statusColor: ColorName.readyColor,
       packageName: "Package: Pallet",
@@ -174,7 +174,7 @@ List<CheckInModel> _checkInList = [
       ]),
   // CheckInModel(
   //     id: 2,
-  //     name: "WH/QC/00138",
+  //     name: "WH/INT/00138",
   //     status: "Ready",
   //     statusColor: ColorName.readyColor,
   //     packageName: "Package: Pallet",
@@ -206,7 +206,7 @@ List<CheckInModel> _checkInList = [
   //     ]),
   CheckInModel(
       id: 6,
-      name: "WH/QC/00138",
+      name: "WH/INT/00138",
       status: "Waiting",
       statusColor: ColorName.waitingColor,
       packageName: "Package: Pallet",
@@ -238,7 +238,7 @@ List<CheckInModel> _checkInList = [
       ]),
   CheckInModel(
       id: 3,
-      name: "WH/QC/00137",
+      name: "WH/INT/00137",
       status: "Late",
       statusColor: ColorName.lateColor,
       packageName: "Package: Pallet",
@@ -270,7 +270,7 @@ List<CheckInModel> _checkInList = [
       ]),
   CheckInModel(
       id: 4,
-      name: "WH/QC/00136",
+      name: "WH/INT/00136",
       status: "Ready",
       statusColor: ColorName.readyColor,
       packageName: "Package: Pallet",
@@ -302,7 +302,7 @@ List<CheckInModel> _checkInList = [
       ]),
   CheckInModel(
       id: 5,
-      name: "WH/QC/00135",
+      name: "WH/INT/00135",
       status: "Waiting",
       statusColor: ColorName.waitingColor,
       packageName: "Package: Pallet",
